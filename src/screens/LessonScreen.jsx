@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { FeedbackBar } from '../components/FeedbackBar.jsx'
+import { playWord } from '../lib/audio.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 const PRAISES = ['Igerrez !', 'Yelha !', 'Bravo !', 'Excellent !', 'Continue !']
@@ -38,6 +39,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
   const [pulse, setPulse] = useState(0)
   const [praise, setPraise] = useState(null) // { text, key }
   const [shakeKey, setShakeKey] = useState(0)
+  const [audioMode, setAudioMode] = useState(null) // 'file' | 'tts' | 'none'
 
   const ex = exercises[index]
   const isLast = index === total - 1
@@ -80,6 +82,12 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
     setIndex((i) => i + 1)
     setSelected(null)
     setAnswered(false)
+    setAudioMode(null)
+  }
+
+  function handlePlay() {
+    setPulse((p) => p + 1)
+    playWord(ex.word).then(setAudioMode)
   }
 
   return (
@@ -112,13 +120,18 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
         <h2 className="text-[18px] font-extrabold tracking-tight">{ex.prompt}</h2>
 
         <div className="mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5">
-          {ex.audio && <SpeakerButton onPlay={() => setPulse((p) => p + 1)} />}
+          {ex.audio && <SpeakerButton onPlay={handlePlay} />}
           <div>
             <div key={pulse} className={ex.audio ? 'animate-pop text-[17px] font-extrabold' : 'text-[17px] font-extrabold'}>
               {ex.word}
             </div>
-            <div className="mt-0.5 text-[11px] font-semibold text-ink-soft">
+            <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
               {ex.audio ? '▶ écouter la prononciation' : 'traduis en kabyle'}
+              {audioMode === 'tts' && (
+                <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Enregistrement natif à venir">
+                  voix provisoire
+                </span>
+              )}
             </div>
           </div>
         </div>

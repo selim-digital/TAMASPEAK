@@ -49,7 +49,7 @@ const l5 = [
   { kind: 'kab-to-fr', prompt: 'Que signifie ?', word: 'Azul', audio: true, answer: 'Bonjour', choices: ['Bonjour', 'Bienvenue', 'Non', 'Merci'] },
 ]
 
-const byLesson = { l1, l2, l3, l4, l5 }
+export const byLesson = { l1, l2, l3, l4, l5 }
 
 export function getExercises(lessonId) {
   return byLesson[lessonId] ?? l1
