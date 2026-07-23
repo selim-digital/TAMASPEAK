@@ -21,3 +21,21 @@ export const unit1 = {
     { id: 'l5', title: 'Au revoir', icon: '👋', status: 'locked' },
   ],
 }
+
+/**
+ * Marque une leçon comme terminée et débloque la prochaine leçon
+ * (on saute les coffres). Renvoie une NOUVELLE unité (immutable).
+ */
+export function completeLesson(unit, lessonId) {
+  const lessons = unit.lessons.map((l) => ({ ...l }))
+  const idx = lessons.findIndex((l) => l.id === lessonId)
+  if (idx === -1) return unit
+  lessons[idx].status = 'done'
+  for (let j = idx + 1; j < lessons.length; j++) {
+    if (lessons[j].type !== 'chest') {
+      if (lessons[j].status === 'locked') lessons[j].status = 'current'
+      break
+    }
+  }
+  return { ...unit, lessons }
+}
