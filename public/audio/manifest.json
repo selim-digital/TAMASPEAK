@@ -1,10 +1,38 @@
 [
   {
+    "id": "aberkan",
+    "kab": "Aberkan",
+    "fr": "Noir",
+    "file": "aberkan.mp3",
+    "lessons": "l22 l23"
+  },
+  {
+    "id": "adfel",
+    "kab": "Adfel",
+    "fr": "Neige",
+    "file": "adfel.mp3",
+    "lessons": "l28 l29 l35"
+  },
+  {
     "id": "adlis",
     "kab": "Adlis",
     "fr": "Livre",
     "file": "adlis.mp3",
     "lessons": "l13"
+  },
+  {
+    "id": "adu",
+    "kab": "Aḍu",
+    "fr": "Vent",
+    "file": "adu.mp3",
+    "lessons": "l28 l29"
+  },
+  {
+    "id": "ageffur",
+    "kab": "Ageffur",
+    "fr": "Pluie",
+    "file": "ageffur.mp3",
+    "lessons": "l27 l29"
   },
   {
     "id": "aghrum",
@@ -35,6 +63,13 @@
     "lessons": "l13 l17"
   },
   {
+    "id": "amellal",
+    "kab": "Amellal",
+    "fr": "Blanc",
+    "file": "amellal.mp3",
+    "lessons": "l22 l23"
+  },
+  {
     "id": "ansuf",
     "kab": "Ansuf",
     "fr": "Bienvenue",
@@ -63,6 +98,13 @@
     "lessons": "l3 l5 l7 l9"
   },
   {
+    "id": "asigna",
+    "kab": "Asigna",
+    "fr": "Nuage",
+    "file": "asigna.mp3",
+    "lessons": "l28 l29"
+  },
+  {
     "id": "atay",
     "kab": "Atay",
     "fr": "Thé",
@@ -70,11 +112,39 @@
     "lessons": "l11 l12 l17"
   },
   {
+    "id": "awragh",
+    "kab": "Awraɣ",
+    "fr": "Jaune",
+    "file": "awragh.mp3",
+    "lessons": "l22 l23"
+  },
+  {
     "id": "axxam",
     "kab": "Axxam",
     "fr": "Maison",
     "file": "axxam.mp3",
     "lessons": "l10 l12 l17"
+  },
+  {
+    "id": "azeggagh",
+    "kab": "Azeggaɣ",
+    "fr": "Rouge",
+    "file": "azeggagh.mp3",
+    "lessons": "l21 l23 l35"
+  },
+  {
+    "id": "azegzaw",
+    "kab": "Azegzaw",
+    "fr": "Vert",
+    "file": "azegzaw.mp3",
+    "lessons": "l21 l23"
+  },
+  {
+    "id": "azemmur",
+    "kab": "Aẓemmur",
+    "fr": "Olives",
+    "file": "azemmur.mp3",
+    "lessons": "l25"
   },
   {
     "id": "azul",
@@ -112,11 +182,32 @@
     "lessons": "l14 l15"
   },
   {
+    "id": "idrimen",
+    "kab": "Idrimen",
+    "fr": "Argent",
+    "file": "idrimen.mp3",
+    "lessons": "l26"
+  },
+  {
     "id": "ih",
     "kab": "Ih",
     "fr": "Oui",
     "file": "ih.mp3",
     "lessons": "l2 l3 l5 l6 l9"
+  },
+  {
+    "id": "kkuz",
+    "kab": "Kkuẓ",
+    "fr": "Quatre",
+    "file": "kkuz.mp3",
+    "lessons": "l19 l20"
+  },
+  {
+    "id": "krad",
+    "kab": "Kraḍ",
+    "fr": "Trois",
+    "file": "krad.mp3",
+    "lessons": "l18 l20"
   },
   {
     "id": "labas",
@@ -126,11 +217,46 @@
     "lessons": "l3 l4 l6 l9"
   },
   {
+    "id": "semmus",
+    "kab": "Semmus",
+    "fr": "Cinq",
+    "file": "semmus.mp3",
+    "lessons": "l19 l20 l35"
+  },
+  {
+    "id": "sin",
+    "kab": "Sin",
+    "fr": "Deux",
+    "file": "sin.mp3",
+    "lessons": "l18 l20"
+  },
+  {
+    "id": "ssuq",
+    "kab": "Ssuq",
+    "fr": "Marché",
+    "file": "ssuq.mp3",
+    "lessons": "l24 l25 l26 l35"
+  },
+  {
     "id": "taddart",
     "kab": "Taddart",
     "fr": "Village",
     "file": "taddart.mp3",
     "lessons": "l13"
+  },
+  {
+    "id": "tafukt",
+    "kab": "Tafukt",
+    "fr": "Soleil",
+    "file": "tafukt.mp3",
+    "lessons": "l27 l29 l35"
+  },
+  {
+    "id": "tament",
+    "kab": "Tament",
+    "fr": "Miel",
+    "file": "tament.mp3",
+    "lessons": "l25 l26 l35"
   },
   {
     "id": "tanemmirt",
@@ -166,5 +292,12 @@
     "fr": "Mère",
     "file": "yemma.mp3",
     "lessons": "l14"
+  },
+  {
+    "id": "yiwen",
+    "kab": "Yiwen",
+    "fr": "Un",
+    "file": "yiwen.mp3",
+    "lessons": "l18 l20"
   }
 ]

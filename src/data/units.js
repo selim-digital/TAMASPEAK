@@ -62,6 +62,81 @@ export const units = [
       { id: 'l17', title: 'Grande révision', icon: '🏅', status: 'locked' },
     ],
   },
+  {
+    id: 'u5',
+    level: 'Initiation',
+    unitLabel: 'Unité 5',
+    title: 'Les nombres — Amḍan',
+    trophy: '🔢',
+    lessons: [
+      { id: 'l18', title: 'Un à trois', icon: '3️⃣', status: 'locked' },
+      { id: 'l19', title: 'Quatre & cinq', icon: '5️⃣', status: 'locked' },
+      { id: 'chest5', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l20', title: 'Compter', icon: '🧮', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u6',
+    level: 'Initiation',
+    unitLabel: 'Unité 6',
+    title: 'Les couleurs — Initen',
+    trophy: '🎨',
+    lessons: [
+      { id: 'l21', title: 'Rouge & vert', icon: '🟥', status: 'locked' },
+      { id: 'l22', title: 'Jaune, noir, blanc', icon: '🟨', status: 'locked' },
+      { id: 'l23', title: 'Révision couleurs', icon: '🌈', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u7',
+    level: 'Initiation',
+    unitLabel: 'Unité 7',
+    title: 'Au marché — Ssuq',
+    trophy: '🛒',
+    lessons: [
+      { id: 'l24', title: 'Au souk', icon: '🛍️', status: 'locked' },
+      { id: 'l25', title: 'Miel & olives', icon: '🫒', status: 'locked' },
+      { id: 'chest7', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l26', title: 'Acheter', icon: '💰', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u8',
+    level: 'Initiation',
+    unitLabel: 'Unité 8',
+    title: 'La météo — Tignewt',
+    trophy: '☀️',
+    lessons: [
+      { id: 'l27', title: 'Soleil & pluie', icon: '🌦️', status: 'locked' },
+      { id: 'l28', title: 'Neige & vent', icon: '❄️', status: 'locked' },
+      { id: 'l29', title: 'Quel temps ?', icon: '🌤️', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u9',
+    level: 'Découverte',
+    unitLabel: 'Unité 9',
+    title: 'Peuples & territoires',
+    trophy: '🗺️',
+    lessons: [
+      { id: 'l30', title: 'Les Imazighen', icon: 'ⵣ', status: 'locked' },
+      { id: 'l31', title: 'Les régions', icon: '🏔️', status: 'locked' },
+      { id: 'chest9', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l32', title: 'Le drapeau', icon: '🏳️', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u10',
+    level: 'Découverte',
+    unitLabel: 'Unité 10',
+    title: 'Histoire & culture',
+    trophy: '📜',
+    lessons: [
+      { id: 'l33', title: 'Le tifinagh', icon: '🔤', status: 'locked' },
+      { id: 'l34', title: 'Figures & fêtes', icon: '🎉', status: 'locked' },
+      { id: 'l35', title: 'Grande révision', icon: '🏅', status: 'locked' },
+    ],
+  },
 ]
 
 /** Liste ordonnée à plat de tous les nœuds (leçons + coffres). */

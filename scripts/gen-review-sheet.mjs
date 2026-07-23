@@ -4,7 +4,7 @@
  *
  * Usage : node scripts/gen-review-sheet.mjs [chemin/sortie.html]
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
@@ -12,11 +12,16 @@ const here = dirname(fileURLToPath(import.meta.url))
 const root = join(here, '..')
 const out = process.argv[2] || join(root, 'fiche-validation.html')
 
-const rows = JSON.parse(readFileSync(join(root, 'public', 'audio', 'manifest.json'), 'utf8'))
+const AUDIO = join(root, 'public', 'audio')
+const rows = JSON.parse(readFileSync(join(AUDIO, 'manifest.json'), 'utf8'))
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const isPhrase = (r) => r.kab.trim().includes(' ')
-const words = rows.filter((r) => !isPhrase(r))
-const phrases = rows.filter(isPhrase)
+// Une voix native existe déjà ? (fichier présent à la racine de public/audio)
+const recorded = (r) => existsSync(join(AUDIO, r.file))
+const todo = rows.filter((r) => !recorded(r))
+const done = rows.filter(recorded)
+const words = todo.filter((r) => !isPhrase(r))
+const phrases = todo.filter(isPhrase)
 
 const tbody = (list, start) =>
   list
@@ -71,7 +76,7 @@ const html = `<title>Tama Speak — Fiche de validation &amp; enregistrement</ti
     <div class="mark"><svg width="28" height="31" viewBox="0 0 42 46"><g stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M21 12V40"/><path d="M8 6 C8 16,34 16,34 6"/><path d="M12 40H30"/></g><circle cx="21" cy="7" r="4.6" fill="#FF6F61"/></svg></div>
     <div>
       <h1>Fiche de validation &amp; enregistrement</h1>
-      <div class="sub">Tama Speak · Kabyle (taqbaylit) · ${rows.length} entrées — Unités 1 à 4</div>
+      <div class="sub">Tama Speak · Kabyle (taqbaylit) · ${todo.length} à enregistrer · ${done.length} déjà faites</div>
     </div>
   </div>
 
@@ -87,7 +92,12 @@ const html = `<title>Tama Speak — Fiche de validation &amp; enregistrement</ti
     <div class="step"><div class="n">Étape 3</div><h3>Renvoyer</h3><p>Renvoie les fichiers + cette fiche annotée. L'app jouera ta voix automatiquement.</p></div>
   </div>
 
-  <div class="seclabel">Mots (${words.length})</div>
+  <div class="lead" style="margin-top:14px">
+    ✅ <b>${done.length} entrées sont déjà enregistrées</b> (merci !). Il reste <b>${todo.length} nouvelles entrées</b> ci-dessous.
+    Tu peux enregistrer un <b>seul fichier</b> en les disant <b>dans l'ordre de cette fiche</b>, avec une petite pause entre chaque — on le découpera automatiquement.
+  </div>
+
+  <div class="seclabel">À enregistrer — mots (${words.length})</div>
   <div class="tablewrap"><table>
     <thead><tr><th class="num">#</th><th>Kabyle (à valider)</th><th>Français</th><th>Fichier audio</th><th>✏️ Correction</th><th class="ok">✓</th></tr></thead>
     <tbody>
@@ -95,11 +105,19 @@ ${tbody(words, 1)}
     </tbody>
   </table></div>
 
-  <div class="seclabel">Phrases (${phrases.length})</div>
+  ${phrases.length ? `<div class="seclabel">À enregistrer — phrases (${phrases.length})</div>
   <div class="tablewrap"><table>
     <thead><tr><th class="num">#</th><th>Kabyle (à valider)</th><th>Français</th><th>Fichier audio</th><th>✏️ Correction</th><th class="ok">✓</th></tr></thead>
     <tbody>
 ${tbody(phrases, words.length + 1)}
+    </tbody>
+  </table></div>` : ''}
+
+  <div class="seclabel">Déjà enregistré ✅ (${done.length}) — à valider seulement</div>
+  <div class="tablewrap"><table>
+    <thead><tr><th class="num">#</th><th>Kabyle</th><th>Français</th><th>Fichier audio</th><th>✏️ Correction</th><th class="ok">✓</th></tr></thead>
+    <tbody>
+${tbody(done, 1)}
     </tbody>
   </table></div>
 

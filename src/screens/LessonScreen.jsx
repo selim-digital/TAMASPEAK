@@ -44,7 +44,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
 
   const ex = exercises[index]
   const isMatch = ex.type === 'match'
-  const isImage = ex.type === 'image'
+  const isImage = ex.type === 'image' || ex.type === 'culture' // même rendu : énoncé + illustration facultative + choix
   const isSentence = ex.type === 'sentence'
   const isListen = ex.type === 'listen'
   const audioFirst = isListen || isSentence // audio d'abord, texte révélé après
@@ -150,9 +150,13 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
         ) : (
           <>
             {isImage ? (
-              <div className="animate-pop-in mx-auto mt-4 w-full max-w-[230px] overflow-hidden rounded-2xl border-2 border-line shadow-sm">
-                <Scene id={ex.scene} />
-              </div>
+              ex.scene ? (
+                <div className="animate-pop-in mx-auto mt-4 w-full max-w-[230px] overflow-hidden rounded-2xl border-2 border-line shadow-sm">
+                  <Scene id={ex.scene} />
+                </div>
+              ) : (
+                <div className="mt-3" />
+              )
             ) : (
               <>
                 <div className={`mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${audioFirst ? 'justify-center' : ''}`}>
@@ -201,7 +205,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-5 pt-3">
-        {answered && !isMatch && <FeedbackBar correct={isCorrect} word={ex.word ?? ex.answer} answer={ex.answer} />}
+        {answered && !isMatch && <FeedbackBar correct={isCorrect} word={ex.word} answer={ex.answer} />}
         <Button variant={answered && !isCorrect ? 'coral' : 'primary'} disabled={actionDisabled} onClick={handleAction}>
           {actionLabel}
         </Button>

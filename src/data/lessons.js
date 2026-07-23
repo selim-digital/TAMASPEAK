@@ -29,6 +29,8 @@ const listen = (word, answer, choices) => ({
 const match = (pairs, prompt = 'Associe les paires') => ({ type: 'match', prompt, pairs })
 /** Image d'une situation quotidienne → trouver la bonne description (mot kabyle). */
 const image = (scene, answer, choices, prompt = 'Que montre l’image ?') => ({ type: 'image', prompt, scene, answer, choices })
+/** Question de culture/histoire (réponses en français, illustration facultative). */
+const culture = (prompt, answer, choices, scene) => ({ type: 'culture', prompt, scene, answer, choices })
 /** Écouter une PHRASE entière → choisir son sens. */
 const sentence = (phrase, answer, choices) => ({
   type: 'sentence',
@@ -198,7 +200,167 @@ const l17 = [
   image('house', 'Axxam', ['Axxam', 'Taddart', 'Tawwurt', 'Adlis']),
 ]
 
-export const byLesson = { l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17 }
+// -------- Unité 5 — Les nombres --------
+const l18 = [
+  image('count-1', 'Yiwen', ['Yiwen', 'Sin', 'Kraḍ', 'Kkuẓ']),
+  image('count-2', 'Sin', ['Sin', 'Yiwen', 'Semmus', 'Kraḍ']),
+  image('count-3', 'Kraḍ', ['Kraḍ', 'Sin', 'Kkuẓ', 'Yiwen']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Sin', 'Deux', ['Deux', 'Un', 'Trois', 'Cinq']),
+]
+const l19 = [
+  image('count-4', 'Kkuẓ', ['Kkuẓ', 'Semmus', 'Kraḍ', 'Sin']),
+  image('count-5', 'Semmus', ['Semmus', 'Kkuẓ', 'Yiwen', 'Sin']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Semmus', 'Cinq', ['Cinq', 'Quatre', 'Deux', 'Trois']),
+  listen('Kkuẓ', 'Quatre', ['Quatre', 'Cinq', 'Un', 'Trois']),
+]
+const l20 = [
+  match([
+    { kab: 'Yiwen', fr: 'Un' },
+    { kab: 'Sin', fr: 'Deux' },
+    { kab: 'Kraḍ', fr: 'Trois' },
+  ]),
+  qcm('fr-to-kab', 'Comment dit-on « Trois » ?', 'Trois', 'Kraḍ', ['Kraḍ', 'Sin', 'Kkuẓ', 'Semmus']),
+  match([
+    { kab: 'Kkuẓ', fr: 'Quatre' },
+    { kab: 'Semmus', fr: 'Cinq' },
+    { kab: 'Yiwen', fr: 'Un' },
+  ]),
+  image('count-3', 'Kraḍ', ['Kraḍ', 'Semmus', 'Sin', 'Kkuẓ']),
+]
+
+// -------- Unité 6 — Les couleurs --------
+const l21 = [
+  image('color-red', 'Azeggaɣ', ['Azeggaɣ', 'Azegzaw', 'Awraɣ', 'Aberkan']),
+  image('color-green', 'Azegzaw', ['Azegzaw', 'Azeggaɣ', 'Amellal', 'Awraɣ']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Azeggaɣ', 'Rouge', ['Rouge', 'Vert', 'Jaune', 'Noir']),
+  listen('Azegzaw', 'Vert', ['Vert', 'Rouge', 'Blanc', 'Jaune']),
+]
+const l22 = [
+  image('color-yellow', 'Awraɣ', ['Awraɣ', 'Aberkan', 'Amellal', 'Azeggaɣ']),
+  image('color-black', 'Aberkan', ['Aberkan', 'Amellal', 'Awraɣ', 'Azegzaw']),
+  image('color-white', 'Amellal', ['Amellal', 'Aberkan', 'Azeggaɣ', 'Awraɣ']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Amellal', 'Blanc', ['Blanc', 'Noir', 'Jaune', 'Vert']),
+]
+const l23 = [
+  match([
+    { kab: 'Azeggaɣ', fr: 'Rouge' },
+    { kab: 'Azegzaw', fr: 'Vert' },
+    { kab: 'Awraɣ', fr: 'Jaune' },
+  ]),
+  qcm('fr-to-kab', 'Comment dit-on « Noir » ?', 'Noir', 'Aberkan', ['Aberkan', 'Amellal', 'Awraɣ', 'Azegzaw']),
+  match([
+    { kab: 'Aberkan', fr: 'Noir' },
+    { kab: 'Amellal', fr: 'Blanc' },
+    { kab: 'Azeggaɣ', fr: 'Rouge' },
+  ]),
+  image('color-green', 'Azegzaw', ['Azegzaw', 'Aberkan', 'Amellal', 'Azeggaɣ']),
+]
+
+// -------- Unité 7 — Au marché --------
+const l24 = [
+  image('souk', 'Ssuq', ['Ssuq', 'Axxam', 'Taddart', 'Tawwurt']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Ssuq', 'Marché', ['Marché', 'Maison', 'Village', 'Porte']),
+  listen('Ssuq', 'Marché', ['Marché', 'Village', 'Eau', 'Pain']),
+  qcm('fr-to-kab', 'Comment dit-on « Marché » ?', 'Marché', 'Ssuq', ['Ssuq', 'Taddart', 'Axxam', 'Adlis']),
+]
+const l25 = [
+  image('honey', 'Tament', ['Tament', 'Aẓemmur', 'Aman', 'Atay']),
+  image('olives', 'Aẓemmur', ['Aẓemmur', 'Tament', 'Aɣrum', 'Ssuq']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Tament', 'Miel', ['Miel', 'Olives', 'Pain', 'Thé']),
+  match([
+    { kab: 'Tament', fr: 'Miel' },
+    { kab: 'Aẓemmur', fr: 'Olives' },
+    { kab: 'Ssuq', fr: 'Marché' },
+  ]),
+]
+const l26 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Idrimen', 'Argent', ['Argent', 'Miel', 'Marché', 'Olives']),
+  listen('Idrimen', 'Argent', ['Argent', 'Olives', 'Marché', 'Pain']),
+  match([
+    { kab: 'Idrimen', fr: 'Argent' },
+    { kab: 'Ssuq', fr: 'Marché' },
+    { kab: 'Tament', fr: 'Miel' },
+  ]),
+  image('souk', 'Ssuq', ['Ssuq', 'Idrimen', 'Tament', 'Aẓemmur']),
+]
+
+// -------- Unité 8 — La météo --------
+const l27 = [
+  image('sun', 'Tafukt', ['Tafukt', 'Ageffur', 'Adfel', 'Aḍu']),
+  image('rain', 'Ageffur', ['Ageffur', 'Tafukt', 'Asigna', 'Adfel']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Tafukt', 'Soleil', ['Soleil', 'Pluie', 'Neige', 'Vent']),
+  listen('Ageffur', 'Pluie', ['Pluie', 'Soleil', 'Nuage', 'Vent']),
+]
+const l28 = [
+  image('snow', 'Adfel', ['Adfel', 'Aḍu', 'Asigna', 'Tafukt']),
+  image('wind', 'Aḍu', ['Aḍu', 'Adfel', 'Ageffur', 'Tafukt']),
+  image('cloud', 'Asigna', ['Asigna', 'Adfel', 'Aḍu', 'Tafukt']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Adfel', 'Neige', ['Neige', 'Vent', 'Nuage', 'Soleil']),
+]
+const l29 = [
+  match([
+    { kab: 'Tafukt', fr: 'Soleil' },
+    { kab: 'Ageffur', fr: 'Pluie' },
+    { kab: 'Adfel', fr: 'Neige' },
+  ]),
+  qcm('fr-to-kab', 'Comment dit-on « Vent » ?', 'Vent', 'Aḍu', ['Aḍu', 'Adfel', 'Asigna', 'Ageffur']),
+  match([
+    { kab: 'Aḍu', fr: 'Vent' },
+    { kab: 'Asigna', fr: 'Nuage' },
+    { kab: 'Tafukt', fr: 'Soleil' },
+  ]),
+  image('sun', 'Tafukt', ['Tafukt', 'Asigna', 'Aḍu', 'Ageffur']),
+]
+
+// -------- Unité 9 — Peuples & territoires (culture) --------
+const l30 = [
+  culture('Que signifie « Amazigh » ?', 'Homme libre', ['Homme libre', 'Montagnard', 'Voyageur', 'Berger']),
+  culture('Comment appelle-t-on la langue berbère ?', 'Tamazight', ['Tamazight', 'Tifinagh', 'Tamazgha', 'Yennayer']),
+  culture('« Imazighen » est le pluriel de…', 'Amazigh', ['Amazigh', 'Tamazight', 'Tifinagh', 'Taddart']),
+  culture('Comment dit-on « le kabyle » (la langue) ?', 'Taqbaylit', ['Taqbaylit', 'Tarifit', 'Tacelḥit', 'Tamazgha']),
+]
+const l31 = [
+  culture('Où se trouve la Kabylie ?', 'En Algérie', ['En Algérie', 'Au Maroc', 'En Libye', 'En Tunisie'], 'village'),
+  culture('Le Rif est une région…', 'du Maroc', ['du Maroc', "d'Algérie", 'de Tunisie', 'du Mali']),
+  culture('Les Touaregs vivent surtout…', 'au Sahara', ['au Sahara', 'en Kabylie', 'dans le Rif', 'au Souss']),
+  culture('Comment dit-on « la Kabylie » en kabyle ?', 'Tamurt n Leqbayel', ['Tamurt n Leqbayel', 'Tamazgha', 'Tifinagh', 'Taddart']),
+]
+const l32 = [
+  culture('Que représente le symbole rouge du drapeau amazigh ?', "Le yaz (ⵣ), l'homme libre", ["Le yaz (ⵣ), l'homme libre", 'Une montagne', 'Un soleil', 'Une rivière'], 'flag'),
+  culture('Le bleu du drapeau amazigh représente…', 'La mer', ['La mer', 'La nuit', 'Le froid', 'Le ciel seul'], 'flag'),
+  culture('Le vert du drapeau représente…', 'La nature et les montagnes', ['La nature et les montagnes', 'La paix', "L'espoir", 'Les oliviers seuls']),
+  culture('Le jaune du drapeau représente…', 'Le sable du Sahara', ['Le sable du Sahara', "L'or", 'Le blé', 'Le soleil']),
+]
+
+// -------- Unité 10 — Histoire & culture --------
+const l33 = [
+  culture('Le tifinagh est…', "L'alphabet amazigh", ["L'alphabet amazigh", 'Une danse', 'Un plat', 'Une région'], 'tifinagh'),
+  culture("Quel signe tifinagh est l'emblème amazigh ?", 'ⵣ (yaz)', ['ⵣ (yaz)', 'ⴰ (ya)', 'ⵎ (yam)', 'ⵏ (yan)'], 'tifinagh'),
+  culture("Aujourd'hui, le kabyle s'écrit surtout en…", 'Alphabet latin', ['Alphabet latin', 'Tifinagh uniquement', 'Alphabet grec', 'Idéogrammes']),
+  culture('« Tamazgha » désigne…', "L'ensemble des terres amazighes", ["L'ensemble des terres amazighes", 'Une ville', 'Un roi', 'Une fête']),
+]
+const l34 = [
+  culture('Yennayer est…', 'Le nouvel an amazigh', ['Le nouvel an amazigh', 'Une montagne', 'Un plat', 'Un roi']),
+  culture('Yennayer est célébré en…', 'Janvier', ['Janvier', 'Mars', 'Juillet', 'Octobre']),
+  culture('Massinissa était…', 'Un roi numide', ['Un roi numide', 'Un poète', 'Un navigateur', 'Un peintre']),
+  culture('Dihya (la Kahina) était…', 'Une reine guerrière amazighe', ['Une reine guerrière amazighe', 'Une chanteuse', 'Une déesse', 'Une ville']),
+]
+const l35 = [
+  image('count-5', 'Semmus', ['Semmus', 'Kkuẓ', 'Kraḍ', 'Sin']),
+  image('color-red', 'Azeggaɣ', ['Azeggaɣ', 'Azegzaw', 'Awraɣ', 'Amellal']),
+  match([
+    { kab: 'Tafukt', fr: 'Soleil' },
+    { kab: 'Ssuq', fr: 'Marché' },
+    { kab: 'Tament', fr: 'Miel' },
+    { kab: 'Adfel', fr: 'Neige' },
+  ]),
+  culture('Que signifie « Amazigh » ?', 'Homme libre', ['Homme libre', 'Montagnard', 'Berger', 'Voyageur'], 'flag'),
+]
+
+export const byLesson = {
+  l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17,
+  l18, l19, l20, l21, l22, l23, l24, l25, l26, l27, l28, l29, l30, l31, l32, l33, l34, l35,
+}
 
 export function getExercises(lessonId) {
   return byLesson[lessonId] ?? l1
@@ -208,5 +370,5 @@ export function getExercises(lessonId) {
 export function challengePool() {
   return Object.values(byLesson)
     .flat()
-    .filter((ex) => ['qcm', 'listen', 'sentence', 'image'].includes(ex.type))
+    .filter((ex) => ['qcm', 'listen', 'sentence', 'image', 'culture'].includes(ex.type))
 }

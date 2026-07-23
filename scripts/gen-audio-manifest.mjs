@@ -30,6 +30,7 @@ for (const [lessonId, exercises] of Object.entries(byLesson)) {
       for (const p of ex.pairs) addTerm(p.kab, p.fr, lessonId)
       continue
     }
+    if (ex.type === 'culture') continue // réponses en français : pas de terme kabyle à enregistrer
     if (ex.type === 'image') {
       // la bonne réponse est le mot kabyle ; la traduction vient d'autres exercices
       addTerm(ex.answer, '', lessonId)

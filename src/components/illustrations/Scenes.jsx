@@ -156,6 +156,162 @@ export function SceneBook() {
   )
 }
 
+/* ---------------- Météo ---------------- */
+export function SceneSun() {
+  return (
+    <Frame label="Le soleil">
+      <circle cx="100" cy="70" r="30" fill={P.gold} />
+      <g stroke={P.gold} strokeWidth="6" strokeLinecap="round">
+        <path d="M100 20 v-12 M100 132 v-12 M50 70 h-12 M162 70 h-12 M64 34 l-9 -9 M145 106 l9 9 M136 34 l9 -9 M64 106 l-9 9" />
+      </g>
+      <circle cx="100" cy="70" r="20" fill="#F5C860" />
+    </Frame>
+  )
+}
+export function SceneRain() {
+  return (
+    <Frame label="La pluie">
+      <ellipse cx="86" cy="56" rx="34" ry="22" fill="#B9C6CE" />
+      <ellipse cx="118" cy="60" rx="26" ry="18" fill="#CBD6DC" />
+      <g stroke={P.turq} strokeWidth="5" strokeLinecap="round">
+        <path d="M70 90 l-6 22 M96 92 l-6 24 M122 90 l-6 22" />
+      </g>
+    </Frame>
+  )
+}
+export function SceneSnow() {
+  return (
+    <Frame label="La neige">
+      <ellipse cx="96" cy="50" rx="34" ry="20" fill="#CBD6DC" />
+      <g stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round">
+        <path d="M70 88 v14 M63 95 h14 M66 91 l8 8 M74 91 l-8 8" />
+        <path d="M104 96 v14 M97 103 h14 M100 99 l8 8 M108 99 l-8 8" />
+        <path d="M136 86 v12 M130 92 h12 M132 88 l7 7 M139 88 l-7 7" />
+      </g>
+      <rect x="0" y="118" width="200" height="22" fill="#ffffff" opacity=".9" />
+    </Frame>
+  )
+}
+export function SceneCloud() {
+  return (
+    <Frame label="Le nuage">
+      <ellipse cx="80" cy="76" rx="36" ry="24" fill="#CBD6DC" />
+      <ellipse cx="118" cy="80" rx="30" ry="20" fill="#B9C6CE" />
+      <ellipse cx="100" cy="62" rx="26" ry="18" fill="#DDE5EA" />
+    </Frame>
+  )
+}
+export function SceneWind() {
+  return (
+    <Frame label="Le vent">
+      <g stroke={P.turqD} strokeWidth="6" strokeLinecap="round" fill="none">
+        <path d="M34 54 h72 q18 0 18 -12 q0 -12 -14 -10" />
+        <path d="M28 78 h96 q20 0 20 14 q0 14 -16 12" />
+        <path d="M40 102 h56 q16 0 16 10" />
+      </g>
+    </Frame>
+  )
+}
+
+/* ---------------- Marché ---------------- */
+export function SceneSouk() {
+  return (
+    <Frame label="Le marché">
+      <ellipse cx="100" cy="124" rx="76" ry="7" fill={P.ink} opacity=".07" />
+      <path d="M28 60 q18 -14 36 0 q18 -14 36 0 q18 -14 36 0 q18 -14 36 0 v10 H28 Z" fill={P.coral} />
+      <rect x="28" y="70" width="144" height="8" fill={P.coralD} />
+      <rect x="36" y="78" width="8" height="44" fill={P.wood} />
+      <rect x="156" y="78" width="8" height="44" fill={P.wood} />
+      <rect x="52" y="96" width="96" height="26" rx="4" fill={P.sand2} />
+      <circle cx="70" cy="94" r="9" fill={P.turq} />
+      <circle cx="92" cy="94" r="9" fill={P.gold} />
+      <circle cx="114" cy="94" r="9" fill={P.coralD} />
+      <circle cx="136" cy="94" r="9" fill={P.turqDd} />
+    </Frame>
+  )
+}
+export function SceneHoney() {
+  return (
+    <Frame label="Le miel">
+      <ellipse cx="100" cy="120" rx="46" ry="7" fill={P.ink} opacity=".07" />
+      <path d="M70 118 V64 q0 -10 12 -10 h36 q12 0 12 10 v54 Z" fill={P.gold} opacity=".9" />
+      <rect x="66" y="52" width="68" height="10" rx="5" fill={P.wood} />
+      <path d="M78 76 q22 8 44 0" stroke="#C98A45" strokeWidth="3" fill="none" strokeLinecap="round" opacity=".7" />
+      <g fill="#C98A45" opacity=".55">
+        <path d="M92 92 l6 -4 l6 4 v7 l-6 4 l-6 -4 Z" />
+        <path d="M106 100 l6 -4 l6 4 v7 l-6 4 l-6 -4 Z" />
+      </g>
+    </Frame>
+  )
+}
+export function SceneOlives() {
+  return (
+    <Frame label="Les olives">
+      <ellipse cx="100" cy="118" rx="52" ry="7" fill={P.ink} opacity=".07" />
+      <path d="M58 82 q42 -18 84 0 l-8 32 q-34 12 -68 0 Z" fill={P.sand2} />
+      <ellipse cx="78" cy="86" rx="11" ry="14" fill="#5B7A3A" />
+      <ellipse cx="100" cy="82" rx="11" ry="14" fill="#4A6830" />
+      <ellipse cx="122" cy="86" rx="11" ry="14" fill="#6B8B45" />
+      <ellipse cx="89" cy="100" rx="10" ry="13" fill="#3E5A28" />
+      <ellipse cx="111" cy="100" rx="10" ry="13" fill="#5B7A3A" />
+      <path d="M100 68 q10 -12 24 -12" stroke="#4A6830" strokeWidth="3" fill="none" strokeLinecap="round" />
+    </Frame>
+  )
+}
+
+/* ---------------- Culture ---------------- */
+export function SceneFlag() {
+  return (
+    <Frame label="Le drapeau amazigh">
+      <rect x="30" y="34" width="140" height="72" rx="4" fill="#1F7FCB" />
+      <rect x="30" y="58" width="140" height="24" fill="#39A845" />
+      <rect x="30" y="82" width="140" height="24" fill="#F2C400" />
+      <g stroke="#D62828" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M100 56 V96" />
+        <path d="M82 42 c0 14, 36 14, 36 0" />
+        <path d="M88 96 h24" />
+      </g>
+      <circle cx="100" cy="42" r="6" fill="#D62828" />
+      <rect x="24" y="30" width="6" height="86" rx="3" fill={P.wood} />
+    </Frame>
+  )
+}
+export function SceneTifinagh() {
+  return (
+    <Frame label="L'alphabet tifinagh">
+      <g stroke={P.turqDd} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M46 50 V90 M34 50 c0 12, 24 12, 24 0 M36 90 h20" />
+        <circle cx="100" cy="56" r="9" />
+        <path d="M100 66 V92 M88 92 h24" />
+        <path d="M142 50 h24 M154 50 V90 M142 90 h24" />
+      </g>
+      <rect x="30" y="104" width="140" height="4" rx="2" fill={P.coral} opacity=".6" />
+    </Frame>
+  )
+}
+
+/* ------- Fabriques : couleurs & nombres ------- */
+const makeColor = (hex, label, ring) => () => (
+  <Frame label={label}>
+    <circle cx="100" cy="70" r="42" fill={hex} stroke={ring || 'rgba(0,0,0,.08)'} strokeWidth="3" />
+    <ellipse cx="100" cy="120" rx="44" ry="6" fill={P.ink} opacity=".07" />
+  </Frame>
+)
+const makeCount = (n) => () => (
+  <Frame label={`${n} olive${n > 1 ? 's' : ''}`}>
+    {Array.from({ length: n }).map((_, i) => {
+      const cols = Math.min(n, 3)
+      const row = Math.floor(i / cols)
+      const col = i % cols
+      const rowCount = Math.min(cols, n - row * cols)
+      const x = 100 + (col - (rowCount - 1) / 2) * 34
+      const y = n <= 3 ? 70 : 54 + row * 40
+      return <ellipse key={i} cx={x} cy={y} rx="13" ry="17" fill={i % 2 ? '#4A6830' : '#5B7A3A'} />
+    })}
+    <ellipse cx="100" cy="124" rx="50" ry="6" fill={P.ink} opacity=".07" />
+  </Frame>
+)
+
 export const SCENES = {
   tea: SceneTea,
   bread: SceneBread,
@@ -165,6 +321,31 @@ export const SCENES = {
   village: SceneVillage,
   door: SceneDoor,
   book: SceneBook,
+  // météo
+  sun: SceneSun,
+  rain: SceneRain,
+  snow: SceneSnow,
+  cloud: SceneCloud,
+  wind: SceneWind,
+  // marché
+  souk: SceneSouk,
+  honey: SceneHoney,
+  olives: SceneOlives,
+  // culture
+  flag: SceneFlag,
+  tifinagh: SceneTifinagh,
+  // couleurs
+  'color-green': makeColor('#39A845', 'Vert'),
+  'color-red': makeColor('#D62828', 'Rouge'),
+  'color-yellow': makeColor('#F2C400', 'Jaune'),
+  'color-black': makeColor('#1E2530', 'Noir'),
+  'color-white': makeColor('#FFFFFF', 'Blanc', '#CBD6DC'),
+  // nombres
+  'count-1': makeCount(1),
+  'count-2': makeCount(2),
+  'count-3': makeCount(3),
+  'count-4': makeCount(4),
+  'count-5': makeCount(5),
 }
 
 /** Rend une scène par identifiant. */
