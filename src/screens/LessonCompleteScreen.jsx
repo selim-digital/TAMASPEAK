@@ -1,10 +1,42 @@
+import { useEffect, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Aqcic } from '../components/mascots/Aqcic.jsx'
+import { Confetti } from '../components/Confetti.jsx'
 
-function Reward({ value, label, tone = 'turquoise' }) {
+/** Anime un nombre de 0 → target. */
+function useCountUp(target, duration = 700) {
+  const [value, setValue] = useState(0)
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setValue(target)
+      return
+    }
+    let raf
+    const start = performance.now()
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration)
+      setValue(Math.round(target * (1 - Math.pow(1 - t, 3))))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    // Filet de sécurité : garantit la valeur finale même si rAF est
+    // suspendu (onglet non peint / arrière-plan).
+    const fallback = setTimeout(() => setValue(target), duration + 120)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(fallback)
+    }
+  }, [target, duration])
+  return value
+}
+
+function Reward({ value, label, tone = 'turquoise', delay = 0 }) {
   const toneCls = tone === 'coral' ? 'text-coral' : 'text-turquoise-deep'
   return (
-    <div className="flex-1 rounded-2xl border border-line bg-cream px-2 py-3.5 text-center">
+    <div
+      className="animate-pop-in flex-1 rounded-2xl border border-line bg-cream px-2 py-3.5 text-center"
+      style={{ animationDelay: `${delay}ms` }}
+    >
       <div className={`text-xl font-extrabold ${toneCls}`}>{value}</div>
       <div className="mt-1 text-[9.5px] font-extrabold uppercase tracking-wide text-ink-soft">{label}</div>
     </div>
@@ -12,11 +44,16 @@ function Reward({ value, label, tone = 'turquoise' }) {
 }
 
 /**
- * Screen 4 — Fin de leçon (réussite).
+ * Screen 4 — Fin de leçon (réussite) : confettis, XP qui grimpe,
+ * récompenses en cascade, mascotte qui surgit.
  */
 export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak = 4, onContinue }) {
+  const xpShown = useCountUp(xp)
+
   return (
-    <div className="flex flex-1 flex-col items-center px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.2),var(--color-cream)_62%)]">
+    <div className="animate-enter relative flex flex-1 flex-col items-center px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.2),var(--color-cream)_62%)]">
+      <Confetti count={34} />
+
       <div className="animate-pop">
         <Aqcic height={150} />
       </div>
@@ -30,9 +67,9 @@ export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak =
       </p>
 
       <div className="mt-5 flex w-full gap-3">
-        <Reward value={`+${xp}`} label="XP gagnés" />
-        <Reward value={`${streak} 🔥`} label="Série de jours" tone="coral" />
-        <Reward value={`${correct}/${total}`} label="Bonnes réponses" />
+        <Reward value={`+${xpShown}`} label="XP gagnés" delay={80} />
+        <Reward value={`${streak} 🔥`} label="Série de jours" tone="coral" delay={200} />
+        <Reward value={`${correct}/${total}`} label="Bonnes réponses" delay={320} />
       </div>
 
       <div className="flex-1" />

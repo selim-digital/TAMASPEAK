@@ -4,6 +4,7 @@ import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { FeedbackBar } from '../components/FeedbackBar.jsx'
 
 const LETTERS = ['A', 'B', 'C', 'D']
+const PRAISES = ['Igerrez !', 'Yelha !', 'Bravo !', 'Excellent !', 'Continue !']
 
 /** Small speaker button — visual pulse only (real audio arrives in Phase 2). */
 function SpeakerButton({ onPlay }) {
@@ -23,8 +24,8 @@ function SpeakerButton({ onPlay }) {
 }
 
 /**
- * Screen 3 — Moteur de leçon (boucle d'exercices).
- * QCM → Vérifier → feedback juste/faux → Continuer → … → onFinish.
+ * Screen 3 — Moteur de leçon (boucle d'exercices) + animations
+ * d'encouragement : éloge flottant, combo, cœur qui tremble.
  */
 export function LessonScreen({ exercises, onExit, onFinish }) {
   const total = exercises.length
@@ -33,7 +34,10 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
   const [answered, setAnswered] = useState(false)
   const [hearts, setHearts] = useState(5)
   const [correctCount, setCorrectCount] = useState(0)
+  const [combo, setCombo] = useState(0)
   const [pulse, setPulse] = useState(0)
+  const [praise, setPraise] = useState(null) // { text, key }
+  const [shakeKey, setShakeKey] = useState(0)
 
   const ex = exercises[index]
   const isLast = index === total - 1
@@ -47,12 +51,26 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
     return 'dim'
   }
 
+  function praiseFor(n) {
+    if (n >= 3) return `En feu ! ×${n} 🔥`
+    if (n === 2) return 'Combo ×2 ! 🔥'
+    return PRAISES[Math.floor((index + n) % PRAISES.length)]
+  }
+
   function handleAction() {
     if (!answered) {
       const ok = selected === ex.answer
       setAnswered(true)
-      if (ok) setCorrectCount((c) => c + 1)
-      else setHearts((h) => Math.max(0, h - 1))
+      if (ok) {
+        const nextCombo = combo + 1
+        setCombo(nextCombo)
+        setCorrectCount((c) => c + 1)
+        setPraise({ text: praiseFor(nextCombo), key: Date.now() })
+      } else {
+        setCombo(0)
+        setHearts((h) => Math.max(0, h - 1))
+        setShakeKey((k) => k + 1)
+      }
       return
     }
     if (isLast) {
@@ -65,7 +83,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-cream">
+    <div className="animate-enter flex flex-1 flex-col bg-cream">
       {/* Top: close, progress, hearts */}
       <div className="flex items-center gap-3 px-4 pt-8 pb-2">
         <button type="button" onClick={onExit} aria-label="Quitter la leçon" className="text-xl font-extrabold text-ink-soft">
@@ -74,13 +92,23 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
         <div className="h-3 flex-1 overflow-hidden rounded-full bg-sand-2">
           <div className="h-full rounded-full bg-turquoise transition-[width] duration-300" style={{ width: `${progress}%` }} />
         </div>
-        <div className="flex items-center gap-1 text-sm font-extrabold text-coral">
+        <div key={shakeKey} className={`flex items-center gap-1 text-sm font-extrabold text-coral ${shakeKey ? 'animate-shake' : ''}`}>
           <span aria-hidden="true">♥</span> {hearts}
         </div>
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 flex-col overflow-y-auto px-4 pt-4">
+      <div className="relative flex flex-1 flex-col overflow-y-auto px-4 pt-4">
+        {/* Floating praise on correct answers */}
+        {answered && isCorrect && praise && (
+          <div
+            key={praise.key}
+            className="animate-float-up pointer-events-none absolute left-1/2 top-2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-turquoise px-3 py-1 text-sm font-extrabold text-white shadow-lg"
+          >
+            {praise.text}
+          </div>
+        )}
+
         <h2 className="text-[18px] font-extrabold tracking-tight">{ex.prompt}</h2>
 
         <div className="mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5">

@@ -7,7 +7,7 @@ import { LessonNode } from '../components/LessonNode.jsx'
  */
 export function PathScreen({ unit, onSelectLesson, xp = 0, streak = 0, hearts = 5 }) {
   return (
-    <div className="flex flex-1 flex-col bg-cream">
+    <div className="animate-enter flex flex-1 flex-col bg-cream">
       <TopBar streak={streak} gems={xp} hearts={hearts} />
 
       <div className="mx-3.5 mt-0.5 rounded-2xl bg-gradient-to-br from-turquoise to-turquoise-dark px-4 py-3.5 text-white">
@@ -20,12 +20,9 @@ export function PathScreen({ unit, onSelectLesson, xp = 0, streak = 0, hearts = 
       <div className="flex-1 overflow-y-auto px-4 py-7">
         <div className="flex flex-col items-center gap-6">
           {unit.lessons.map((node, i) => (
-            <LessonNode
-              key={node.id}
-              node={node}
-              offset={Math.round(Math.sin(i * 0.9) * 70)}
-              onClick={() => onSelectLesson?.(node)}
-            />
+            <div key={node.id} className="animate-enter" style={{ animationDelay: `${i * 70}ms` }}>
+              <LessonNode node={node} offset={Math.round(Math.sin(i * 0.9) * 70)} onClick={() => onSelectLesson?.(node)} />
+            </div>
           ))}
         </div>
       </div>
