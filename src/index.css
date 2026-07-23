@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Tama Speak — Design System (brand tokens)
+   Turquoise dominant · Corail en accent · Sable · Encre
+   These @theme tokens become Tailwind utilities automatically,
+   e.g. bg-turquoise, text-coral-dark, font-display.
+   ============================================================ */
+@theme {
+  --color-turquoise: #10C4A8;
+  --color-turquoise-dark: #04A88F;
+  --color-turquoise-deep: #0a7a69;
+  --color-coral: #FF6F61;
+  --color-coral-dark: #EF5646;
+  --color-gold: #E0A83E;
+
+  --color-sand: #F6EEE0;
+  --color-sand-2: #EFE3CF;
+  --color-cream: #FFFAF1;
+  --color-ink: #1E2530;
+  --color-ink-soft: #5A6470;
+  --color-line: #E6DCC9;
+
+  --font-display: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+
+  --radius-phone: 44px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
