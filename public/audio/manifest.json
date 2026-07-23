@@ -4,28 +4,28 @@
     "kab": "Ala",
     "fr": "Non",
     "file": "ala.mp3",
-    "lessons": "l2 l3"
+    "lessons": "l2 l3 l5 l6 l9"
   },
   {
     "id": "ansuf",
     "kab": "Ansuf",
     "fr": "Bienvenue",
     "file": "ansuf.mp3",
-    "lessons": "l1 l4"
+    "lessons": "l1 l4 l5 l8 l9"
   },
   {
     "id": "ar-tufat",
     "kab": "Ar tufat",
     "fr": "À demain",
     "file": "ar-tufat.mp3",
-    "lessons": "l3 l5"
+    "lessons": "l3 l5 l7 l9"
   },
   {
     "id": "azul",
     "kab": "Azul",
     "fr": "Bonjour",
     "file": "azul.mp3",
-    "lessons": "l1 l5"
+    "lessons": "l1 l3 l5 l7 l8 l9"
   },
   {
     "id": "azul-fell-ak",
@@ -39,20 +39,20 @@
     "kab": "Ih",
     "fr": "Oui",
     "file": "ih.mp3",
-    "lessons": "l2 l3"
+    "lessons": "l2 l3 l5 l6 l9"
   },
   {
     "id": "labas",
     "kab": "Labas ?",
     "fr": "Ça va ?",
     "file": "labas.mp3",
-    "lessons": "l3 l4"
+    "lessons": "l3 l4 l6 l9"
   },
   {
     "id": "tanemmirt",
     "kab": "Tanemmirt",
     "fr": "Merci",
     "file": "tanemmirt.mp3",
-    "lessons": "l2 l5"
+    "lessons": "l2 l3 l7 l9"
   }
 ]

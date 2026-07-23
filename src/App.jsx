@@ -4,31 +4,53 @@ import { WelcomeScreen } from './screens/WelcomeScreen.jsx'
 import { PathScreen } from './screens/PathScreen.jsx'
 import { LessonScreen } from './screens/LessonScreen.jsx'
 import { LessonCompleteScreen } from './screens/LessonCompleteScreen.jsx'
+import { ChestRewardScreen } from './screens/ChestRewardScreen.jsx'
+import { UnitCompleteScreen } from './screens/UnitCompleteScreen.jsx'
+import { ChallengeCompleteScreen } from './screens/ChallengeCompleteScreen.jsx'
+import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
 import { LogoLockup } from './components/Logo.jsx'
-import { unit1 } from './data/unit1.js'
-import { getExercises } from './data/lessons.js'
-import { loadProgress, saveProgress, resetProgress, applyStatuses, recordCompletion } from './lib/progress.js'
+import { units, unitOfLesson, isUnitComplete } from './data/units.js'
+import { getExercises, challengePool } from './data/lessons.js'
+import {
+  loadProgress,
+  saveProgress,
+  resetProgress,
+  applyStatuses,
+  completeLesson,
+  openChest,
+  recordChallenge,
+  challengeAvailable,
+} from './lib/progress.js'
 
 const XP_PER_LESSON = 20
+const CHEST_GEMS = 15
+const UNIT_BONUS = 25
+const CHALLENGE = { xpGain: 15, gems: 10, size: 5 }
 
-/**
- * App shell for the MVP — screen router:
- * Welcome → Path → Lesson → Complete → (back to Path, progress updated).
- * Progression is persisted locally (Phase 4, étape 1). Supabase auth
- * remplacera cette couche ensuite.
- */
+function pickRandom(arr, n) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a.slice(0, n)
+}
+
 export default function App() {
   const [screen, setScreen] = useState('welcome')
   const [progress, setProgress] = useState(loadProgress)
   const [activeLesson, setActiveLesson] = useState(null)
+  const [activeChest, setActiveChest] = useState(null)
+  const [completedUnit, setCompletedUnit] = useState(null)
   const [lastResult, setLastResult] = useState({ correct: 0, total: 0 })
+  const [challengeExercises, setChallengeExercises] = useState([])
 
-  // Sauvegarde à chaque changement de progression.
   useEffect(() => {
     saveProgress(progress)
   }, [progress])
 
-  const unit = applyStatuses(unit1, progress.statuses)
+  const unitsWithStatuses = units.map((u) => applyStatuses(u, progress.statuses))
+  const canChallenge = challengeAvailable(progress)
 
   function startLesson(node) {
     setActiveLesson(node)
@@ -36,9 +58,31 @@ export default function App() {
   }
 
   function finishLesson(result) {
+    const unit = unitOfLesson(activeLesson.id)
+    const before = isUnitComplete(progress.statuses, unit)
+    let np = completeLesson(progress, activeLesson.id, { xpGain: XP_PER_LESSON, perfect: result.perfect })
+    const justDone = !before && isUnitComplete(np.statuses, unit)
+    if (justDone) np = { ...np, gems: (np.gems || 0) + UNIT_BONUS }
+    setProgress(np)
     setLastResult(result)
-    setProgress((p) => recordCompletion(p, activeLesson.id, { xpGain: XP_PER_LESSON }))
+    setCompletedUnit(justDone ? unit : null)
     setScreen('complete')
+  }
+
+  function afterLessonComplete() {
+    setScreen(completedUnit ? 'unitcomplete' : 'path')
+  }
+
+  function startChallenge() {
+    setChallengeExercises(pickRandom(challengePool(), CHALLENGE.size))
+    setScreen('challenge')
+  }
+
+  function finishChallenge(result) {
+    setLastResult(result)
+    const passed = result.correct >= Math.ceil(result.total * 0.6)
+    if (passed) setProgress((p) => recordChallenge(p, { xpGain: CHALLENGE.xpGain, gems: CHALLENGE.gems }))
+    setScreen('challengecomplete')
   }
 
   function handleReset() {
@@ -46,13 +90,15 @@ export default function App() {
     setScreen('welcome')
   }
 
+  const nextUnitExists = completedUnit ? units.findIndex((u) => u.id === completedUnit.id) < units.length - 1 : false
+
   return (
     <div className="min-h-full bg-sand text-ink">
       <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-8">
         <header className="mb-6 flex w-full items-center justify-between">
           <LogoLockup iconSize={38} />
           <span className="rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-bold text-ink-soft">
-            MVP · {progress.xp} XP · série {progress.streak}
+            {progress.xp} XP · 🪙 {progress.gems}
           </span>
         </header>
 
@@ -60,29 +106,69 @@ export default function App() {
           {screen === 'welcome' && <WelcomeScreen onStart={() => setScreen('path')} />}
 
           {screen === 'path' && (
-            <PathScreen unit={unit} onSelectLesson={startLesson} xp={progress.xp} streak={progress.streak} hearts={5} />
+            <PathScreen
+              units={unitsWithStatuses}
+              xp={progress.xp}
+              gems={progress.gems}
+              streak={progress.streak}
+              canChallenge={canChallenge}
+              onSelectLesson={startLesson}
+              onOpenChest={(node) => {
+                setActiveChest(node)
+                setScreen('chest')
+              }}
+              onChallenge={startChallenge}
+              onTrophies={() => setScreen('trophies')}
+            />
           )}
 
           {screen === 'lesson' && (
-            <LessonScreen
-              exercises={getExercises(activeLesson?.id)}
-              onExit={() => setScreen('path')}
-              onFinish={finishLesson}
-            />
+            <LessonScreen exercises={getExercises(activeLesson?.id)} onExit={() => setScreen('path')} onFinish={finishLesson} />
           )}
 
           {screen === 'complete' && (
-            <LessonCompleteScreen
+            <LessonCompleteScreen correct={lastResult.correct} total={lastResult.total} xp={XP_PER_LESSON} streak={progress.streak} onContinue={afterLessonComplete} />
+          )}
+
+          {screen === 'chest' && (
+            <ChestRewardScreen
+              gems={CHEST_GEMS}
+              onContinue={() => {
+                setProgress((p) => openChest(p, activeChest.id, { gems: CHEST_GEMS }))
+                setScreen('path')
+              }}
+            />
+          )}
+
+          {screen === 'unitcomplete' && (
+            <UnitCompleteScreen
+              unit={completedUnit}
+              gems={UNIT_BONUS}
+              hasNext={nextUnitExists}
+              onContinue={() => {
+                setCompletedUnit(null)
+                setScreen('path')
+              }}
+            />
+          )}
+
+          {screen === 'challenge' && (
+            <LessonScreen exercises={challengeExercises} onExit={() => setScreen('path')} onFinish={finishChallenge} />
+          )}
+
+          {screen === 'challengecomplete' && (
+            <ChallengeCompleteScreen
               correct={lastResult.correct}
               total={lastResult.total}
-              xp={XP_PER_LESSON}
-              streak={progress.streak}
+              xp={CHALLENGE.xpGain}
+              gems={CHALLENGE.gems}
               onContinue={() => setScreen('path')}
             />
           )}
+
+          {screen === 'trophies' && <TrophiesScreen progress={progress} onBack={() => setScreen('path')} />}
         </PhoneFrame>
 
-        {/* Dev navigation (temporaire) */}
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm">
           {[
             ['welcome', 'Accueil'],

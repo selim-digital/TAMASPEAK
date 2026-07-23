@@ -16,13 +16,21 @@ const root = join(here, '..')
 
 // Collecte des termes kabyles uniques (avec leur traduction française).
 const terms = new Map() // slug -> { kab, fr, lessons:Set }
+function addTerm(kab, fr, lessonId) {
+  if (!kab) return
+  const id = slug(kab)
+  if (!terms.has(id)) terms.set(id, { kab, fr, lessons: new Set() })
+  terms.get(id).lessons.add(lessonId)
+}
 for (const [lessonId, exercises] of Object.entries(byLesson)) {
   for (const ex of exercises) {
+    if (ex.type === 'match') {
+      for (const p of ex.pairs) addTerm(p.kab, p.fr, lessonId)
+      continue
+    }
     const kab = ex.kind === 'kab-to-fr' ? ex.word : ex.answer
     const fr = ex.kind === 'kab-to-fr' ? ex.answer : ex.word
-    const id = slug(kab)
-    if (!terms.has(id)) terms.set(id, { kab, fr, lessons: new Set() })
-    terms.get(id).lessons.add(lessonId)
+    addTerm(kab, fr, lessonId)
   }
 }
 
