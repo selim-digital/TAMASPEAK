@@ -25,6 +25,18 @@
   --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
 
   --radius-phone: 44px;
+
+  --animate-bob: bob 1.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 :root {
