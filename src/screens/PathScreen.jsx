@@ -5,10 +5,10 @@ import { LessonNode } from '../components/LessonNode.jsx'
  * Screen 2 — Chemin d'apprentissage.
  * Barre de stats + bannière d'unité + chemin sinueux de nœuds.
  */
-export function PathScreen({ unit, onSelectLesson }) {
+export function PathScreen({ unit, onSelectLesson, xp = 0, streak = 0, hearts = 5 }) {
   return (
     <div className="flex flex-1 flex-col bg-cream">
-      <TopBar streak={3} gems={240} hearts={5} />
+      <TopBar streak={streak} gems={xp} hearts={hearts} />
 
       <div className="mx-3.5 mt-0.5 rounded-2xl bg-gradient-to-br from-turquoise to-turquoise-dark px-4 py-3.5 text-white">
         <div className="text-[10.5px] font-bold uppercase tracking-[0.14em] opacity-90">

@@ -1,24 +1,34 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PhoneFrame } from './components/PhoneFrame.jsx'
 import { WelcomeScreen } from './screens/WelcomeScreen.jsx'
 import { PathScreen } from './screens/PathScreen.jsx'
 import { LessonScreen } from './screens/LessonScreen.jsx'
 import { LessonCompleteScreen } from './screens/LessonCompleteScreen.jsx'
 import { LogoLockup } from './components/Logo.jsx'
-import { unit1, completeLesson } from './data/unit1.js'
+import { unit1 } from './data/unit1.js'
 import { getExercises } from './data/lessons.js'
+import { loadProgress, saveProgress, resetProgress, applyStatuses, recordCompletion } from './lib/progress.js'
+
+const XP_PER_LESSON = 20
 
 /**
  * App shell for the MVP — screen router:
  * Welcome → Path → Lesson → Complete → (back to Path, progress updated).
- * Progression is kept in local state for now; persistence (Supabase)
- * comes in Phase 4.
+ * Progression is persisted locally (Phase 4, étape 1). Supabase auth
+ * remplacera cette couche ensuite.
  */
 export default function App() {
   const [screen, setScreen] = useState('welcome')
-  const [unit, setUnit] = useState(unit1)
+  const [progress, setProgress] = useState(loadProgress)
   const [activeLesson, setActiveLesson] = useState(null)
   const [lastResult, setLastResult] = useState({ correct: 0, total: 0 })
+
+  // Sauvegarde à chaque changement de progression.
+  useEffect(() => {
+    saveProgress(progress)
+  }, [progress])
+
+  const unit = applyStatuses(unit1, progress.statuses)
 
   function startLesson(node) {
     setActiveLesson(node)
@@ -27,8 +37,13 @@ export default function App() {
 
   function finishLesson(result) {
     setLastResult(result)
-    setUnit((u) => completeLesson(u, activeLesson.id))
+    setProgress((p) => recordCompletion(p, activeLesson.id, { xpGain: XP_PER_LESSON }))
     setScreen('complete')
+  }
+
+  function handleReset() {
+    setProgress(resetProgress())
+    setScreen('welcome')
   }
 
   return (
@@ -37,14 +52,16 @@ export default function App() {
         <header className="mb-6 flex w-full items-center justify-between">
           <LogoLockup iconSize={38} />
           <span className="rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-bold text-ink-soft">
-            MVP · en construction
+            MVP · {progress.xp} XP · série {progress.streak}
           </span>
         </header>
 
         <PhoneFrame>
           {screen === 'welcome' && <WelcomeScreen onStart={() => setScreen('path')} />}
 
-          {screen === 'path' && <PathScreen unit={unit} onSelectLesson={startLesson} />}
+          {screen === 'path' && (
+            <PathScreen unit={unit} onSelectLesson={startLesson} xp={progress.xp} streak={progress.streak} hearts={5} />
+          )}
 
           {screen === 'lesson' && (
             <LessonScreen
@@ -58,13 +75,15 @@ export default function App() {
             <LessonCompleteScreen
               correct={lastResult.correct}
               total={lastResult.total}
+              xp={XP_PER_LESSON}
+              streak={progress.streak}
               onContinue={() => setScreen('path')}
             />
           )}
         </PhoneFrame>
 
         {/* Dev navigation (temporaire) */}
-        <div className="mt-5 flex items-center gap-2 text-sm">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm">
           {[
             ['welcome', 'Accueil'],
             ['path', 'Chemin'],
@@ -79,6 +98,13 @@ export default function App() {
               {label}
             </button>
           ))}
+          <button
+            onClick={handleReset}
+            className="rounded-full border border-line bg-cream px-4 py-2 font-bold text-ink-soft transition hover:text-coral-dark"
+            title="Efface la progression sauvegardée"
+          >
+            ↺ Réinitialiser
+          </button>
         </div>
       </div>
     </div>
