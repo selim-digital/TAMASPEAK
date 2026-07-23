@@ -26,12 +26,17 @@ export function audioUrl(word) {
   return `${base}audio/${slug(word)}.mp3`
 }
 
-function tryFile(word) {
+export function synthUrl(word) {
+  const base = import.meta.env.BASE_URL || '/'
+  return `${base}audio/synth/${slug(word)}.mp3`
+}
+
+function tryFile(url, mode) {
   return new Promise((resolve, reject) => {
     const audio = new Audio()
-    audio.addEventListener('playing', () => resolve('file'), { once: true })
+    audio.addEventListener('playing', () => resolve(mode), { once: true })
     audio.addEventListener('error', () => reject(new Error('missing')), { once: true })
-    audio.src = audioUrl(word)
+    audio.src = url
     const p = audio.play()
     if (p && typeof p.catch === 'function') p.catch(reject)
   })
@@ -51,13 +56,25 @@ function trySynth(word) {
 }
 
 /**
- * Joue la prononciation d'un mot.
- * @returns {Promise<'file'|'tts'|'none'>} la source réellement utilisée.
+ * Joue la prononciation d'un mot, par ordre de préférence :
+ *   1. enregistrement natif   → 'file'  (authentique, pas de badge)
+ *   2. mp3 de synthèse espeak → 'synth' (provisoire, badge)
+ *   3. voix du navigateur     → 'tts'   (provisoire, badge)
+ * @returns {Promise<'file'|'synth'|'tts'|'none'>}
  */
 export async function playWord(word) {
   try {
-    return await tryFile(word)
+    return await tryFile(audioUrl(word), 'file')
   } catch {
-    return trySynth(word)
+    /* pas d'enregistrement natif */
   }
+  try {
+    return await tryFile(synthUrl(word), 'synth')
+  } catch {
+    /* pas de mp3 de synthèse */
+  }
+  return trySynth(word)
 }
+
+/** Vrai si la source jouée est provisoire (à remplacer par du natif). */
+export const isProvisional = (mode) => mode === 'synth' || mode === 'tts'

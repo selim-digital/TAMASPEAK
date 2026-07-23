@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { FeedbackBar } from '../components/FeedbackBar.jsx'
-import { playWord } from '../lib/audio.js'
+import { playWord, isProvisional } from '../lib/audio.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 const PRAISES = ['Igerrez !', 'Yelha !', 'Bravo !', 'Excellent !', 'Continue !']
@@ -127,8 +127,8 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
             </div>
             <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
               {ex.audio ? '▶ écouter la prononciation' : 'traduis en kabyle'}
-              {audioMode === 'tts' && (
-                <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Enregistrement natif à venir">
+              {isProvisional(audioMode) && (
+                <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Voix de synthèse — enregistrement natif à venir">
                   voix provisoire
                 </span>
               )}
