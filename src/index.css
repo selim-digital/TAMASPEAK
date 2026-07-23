@@ -14,6 +14,19 @@
   --color-coral-dark: #EF5646;
   --color-gold: #E0A83E;
 
+  /* Palette bijoux d'Ath Yenni (v3, vérifiée) : argent + corail + émaux bleu/vert/jaune.
+     Tons profonds pour le chrome, tons vifs réservés aux récompenses. */
+  --color-silver: #BFC7CF;
+  --color-silver-hi: #E3E9EF;
+  --color-silver-lo: #8E99A5;
+  --color-coral-deep: #D8442E;
+  --color-cobalt: #1F5AA8;
+  --color-cobalt-vif: #2E7BDA;
+  --color-enamel-green: #2C7F4F;
+  --color-green-vif: #34A163;
+  --color-enamel-yellow: #F0B429;
+  --color-yellow-vif: #FFC93C;
+
   --color-sand: #F6EEE0;
   --color-sand-2: #EFE3CF;
   --color-cream: #FFFAF1;
@@ -34,6 +47,14 @@
   --animate-pop-in: popIn 0.42s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-shake: shake 0.42s ease;
   --animate-float-up: floatUp 1s ease forwards;
+
+  /* v3 — ressort & mascotte (principes : anticipation, squash & stretch) */
+  --animate-spring-pick: springPick 0.55s cubic-bezier(0.25, 1.6, 0.35, 1) both;
+  --animate-halo: halo 2s ease-out infinite;
+  --animate-tabz-in: tabzIn 0.9s cubic-bezier(0.25, 1.6, 0.35, 1) both;
+  --animate-ak-jump: akJump 1.15s cubic-bezier(0.3, 0.9, 0.4, 1) both;
+  --animate-ak-console: akConsole 3.8s ease-in-out infinite;
+  --animate-ak-curious: akCurious 3.1s cubic-bezier(0.25, 1.6, 0.35, 1) infinite;
 }
 
 @keyframes bob {
@@ -132,6 +153,203 @@
     opacity: 0;
     transform: translateY(-40px) scale(1.05);
   }
+}
+
+/* ---- v3 : ressort de sélection ---- */
+@keyframes springPick {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.07);
+  }
+  70% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Halo respirant du nœud courant. */
+@keyframes halo {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+/* Apparition du médaillon tabzimt (effet ressort). */
+@keyframes tabzIn {
+  0% {
+    transform: scale(0.55) rotate(-14deg);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.08) rotate(2deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.98) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Akermus : saut de célébration — anticipation, étirement, écrasement, rebond. */
+@keyframes akJump {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  14% {
+    transform: translateY(3px) scale(1.12, 0.84);
+  }
+  30% {
+    transform: translateY(-24px) scale(0.9, 1.14);
+  }
+  44% {
+    transform: translateY(-27px) scale(1, 1);
+  }
+  58% {
+    transform: translateY(0) scale(1.14, 0.84);
+  }
+  72% {
+    transform: translateY(-6px) scale(0.97, 1.05);
+  }
+  84% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+/* Akermus : il console — penché doux vers l'élève. */
+@keyframes akConsole {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0) scale(1, 1);
+  }
+  28%,
+  62% {
+    transform: rotate(-5deg) translateY(3px) scale(1.02, 0.96);
+  }
+  80% {
+    transform: rotate(1deg) translateY(-2px) scale(0.99, 1.02);
+  }
+}
+
+/* Akermus : il s'interroge — bascule curieuse au ressort. */
+@keyframes akCurious {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0);
+  }
+  24%,
+  52% {
+    transform: rotate(7deg) translateY(-3px);
+  }
+  66% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  80% {
+    transform: rotate(1deg) translateY(0);
+  }
+}
+
+/* Bras d'Akermus (une passe, déclenchée par remontage de clé). */
+@keyframes akArmL {
+  0%,
+  10% {
+    transform: rotate(6deg);
+  }
+  30%,
+  55% {
+    transform: rotate(148deg);
+  }
+  70% {
+    transform: rotate(120deg);
+  }
+  100% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes akArmR {
+  0%,
+  10% {
+    transform: rotate(-6deg);
+  }
+  30%,
+  55% {
+    transform: rotate(-148deg);
+  }
+  70% {
+    transform: rotate(-120deg);
+  }
+  100% {
+    transform: rotate(-6deg);
+  }
+}
+@keyframes akPat {
+  0%,
+  18%,
+  92%,
+  100% {
+    transform: rotate(0);
+  }
+  32% {
+    transform: rotate(-88deg);
+  }
+  42% {
+    transform: rotate(-70deg);
+  }
+  52% {
+    transform: rotate(-88deg);
+  }
+  78% {
+    transform: rotate(0);
+  }
+}
+
+/* Parties de la mascotte : origines de transformation en coordonnées locales. */
+.ak-pose {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.ak-arm {
+  transform-box: fill-box;
+}
+.ak-arm-l {
+  transform-origin: 80% 15%;
+}
+.ak-arm-r {
+  transform-origin: 20% 15%;
+}
+.ak-celebrate .ak-pose {
+  animation: akJump 1.15s cubic-bezier(0.3, 0.9, 0.4, 1) both;
+}
+.ak-celebrate .ak-arm-l {
+  animation: akArmL 1.15s cubic-bezier(0.3, 0.9, 0.4, 1) both;
+}
+.ak-celebrate .ak-arm-r {
+  animation: akArmR 1.15s cubic-bezier(0.3, 0.9, 0.4, 1) both;
+}
+.ak-console .ak-pose {
+  animation: akConsole 3.8s ease-in-out infinite;
+}
+.ak-console .ak-arm-r {
+  animation: akPat 3.8s ease-in-out infinite;
+}
+.ak-curious .ak-pose {
+  animation: akCurious 3.1s cubic-bezier(0.25, 1.6, 0.35, 1) infinite;
 }
 
 /* Accessibilité : couper les animations si l'utilisateur le demande. */

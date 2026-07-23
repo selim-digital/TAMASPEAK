@@ -1,0 +1,41 @@
+<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mer de dunes du Grand Erg au soleil couchant corail, crêtes sinueuses et sable chaud">
+  <defs>
+    <linearGradient id="dunes-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFAF1"/>
+      <stop offset="1" stop-color="#FFE2A6"/>
+    </linearGradient>
+    <linearGradient id="dunes-fg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BC5731"/>
+      <stop offset="1" stop-color="#A23F27"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="320" height="200" fill="url(#dunes-sky)"/>
+
+  <circle cx="236" cy="97" r="30" fill="#FFC93C" fill-opacity="0.35"/>
+  <circle cx="236" cy="97" r="17" fill="#FF6F61"/>
+
+  <path d="M0,112 Q24,105 52,104 Q78,112 106,112 Q130,101 158,98 Q190,110 224,108 Q252,98 280,96 Q300,102 320,101 L320,200 L0,200 Z" fill="#F6EEE0"/>
+  <path d="M52,104 Q24,105 0,112 L0,117 Q27,110 52,104 Z" fill="#EFE3CF"/>
+  <path d="M158,98 Q130,101 106,112 Q140,110 158,98 Z" fill="#EFE3CF"/>
+  <path d="M280,96 Q252,98 224,108 Q258,106 280,96 Z" fill="#EFE3CF"/>
+
+  <path d="M0,134 Q26,127 58,124 Q74,136 112,136 Q140,126 168,121 Q184,134 222,134 Q246,126 268,123 Q292,131 320,132 L320,200 L0,200 Z" fill="#F5DCA6"/>
+  <path d="M58,124 Q26,127 0,134 L0,141 Q30,134 58,124 Z" fill="#E6B583"/>
+  <path d="M168,121 Q140,126 112,136 Q150,139 168,121 Z" fill="#E6B583"/>
+  <path d="M268,123 Q246,126 222,134 Q254,137 268,123 Z" fill="#E6B583"/>
+
+  <path d="M0,160 Q30,144 70,142 Q90,156 128,158 Q164,146 196,138 Q216,152 252,156 Q288,148 320,146 L320,200 L0,200 Z" fill="#F0B429"/>
+  <path d="M70,142 Q30,144 0,160 L0,170 Q38,156 70,142 Z" fill="#E07B33"/>
+  <path d="M196,138 Q164,146 128,158 Q176,164 196,138 Z" fill="#E07B33"/>
+  <path d="M320,146 Q288,148 252,156 Q296,160 320,152 Z" fill="#E07B33"/>
+  <path d="M88,162 Q106,158 124,163" fill="none" stroke="#DFA22C" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M210,158 Q226,153 242,158" fill="none" stroke="#DFA22C" stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M0,160 Q30,144 70,142 Q90,156 128,158 Q164,146 196,138 Q216,152 252,156 Q288,148 320,146" fill="none" stroke="#FF6F61" stroke-width="1.4" stroke-linecap="round"/>
+
+  <path d="M0,172 Q60,164 120,170 Q180,176 240,168 Q290,162 320,168 L320,200 L0,200 Z" fill="url(#dunes-fg)"/>
+  <path d="M28,184 Q54,179 78,184" fill="none" stroke="#C96A3F" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M120,190 Q150,185 178,190" fill="none" stroke="#C96A3F" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M226,182 Q252,177 276,182" fill="none" stroke="#C96A3F" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,59 @@
+<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vallée du M'zab : colline de maisons cubiques pastel de Ghardaïa montant vers un minaret pyramidal, palmeraie verte au pied">
+  <defs>
+    <linearGradient id="mzab-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF6E9"/>
+      <stop offset="1" stop-color="#F8E8C8"/>
+    </linearGradient>
+  </defs>
+  <!-- ciel -->
+  <rect x="0" y="0" width="320" height="200" fill="url(#mzab-sky)"/>
+  <!-- soleil -->
+  <circle cx="52" cy="42" r="16" fill="#FFC93C"/>
+  <!-- dunes lointaines -->
+  <path d="M 0,124 Q 48,104 100,116 Q 160,127 220,112 Q 268,100 320,118 L 320,162 L 0,162 Z" fill="#F7EFDD"/>
+  <!-- colline de Ghardaïa -->
+  <path d="M 34,158 C 70,146 104,132 126,112 C 142,98 152,80 168,66 C 184,80 194,98 210,112 C 232,132 266,146 300,158 L 300,172 L 34,172 Z" fill="#EFE3CF"/>
+  <!-- cubes pastel, base -->
+  <rect x="108" y="132" width="20" height="16" rx="1.5" fill="#EFE3CF"/>
+  <rect x="132" y="128" width="22" height="17" rx="1.5" fill="#F6EEE0"/>
+  <rect x="158" y="128" width="22" height="17" rx="1.5" fill="#FFFAF1"/>
+  <rect x="184" y="130" width="22" height="16" rx="1.5" fill="#EFE3CF"/>
+  <rect x="210" y="134" width="20" height="15" rx="1.5" fill="#F6EEE0"/>
+  <!-- cubes pastel, étage bas -->
+  <rect x="98" y="118" width="18" height="15" rx="1.5" fill="#F6EEE0"/>
+  <rect x="118" y="112" width="20" height="16" rx="1.5" fill="#FFFAF1"/>
+  <rect x="142" y="110" width="20" height="16" rx="1.5" fill="#F9D2CA"/>
+  <rect x="166" y="110" width="20" height="16" rx="1.5" fill="#EFE3CF"/>
+  <rect x="190" y="112" width="20" height="16" rx="1.5" fill="#F6EEE0"/>
+  <rect x="230" y="122" width="16" height="14" rx="1.5" fill="#FFFAF1"/>
+  <!-- cubes pastel, étage médian -->
+  <rect x="126" y="96" width="18" height="16" rx="1.5" fill="#EFE3CF"/>
+  <rect x="148" y="90" width="18" height="15" rx="1.5" fill="#F6EEE0"/>
+  <rect x="170" y="90" width="18" height="15" rx="1.5" fill="#FFFAF1"/>
+  <rect x="192" y="95" width="18" height="17" rx="1.5" fill="#C9EBE2"/>
+  <rect x="212" y="112" width="14" height="13" rx="1.5" fill="#EFE3CF"/>
+  <!-- cubes pastel, sommet -->
+  <rect x="146" y="78" width="16" height="13" rx="1.5" fill="#FFFAF1"/>
+  <rect x="178" y="80" width="16" height="12" rx="1.5" fill="#F6EEE0"/>
+  <!-- minaret pyramidal -->
+  <polygon points="160.5,69 175.5,69 172,33 164,33" fill="#FFFAF1"/>
+  <polygon points="168,33 172,33 175.5,69 168,69" fill="#EFE3CF"/>
+  <rect x="166" y="60" width="4" height="9" rx="2" fill="#1E2530"/>
+  <!-- petites ouvertures -->
+  <rect x="150" y="116" width="4" height="7" rx="2" fill="#1E2530"/>
+  <rect x="167.5" y="134" width="4" height="8" rx="2" fill="#1E2530"/>
+  <rect x="199" y="101" width="4" height="7" rx="2" fill="#1E2530"/>
+  <!-- canopée de la palmeraie -->
+  <path d="M 0,178 L 0,160 Q 14,150 30,158 Q 46,147 62,156 Q 78,148 96,157 Q 112,149 128,157 Q 146,148 162,157 Q 178,149 196,157 Q 212,147 228,156 Q 244,148 262,156 Q 278,146 296,155 Q 308,150 320,157 L 320,178 Z" fill="#34A163"/>
+  <!-- palmiers -->
+  <path d="M 42,186 Q 41,166 44.5,151 L 47.5,151 Q 46,168 49,186 Z" fill="#2C7F4F"/>
+  <path d="M 46,150 Q 36,139 26,146 Q 36,144.5 46,150 Z M 46,150 Q 56,139 66,146 Q 56,144.5 46,150 Z M 46,150 Q 37,136 31,138 Q 39,140 46,150 Z M 46,150 Q 55,136 61,138 Q 53,140 46,150 Z M 46,150 Q 44,134 50,131 Q 47,139 46,150 Z" fill="#2C7F4F"/>
+  <path d="M 86.5,182 Q 86,170 88,159 L 90.5,159 Q 90,170 91.5,182 Z" fill="#2C7F4F"/>
+  <path d="M 89,158 Q 81,149 73,154 Q 81,152.5 89,158 Z M 89,158 Q 97,149 105,154 Q 97,152.5 89,158 Z M 89,158 Q 82,146 77,148 Q 84,150 89,158 Z M 89,158 Q 96,146 101,148 Q 94,150 89,158 Z M 89,158 Q 88,144 92,141 Q 90,149 89,158 Z" fill="#2C7F4F"/>
+  <path d="M 234.5,182 Q 234,170 236,158 L 238.5,158 Q 238,170 239.5,182 Z" fill="#2C7F4F"/>
+  <path d="M 237,157 Q 229,148 221,153 Q 229,151.5 237,157 Z M 237,157 Q 245,148 253,153 Q 245,151.5 237,157 Z M 237,157 Q 230,145 225,147 Q 232,149 237,157 Z M 237,157 Q 244,145 249,147 Q 242,149 237,157 Z M 237,157 Q 236,143 240,140 Q 238,148 237,157 Z" fill="#2C7F4F"/>
+  <path d="M 280,188 Q 279,168 282.5,152 L 285.5,152 Q 284,170 287,188 Z" fill="#2C7F4F"/>
+  <path d="M 284,152 Q 274,141 264,148 Q 274,146.5 284,152 Z M 284,152 Q 294,141 304,148 Q 294,146.5 284,152 Z M 284,152 Q 275,138 269,140 Q 277,142 284,152 Z M 284,152 Q 293,138 299,140 Q 291,142 284,152 Z M 284,152 Q 282,136 288,133 Q 285,141 284,152 Z" fill="#2C7F4F"/>
+  <!-- premier plan : sol de la palmeraie -->
+  <path d="M 0,200 L 0,174 Q 80,166 160,170 Q 240,174 320,168 L 320,200 Z" fill="#2C7F4F"/>
+</svg>

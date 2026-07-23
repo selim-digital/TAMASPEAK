@@ -4,6 +4,7 @@ import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { FeedbackBar } from '../components/FeedbackBar.jsx'
 import { MatchExercise } from '../components/MatchExercise.jsx'
 import { Scene } from '../components/illustrations/Scenes.jsx'
+import { Akermus } from '../components/mascots/Akermus.jsx'
 import { playWord, isProvisional } from '../lib/audio.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -143,7 +144,16 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
           </div>
         )}
 
-        <h2 className="text-[18px] font-extrabold tracking-tight">{ex.prompt}</h2>
+        {/* Akermus vit la leçon : curieux à l'écoute, il exulte ou console. */}
+        <div className="pointer-events-none absolute right-1 top-0 z-0" aria-hidden="true">
+          <Akermus
+            key={`${index}-${answered ? (isCorrect ? 'c' : 'w') : 'q'}`}
+            height={62}
+            state={answered ? (isCorrect ? 'celebrate' : 'console') : audioFirst ? 'curious' : 'idle'}
+          />
+        </div>
+
+        <h2 className="pr-16 text-[18px] font-extrabold tracking-tight">{ex.prompt}</h2>
 
         {isMatch ? (
           <MatchExercise key={index} pairs={ex.pairs} onComplete={onMatchComplete} />
@@ -190,14 +200,15 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
 
             <div className="mt-3 flex flex-col gap-2.5 pb-2">
               {ex.choices.map((choice, i) => (
-                <ExerciseChoice
-                  key={choice}
-                  letter={LETTERS[i]}
-                  text={choice}
-                  state={choiceState(choice)}
-                  disabled={answered}
-                  onClick={() => setSelected(choice)}
-                />
+                <div key={choice} className={choiceState(choice) === 'correct' ? 'animate-spring-pick' : ''}>
+                  <ExerciseChoice
+                    letter={LETTERS[i]}
+                    text={choice}
+                    state={choiceState(choice)}
+                    disabled={answered}
+                    onClick={() => setSelected(choice)}
+                  />
+                </div>
               ))}
             </div>
           </>

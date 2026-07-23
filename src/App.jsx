@@ -9,6 +9,7 @@ import { UnitCompleteScreen } from './screens/UnitCompleteScreen.jsx'
 import { ChallengeCompleteScreen } from './screens/ChallengeCompleteScreen.jsx'
 import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
 import { LogoLockup } from './components/Logo.jsx'
+import { JewelDefs } from './components/jewels/JewelDefs.jsx'
 import { units, unitOfLesson, isUnitComplete } from './data/units.js'
 import { getExercises, challengePool } from './data/lessons.js'
 import {
@@ -94,6 +95,7 @@ export default function App() {
 
   return (
     <div className="min-h-full bg-sand text-ink">
+      <JewelDefs />
       <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-8">
         <header className="mb-6 flex w-full items-center justify-between">
           <LogoLockup iconSize={38} />
@@ -133,6 +135,7 @@ export default function App() {
           {screen === 'chest' && (
             <ChestRewardScreen
               gems={CHEST_GEMS}
+              chest={activeChest}
               onContinue={() => {
                 setProgress((p) => openChest(p, activeChest.id, { gems: CHEST_GEMS }))
                 setScreen('path')

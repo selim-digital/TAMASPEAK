@@ -1,0 +1,49 @@
+<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Palmeraie d'oasis : palmiers-dattiers, jardins verts irrigués par une seguia turquoise, dunes de sable claires et soleil jaune dans un ciel crème">
+  <defs>
+    <linearGradient id="oasis-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFAF1"/>
+      <stop offset="1" stop-color="#FFEBC2"/>
+    </linearGradient>
+    <g id="oasis-palm">
+      <path d="M-4 0 C-3 -15 -1 -31 1 -46 L7 -46 C6 -31 5 -15 6 0 Z" fill="#1E2530"/>
+      <path d="M-2.6 -10 L5.8 -11 L5.6 -13.4 L-2.9 -12.4 Z" fill="#FFF6E9" fill-opacity=".45"/>
+      <path d="M-1.6 -24 L6.2 -25 L6 -27.3 L-1.9 -26.3 Z" fill="#FFF6E9" fill-opacity=".45"/>
+      <path d="M-0.6 -37 L6.6 -38 L6.5 -40 L-0.8 -39 Z" fill="#FFF6E9" fill-opacity=".45"/>
+      <path d="M4 -46 Q-14 -47 -23 -34 Q-8 -42 4 -43 Z" fill="#2C7F4F"/>
+      <path d="M4 -46 Q-13 -58 -27 -54 Q-11 -50 4 -44 Z" fill="#2C7F4F"/>
+      <path d="M4 -46 Q-1 -64 -10 -68 Q5 -61 6 -46 Z" fill="#2C7F4F"/>
+      <path d="M4 -46 Q9 -65 19 -67 Q8 -59 5 -46 Z" fill="#2C7F4F"/>
+      <path d="M4 -46 Q21 -57 33 -51 Q16 -49 5 -44 Z" fill="#2C7F4F"/>
+      <path d="M4 -46 Q22 -46 29 -33 Q14 -41 4 -43 Z" fill="#2C7F4F"/>
+      <path d="M4 -46 Q-5 -61 -17 -61 Q-5 -53 4 -45 Z" fill="#34A163"/>
+      <path d="M4 -46 Q13 -61 25 -59 Q11 -53 5 -45 Z" fill="#34A163"/>
+      <circle cx="0" cy="-42.5" r="2.4" fill="#F0B429"/>
+      <circle cx="8" cy="-41.5" r="2" fill="#F0B429"/>
+    </g>
+  </defs>
+  <rect x="0" y="0" width="320" height="200" fill="url(#oasis-sky)"/>
+  <circle cx="175" cy="48" r="20" fill="#FFC93C"/>
+  <path d="M0 116 Q45 101 95 109 Q145 117 190 105 Q232 95 270 104 Q298 111 320 103 L320 200 L0 200 Z" fill="#F6EEE0"/>
+  <path d="M0 132 Q50 117 105 126 Q160 135 215 122 Q268 110 320 123 L320 200 L0 200 Z" fill="#F7D589"/>
+  <path d="M0 146 Q55 131 115 140 Q175 149 235 135 Q283 125 320 137 L320 200 L0 200 Z" fill="#F0B429"/>
+  <path d="M0 156 Q45 146 95 151 Q160 157 230 148 Q285 142 320 149 L320 200 L0 200 Z" fill="#34A163"/>
+  <use href="#oasis-palm" transform="translate(142,152) scale(0.45)" opacity="0.9"/>
+  <use href="#oasis-palm" transform="translate(184,153) scale(-0.4,0.4)" opacity="0.9"/>
+  <ellipse cx="60" cy="159" rx="24" ry="4.5" fill="#2C7F4F"/>
+  <ellipse cx="104" cy="165" rx="18" ry="4" fill="#2C7F4F"/>
+  <ellipse cx="222" cy="157" rx="22" ry="4.5" fill="#2C7F4F"/>
+  <ellipse cx="262" cy="164" rx="16" ry="4" fill="#2C7F4F"/>
+  <use href="#oasis-palm" transform="translate(196,164) scale(-0.7,0.7)"/>
+  <use href="#oasis-palm" transform="translate(118,161) scale(0.6)"/>
+  <path d="M0 172 Q80 162 160 168 Q240 174 320 164 L320 200 L0 200 Z" fill="#2C7F4F"/>
+  <path d="M157 156 Q142 160 139 167 Q150 177 167 180 Q160 189 141 193 Q142 197 150 200 L170 200 Q162 196 159 193 Q176 188 181 180 Q172 170 149 167 Q151 159 163 156 Z" fill="#10C4A8"/>
+  <path d="M160 158 Q146 162 145 168 Q153 175 168 181 Q166 187 152 192 Q151 196 157 200" fill="none" stroke="#87E1D3" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="144" cy="170" rx="2.5" ry="1" fill="#CFF2EA"/>
+  <ellipse cx="172" cy="183" rx="2.5" ry="1" fill="#CFF2EA"/>
+  <use href="#oasis-palm" transform="translate(46,180) scale(1.05)"/>
+  <use href="#oasis-palm" transform="translate(80,172) scale(-0.9,0.9)"/>
+  <use href="#oasis-palm" transform="translate(20,170) scale(0.78)"/>
+  <use href="#oasis-palm" transform="translate(270,178) scale(1.1)"/>
+  <use href="#oasis-palm" transform="translate(240,170) scale(-0.85,0.85)"/>
+  <use href="#oasis-palm" transform="translate(298,170) scale(0.75)"/>
+</svg>

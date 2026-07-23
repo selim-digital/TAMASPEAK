@@ -1,0 +1,51 @@
+<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Côte kabyle esprit Béjaïa : falaises turquoise-vertes plongeant dans une Méditerranée turquoise claire, cap rocheux clair, crique de sable crème avec une petite barque de pêche corail échouée, soleil jaune.">
+  <defs>
+    <linearGradient id="kcote-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CBEFE7"/>
+      <stop offset="1" stop-color="#FFF6E9"/>
+    </linearGradient>
+    <linearGradient id="kcote-sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B7ECDF"/>
+      <stop offset="1" stop-color="#10C4A8"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="320" height="200" fill="url(#kcote-sky)"/>
+  <circle cx="246" cy="42" r="17" fill="#FFC93C"/>
+
+  <rect x="0" y="112" width="320" height="50" fill="url(#kcote-sea)"/>
+
+  <path d="M244 112 L262 95 L280 101 L296 90 L312 98 L320 95 L320 112 Z" fill="#C4E8DC"/>
+  <path d="M0 112 L0 70 L26 80 L52 92 L78 102 L100 108 L112 112 Z" fill="#9BD9C7"/>
+
+  <path d="M0 160 L0 30 L22 36 L40 52 L34 66 L58 80 L50 96 L76 110 L88 126 L80 142 L52 152 Q24 158 0 160 Z" fill="#2C7F4F"/>
+  <path d="M0 30 L22 36 L20 52 L0 48 Z" fill="#34A163"/>
+  <path d="M22 36 L40 52 L34 66 L20 52 Z" fill="#0a7a69"/>
+  <path d="M58 80 L50 96 L76 110 L68 90 Z" fill="#0a7a69"/>
+  <circle cx="8" cy="28" r="8" fill="#34A163"/>
+  <circle cx="22" cy="32" r="6" fill="#34A163"/>
+  <circle cx="38" cy="50" r="5" fill="#2C7F4F"/>
+  <circle cx="56" cy="78" r="4.5" fill="#34A163"/>
+
+  <path d="M0 152 Q80 140 170 146 Q250 152 320 142 L320 146 Q250 156 170 150 Q80 144 0 156 Z" fill="#FFFAF1"/>
+  <path d="M0 156 Q80 144 170 150 Q250 156 320 146 L320 200 L0 200 Z" fill="#F6EEE0"/>
+
+  <g stroke="#FFFAF1" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M134 122 q10 -5 20 0"/>
+    <path d="M206 118 q9 -4 18 0"/>
+    <path d="M170 132 q11 -5 22 0"/>
+    <path d="M256 128 q10 -5 20 0"/>
+    <path d="M118 140 q10 -5 20 0"/>
+  </g>
+
+  <path d="M92 164 L104 150 L116 164 Z" fill="#0a7a69"/>
+  <path d="M120 162 L128 154 L137 162 Z" fill="#0a7a69"/>
+
+  <ellipse cx="214" cy="167" rx="27" ry="3" fill="#EFE3CF"/>
+  <path d="M186 153 Q190 165 204 167 L222 167 Q237 164 243 150 Q229 158 212 158 Q197 158 186 153 Z" fill="#FF6F61"/>
+  <path d="M186 153 Q197 158 212 158 Q229 158 243 150 Q230 161 212 161 Q198 161 189 156 Z" fill="#D8442E"/>
+
+  <path d="M0 168 Q50 162 100 168 Q160 174 220 168 Q270 162 320 168 L320 200 L0 200 Z" fill="#0a7a69"/>
+  <path d="M18 172 Q26 158 38 164 Q48 156 58 166 Q66 161 72 172 Z" fill="#2C7F4F"/>
+  <path d="M258 170 Q268 156 280 163 Q290 157 300 170 Z" fill="#2C7F4F"/>
+</svg>

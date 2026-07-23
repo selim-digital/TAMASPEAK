@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../components/Button.jsx'
-import { Aqcic } from '../components/mascots/Aqcic.jsx'
+import { Akermus } from '../components/mascots/Akermus.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 
 /** Anime un nombre de 0 → target. */
@@ -55,7 +55,7 @@ export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak =
       <Confetti count={34} />
 
       <div className="animate-pop">
-        <Aqcic height={150} />
+        <Akermus height={150} state="celebrate" />
       </div>
 
       <h2 className="mt-3 text-2xl font-extrabold">
@@ -68,7 +68,7 @@ export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak =
 
       <div className="mt-5 flex w-full gap-3">
         <Reward value={`+${xpShown}`} label="XP gagnés" delay={80} />
-        <Reward value={`${streak} 🔥`} label="Série de jours" tone="coral" delay={200} />
+        <Reward value={streak} label="Série de jours" tone="coral" delay={200} />
         <Reward value={`${correct}/${total}`} label="Bonnes réponses" delay={320} />
       </div>
 

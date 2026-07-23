@@ -1,0 +1,54 @@
+<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paysage du Haut Atlas marocain : sommets enneigés, terrasses agricoles courbes et kasbah en terre">
+  <defs>
+    <linearGradient id="atlas-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#AFCEF1"/>
+      <stop offset="1" stop-color="#F1F8FE"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ciel -->
+  <rect x="0" y="0" width="320" height="200" fill="url(#atlas-sky)"/>
+  <circle cx="250" cy="44" r="15" fill="#FFC93C"/>
+
+  <!-- Couche 1 : sommets lointains, cobalt désaturé -->
+  <path d="M0,112 L26,84 L48,100 L74,64 L104,94 L134,72 L162,98 L192,78 L222,102 L252,88 L282,104 L320,94 L320,140 L0,140 Z" fill="#96BDEC"/>
+  <path d="M26,84 L41,95 L34,92 L27,98 L21,92 L16,94 Z" fill="#E3E9EF"/>
+  <path d="M74,64 L91,81 L83,77 L76,84 L69,77 L63,79 Z" fill="#E3E9EF"/>
+  <path d="M134,72 L148,85 L141,82 L134,89 L127,82 L116,85 Z" fill="#E3E9EF"/>
+  <path d="M192,78 L207,90 L199,87 L192,94 L185,87 L174,90 Z" fill="#E3E9EF"/>
+  <path d="M252,88 L265,95 L258,93 L252,99 L246,93 L237,95 Z" fill="#E3E9EF"/>
+
+  <!-- Couche 2 : moyenne montagne turquoise -->
+  <path d="M0,128 Q30,104 62,120 Q94,134 128,116 Q164,98 198,118 Q234,136 268,118 Q296,104 320,118 L320,150 L0,150 Z" fill="#82D3C7"/>
+
+  <!-- Couche 3 : crête turquoise-verte -->
+  <path d="M0,142 Q40,124 84,136 Q140,148 196,136 Q256,124 320,134 L320,168 L0,168 Z" fill="#35B49D"/>
+
+  <!-- Couche 4 : collines vertes -->
+  <path d="M0,158 Q44,138 92,148 Q148,158 204,148 Q262,138 320,148 L320,200 L0,200 Z" fill="#34A163"/>
+
+  <!-- Promontoire de la kasbah -->
+  <path d="M26,160 Q42,118 60,124 Q76,128 88,160 Z" fill="#2C7F4F"/>
+
+  <!-- Kasbah en terre -->
+  <rect x="42" y="112" width="24" height="20" fill="#F3C55B"/>
+  <path d="M64,132 V106 H66 V103 H69 V106 H71 V132 Z" fill="#F0B429"/>
+  <path d="M49,112 V92 H52 V96 H55 V92 H58 V96 H61 V92 H64 V112 Z" fill="#F7D78D"/>
+  <rect x="53" y="100" width="1.6" height="4" fill="#1E2530"/>
+  <rect x="58.5" y="100" width="1.6" height="4" fill="#1E2530"/>
+  <path d="M52,128 v-7 q3.5,-5 7,0 v7 Z" fill="#1E2530"/>
+
+  <!-- Versant en terrasses (détail signature) -->
+  <path d="M108,200 Q136,158 184,146 Q248,132 320,132 L320,200 Z" fill="#2C7F4F"/>
+  <path d="M192,147 Q252,136 320,134 L320,141 Q250,143 178,153 Z" fill="#34A163"/>
+  <path d="M160,162 Q236,148 320,146 L320,153 Q232,155 150,169 Z" fill="#34A163"/>
+  <path d="M134,178 Q218,162 320,158 L320,165 Q214,169 126,185 Z" fill="#34A163"/>
+
+  <!-- Premier plan sombre -->
+  <path d="M0,200 L0,170 Q50,158 104,168 Q180,178 250,172 Q290,166 320,170 L320,200 Z" fill="#0A7A69"/>
+
+  <!-- Cyprès et olivier -->
+  <path d="M96,130 Q102,148 98.5,164 Q97,170 96,172 Q95,170 93.5,164 Q90,148 96,130 Z" fill="#1E2530"/>
+  <path d="M110,141 Q114.5,154 112,167 Q111,172 110,174 Q109,172 108,167 Q105.5,154 110,141 Z" fill="#1E2530"/>
+  <path d="M262,177 q0,-10 9.5,-10 q9.5,0 9.5,10 Z" fill="#1E2530"/>
+</svg>
