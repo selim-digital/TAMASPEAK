@@ -50,7 +50,9 @@ function Filigree() {
   )
 }
 
-/** Sentier pointillé reliant deux nœuds consécutifs (motif G3). */
+/** Sentier pointillé reliant deux nœuds consécutifs (motif G3).
+ *  NB : la fin de courbe passe derrière l'info-bulle « Commencer ! » du nœud
+ *  courant — masquée par le fond encre de la bulle, choix assumé. */
 function Connector({ from, to }) {
   return (
     <svg width="264" height="26" viewBox="0 0 264 26" className="pointer-events-none overflow-visible" aria-hidden="true">

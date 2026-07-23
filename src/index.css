@@ -26,6 +26,7 @@
   --color-green-vif: #34A163;
   --color-enamel-yellow: #F0B429;
   --color-yellow-vif: #FFC93C;
+  --color-gold-deep: #C08A10;
 
   --color-sand: #F6EEE0;
   --color-sand-2: #EFE3CF;
@@ -48,13 +49,10 @@
   --animate-shake: shake 0.42s ease;
   --animate-float-up: floatUp 1s ease forwards;
 
-  /* v3 — ressort & mascotte (principes : anticipation, squash & stretch) */
+  /* v3 — ressort & récompenses (les animations mascotte passent par .ak-*) */
   --animate-spring-pick: springPick 0.55s cubic-bezier(0.25, 1.6, 0.35, 1) both;
   --animate-halo: halo 2s ease-out infinite;
   --animate-tabz-in: tabzIn 0.9s cubic-bezier(0.25, 1.6, 0.35, 1) both;
-  --animate-ak-jump: akJump 1.15s cubic-bezier(0.3, 0.9, 0.4, 1) both;
-  --animate-ak-console: akConsole 3.8s ease-in-out infinite;
-  --animate-ak-curious: akCurious 3.1s cubic-bezier(0.25, 1.6, 0.35, 1) infinite;
 }
 
 @keyframes bob {

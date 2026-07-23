@@ -1,6 +1,10 @@
 /**
  * Aqcic (le petit garçon) — celebrating, arms up.
  * House style: no face, no eyes; blush + posture only.
+ *
+ * NOTE (v3) : plus référencé depuis qu'Akermus (mascotte figuier de barbarie)
+ * anime les leçons — conservé délibérément : la famille (Aqcic, Taqcict,
+ * Yemma, Baba, Setti, Jeddi) reviendra sur l'accueil et les écrans du monde.
  */
 export function Aqcic({ height = 150, className = '' }) {
   return (

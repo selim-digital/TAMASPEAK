@@ -27,7 +27,7 @@ export function UnitCompleteScreen({ unit, gems = 25, hasNext = true, onContinue
         Le médaillon <b className="text-ink">« {unit?.unitLabel} »</b> rejoint ta collection.
       </p>
 
-      <div className="animate-pop-in mt-5 flex items-center gap-2 rounded-2xl border border-line bg-cream px-5 py-3 text-lg font-extrabold text-[#C08A10]" style={{ animationDelay: '380ms' }}>
+      <div className="animate-pop-in mt-5 flex items-center gap-2 rounded-2xl border border-line bg-cream px-5 py-3 text-lg font-extrabold text-gold-deep" style={{ animationDelay: '380ms' }}>
         <GemIcon size={24} /> +{gems} gemmes bonus
       </div>
 

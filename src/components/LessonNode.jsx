@@ -37,7 +37,7 @@ function LessonCircle({ variant, glyph }) {
   const fill = variant === 'done' ? 'url(#jw-turq)' : 'var(--color-sand-2)'
   const shadow = variant === 'done' ? 'var(--color-turquoise-dark)' : 'var(--color-line)'
   return (
-    <svg width="64" height="64" viewBox="0 0 76 76" aria-hidden="true">
+    <svg className="block" width="64" height="64" viewBox="0 0 76 76" aria-hidden="true">
       <circle cx="41.5" cy="42.5" r="30" fill={shadow} opacity=".9" />
       <circle cx="38" cy="38" r="30" fill={fill} />
       {variant === 'done' && (
@@ -53,7 +53,7 @@ function CurrentCircle({ progress = 0 }) {
   const C = 2 * Math.PI * 40
   const p = Math.max(0.04, Math.min(1, progress)) // toujours une amorce visible
   return (
-    <svg width="88" height="88" viewBox="0 0 100 100" aria-hidden="true">
+    <svg className="block" width="88" height="88" viewBox="0 0 100 100" aria-hidden="true">
       <circle
         className="animate-halo"
         style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
@@ -141,8 +141,8 @@ export function LessonNode({ node, offset = 0, onClick, unitProgress = 0 }) {
         onClick={clickable ? onClick : undefined}
         disabled={!clickable}
         aria-label={`${node.title || 'Coffre'}${clickable ? '' : node.status === 'locked' ? ' (verrouillé)' : ' (terminé)'}`}
-        className={`relative aspect-square flex-none rounded-full ${clickable ? 'cursor-pointer' : 'cursor-not-allowed'} ${
-          clickable ? 'animate-bob' : ''
+        className={`relative grid aspect-square flex-none place-items-center rounded-full ${
+          clickable ? 'animate-bob cursor-pointer' : 'cursor-not-allowed'
         }`}
       >
         {isChest ? (
@@ -150,7 +150,7 @@ export function LessonNode({ node, offset = 0, onClick, unitProgress = 0 }) {
             className={`relative block ${node.status === 'locked' ? 'opacity-55 grayscale' : ''}`}
             style={node.status === 'available' ? DIAG_SHADOW : undefined}
           >
-            <Tabzimt size={56} />
+            <Tabzimt size={56} className="block" />
             {node.status !== 'available' && <ChestBadge kind={node.status === 'done' ? 'done' : 'lock'} />}
           </span>
         ) : node.status === 'current' ? (

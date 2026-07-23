@@ -17,8 +17,8 @@
       <path d="M4 -46 Q22 -46 29 -33 Q14 -41 4 -43 Z" fill="#2C7F4F"/>
       <path d="M4 -46 Q-5 -61 -17 -61 Q-5 -53 4 -45 Z" fill="#34A163"/>
       <path d="M4 -46 Q13 -61 25 -59 Q11 -53 5 -45 Z" fill="#34A163"/>
-      <circle cx="0" cy="-42.5" r="2.4" fill="#F0B429"/>
-      <circle cx="8" cy="-41.5" r="2" fill="#F0B429"/>
+      
+      
     </g>
   </defs>
   <rect x="0" y="0" width="320" height="200" fill="url(#oasis-sky)"/>

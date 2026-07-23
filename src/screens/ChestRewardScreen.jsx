@@ -41,7 +41,7 @@ export function ChestRewardScreen({ gems = 15, chest, onContinue }) {
           <p className="animate-rise mt-1 text-[13.5px] font-semibold text-ink-soft">
             {dish.name} — {dish.fr}. {dish.note}
           </p>
-          <div className="animate-pop-in mt-4 flex items-center gap-2 rounded-2xl border border-line bg-cream px-5 py-3 text-xl font-extrabold text-[#C08A10]">
+          <div className="animate-pop-in mt-4 flex items-center gap-2 rounded-2xl border border-line bg-cream px-5 py-3 text-xl font-extrabold text-gold-deep">
             <GemIcon size={26} /> +{gems} gemmes
           </div>
         </>

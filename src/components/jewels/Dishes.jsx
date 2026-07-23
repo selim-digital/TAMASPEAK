@@ -4,10 +4,11 @@
  * Deux plats sont déjà des mots du vocabulaire (aghrum, atay) :
  * la récompense devient une mini-leçon.
  */
+import { orderedNodes } from '../../data/units.js'
 
 function Seksu({ width = 150 }) {
   return (
-    <svg width={width} viewBox="0 0 130 96" aria-hidden="true">
+    <svg width={width} height={Math.round((width * 96) / 130)} viewBox="0 0 130 96" aria-hidden="true">
       <ellipse cx="65" cy="88" rx="42" ry="4.5" fill="rgba(0,0,0,.08)" />
       <path d="M50 20q3-6 0-12M65 16q3-6 0-12M80 20q3-6 0-12" stroke="#BFC7CF" strokeWidth="2.2" fill="none" strokeLinecap="round" opacity=".65" />
       <path d="M31 54c0-16 15-26 34-26s34 10 34 26z" fill="#FFC93C" />
@@ -16,9 +17,9 @@ function Seksu({ width = 150 }) {
       <circle cx="70" cy="45" r="1.2" fill="#F0B429" />
       <circle cx="79" cy="39" r="1.2" fill="#F0B429" />
       <circle cx="64" cy="49" r="1.2" fill="#F0B429" />
-      <circle cx="53" cy="33" r="3.4" fill="#34A163" />
-      <circle cx="76" cy="31" r="3.4" fill="#2C7F4F" />
-      <rect x="60" y="27" width="9" height="4" rx="2" fill="#FF6F61" />
+      <circle cx="48" cy="41" r="3" fill="#34A163" />
+      <circle cx="72" cy="34" r="3.8" fill="#2C7F4F" />
+      <rect x="70" y="25" width="9" height="4" rx="2" fill="#FF6F61" />
       <rect x="43" y="38" width="8" height="3.6" rx="1.8" fill="#D8442E" />
       <rect x="80" y="44" width="8" height="3.6" rx="1.8" fill="#F0B429" />
       <path d="M28 54h74c0 15-11 25-25 27H53c-14-2-25-12-25-27z" fill="#D8442E" />
@@ -35,7 +36,7 @@ function Seksu({ width = 150 }) {
 
 function Aghrum({ width = 150 }) {
   return (
-    <svg width={width} viewBox="0 0 130 96" aria-hidden="true">
+    <svg width={width} height={Math.round((width * 96) / 130)} viewBox="0 0 130 96" aria-hidden="true">
       <ellipse cx="65" cy="88" rx="44" ry="4.5" fill="rgba(0,0,0,.08)" />
       <ellipse cx="65" cy="62" rx="47" ry="17" fill="#EFE3CF" />
       <ellipse cx="65" cy="60" rx="47" ry="15.5" fill="#F6EEE0" />
@@ -58,7 +59,7 @@ function Aghrum({ width = 150 }) {
 
 function Atay({ width = 150 }) {
   return (
-    <svg width={width} viewBox="0 0 130 96" aria-hidden="true">
+    <svg width={width} height={Math.round((width * 96) / 130)} viewBox="0 0 130 96" aria-hidden="true">
       <ellipse cx="65" cy="89" rx="44" ry="4.5" fill="rgba(0,0,0,.08)" />
       <path d="M30 62c0-11 8-19 19-19s19 8 19 19c0 8-4 13-9 16H39c-5-3-9-8-9-16z" fill="#BFC7CF" />
       <path d="M32 55q-9-2-12-10" stroke="#BFC7CF" strokeWidth="4" fill="none" strokeLinecap="round" />
@@ -79,7 +80,7 @@ function Atay({ width = 150 }) {
 
 function Tighrifin({ width = 150 }) {
   return (
-    <svg width={width} viewBox="0 0 130 96" aria-hidden="true">
+    <svg width={width} height={Math.round((width * 96) / 130)} viewBox="0 0 130 96" aria-hidden="true">
       <ellipse cx="65" cy="88" rx="42" ry="4.5" fill="rgba(0,0,0,.08)" />
       <ellipse cx="65" cy="80" rx="44" ry="8" fill="#EFE3CF" />
       <ellipse cx="65" cy="72" rx="36" ry="9" fill="#C08A10" />
@@ -107,8 +108,10 @@ export const DISHES = [
   { id: 'tighrifin', name: 'Tiɣrifin', fr: 'les crêpes mille trous', note: 'Avec un filet de miel.', Art: Tighrifin },
 ]
 
-/** Plat associé à un coffre (rotation stable par index de coffre). */
+/** Plat associé à un coffre : rotation stable par POSITION du coffre sur le
+ *  chemin (les ids sautent des numéros, ex. chest6/chest8 absents). */
 export function dishForChest(chestId) {
-  const n = parseInt(String(chestId).replace(/\D/g, ''), 10) || 0
-  return DISHES[n % DISHES.length]
+  const chests = orderedNodes.filter((n) => n.type === 'chest')
+  const i = chests.findIndex((c) => c.id === chestId)
+  return DISHES[Math.max(0, i) % DISHES.length]
 }

@@ -144,11 +144,12 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
           </div>
         )}
 
-        {/* Akermus vit la leçon : curieux à l'écoute, il exulte ou console. */}
-        <div className="pointer-events-none absolute right-1 top-0 z-0" aria-hidden="true">
+        {/* Akermus vit la leçon : curieux à l'écoute, il exulte ou console.
+            Placé derrière les cartes (elles sont `relative`, déclarées après lui). */}
+        <div className="pointer-events-none absolute right-1 top-0" aria-hidden="true">
           <Akermus
             key={`${index}-${answered ? (isCorrect ? 'c' : 'w') : 'q'}`}
-            height={62}
+            height={78}
             state={answered ? (isCorrect ? 'celebrate' : 'console') : audioFirst ? 'curious' : 'idle'}
           />
         </div>
@@ -161,7 +162,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
           <>
             {isImage ? (
               ex.scene ? (
-                <div className="animate-pop-in mx-auto mt-4 w-full max-w-[230px] overflow-hidden rounded-2xl border-2 border-line shadow-sm">
+                <div className="animate-pop-in relative mx-auto mt-4 w-full max-w-[230px] overflow-hidden rounded-2xl border-2 border-line shadow-sm">
                   <Scene id={ex.scene} />
                 </div>
               ) : (
@@ -169,7 +170,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
               )
             ) : (
               <>
-                <div className={`mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${audioFirst ? 'justify-center' : ''}`}>
+                <div className={`relative mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${audioFirst ? 'justify-center' : ''}`}>
                   {ex.audio && <SpeakerButton onPlay={handlePlay} big={audioFirst} />}
                   {!audioFirst && (
                     <div>
@@ -200,7 +201,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
 
             <div className="mt-3 flex flex-col gap-2.5 pb-2">
               {ex.choices.map((choice, i) => (
-                <div key={choice} className={choiceState(choice) === 'correct' ? 'animate-spring-pick' : ''}>
+                <div key={`${index}-${i}`} className={choiceState(choice) === 'correct' ? 'animate-spring-pick' : ''}>
                   <ExerciseChoice
                     letter={LETTERS[i]}
                     text={choice}

@@ -10,6 +10,7 @@ import { ChallengeCompleteScreen } from './screens/ChallengeCompleteScreen.jsx'
 import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
 import { LogoLockup } from './components/Logo.jsx'
 import { JewelDefs } from './components/jewels/JewelDefs.jsx'
+import { GemIcon } from './components/jewels/StatIcons.jsx'
 import { units, unitOfLesson, isUnitComplete } from './data/units.js'
 import { getExercises, challengePool } from './data/lessons.js'
 import {
@@ -99,8 +100,8 @@ export default function App() {
       <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-8">
         <header className="mb-6 flex w-full items-center justify-between">
           <LogoLockup iconSize={38} />
-          <span className="rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-bold text-ink-soft">
-            {progress.xp} XP · 🪙 {progress.gems}
+          <span className="flex items-center gap-1 rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-bold text-ink-soft">
+            {progress.xp} XP · <GemIcon size={15} /> {progress.gems}
           </span>
         </header>
 

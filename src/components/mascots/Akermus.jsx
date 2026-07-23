@@ -20,11 +20,13 @@ const STATE_CLS = {
 }
 
 export function Akermus({ height = 120, state = 'idle', float = false, className = '' }) {
-  const width = Math.round((height * 90) / 104)
+  /* Le viewBox réserve 30 unités au-dessus de la tête : le saut « celebrate »
+     (translateY -27) reste visible même dans un conteneur qui clippe. */
+  const width = Math.round((height * 90) / 134)
 
   return (
     <div className={`${STATE_CLS[state] ?? ''} ${float ? 'animate-float' : ''} ${className}`.trim()}>
-      <svg width={width} height={height} viewBox="0 0 90 104" aria-hidden="true">
+      <svg width={width} height={height} viewBox="0 -30 90 134" aria-hidden="true">
         <ellipse cx="45" cy="99" rx="19" ry="4" fill="rgba(0,0,0,.10)" />
         <g className="ak-pose">
           <g className="ak-arm ak-arm-l">
@@ -64,7 +66,7 @@ export function Akermus({ height = 120, state = 'idle', float = false, className
 
           {/* Bouche selon l'état */}
           {state === 'console' ? (
-            <path d="M39 66q6-4 12 0" fill="none" stroke="var(--color-turquoise-deep)" strokeWidth="2.8" strokeLinecap="round" />
+            <path d="M39 62q6-4 12 0" fill="none" stroke="var(--color-turquoise-deep)" strokeWidth="2.8" strokeLinecap="round" />
           ) : state === 'curious' ? (
             <circle cx="45" cy="63.5" r="3" fill="#fff" />
           ) : (
