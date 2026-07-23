@@ -34,6 +34,34 @@ export const units = [
       { id: 'l9', title: 'Révision', icon: '🔁', status: 'locked' },
     ],
   },
+  {
+    id: 'u3',
+    level: 'Initiation',
+    unitLabel: 'Unité 3',
+    title: 'À la maison — Axxam',
+    trophy: '🏠',
+    lessons: [
+      { id: 'l10', title: 'La maison', icon: '🏠', status: 'locked' },
+      { id: 'l11', title: 'Manger & boire', icon: '🍞', status: 'locked' },
+      { id: 'chest3', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l12', title: 'Le thé', icon: '🫖', status: 'locked' },
+      { id: 'l13', title: 'Autour de moi', icon: '🐈', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u4',
+    level: 'Initiation',
+    unitLabel: 'Unité 4',
+    title: 'La famille & les phrases',
+    trophy: '👨‍👩‍👧',
+    lessons: [
+      { id: 'l14', title: 'La famille', icon: '👪', status: 'locked' },
+      { id: 'l15', title: 'Frère & sœur', icon: '🧒', status: 'locked' },
+      { id: 'chest4', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l16', title: 'Phrases du jour', icon: '💬', status: 'locked' },
+      { id: 'l17', title: 'Grande révision', icon: '🏅', status: 'locked' },
+    ],
+  },
 ]
 
 /** Liste ordonnée à plat de tous les nœuds (leçons + coffres). */

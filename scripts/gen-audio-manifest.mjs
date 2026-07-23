@@ -19,13 +19,20 @@ const terms = new Map() // slug -> { kab, fr, lessons:Set }
 function addTerm(kab, fr, lessonId) {
   if (!kab) return
   const id = slug(kab)
-  if (!terms.has(id)) terms.set(id, { kab, fr, lessons: new Set() })
-  terms.get(id).lessons.add(lessonId)
+  if (!terms.has(id)) terms.set(id, { kab, fr: fr || '', lessons: new Set() })
+  const t = terms.get(id)
+  if (!t.fr && fr) t.fr = fr // complète la traduction si elle manquait
+  t.lessons.add(lessonId)
 }
 for (const [lessonId, exercises] of Object.entries(byLesson)) {
   for (const ex of exercises) {
     if (ex.type === 'match') {
       for (const p of ex.pairs) addTerm(p.kab, p.fr, lessonId)
+      continue
+    }
+    if (ex.type === 'image') {
+      // la bonne réponse est le mot kabyle ; la traduction vient d'autres exercices
+      addTerm(ex.answer, '', lessonId)
       continue
     }
     const kab = ex.kind === 'kab-to-fr' ? ex.word : ex.answer

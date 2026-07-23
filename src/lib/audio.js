@@ -15,6 +15,9 @@
 export function slug(word) {
   return word
     .toLowerCase()
+    // lettres propres au kabyle, translittérées pour les noms de fichiers
+    .replace(/ɣ/g, 'gh')
+    .replace(/ɛ/g, 'e')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '') // enlève les accents
     .replace(/[^a-z0-9]+/g, '-')

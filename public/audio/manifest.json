@@ -1,10 +1,38 @@
 [
   {
+    "id": "adlis",
+    "kab": "Adlis",
+    "fr": "Livre",
+    "file": "adlis.mp3",
+    "lessons": "l13"
+  },
+  {
+    "id": "aghrum",
+    "kab": "Aɣrum",
+    "fr": "Pain",
+    "file": "aghrum.mp3",
+    "lessons": "l11"
+  },
+  {
     "id": "ala",
     "kab": "Ala",
     "fr": "Non",
     "file": "ala.mp3",
     "lessons": "l2 l3 l5 l6 l9"
+  },
+  {
+    "id": "aman",
+    "kab": "Aman",
+    "fr": "Eau",
+    "file": "aman.mp3",
+    "lessons": "l11 l17"
+  },
+  {
+    "id": "amcic",
+    "kab": "Amcic",
+    "fr": "Chat",
+    "file": "amcic.mp3",
+    "lessons": "l13 l17"
   },
   {
     "id": "ansuf",
@@ -14,11 +42,39 @@
     "lessons": "l1 l4 l5 l8 l9"
   },
   {
+    "id": "ansuf-yes-k",
+    "kab": "Ansuf yes-k",
+    "fr": "Bienvenue à toi",
+    "file": "ansuf-yes-k.mp3",
+    "lessons": "l16"
+  },
+  {
+    "id": "aql-i-labas",
+    "kab": "Aql-i labas",
+    "fr": "Je vais bien",
+    "file": "aql-i-labas.mp3",
+    "lessons": "l16"
+  },
+  {
     "id": "ar-tufat",
     "kab": "Ar tufat",
     "fr": "À demain",
     "file": "ar-tufat.mp3",
     "lessons": "l3 l5 l7 l9"
+  },
+  {
+    "id": "atay",
+    "kab": "Atay",
+    "fr": "Thé",
+    "file": "atay.mp3",
+    "lessons": "l11 l12 l17"
+  },
+  {
+    "id": "axxam",
+    "kab": "Axxam",
+    "fr": "Maison",
+    "file": "axxam.mp3",
+    "lessons": "l10 l12 l17"
   },
   {
     "id": "azul",
@@ -35,6 +91,27 @@
     "lessons": "l1 l4"
   },
   {
+    "id": "azul-amek-tellid",
+    "kab": "Azul, amek telliḍ ?",
+    "fr": "Bonjour, comment vas-tu ?",
+    "file": "azul-amek-tellid.mp3",
+    "lessons": "l16"
+  },
+  {
+    "id": "baba",
+    "kab": "Baba",
+    "fr": "Père",
+    "file": "baba.mp3",
+    "lessons": "l14 l15 l17"
+  },
+  {
+    "id": "gma",
+    "kab": "Gma",
+    "fr": "Frère",
+    "file": "gma.mp3",
+    "lessons": "l14 l15"
+  },
+  {
     "id": "ih",
     "kab": "Ih",
     "fr": "Oui",
@@ -49,10 +126,45 @@
     "lessons": "l3 l4 l6 l9"
   },
   {
+    "id": "taddart",
+    "kab": "Taddart",
+    "fr": "Village",
+    "file": "taddart.mp3",
+    "lessons": "l13"
+  },
+  {
     "id": "tanemmirt",
     "kab": "Tanemmirt",
     "fr": "Merci",
     "file": "tanemmirt.mp3",
     "lessons": "l2 l3 l7 l9"
+  },
+  {
+    "id": "tanemmirt-atas",
+    "kab": "Tanemmirt aṭas",
+    "fr": "Merci beaucoup",
+    "file": "tanemmirt-atas.mp3",
+    "lessons": "l12 l16 l17"
+  },
+  {
+    "id": "tawwurt",
+    "kab": "Tawwurt",
+    "fr": "Porte",
+    "file": "tawwurt.mp3",
+    "lessons": "l10 l12"
+  },
+  {
+    "id": "weltma",
+    "kab": "Weltma",
+    "fr": "Sœur",
+    "file": "weltma.mp3",
+    "lessons": "l15"
+  },
+  {
+    "id": "yemma",
+    "kab": "Yemma",
+    "fr": "Mère",
+    "file": "yemma.mp3",
+    "lessons": "l14"
   }
 ]

@@ -3,6 +3,7 @@ import { Button } from '../components/Button.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { FeedbackBar } from '../components/FeedbackBar.jsx'
 import { MatchExercise } from '../components/MatchExercise.jsx'
+import { Scene } from '../components/illustrations/Scenes.jsx'
 import { playWord, isProvisional } from '../lib/audio.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -43,14 +44,17 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
 
   const ex = exercises[index]
   const isMatch = ex.type === 'match'
+  const isImage = ex.type === 'image'
+  const isSentence = ex.type === 'sentence'
   const isListen = ex.type === 'listen'
+  const audioFirst = isListen || isSentence // audio d'abord, texte révélé après
   const isLast = index === total - 1
   const isCorrect = answered && (isMatch || selected === ex.answer)
   const progress = answered ? ((index + 1) / total) * 100 : (index / total) * 100
 
   // Auto-lecture pour les exercices « écoute ».
   useEffect(() => {
-    if (isListen) playWord(ex.word).then(setAudioMode)
+    if (audioFirst) playWord(ex.word).then(setAudioMode)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index])
 
@@ -145,31 +149,39 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
           <MatchExercise key={index} pairs={ex.pairs} onComplete={onMatchComplete} />
         ) : (
           <>
-            <div className={`mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${isListen ? 'justify-center' : ''}`}>
-              {ex.audio && <SpeakerButton onPlay={handlePlay} big={isListen} />}
-              {!isListen && (
-                <div>
-                  <div key={pulse} className="animate-pop text-[17px] font-extrabold">
-                    {ex.word}
-                  </div>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
-                    ▶ écouter la prononciation
+            {isImage ? (
+              <div className="animate-pop-in mx-auto mt-4 w-full max-w-[230px] overflow-hidden rounded-2xl border-2 border-line shadow-sm">
+                <Scene id={ex.scene} />
+              </div>
+            ) : (
+              <>
+                <div className={`mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${audioFirst ? 'justify-center' : ''}`}>
+                  {ex.audio && <SpeakerButton onPlay={handlePlay} big={audioFirst} />}
+                  {!audioFirst && (
+                    <div>
+                      <div key={pulse} className="animate-pop text-[17px] font-extrabold">
+                        {ex.word}
+                      </div>
+                      <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
+                        ▶ écouter la prononciation
+                        {isProvisional(audioMode) && (
+                          <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Voix de synthèse — enregistrement natif à venir">
+                            voix provisoire
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {audioFirst && (
+                  <div className="mt-1.5 flex items-center justify-center gap-2 text-center text-[11px] font-semibold text-ink-soft">
+                    {answered ? `« ${ex.word} »` : isSentence ? 'écoute la phrase, puis choisis' : 'appuie pour réécouter'}
                     {isProvisional(audioMode) && (
-                      <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Voix de synthèse — enregistrement natif à venir">
-                        voix provisoire
-                      </span>
+                      <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft">voix provisoire</span>
                     )}
                   </div>
-                </div>
-              )}
-            </div>
-            {isListen && (
-              <div className="mt-1.5 flex items-center justify-center gap-2 text-[11px] font-semibold text-ink-soft">
-                {answered ? `« ${ex.word} »` : 'appuie pour réécouter'}
-                {isProvisional(audioMode) && (
-                  <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft">voix provisoire</span>
                 )}
-              </div>
+              </>
             )}
 
             <div className="mt-3 flex flex-col gap-2.5 pb-2">
@@ -189,7 +201,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-5 pt-3">
-        {answered && !isMatch && <FeedbackBar correct={isCorrect} word={ex.word} answer={ex.answer} />}
+        {answered && !isMatch && <FeedbackBar correct={isCorrect} word={ex.word ?? ex.answer} answer={ex.answer} />}
         <Button variant={answered && !isCorrect ? 'coral' : 'primary'} disabled={actionDisabled} onClick={handleAction}>
           {actionLabel}
         </Button>
