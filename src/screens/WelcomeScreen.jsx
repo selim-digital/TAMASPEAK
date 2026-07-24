@@ -1,6 +1,6 @@
 import { Wordmark, YazMark } from '../components/Logo.jsx'
 import { Button } from '../components/Button.jsx'
-import { Yemma } from '../components/mascots/Yemma.jsx'
+import { Akermus } from '../components/mascots/Akermus.jsx'
 
 /**
  * Screen 1 — Onboarding / welcome.
@@ -20,8 +20,8 @@ export function WelcomeScreen({ onStart }) {
         un mot après l'autre.
       </p>
 
-      <div className="my-4 animate-float">
-        <Yemma height={150} />
+      <div className="my-3">
+        <Akermus height={185} float />
       </div>
 
       <div className="flex-1" />
