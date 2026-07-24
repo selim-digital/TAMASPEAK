@@ -103,10 +103,11 @@ const cubic = (p0, p1, p2, p3, t) => {
 const linePts = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => [lerp(a[0], b[0], i / n), lerp(a[1], b[1], i / n)])
 const cubicPts = (p0, p1, p2, p3, n) => Array.from({ length: n + 1 }, (_, i) => cubic(p0, p1, p2, p3, i / n))
 
-/** Dessine le logo (viewBox 42x46 du favicon) dans un carré `size`, glyphes à l'échelle `inner`. */
-function drawIcon(size, inner) {
+/** Dessine le logo (viewBox 42x46 du favicon) dans un carré `size`, glyphes à
+ *  l'échelle `inner`. `rad` = arrondi du fond (0 = plein cadre, requis pour
+ *  les icônes maskable/apple qui doivent être opaques bord à bord). */
+function drawIcon(size, inner, rad = (size * 9) / 42) {
   const c = makeCanvas(size)
-  const rad = (size * 9) / 42
   c.fillRoundedRect(0, 0, size, size, rad, TURQUOISE)
   // repère : viewBox 42x46 centré, mis à l'échelle `inner`
   const s = (size / 46) * inner
@@ -121,30 +122,40 @@ function drawIcon(size, inner) {
   return c.px
 }
 
-/** Réduction 2x par moyenne (anti-aliasing). */
+/** Réduction 2x par moyenne en alpha PRÉMULTIPLIÉ (évite le liseré sombre
+ *  le long des bords transparents). */
 function downsample(px, size) {
   const out = Buffer.alloc((size / 2) * (size / 2) * 4)
+  const at = (x, y, ch) => px[(y * size + x) * 4 + ch]
   for (let y = 0; y < size / 2; y++)
     for (let x = 0; x < size / 2; x++) {
-      for (let ch = 0; ch < 4; ch++) {
-        const a = px[((2 * y) * size + 2 * x) * 4 + ch]
-        const b = px[((2 * y) * size + 2 * x + 1) * 4 + ch]
-        const cc = px[((2 * y + 1) * size + 2 * x) * 4 + ch]
-        const d = px[((2 * y + 1) * size + 2 * x + 1) * 4 + ch]
-        out[(y * (size / 2) + x) * 4 + ch] = (a + b + cc + d) >> 2
-      }
+      const xs = [2 * x, 2 * x + 1]
+      const ys = [2 * y, 2 * y + 1]
+      let aSum = 0
+      const rgb = [0, 0, 0]
+      for (const yy of ys)
+        for (const xx of xs) {
+          const a = at(xx, yy, 3)
+          aSum += a
+          for (let ch = 0; ch < 3; ch++) rgb[ch] += at(xx, yy, ch) * a
+        }
+      const o = (y * (size / 2) + x) * 4
+      out[o + 3] = aSum >> 2
+      for (let ch = 0; ch < 3; ch++) out[o + ch] = aSum ? Math.round(rgb[ch] / aSum) : 0
     }
   return out
 }
 
 const OUT = join(ROOT, 'public', 'icons')
 mkdirSync(OUT, { recursive: true })
-const make = (name, finalSize, inner) => {
-  const big = drawIcon(finalSize * 2, inner)
+const make = (name, finalSize, inner, rad) => {
+  const big = drawIcon(finalSize * 2, inner, rad === undefined ? undefined : rad)
   writeFileSync(join(OUT, name), encodePng(finalSize, downsample(big, finalSize * 2)))
   console.log('✓', name)
 }
 make('icon-192.png', 192, 0.92)
 make('icon-512.png', 512, 0.92)
-// maskable : glyphes dans la zone sûre (80 % central)
-make('icon-maskable-512.png', 512, 0.62)
+// maskable/apple : fond PLEIN CADRE (opaque bord à bord, le lanceur applique
+// son propre masque) ; glyphes dans la zone sûre (80 % central).
+make('icon-maskable-512.png', 512, 0.62, 0)
+make('apple-touch-icon.png', 180, 0.8, 0)

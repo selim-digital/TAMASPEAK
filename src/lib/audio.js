@@ -81,3 +81,28 @@ export async function playWord(word) {
 
 /** Vrai si la source jouée est provisoire (à remplacer par du natif). */
 export const isProvisional = (mode) => mode === 'synth' || mode === 'tts'
+
+/**
+ * Réchauffe le cache audio de la PWA (route runtime CacheFirst du service
+ * worker) : au premier chargement en ligne, chaque mp3 listé dans le
+ * manifest est demandé une fois — le SW le met en cache, et les leçons
+ * fonctionnent ensuite hors-ligne. Sans SW (dev, singlefile), no-op.
+ */
+export async function warmAudioCache() {
+  try {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return
+    await navigator.serviceWorker.ready
+    const base = import.meta.env.BASE_URL || '/'
+    const res = await fetch(`${base}audio/manifest.json`)
+    if (!res.ok) return
+    const entries = await res.json()
+    for (const e of entries) {
+      if (!e?.file) continue
+      // natif puis synthèse : les 404 ne sont pas mis en cache, sans gravité.
+      fetch(`${base}audio/${e.file}`).catch(() => {})
+      fetch(`${base}audio/synth/${e.file}`).catch(() => {})
+    }
+  } catch {
+    /* le réchauffage est un bonus — jamais bloquant */
+  }
+}

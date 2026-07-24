@@ -21,7 +21,7 @@ export function WelcomeScreen({ onStart }) {
       </p>
 
       <div className="my-3">
-        <Akermus height={185} float />
+        <Akermus height={170} float />
       </div>
 
       <div className="flex-1" />
