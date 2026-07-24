@@ -1,15 +1,22 @@
+import { useEffect } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
 import { GemIcon } from '../components/jewels/StatIcons.jsx'
+import { sfx } from '../lib/sfx.js'
 
 /**
  * Écran « Unité terminée » (v3) : le médaillon tabzimt — la fibule émaillée
  * d'Ath Yenni — surgit avec un effet ressort. Un bijou d'artisanat en trophée.
  */
 export function UnitCompleteScreen({ unit, gems = 25, hasNext = true, onContinue }) {
+  useEffect(() => {
+    sfx.chest()
+    const t = setTimeout(() => sfx.complete(), 350)
+    return () => clearTimeout(t)
+  }, [])
   return (
-    <div className="animate-enter relative flex flex-1 flex-col items-center px-6 pb-6 pt-12 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.22),var(--color-cream)_64%)]">
+    <div className="animate-enter relative flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-6 pt-12 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.22),var(--color-cream)_64%)]">
       <Confetti count={40} />
 
       <Tabzimt size={168} animate rays />

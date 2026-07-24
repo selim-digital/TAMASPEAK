@@ -4,6 +4,7 @@ import { Confetti } from '../components/Confetti.jsx'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
 import { GemIcon } from '../components/jewels/StatIcons.jsx'
 import { dishForChest } from '../components/jewels/Dishes.jsx'
+import { sfx } from '../lib/sfx.js'
 
 /**
  * Écran d'ouverture de coffre (v3.1) : le médaillon tabzimt s'ouvre sur un
@@ -16,12 +17,15 @@ export function ChestRewardScreen({ gems = 15, chest, onContinue }) {
   const Art = dish.Art
 
   useEffect(() => {
-    const t = setTimeout(() => setOpen(true), 600)
+    const t = setTimeout(() => {
+      setOpen(true)
+      sfx.chest()
+    }, 600)
     return () => clearTimeout(t)
   }, [])
 
   return (
-    <div className="animate-enter relative flex flex-1 flex-col items-center justify-center px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_16%,rgba(240,180,41,0.2),var(--color-cream)_64%)]">
+    <div className="animate-enter relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_16%,rgba(240,180,41,0.2),var(--color-cream)_64%)]">
       {open && <Confetti count={30} />}
 
       {open ? (

@@ -6,6 +6,7 @@ import { MatchExercise } from '../components/MatchExercise.jsx'
 import { Scene } from '../components/illustrations/Scenes.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { playWord, isProvisional } from '../lib/audio.js'
+import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 const PRAISES = ['Igerrez !', 'Yelha !', 'Bravo !', 'Excellent !', 'Continue !']
@@ -69,11 +70,14 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
     setCombo(nextCombo)
     setCorrectCount((c) => c + 1)
     setPraise({ text: praiseFor(nextCombo), key: Date.now() })
+    if (nextCombo >= 2) sfx.combo(nextCombo)
+    else sfx.correct()
   }
   function markWrong() {
     setCombo(0)
     setHearts((h) => Math.max(0, h - 1))
     setShakeKey((k) => k + 1)
+    sfx.wrong()
   }
 
   function choiceState(choice) {

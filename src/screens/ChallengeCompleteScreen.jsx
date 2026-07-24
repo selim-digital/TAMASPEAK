@@ -1,11 +1,16 @@
+import { useEffect } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Confetti } from '../components/Confetti.jsx'
+import { sfx } from '../lib/sfx.js'
 
 /** Récompense du Défi du jour. */
 export function ChallengeCompleteScreen({ correct = 0, total = 0, xp = 15, gems = 10, onContinue }) {
   const passed = correct >= Math.ceil(total * 0.6)
+  useEffect(() => {
+    if (passed) sfx.complete()
+  }, [passed])
   return (
-    <div className="animate-enter relative flex flex-1 flex-col items-center px-6 pb-6 pt-12 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(255,111,97,0.18),var(--color-cream)_64%)]">
+    <div className="animate-enter relative flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-6 pt-12 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(255,111,97,0.18),var(--color-cream)_64%)]">
       {passed && <Confetti count={32} />}
 
       <div className="animate-pop text-[80px] leading-none" aria-hidden="true">

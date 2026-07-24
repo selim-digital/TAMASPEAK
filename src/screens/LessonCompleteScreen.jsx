@@ -3,6 +3,7 @@ import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { cheerFor } from '../components/mascots/Family.jsx'
 import { Confetti } from '../components/Confetti.jsx'
+import { sfx } from '../lib/sfx.js'
 
 /** Anime un nombre de 0 → target. */
 function useCountUp(target, duration = 700) {
@@ -51,9 +52,12 @@ function Reward({ value, label, tone = 'turquoise', delay = 0 }) {
 export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak = 4, cheerCount = 0, onContinue }) {
   const xpShown = useCountUp(xp)
   const { member, message } = cheerFor(cheerCount)
+  useEffect(() => {
+    sfx.complete()
+  }, [])
 
   return (
-    <div className="animate-enter relative flex flex-1 flex-col items-center px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.2),var(--color-cream)_62%)]">
+    <div className="animate-enter relative flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.2),var(--color-cream)_62%)]">
       <Confetti count={34} />
 
       <div className="animate-pop">
@@ -76,7 +80,7 @@ export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak =
 
       {/* Un membre de la famille vient féliciter l'élève. */}
       <div className="animate-rise mt-4 flex w-full items-end gap-2 text-left" style={{ animationDelay: '450ms' }}>
-        <div className="flex-none">
+        <div className="fam-anim flex-none">
           <member.Comp height={58} />
         </div>
         <div className="mb-1.5 flex-1 rounded-2xl rounded-bl-md border border-line bg-cream p-2.5 text-[11.5px] font-semibold leading-snug">

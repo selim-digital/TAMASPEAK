@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
-import { FAMILY } from '../components/mascots/Family.jsx'
+import { FamilyCarousel } from '../components/mascots/FamilyCarousel.jsx'
+import { sfx } from '../lib/sfx.js'
 
 /**
  * Onboarding (v3.3) — Akermus, le partenaire d'apprentissage, fait
@@ -43,28 +44,18 @@ const STEPS = [
 
 function FamilyIntro({ onDone }) {
   return (
-    <div className="animate-enter flex flex-1 flex-col px-5 pt-10 pb-5 text-center">
+    <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-5 text-center">
       <h2 className="text-xl font-extrabold tracking-tight">Ta famille d'accueil</h2>
       <p className="mx-auto mt-1 max-w-[300px] text-[12.5px] leading-snug text-ink-soft">
-        Ils t'attendent sur le chemin et t'encourageront à chaque étape. Deux d'entre eux sont déjà
-        dans tes leçons : <b className="text-ink">yemma</b> (maman) et <b className="text-ink">baba</b> (papa).
+        Fais leur connaissance — <b className="text-ink">balaie</b> ou <b className="text-ink">touche un visage</b>.
+        Ils t'encourageront tout au long du chemin.
       </p>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        {FAMILY.map(({ id, name, role, Comp }, i) => (
-          <div
-            key={id}
-            className="animate-pop-in flex flex-col items-center rounded-2xl border border-line bg-cream px-1 pb-2 pt-3"
-            style={{ animationDelay: `${i * 90}ms` }}
-          >
-            <Comp height={64} />
-            <div className="mt-1 text-[11px] font-extrabold">{name}</div>
-            <div className="text-[9px] text-ink-soft">{role}</div>
-          </div>
-        ))}
+      <div className="mt-3">
+        <FamilyCarousel />
       </div>
 
-      <div className="flex-1" />
+      <div className="min-h-3 flex-1" />
       <Button variant="primary" onClick={onDone}>
         Commencer le voyage
       </Button>
@@ -91,13 +82,14 @@ export function OnboardingScreen({ onFinish }) {
 
   function next() {
     if (selected == null) return
+    sfx.click()
     setAnswers((a) => ({ ...a, [id]: selected }))
     setSelected(null)
     setStep((s) => s + 1)
   }
 
   return (
-    <div className="animate-enter flex flex-1 flex-col px-5 pt-9 pb-5">
+    <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-9 pb-5">
       {/* progression de l'onboarding */}
       <div className="flex gap-1.5">
         {STEPS.map((s, i) => (

@@ -8,7 +8,7 @@ import { Akermus } from '../components/mascots/Akermus.jsx'
  */
 export function WelcomeScreen({ onStart }) {
   return (
-    <div className="animate-enter flex flex-1 flex-col items-center px-6 pt-12 pb-6 text-center bg-[radial-gradient(130%_80%_at_50%_6%,rgba(16,196,168,0.18),var(--color-cream)_60%)]">
+    <div className="animate-enter flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pt-12 pb-6 text-center bg-[radial-gradient(130%_80%_at_50%_6%,rgba(16,196,168,0.18),var(--color-cream)_60%)]">
       <div className="grid place-items-center w-20 h-20 rounded-[22px] bg-gradient-to-br from-turquoise to-turquoise-dark text-white shadow-lg shadow-turquoise/30">
         <YazMark size={44} />
       </div>

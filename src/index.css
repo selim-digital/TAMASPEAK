@@ -350,6 +350,47 @@
   animation: akCurious 3.1s cubic-bezier(0.25, 1.6, 0.35, 1) infinite;
 }
 
+/* ---- Famille : vie douce des personnages (balancement depuis les pieds,
+       petit salut). Jamais d'yeux — l'émotion reste dans la posture. ---- */
+@keyframes famSway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(2.2deg);
+  }
+  70% {
+    transform: rotate(-2deg);
+  }
+}
+@keyframes famHello {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  12% {
+    transform: rotate(-3deg) translateY(-2px);
+  }
+  24% {
+    transform: rotate(3deg) translateY(-3px);
+  }
+  36% {
+    transform: rotate(-2deg) translateY(-1px);
+  }
+  48% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+.fam-anim {
+  animation: famSway 3.6s ease-in-out infinite;
+  transform-origin: 50% 96%;
+}
+.fam-hello {
+  animation: famHello 2.8s ease-in-out infinite;
+  transform-origin: 50% 96%;
+}
+
 /* Accessibilité : couper les animations si l'utilisateur le demande. */
 @media (prefers-reduced-motion: reduce) {
   *,

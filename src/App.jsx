@@ -9,6 +9,7 @@ import { ChestRewardScreen } from './screens/ChestRewardScreen.jsx'
 import { UnitCompleteScreen } from './screens/UnitCompleteScreen.jsx'
 import { ChallengeCompleteScreen } from './screens/ChallengeCompleteScreen.jsx'
 import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
+import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
 import { JewelDefs } from './components/jewels/JewelDefs.jsx'
 import { GemIcon } from './components/jewels/StatIcons.jsx'
@@ -140,7 +141,20 @@ export default function App() {
               }}
               onChallenge={startChallenge}
               onTrophies={() => setScreen('trophies')}
+              onFamily={() => setScreen('famille')}
             />
+          )}
+
+          {screen === 'famille' && (
+            <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-5 text-center">
+              <div className="mb-2 flex items-center gap-3 text-left">
+                <button type="button" onClick={() => setScreen('path')} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
+                  ←
+                </button>
+                <h2 className="text-lg font-extrabold">La famille</h2>
+              </div>
+              <FamilyCarousel />
+            </div>
           )}
 
           {screen === 'lesson' && (

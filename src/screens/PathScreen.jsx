@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { TopBar } from '../components/TopBar.jsx'
 import { LessonNode } from '../components/LessonNode.jsx'
 import { landOf } from '../data/journey.js'
 import { cheerFor } from '../components/mascots/Family.jsx'
+import { isSfxOn, setSfxOn, sfx } from '../lib/sfx.js'
 
 /** Position horizontale du nœud i sur le chemin sinueux. */
 const offsetOf = (i) => Math.round(Math.sin(i * 0.9) * 66)
@@ -105,15 +107,21 @@ function DailyGoal({ value = 0, goal }) {
   )
 }
 
-/** Un membre de la famille encourage l'élève près de sa leçon en cours. */
-function FamilyCheer({ cheer }) {
+/** Un membre de la famille encourage l'élève près de sa leçon en cours
+ *  (animé, et cliquable pour faire connaissance). */
+function FamilyCheer({ cheer, onOpen }) {
   if (!cheer) return null
   const { member, message } = cheer
   return (
     <div className="animate-rise mb-1 mt-2 flex items-end gap-2 px-1">
-      <div className="flex-none">
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={`Faire connaissance avec ${member.name}`}
+        className="fam-anim flex-none cursor-pointer"
+      >
         <member.Comp height={62} />
-      </div>
+      </button>
       <div className="relative mb-2 flex-1 rounded-2xl rounded-bl-md border border-line bg-cream p-2.5 text-[11.5px] font-semibold leading-snug">
         <b className="text-turquoise-deep">{member.name}</b> — {message}
       </div>
@@ -134,8 +142,17 @@ export function PathScreen({
   onOpenChest,
   onChallenge,
   onTrophies,
+  onFamily,
 }) {
   const cheer = cheerFor(cheerCount)
+  const [soundOn, setSoundOn] = useState(isSfxOn)
+
+  function toggleSound() {
+    const next = !soundOn
+    setSfxOn(next)
+    setSoundOn(next)
+    if (next) sfx.click()
+  }
   function handleNode(node) {
     if (node.type === 'chest') {
       if (node.status === 'available') onOpenChest?.(node)
@@ -174,6 +191,22 @@ export function PathScreen({
           </svg>
           Trophées
         </button>
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-label={soundOn ? 'Couper les sons' : 'Activer les sons'}
+          aria-pressed={soundOn}
+          className={`grid place-items-center rounded-xl border border-line px-2.5 transition ${soundOn ? 'bg-cream text-turquoise-deep' : 'bg-sand-2 text-ink-soft'}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4 9v6h4l5 5V4L8 9H4z" />
+            {soundOn ? (
+              <path d="M16 8c1.5 1.2 1.5 6.8 0 8M18.5 6c2.5 2 2.5 10 0 12" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+            ) : (
+              <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+            )}
+          </svg>
+        </button>
       </div>
 
       <DailyGoal value={xpTodayValue} goal={dailyGoalXp} />
@@ -188,7 +221,7 @@ export function PathScreen({
             return (
               <div key={unit.id} className="relative mb-2">
                 <UnitBanner unit={unit} land={land} progress={progress} />
-                {hasCurrent && <FamilyCheer cheer={cheer} />}
+                {hasCurrent && <FamilyCheer cheer={cheer} onOpen={onFamily} />}
                 <div className="flex flex-col items-center py-5">
                   {unit.lessons.map((node, i) => (
                     <div key={node.id} className="flex flex-col items-center">
