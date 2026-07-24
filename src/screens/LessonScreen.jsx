@@ -72,6 +72,8 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
     setPraise({ text: praiseFor(nextCombo), key: Date.now() })
     if (nextCombo >= 2) sfx.combo(nextCombo)
     else sfx.correct()
+    // « boing » du saut d'Akermus + de l'éloge qui s'envole
+    sfx.pop(0.3)
   }
   function markWrong() {
     setCombo(0)

@@ -54,6 +54,7 @@ export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak =
   const { member, message } = cheerFor(cheerCount)
   useEffect(() => {
     sfx.complete()
+    sfx.pop(0.5) // atterrissage du saut d'Akermus
   }, [])
 
   return (

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FAMILY } from './Family.jsx'
 import { sfx } from '../../lib/sfx.js'
 
@@ -14,12 +14,29 @@ export function FamilyCarousel({ start = 0 }) {
   const member = FAMILY[index]
   const { Comp } = member
 
+  // Petit « salut » sonore quand le personnage entre en scène.
+  useEffect(() => {
+    sfx.hello()
+  }, [index])
+
   function go(next) {
     const n = (next + FAMILY.length) % FAMILY.length
     setDir(n > index || (index === FAMILY.length - 1 && n === 0) ? 1 : -1)
     setIndex(n)
-    sfx.click()
+    sfx.swish()
   }
+
+  /* Sur tactile, on gère le toucher DIRECTEMENT sur les flèches : sinon le
+     détecteur de swipe de la carte avale le geste et le clic n'arrive jamais. */
+  const arrowTouchProps = (target) => ({
+    onTouchStart: (e) => e.stopPropagation(),
+    onTouchEnd: (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      go(target())
+    },
+    onClick: () => go(target()),
+  })
 
   return (
     <div className="flex flex-col">
@@ -33,23 +50,23 @@ export function FamilyCarousel({ start = 0 }) {
           if (touchX.current == null) return
           const delta = e.changedTouches[0].clientX - touchX.current
           touchX.current = null
-          if (delta > 40) go(index - 1)
-          else if (delta < -40) go(index + 1)
+          if (delta > 30) go(index - 1)
+          else if (delta < -30) go(index + 1)
         }}
       >
         <button
           type="button"
-          onClick={() => go(index - 1)}
+          {...arrowTouchProps(() => index - 1)}
           aria-label="Personnage précédent"
-          className="absolute left-1.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-cream text-lg font-extrabold text-ink-soft"
+          className="absolute left-1 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-line bg-cream text-xl font-extrabold text-ink-soft shadow-sm active:scale-95"
         >
           ‹
         </button>
         <button
           type="button"
-          onClick={() => go(index + 1)}
+          {...arrowTouchProps(() => index + 1)}
           aria-label="Personnage suivant"
-          className="absolute right-1.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-cream text-lg font-extrabold text-ink-soft"
+          className="absolute right-1 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-line bg-cream text-xl font-extrabold text-ink-soft shadow-sm active:scale-95"
         >
           ›
         </button>

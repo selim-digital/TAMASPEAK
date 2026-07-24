@@ -89,4 +89,17 @@ export const sfx = {
   click: guard(() => {
     tone(880, { dur: 0.05, type: 'triangle', vol: 0.05 })
   }),
+  /** « Boing » d'un saut / d'un éloge qui s'envole (glissando montant). */
+  pop: guard((at = 0) => {
+    tone(300, { at, dur: 0.14, vol: 0.09, to: 560 })
+  }),
+  /** Glissement du carrousel (swipe / flèches). */
+  swish: guard(() => {
+    tone(500, { dur: 0.09, type: 'triangle', vol: 0.05, to: 950 })
+  }),
+  /** Petit salut d'un personnage qui entre en scène. */
+  hello: guard(() => {
+    tone(660, { dur: 0.09, vol: 0.07 })
+    tone(880, { at: 0.1, dur: 0.13, vol: 0.07 })
+  }),
 }

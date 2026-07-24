@@ -102,8 +102,8 @@ export default function App() {
   return (
     <div className="min-h-full bg-sand text-ink">
       <JewelDefs />
-      <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-8">
-        <header className="mb-6 flex w-full items-center justify-between">
+      <div className="mx-auto flex max-w-3xl flex-col items-center px-0 py-0 sm:px-4 sm:py-8">
+        <header className="mb-6 hidden w-full items-center justify-between sm:flex">
           <LogoLockup iconSize={38} />
           <span className="flex items-center gap-1 rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-bold text-ink-soft">
             {progress.xp} XP · <GemIcon size={15} /> {progress.gems}
@@ -212,7 +212,7 @@ export default function App() {
           {screen === 'trophies' && <TrophiesScreen progress={progress} onBack={() => setScreen('path')} />}
         </PhoneFrame>
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm">
+        <div className="mt-5 hidden flex-wrap items-center justify-center gap-2 text-sm sm:flex">
           {[
             ['welcome', 'Accueil'],
             ['path', 'Chemin'],
