@@ -91,7 +91,8 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
 
   function handlePlay() {
     setPulse((p) => p + 1)
-    playWord(ex.word).then(setAudioMode)
+    // fr→kab : le mot affiché est français — on prononce la réponse kabyle.
+    playWord(ex.audio ? ex.word : ex.answer).then(setAudioMode)
   }
 
   function goNext() {
@@ -112,6 +113,8 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
       if (selected === ex.answer) markCorrect()
       else markWrong()
       setAnswered(true)
+      // fr→kab : on fait entendre la bonne réponse en kabyle.
+      if (!ex.audio && ex.kind === 'fr-to-kab') playWord(ex.answer).then(setAudioMode)
       return
     }
     goNext()
@@ -171,20 +174,22 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
             ) : (
               <>
                 <div className={`relative mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${audioFirst ? 'justify-center' : ''}`}>
-                  {ex.audio && <SpeakerButton onPlay={handlePlay} big={audioFirst} />}
+                  {(ex.audio || (answered && ex.kind === 'fr-to-kab')) && <SpeakerButton onPlay={handlePlay} big={audioFirst} />}
                   {!audioFirst && (
                     <div>
                       <div key={pulse} className="animate-pop text-[17px] font-extrabold">
                         {ex.word}
                       </div>
-                      <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
-                        ▶ écouter la prononciation
-                        {isProvisional(audioMode) && (
-                          <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Voix de synthèse — enregistrement natif à venir">
-                            voix provisoire
-                          </span>
-                        )}
-                      </div>
+                      {(ex.audio || (answered && ex.kind === 'fr-to-kab')) && (
+                        <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
+                          {ex.audio ? '▶ écouter la prononciation' : `▶ écouter « ${ex.answer} »`}
+                          {isProvisional(audioMode) && (
+                            <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Voix de synthèse — enregistrement natif à venir">
+                              voix provisoire
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

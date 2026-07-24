@@ -68,10 +68,10 @@ export function TrophiesScreen({ progress, onBack }) {
                 <img
                   src={land.img}
                   alt=""
-                  className={`h-16 w-full object-cover ${done ? '' : 'opacity-55 grayscale'}`}
+                  className={`h-16 w-full object-cover transition-[filter,opacity] duration-700 ${done ? '' : 'opacity-55 grayscale'}`}
                 />
                 <div className="absolute right-1.5 top-1.5 drop-shadow-sm">
-                  <Tabzimt size={32} className={done ? 'block' : 'block opacity-70 grayscale'} />
+                  <Tabzimt size={32} className={`block transition-[filter,opacity] duration-700 ${done ? '' : 'opacity-70 grayscale'}`} />
                 </div>
                 <div className="px-2.5 py-1.5">
                   <div className="text-[10.5px] font-extrabold leading-tight">

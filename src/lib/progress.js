@@ -10,8 +10,32 @@ const KEY = 'tama-speak:v2'
 const todayKey = () => new Date().toISOString().slice(0, 10)
 
 export function defaultProgress() {
-  return { statuses: initialStatuses(), xp: 0, gems: 0, streak: 0, lastDay: null, dailyDay: null, perfectCount: 0 }
+  return {
+    statuses: initialStatuses(),
+    xp: 0,
+    gems: 0,
+    streak: 0,
+    lastDay: null,
+    dailyDay: null,
+    perfectCount: 0,
+    // Profil d'onboarding : { reason, level, dailyGoalXp } — null tant que
+    // l'onboarding n'a pas été fait.
+    profile: null,
+    // XP gagnés aujourd'hui (pour l'objectif quotidien).
+    xpToday: 0,
+    xpDay: null,
+  }
 }
+
+/** Ajoute des XP en tenant le compteur du jour (objectif quotidien). */
+function addXp(progress, xpGain) {
+  const today = todayKey()
+  const xpToday = (progress.xpDay === today ? progress.xpToday || 0 : 0) + xpGain
+  return { xp: (progress.xp || 0) + xpGain, xpToday, xpDay: today }
+}
+
+/** XP gagnés aujourd'hui (0 si le jour a changé depuis la sauvegarde). */
+export const xpToday = (progress) => (progress.xpDay === todayKey() ? progress.xpToday || 0 : 0)
 
 export function loadProgress() {
   try {
@@ -68,8 +92,8 @@ export function completeLesson(progress, lessonId, { xpGain = 20, perfect = fals
   const streak = progress.lastDay === today ? progress.streak : (progress.streak || 0) + 1
   return {
     ...progress,
+    ...addXp(progress, xpGain),
     statuses,
-    xp: (progress.xp || 0) + xpGain,
     streak,
     lastDay: today,
     perfectCount: (progress.perfectCount || 0) + (perfect ? 1 : 0),
@@ -86,7 +110,12 @@ export function openChest(progress, chestId, { gems = 15 } = {}) {
 
 /** Défi du jour relevé : +XP, +gemmes, marqué pour aujourd'hui. */
 export function recordChallenge(progress, { xpGain = 15, gems = 10 } = {}) {
-  return { ...progress, xp: (progress.xp || 0) + xpGain, gems: (progress.gems || 0) + gems, dailyDay: todayKey() }
+  return { ...progress, ...addXp(progress, xpGain), gems: (progress.gems || 0) + gems, dailyDay: todayKey() }
+}
+
+/** Enregistre le profil choisi pendant l'onboarding. */
+export function setProfile(progress, profile) {
+  return { ...progress, profile }
 }
 
 export const challengeAvailable = (progress) => progress.dailyDay !== todayKey()

@@ -1,6 +1,7 @@
 import { TopBar } from '../components/TopBar.jsx'
 import { LessonNode } from '../components/LessonNode.jsx'
 import { landOf } from '../data/journey.js'
+import { cheerFor } from '../components/mascots/Family.jsx'
 
 /** Position horizontale du nœud i sur le chemin sinueux. */
 const offsetOf = (i) => Math.round(Math.sin(i * 0.9) * 66)
@@ -38,8 +39,9 @@ function Connector({ from, to }) {
   )
 }
 
-/** Bannière d'unité illustrée par son paysage + voile turquoise lisible. */
-function UnitBanner({ unit, land }) {
+/** Bannière d'unité illustrée par son paysage + voile turquoise lisible
+ *  + fine barre de progression de l'unité (motivation !). */
+function UnitBanner({ unit, land, progress = 0 }) {
   return (
     <div className="relative mb-1 h-[86px] overflow-hidden rounded-2xl shadow-[0_8px_18px_-10px_rgba(10,122,105,.55)]">
       <img src={land.img} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -49,6 +51,12 @@ function UnitBanner({ unit, land }) {
           {unit.level} · {unit.unitLabel} — {land.region}
         </div>
         <div className="mt-0.5 text-[15px] font-extrabold drop-shadow-sm">{unit.title}</div>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-[5px] bg-black/15">
+        <div
+          className="h-full rounded-r-full bg-yellow-vif transition-all duration-700"
+          style={{ width: `${Math.round(progress * 100)}%` }}
+        />
       </div>
     </div>
   )
@@ -61,7 +69,73 @@ function progressOf(unit) {
   return lessons.filter((l) => l.status === 'done').length / lessons.length
 }
 
-export function PathScreen({ units, xp, gems, streak, canChallenge, onSelectLesson, onOpenChest, onChallenge, onTrophies }) {
+/** Anneau d'objectif quotidien (issu de l'onboarding). */
+function DailyGoal({ value = 0, goal }) {
+  if (!goal) return null
+  const p = Math.min(1, value / goal)
+  const C = 2 * Math.PI * 14
+  const done = p >= 1
+  return (
+    <div className="mx-3.5 mb-1.5 flex items-center gap-2.5 rounded-xl border border-line bg-cream px-3 py-2">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <circle cx="17" cy="17" r="14" fill="none" stroke="var(--color-sand-2)" strokeWidth="4.5" />
+        <circle
+          cx="17"
+          cy="17"
+          r="14"
+          fill="none"
+          stroke={done ? 'var(--color-green-vif)' : 'var(--color-coral)'}
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          strokeDasharray={`${C * p} ${C}`}
+          transform="rotate(-90 17 17)"
+          className="transition-all duration-700"
+        />
+        {done && (
+          <path d="M11.5 17.5l4 4 7-8" fill="none" stroke="var(--color-green-vif)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+        )}
+      </svg>
+      <div className="flex-1">
+        <div className="text-[11.5px] font-extrabold">{done ? 'Objectif du jour atteint — Igerrez !' : 'Objectif du jour'}</div>
+        <div className="text-[10.5px] font-bold text-ink-soft tabular-nums">
+          {Math.min(value, goal)} / {goal} XP
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Un membre de la famille encourage l'élève près de sa leçon en cours. */
+function FamilyCheer({ cheer }) {
+  if (!cheer) return null
+  const { member, message } = cheer
+  return (
+    <div className="animate-rise mb-1 mt-2 flex items-end gap-2 px-1">
+      <div className="flex-none">
+        <member.Comp height={62} />
+      </div>
+      <div className="relative mb-2 flex-1 rounded-2xl rounded-bl-md border border-line bg-cream p-2.5 text-[11.5px] font-semibold leading-snug">
+        <b className="text-turquoise-deep">{member.name}</b> — {message}
+      </div>
+    </div>
+  )
+}
+
+export function PathScreen({
+  units,
+  xp,
+  gems,
+  streak,
+  xpTodayValue = 0,
+  dailyGoalXp,
+  cheerCount = 0,
+  canChallenge,
+  onSelectLesson,
+  onOpenChest,
+  onChallenge,
+  onTrophies,
+}) {
+  const cheer = cheerFor(cheerCount)
   function handleNode(node) {
     if (node.type === 'chest') {
       if (node.status === 'available') onOpenChest?.(node)
@@ -102,15 +176,19 @@ export function PathScreen({ units, xp, gems, streak, canChallenge, onSelectLess
         </button>
       </div>
 
+      <DailyGoal value={xpTodayValue} goal={dailyGoalXp} />
+
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="relative">
           <Filigree />
           {units.map((unit, unitIndex) => {
             const land = landOf(unitIndex)
             const progress = progressOf(unit)
+            const hasCurrent = unit.lessons.some((l) => l.status === 'current' || l.status === 'available')
             return (
               <div key={unit.id} className="relative mb-2">
-                <UnitBanner unit={unit} land={land} />
+                <UnitBanner unit={unit} land={land} progress={progress} />
+                {hasCurrent && <FamilyCheer cheer={cheer} />}
                 <div className="flex flex-col items-center py-5">
                   {unit.lessons.map((node, i) => (
                     <div key={node.id} className="flex flex-col items-center">

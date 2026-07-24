@@ -22,7 +22,7 @@ export function TopBar({ streak = 0, xp = 0, gems = 0 }) {
       </Stat>
       <Stat className="text-cobalt" icon={<StarIcon size={24} />}>
         <span className="sr-only">Points d'expérience : </span>
-        {xp}
+        <span key={xp} className="animate-pop inline-block">{xp}</span>
       </Stat>
       <Stat className="text-gold-deep" icon={<GemIcon size={24} />}>
         <span className="sr-only">Gemmes : </span>

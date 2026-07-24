@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { PhoneFrame } from './components/PhoneFrame.jsx'
 import { WelcomeScreen } from './screens/WelcomeScreen.jsx'
+import { OnboardingScreen } from './screens/OnboardingScreen.jsx'
 import { PathScreen } from './screens/PathScreen.jsx'
 import { LessonScreen } from './screens/LessonScreen.jsx'
 import { LessonCompleteScreen } from './screens/LessonCompleteScreen.jsx'
@@ -22,6 +23,9 @@ import {
   openChest,
   recordChallenge,
   challengeAvailable,
+  setProfile,
+  xpToday,
+  lessonsDone,
 } from './lib/progress.js'
 
 const XP_PER_LESSON = 20
@@ -106,7 +110,18 @@ export default function App() {
         </header>
 
         <PhoneFrame>
-          {screen === 'welcome' && <WelcomeScreen onStart={() => setScreen('path')} />}
+          {screen === 'welcome' && (
+            <WelcomeScreen onStart={() => setScreen(progress.profile ? 'path' : 'onboarding')} />
+          )}
+
+          {screen === 'onboarding' && (
+            <OnboardingScreen
+              onFinish={(profile) => {
+                setProgress((p) => setProfile(p, profile))
+                setScreen('path')
+              }}
+            />
+          )}
 
           {screen === 'path' && (
             <PathScreen
@@ -114,6 +129,9 @@ export default function App() {
               xp={progress.xp}
               gems={progress.gems}
               streak={progress.streak}
+              xpTodayValue={xpToday(progress)}
+              dailyGoalXp={progress.profile?.dailyGoalXp}
+              cheerCount={lessonsDone(progress)}
               canChallenge={canChallenge}
               onSelectLesson={startLesson}
               onOpenChest={(node) => {
@@ -130,7 +148,14 @@ export default function App() {
           )}
 
           {screen === 'complete' && (
-            <LessonCompleteScreen correct={lastResult.correct} total={lastResult.total} xp={XP_PER_LESSON} streak={progress.streak} onContinue={afterLessonComplete} />
+            <LessonCompleteScreen
+              correct={lastResult.correct}
+              total={lastResult.total}
+              xp={XP_PER_LESSON}
+              streak={progress.streak}
+              cheerCount={lessonsDone(progress)}
+              onContinue={afterLessonComplete}
+            />
           )}
 
           {screen === 'chest' && (

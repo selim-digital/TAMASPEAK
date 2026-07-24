@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
+import { cheerFor } from '../components/mascots/Family.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 
 /** Anime un nombre de 0 → target. */
@@ -47,8 +48,9 @@ function Reward({ value, label, tone = 'turquoise', delay = 0 }) {
  * Screen 4 — Fin de leçon (réussite) : confettis, XP qui grimpe,
  * récompenses en cascade, mascotte qui surgit.
  */
-export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak = 4, onContinue }) {
+export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak = 4, cheerCount = 0, onContinue }) {
   const xpShown = useCountUp(xp)
+  const { member, message } = cheerFor(cheerCount)
 
   return (
     <div className="animate-enter relative flex flex-1 flex-col items-center px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(16,196,168,0.2),var(--color-cream)_62%)]">
@@ -70,6 +72,16 @@ export function LessonCompleteScreen({ correct = 0, total = 0, xp = 20, streak =
         <Reward value={`+${xpShown}`} label="XP gagnés" delay={80} />
         <Reward value={streak} label="Série de jours" tone="coral" delay={200} />
         <Reward value={`${correct}/${total}`} label="Bonnes réponses" delay={320} />
+      </div>
+
+      {/* Un membre de la famille vient féliciter l'élève. */}
+      <div className="animate-rise mt-4 flex w-full items-end gap-2 text-left" style={{ animationDelay: '450ms' }}>
+        <div className="flex-none">
+          <member.Comp height={58} />
+        </div>
+        <div className="mb-1.5 flex-1 rounded-2xl rounded-bl-md border border-line bg-cream p-2.5 text-[11.5px] font-semibold leading-snug">
+          <b className="text-turquoise-deep">{member.name}</b> — {message}
+        </div>
       </div>
 
       <div className="flex-1" />
