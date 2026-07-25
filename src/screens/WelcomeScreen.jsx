@@ -15,7 +15,7 @@ export function WelcomeScreen({ onStart }) {
 
       <Wordmark className="mt-5 text-3xl" />
       <p className="mt-2 text-sm text-ink-soft leading-snug">
-        Apprends le kabyle,
+        Apprends les langues amazighes,
         <br />
         un mot après l'autre.
       </p>
