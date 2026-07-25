@@ -65,8 +65,8 @@ export const LANGUAGES = [
     land: 'tassili',
     accent: '#FF6F61',
     accentDeep: '#D8442E',
-    blurb: 'Lire le tifinagh et la langue de l’école et des panneaux.',
-    note: 'Norme écrite construite par l’IRCAM, sans locuteur natif — comme l’arabe littéraire. C’est la langue des panneaux, de l’école et des médias amazighs.',
+    blurb: 'Lire le tifinagh — la langue de l’école et des panneaux.',
+    note: 'Norme écrite de l’IRCAM, sans locuteur natif — comme l’arabe littéraire. Officielle au Maroc depuis 2003 (graphie) et 2011 (Constitution) : on l’apprend pour LIRE, pas pour parler.',
   },
 ]
 
