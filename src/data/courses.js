@@ -2,6 +2,7 @@ import { LANGUAGES, DEFAULT_LANG } from './languages.js'
 import { units as kabUnits } from './units.js'
 import { byLesson as kabLessons } from './lessons.js'
 import { rifUnits, rifLessons } from './courses/rif.js'
+import { shiUnits, shiLessons } from './courses/shi.js'
 
 /**
  * Un « cours » = une langue amazighe + son contenu + les helpers liés.
@@ -56,6 +57,7 @@ const byId = (id) => LANGUAGES.find((l) => l.id === id)
 export const COURSES = {
   kab: makeCourse(byId('kab'), kabUnits, kabLessons),
   rif: makeCourse(byId('rif'), rifUnits, rifLessons),
+  shi: makeCourse(byId('shi'), shiUnits, shiLessons),
 }
 
 export const hasCourse = (langId) => !!COURSES[langId]
