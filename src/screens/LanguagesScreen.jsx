@@ -62,7 +62,10 @@ export function LanguagesScreen({ store, onPick, onBack }) {
                   <div className="relative flex h-full items-center justify-between px-3.5 text-white">
                     <div>
                       <div className="text-[15px] font-extrabold leading-tight drop-shadow-sm">
-                        {lang.name} <span className="text-[11.5px] font-bold opacity-90">· {lang.autonym}</span>
+                        {lang.name}
+                        {lang.autonym !== lang.name && (
+                          <span className="text-[11.5px] font-bold opacity-90"> · {lang.autonym}</span>
+                        )}
                       </div>
                       <div className="text-[9.5px] font-bold uppercase tracking-[0.12em] opacity-90">{lang.region}</div>
                     </div>

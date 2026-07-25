@@ -16,21 +16,35 @@ import tassili from '../assets/landscapes/tassili.svg'
  * attend les unités suivantes.
  */
 export const JOURNEY = [
-  { img: kmont, region: 'Kabylie — Djurdjura' },
-  { img: kcote, region: 'Kabylie — la côte' },
-  { img: rif, region: 'Le Rif' },
-  { img: atlas, region: 'Haut Atlas' },
-  { img: aures, region: 'Aurès — Ghoufi' },
-  { img: mzab, region: 'Vallée du M’zab' },
-  { img: ksar, region: 'Ksar du Sud' },
-  { img: oasis, region: 'L’oasis' },
-  { img: dunes, region: 'Grand Erg' },
-  { img: hoggar, region: 'Hoggar' },
-  { img: tassili, region: 'Tassili n’Ajjer' },
+  { id: 'kmont', img: kmont, region: 'Kabylie — Djurdjura' },
+  { id: 'kcote', img: kcote, region: 'Kabylie — la côte' },
+  { id: 'rif', img: rif, region: 'Le Rif' },
+  { id: 'atlas', img: atlas, region: 'Haut Atlas' },
+  { id: 'aures', img: aures, region: 'Aurès — Ghoufi' },
+  { id: 'mzab', img: mzab, region: 'Vallée du M’zab' },
+  { id: 'ksar', img: ksar, region: 'Ksar du Sud' },
+  { id: 'oasis', img: oasis, region: 'L’oasis' },
+  { id: 'dunes', img: dunes, region: 'Grand Erg' },
+  { id: 'hoggar', img: hoggar, region: 'Hoggar' },
+  { id: 'tassili', img: tassili, region: 'Tassili n’Ajjer' },
 ]
 
-/** Paysage de l'unité d'index donné (les unités au-delà restent au Tassili). */
-export const landOf = (unitIndex) => JOURNEY[Math.min(unitIndex, JOURNEY.length - 1)]
+/**
+ * Voyage d'une langue : il commence TOUJOURS chez elle (le Rif pour le
+ * tarifit, le Djurdjura pour le kabyle…), puis parcourt le reste de
+ * Tamazgha.
+ */
+export function journeyFor(homeLandId) {
+  const i = JOURNEY.findIndex((j) => j.id === homeLandId)
+  if (i <= 0) return JOURNEY
+  return [JOURNEY[i], ...JOURNEY.filter((_, k) => k !== i)]
+}
+
+/** Paysage de l'unité d'index donné (les unités au-delà restent au bout). */
+export const landOf = (unitIndex, homeLandId) => {
+  const route = homeLandId ? journeyFor(homeLandId) : JOURNEY
+  return route[Math.min(unitIndex, route.length - 1)]
+}
 
 /** Paysages adressables par nom — chaque langue a le sien (voir languages.js). */
 export const LAND_BY_ID = { kmont, kcote, dunes, tassili, hoggar, ksar, aures, atlas, rif, mzab, oasis }

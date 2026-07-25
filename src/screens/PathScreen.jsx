@@ -141,7 +141,7 @@ function LangChip({ course, onOpen }) {
     >
       <span className="h-2.5 w-2.5 flex-none rounded-full" style={{ background: course.accent }} />
       <span className="text-[12px] font-extrabold">{course.name}</span>
-      <span className="text-[11px] font-bold text-ink-soft">{course.autonym}</span>
+      {course.autonym !== course.name && <span className="text-[11px] font-bold text-ink-soft">{course.autonym}</span>}
       <span className="text-[11px] font-extrabold text-ink-soft">⌄</span>
     </button>
   )
@@ -236,7 +236,7 @@ export function PathScreen({
         <div className="relative">
           <Filigree />
           {units.map((unit, unitIndex) => {
-            const land = landOf(unitIndex)
+            const land = landOf(unitIndex, course?.land)
             const progress = progressOf(unit)
             const hasCurrent = unit.lessons.some((l) => l.status === 'current' || l.status === 'available')
             return (

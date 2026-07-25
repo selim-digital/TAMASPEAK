@@ -60,7 +60,7 @@ export function TrophiesScreen({ course, progress, onBack }) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           {units.map((unit, i) => {
-            const land = landOf(i)
+            const land = landOf(i, course.land)
             const done = isUnitComplete(progress.statuses, unit)
             return (
               <div
