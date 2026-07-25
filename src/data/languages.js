@@ -7,6 +7,12 @@
  *
  * Chaque langue reçoit un paysage « chez soi » et une couleur d'accent tirée
  * de la palette des émaux d'Ath Yenni.
+ *
+ * RÈGLE DE NOMMAGE (recommandation de la recherche linguistique) : dans
+ * l'interface, le terme générique est « amazigh » / « langues amazighes »,
+ * JAMAIS « tamazight » — ce mot est à la fois le nom du produit et celui
+ * d'une variété précise (Maroc central). D'où le qualificatif « (Atlas) »
+ * sur ce cours, et la note affichée au choix de la langue.
  */
 export const LANGUAGES = [
   {
@@ -41,13 +47,15 @@ export const LANGUAGES = [
   },
   {
     id: 'tzm',
-    name: 'Tamazight',
+    name: 'Tamazight (Atlas)',
     autonym: 'Tamaziɣt',
-    region: 'Atlas central · Maroc',
+    region: 'Maroc central · Moyen Atlas',
     land: 'atlas',
     accent: '#34A163',
     accentDeep: '#2C7F4F',
     blurb: 'Les cèdres et les hauts plateaux du Moyen Atlas.',
+    // Le mot « tamazight » sert aussi de nom générique : on le précise.
+    note: 'Ici, la variété du Maroc central. « Tamazight » désigne aussi, plus largement, l’ensemble des langues amazighes.',
   },
 ]
 

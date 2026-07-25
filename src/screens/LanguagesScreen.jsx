@@ -109,6 +109,7 @@ export function LanguagesScreen({ store, onPick, onBack }) {
                       </span>
                     </div>
                   )}
+                  {lang.note && <p className="mt-1.5 text-[10px] leading-snug text-ink-soft">{lang.note}</p>}
                 </div>
               </button>
             )
@@ -116,8 +117,8 @@ export function LanguagesScreen({ store, onPick, onBack }) {
         </div>
 
         <p className="mt-4 text-center text-[10.5px] leading-snug text-ink-soft">
-          Le cours de kabyle est le plus avancé. Les trois autres démarrent par une unité de
-          salutations — le contenu s'étoffera, et reste à valider par des locuteurs natifs.
+          Le cours de kabyle est le plus avancé. Les trois autres démarrent par deux unités —
+          le contenu s'étoffera, et reste à valider par des locuteurs natifs.
         </p>
       </div>
     </div>

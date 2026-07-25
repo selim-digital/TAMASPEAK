@@ -3,6 +3,7 @@ import { units as kabUnits } from './units.js'
 import { byLesson as kabLessons } from './lessons.js'
 import { rifUnits, rifLessons } from './courses/rif.js'
 import { shiUnits, shiLessons } from './courses/shi.js'
+import { tzmUnits, tzmLessons } from './courses/tzm.js'
 
 /**
  * Un « cours » = une langue amazighe + son contenu + les helpers liés.
@@ -58,6 +59,7 @@ export const COURSES = {
   kab: makeCourse(byId('kab'), kabUnits, kabLessons),
   rif: makeCourse(byId('rif'), rifUnits, rifLessons),
   shi: makeCourse(byId('shi'), shiUnits, shiLessons),
+  tzm: makeCourse(byId('tzm'), tzmUnits, tzmLessons),
 }
 
 export const hasCourse = (langId) => !!COURSES[langId]
