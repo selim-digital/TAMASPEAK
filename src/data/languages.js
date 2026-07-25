@@ -57,6 +57,17 @@ export const LANGUAGES = [
     // Le mot « tamazight » sert aussi de nom générique : on le précise.
     note: 'Ici, la variété du Maroc central. « Tamazight » désigne aussi, plus largement, l’ensemble des langues amazighes.',
   },
+  {
+    id: 'zgh',
+    name: 'Amazighe standard',
+    autonym: 'Tamaziɣt tanawayt',
+    region: 'Norme officielle · tifinagh',
+    land: 'tassili',
+    accent: '#FF6F61',
+    accentDeep: '#D8442E',
+    blurb: 'Lire le tifinagh et la langue de l’école et des panneaux.',
+    note: 'Norme écrite construite par l’IRCAM, sans locuteur natif — comme l’arabe littéraire. C’est la langue des panneaux, de l’école et des médias amazighs.',
+  },
 ]
 
 export const DEFAULT_LANG = 'kab'

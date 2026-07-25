@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts/tifinagh.css";
 
 /* ============================================================
    Tama Speak — Design System (brand tokens)
@@ -35,8 +36,11 @@
   --color-ink-soft: #5A6470;
   --color-line: #E6DCC9;
 
-  --font-display: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  /* « Noto Sans Tifinagh » est en tête mais porte un unicode-range limité au
+     bloc tifinagh : elle ne sert QUE pour ⵜⵉⴼⵉⵏⴰⵖ, le texte latin passe à la
+     police suivante. Un seul réglage suffit donc pour toute l'app. */
+  --font-display: "Noto Sans Tifinagh", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-sans: "Noto Sans Tifinagh", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
 
   --radius-phone: 44px;
 
@@ -348,6 +352,14 @@
 }
 .ak-curious .ak-pose {
   animation: akCurious 3.1s cubic-bezier(0.25, 1.6, 0.35, 1) infinite;
+}
+
+/* Tifinagh : police embarquée d'abord, polices système ensuite. Utilisé
+   partout où un caractère amazigh est affiché (cours d'amazighe standard,
+   logo yaz, filigranes). */
+.tifinagh {
+  font-family: 'Noto Sans Tifinagh', Ebrima, 'Segoe UI', sans-serif;
+  line-height: 1.35;
 }
 
 /* ---- Famille : vie douce des personnages (balancement depuis les pieds,
