@@ -129,7 +129,26 @@ function FamilyCheer({ cheer, onOpen }) {
   )
 }
 
+/** Bandeau de la langue en cours — appuyer ouvre « Mes langues ». */
+function LangChip({ course, onOpen }) {
+  if (!course) return null
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex items-center gap-2 px-[18px] pt-7 pb-0.5 text-left"
+      aria-label={`Langue : ${course.name}. Changer de langue`}
+    >
+      <span className="h-2.5 w-2.5 flex-none rounded-full" style={{ background: course.accent }} />
+      <span className="text-[12px] font-extrabold">{course.name}</span>
+      <span className="text-[11px] font-bold text-ink-soft">{course.autonym}</span>
+      <span className="text-[11px] font-extrabold text-ink-soft">⌄</span>
+    </button>
+  )
+}
+
 export function PathScreen({
+  course,
   units,
   xp,
   gems,
@@ -143,6 +162,7 @@ export function PathScreen({
   onChallenge,
   onTrophies,
   onFamily,
+  onLanguages,
 }) {
   const cheer = cheerFor(cheerCount)
   const [soundOn, setSoundOn] = useState(isSfxOn)
@@ -163,6 +183,7 @@ export function PathScreen({
 
   return (
     <div className="animate-enter flex flex-1 flex-col bg-cream">
+      <LangChip course={course} onOpen={onLanguages} />
       <TopBar streak={streak} xp={xp} gems={gems} />
 
       {/* Actions */}

@@ -1,46 +1,11 @@
 /**
- * Contenu des exercices — PROVISOIRE (à valider par un locuteur natif).
- * Orthographe latine usuelle.
+ * Cours de KABYLE (taqbaylit) — contenu PROVISOIRE, à valider par un
+ * locuteur natif. Orthographe latine usuelle.
  *
- * Types d'exercices :
- *   - 'qcm'    : choix multiple. kind = 'kab-to-fr' | 'fr-to-kab'.
- *   - 'listen' : écoute puis choisis (audio d'abord). kind = 'kab-to-fr'.
- *   - 'match'  : associe des paires kabyle ↔ français.
+ * Les fabriques d'exercices sont partagées par tous les cours de langue :
+ * voir data/exercises.js.
  */
-
-const qcm = (kind, prompt, word, answer, choices, audio = kind === 'kab-to-fr') => ({
-  type: 'qcm',
-  kind,
-  prompt,
-  word,
-  audio,
-  answer,
-  choices,
-})
-const listen = (word, answer, choices) => ({
-  type: 'listen',
-  kind: 'kab-to-fr',
-  prompt: 'Écoute et choisis',
-  word,
-  audio: true,
-  answer,
-  choices,
-})
-const match = (pairs, prompt = 'Associe les paires') => ({ type: 'match', prompt, pairs })
-/** Image d'une situation quotidienne → trouver la bonne description (mot kabyle). */
-const image = (scene, answer, choices, prompt = 'Que montre l’image ?') => ({ type: 'image', prompt, scene, answer, choices })
-/** Question de culture/histoire (réponses en français, illustration facultative). */
-const culture = (prompt, answer, choices, scene) => ({ type: 'culture', prompt, scene, answer, choices })
-/** Écouter une PHRASE entière → choisir son sens. */
-const sentence = (phrase, answer, choices) => ({
-  type: 'sentence',
-  kind: 'kab-to-fr',
-  prompt: 'Écoute la phrase',
-  word: phrase,
-  audio: true,
-  answer,
-  choices,
-})
+import { qcm, listen, match, image, culture, sentence } from './exercises.js'
 
 // -------- Unité 1 — Salutations --------
 const l1 = [

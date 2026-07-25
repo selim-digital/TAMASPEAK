@@ -31,7 +31,7 @@ function SpeakerButton({ onPlay, big }) {
  * Moteur de leçon — gère QCM, « écoute » (audio d'abord) et « associe ».
  * Animations d'encouragement : éloge flottant, combo, cœur qui tremble.
  */
-export function LessonScreen({ exercises, onExit, onFinish }) {
+export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const total = exercises.length
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
@@ -56,7 +56,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
 
   // Auto-lecture pour les exercices « écoute ».
   useEffect(() => {
-    if (audioFirst) playWord(ex.word).then(setAudioMode)
+    if (audioFirst) playWord(ex.word, lang).then(setAudioMode)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index])
 
@@ -98,7 +98,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
   function handlePlay() {
     setPulse((p) => p + 1)
     // fr→kab : le mot affiché est français — on prononce la réponse kabyle.
-    playWord(ex.audio ? ex.word : ex.answer).then(setAudioMode)
+    playWord(ex.audio ? ex.word : ex.answer, lang).then(setAudioMode)
   }
 
   function goNext() {
@@ -120,7 +120,7 @@ export function LessonScreen({ exercises, onExit, onFinish }) {
       else markWrong()
       setAnswered(true)
       // fr→kab : on fait entendre la bonne réponse en kabyle.
-      if (!ex.audio && ex.kind === 'fr-to-kab') playWord(ex.answer).then(setAudioMode)
+      if (!ex.audio && ex.kind === 'fr-to-kab') playWord(ex.answer, lang).then(setAudioMode)
       return
     }
     goNext()

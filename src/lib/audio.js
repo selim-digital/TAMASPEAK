@@ -24,14 +24,21 @@ export function slug(word) {
     .replace(/^-+|-+$/g, '')
 }
 
-export function audioUrl(word) {
+/**
+ * Chemin d'un enregistrement natif.
+ * Les langues ajoutées après le kabyle rangent leurs mp3 dans un
+ * sous-dossier `audio/<lang>/` ; le kabyle garde `audio/` (historique).
+ */
+export function audioUrl(word, lang) {
   const base = import.meta.env.BASE_URL || '/'
-  return `${base}audio/${slug(word)}.mp3`
+  const dir = !lang || lang === 'kab' ? 'audio' : `audio/${lang}`
+  return `${base}${dir}/${slug(word)}.mp3`
 }
 
-export function synthUrl(word) {
+export function synthUrl(word, lang) {
   const base = import.meta.env.BASE_URL || '/'
-  return `${base}audio/synth/${slug(word)}.mp3`
+  const dir = !lang || lang === 'kab' ? 'audio/synth' : `audio/${lang}/synth`
+  return `${base}${dir}/${slug(word)}.mp3`
 }
 
 function tryFile(url, mode) {
@@ -65,14 +72,14 @@ function trySynth(word) {
  *   3. voix du navigateur     → 'tts'   (provisoire, badge)
  * @returns {Promise<'file'|'synth'|'tts'|'none'>}
  */
-export async function playWord(word) {
+export async function playWord(word, lang) {
   try {
-    return await tryFile(audioUrl(word), 'file')
+    return await tryFile(audioUrl(word, lang), 'file')
   } catch {
     /* pas d'enregistrement natif */
   }
   try {
-    return await tryFile(synthUrl(word), 'synth')
+    return await tryFile(synthUrl(word, lang), 'synth')
   } catch {
     /* pas de mp3 de synthèse */
   }

@@ -11,9 +11,9 @@ import { sfx } from '../lib/sfx.js'
  * plat berbère + des gemmes. Deux plats (aghrum, atay) sont des mots du
  * vocabulaire : la récompense devient une mini-leçon.
  */
-export function ChestRewardScreen({ gems = 15, chest, onContinue }) {
+export function ChestRewardScreen({ gems = 15, chest, course, onContinue }) {
   const [open, setOpen] = useState(false)
-  const dish = dishForChest(chest?.id)
+  const dish = dishForChest(course, chest?.id)
   const Art = dish.Art
 
   useEffect(() => {

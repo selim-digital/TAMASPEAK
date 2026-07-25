@@ -1,8 +1,11 @@
 /**
- * Unités & chemin d'apprentissage.
+ * Unités & chemin d'apprentissage du cours de KABYLE.
  * status lesson: 'locked' | 'current' | 'done'
  * status chest : 'locked' | 'available' | 'done'
  * type: 'lesson' (défaut) | 'chest'
+ *
+ * Les helpers (orderedNodes, initialStatuses…) vivent dans data/courses.js :
+ * ils sont génériques et liés à chaque langue.
  */
 export const units = [
   {
@@ -139,23 +142,3 @@ export const units = [
   },
 ]
 
-/** Liste ordonnée à plat de tous les nœuds (leçons + coffres). */
-export const orderedNodes = units.flatMap((u) => u.lessons)
-
-export const findUnit = (unitId) => units.find((u) => u.id === unitId)
-
-export const unitOfLesson = (lessonId) => units.find((u) => u.lessons.some((l) => l.id === lessonId))
-
-/** Statuts initiaux (id -> status). */
-export function initialStatuses() {
-  const s = {}
-  orderedNodes.forEach((n) => {
-    s[n.id] = n.status
-  })
-  return s
-}
-
-/** Une unité est terminée quand toutes ses LEÇONS (hors coffres) sont faites. */
-export function isUnitComplete(statuses, unit) {
-  return unit.lessons.filter((l) => l.type !== 'chest').every((l) => statuses[l.id] === 'done')
-}

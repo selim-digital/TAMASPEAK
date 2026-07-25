@@ -31,3 +31,6 @@ export const JOURNEY = [
 
 /** Paysage de l'unité d'index donné (les unités au-delà restent au Tassili). */
 export const landOf = (unitIndex) => JOURNEY[Math.min(unitIndex, JOURNEY.length - 1)]
+
+/** Paysages adressables par nom — chaque langue a le sien (voir languages.js). */
+export const LAND_BY_ID = { kmont, kcote, dunes, tassili, hoggar, ksar, aures, atlas, rif, mzab, oasis }

@@ -9,22 +9,24 @@ import { ChestRewardScreen } from './screens/ChestRewardScreen.jsx'
 import { UnitCompleteScreen } from './screens/UnitCompleteScreen.jsx'
 import { ChallengeCompleteScreen } from './screens/ChallengeCompleteScreen.jsx'
 import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
+import { LanguagesScreen } from './screens/LanguagesScreen.jsx'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
 import { JewelDefs } from './components/jewels/JewelDefs.jsx'
 import { GemIcon } from './components/jewels/StatIcons.jsx'
-import { units, unitOfLesson, isUnitComplete } from './data/units.js'
-import { getExercises, challengePool } from './data/lessons.js'
+import { getCourse, isUnitComplete } from './data/courses.js'
 import {
-  loadProgress,
-  saveProgress,
-  resetProgress,
+  loadStore,
+  saveStore,
+  resetStore,
+  progressOf,
+  withProgress,
+  hasProfile,
   applyStatuses,
   completeLesson,
   openChest,
   recordChallenge,
   challengeAvailable,
-  setProfile,
   xpToday,
   lessonsDone,
 } from './lib/progress.js'
@@ -45,7 +47,8 @@ function pickRandom(arr, n) {
 
 export default function App() {
   const [screen, setScreen] = useState('welcome')
-  const [progress, setProgress] = useState(loadProgress)
+  const [store, setStore] = useState(loadStore)
+  const [pendingLang, setPendingLang] = useState(null)
   const [activeLesson, setActiveLesson] = useState(null)
   const [activeChest, setActiveChest] = useState(null)
   const [completedUnit, setCompletedUnit] = useState(null)
@@ -53,11 +56,49 @@ export default function App() {
   const [challengeExercises, setChallengeExercises] = useState([])
 
   useEffect(() => {
-    saveProgress(progress)
-  }, [progress])
+    saveStore(store)
+  }, [store])
 
-  const unitsWithStatuses = units.map((u) => applyStatuses(u, progress.statuses))
+  // Langue active → son cours et sa progression.
+  const course = getCourse(store.lang)
+  const progress = progressOf(store, course)
+
+  /** Met à jour la progression de la langue active. */
+  const setProgress = (updater) =>
+    setStore((s) => {
+      const current = progressOf(s, getCourse(s.lang))
+      const next = typeof updater === 'function' ? updater(current) : updater
+      return withProgress(s, s.lang, next)
+    })
+
+  const unitsWithStatuses = course.units.map((u) => applyStatuses(u, progress.statuses))
   const canChallenge = challengeAvailable(progress)
+
+  /** Bascule vers une langue : déjà commencée → chemin, sinon onboarding court. */
+  function pickLanguage(langId) {
+    if (store.byLang?.[langId]) {
+      setStore((s) => ({ ...s, lang: langId }))
+      setScreen('path')
+    } else {
+      setPendingLang(langId)
+      setScreen('onboarding')
+    }
+  }
+
+  function finishOnboarding({ lang, level, reason, dailyGoalXp }) {
+    const langId = lang || store.lang
+    setStore((s) => {
+      const next = {
+        ...s,
+        lang: langId,
+        profile: s.profile || { reason, dailyGoalXp },
+      }
+      const langProgress = progressOf(next, getCourse(langId))
+      return withProgress(next, langId, { ...langProgress, level })
+    })
+    setPendingLang(null)
+    setScreen('path')
+  }
 
   function startLesson(node) {
     setActiveLesson(node)
@@ -65,9 +106,9 @@ export default function App() {
   }
 
   function finishLesson(result) {
-    const unit = unitOfLesson(activeLesson.id)
+    const unit = course.unitOfLesson(activeLesson.id)
     const before = isUnitComplete(progress.statuses, unit)
-    let np = completeLesson(progress, activeLesson.id, { xpGain: XP_PER_LESSON, perfect: result.perfect })
+    let np = completeLesson(course, progress, activeLesson.id, { xpGain: XP_PER_LESSON, perfect: result.perfect })
     const justDone = !before && isUnitComplete(np.statuses, unit)
     if (justDone) np = { ...np, gems: (np.gems || 0) + UNIT_BONUS }
     setProgress(np)
@@ -81,7 +122,7 @@ export default function App() {
   }
 
   function startChallenge() {
-    setChallengeExercises(pickRandom(challengePool(), CHALLENGE.size))
+    setChallengeExercises(pickRandom(course.challengePool(), CHALLENGE.size))
     setScreen('challenge')
   }
 
@@ -93,11 +134,14 @@ export default function App() {
   }
 
   function handleReset() {
-    setProgress(resetProgress())
+    setStore(resetStore())
+    setPendingLang(null)
     setScreen('welcome')
   }
 
-  const nextUnitExists = completedUnit ? units.findIndex((u) => u.id === completedUnit.id) < units.length - 1 : false
+  const nextUnitExists = completedUnit
+    ? course.units.findIndex((u) => u.id === completedUnit.id) < course.units.length - 1
+    : false
 
   return (
     <div className="min-h-full bg-sand text-ink">
@@ -106,33 +150,29 @@ export default function App() {
         <header className="mb-6 hidden w-full items-center justify-between sm:flex">
           <LogoLockup iconSize={38} />
           <span className="flex items-center gap-1 rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-bold text-ink-soft">
-            {progress.xp} XP · <GemIcon size={15} /> {progress.gems}
+            {course.name} · {progress.xp} XP · <GemIcon size={15} /> {progress.gems}
           </span>
         </header>
 
         <PhoneFrame>
           {screen === 'welcome' && (
-            <WelcomeScreen onStart={() => setScreen(progress.profile ? 'path' : 'onboarding')} />
+            <WelcomeScreen onStart={() => setScreen(hasProfile(store) ? 'path' : 'onboarding')} />
           )}
 
           {screen === 'onboarding' && (
-            <OnboardingScreen
-              onFinish={(profile) => {
-                setProgress((p) => setProfile(p, profile))
-                setScreen('path')
-              }}
-            />
+            <OnboardingScreen hasProfile={hasProfile(store)} presetLang={pendingLang} onFinish={finishOnboarding} />
           )}
 
           {screen === 'path' && (
             <PathScreen
+              course={course}
               units={unitsWithStatuses}
               xp={progress.xp}
               gems={progress.gems}
               streak={progress.streak}
               xpTodayValue={xpToday(progress)}
-              dailyGoalXp={progress.profile?.dailyGoalXp}
-              cheerCount={lessonsDone(progress)}
+              dailyGoalXp={store.profile?.dailyGoalXp}
+              cheerCount={lessonsDone(course, progress)}
               canChallenge={canChallenge}
               onSelectLesson={startLesson}
               onOpenChest={(node) => {
@@ -142,7 +182,12 @@ export default function App() {
               onChallenge={startChallenge}
               onTrophies={() => setScreen('trophies')}
               onFamily={() => setScreen('famille')}
+              onLanguages={() => setScreen('langues')}
             />
+          )}
+
+          {screen === 'langues' && (
+            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen('path')} />
           )}
 
           {screen === 'famille' && (
@@ -158,7 +203,12 @@ export default function App() {
           )}
 
           {screen === 'lesson' && (
-            <LessonScreen exercises={getExercises(activeLesson?.id)} onExit={() => setScreen('path')} onFinish={finishLesson} />
+            <LessonScreen
+              exercises={course.getExercises(activeLesson?.id)}
+              lang={course.id}
+              onExit={() => setScreen('path')}
+              onFinish={finishLesson}
+            />
           )}
 
           {screen === 'complete' && (
@@ -167,7 +217,7 @@ export default function App() {
               total={lastResult.total}
               xp={XP_PER_LESSON}
               streak={progress.streak}
-              cheerCount={lessonsDone(progress)}
+              cheerCount={lessonsDone(course, progress)}
               onContinue={afterLessonComplete}
             />
           )}
@@ -176,8 +226,9 @@ export default function App() {
             <ChestRewardScreen
               gems={CHEST_GEMS}
               chest={activeChest}
+              course={course}
               onContinue={() => {
-                setProgress((p) => openChest(p, activeChest.id, { gems: CHEST_GEMS }))
+                setProgress((p) => openChest(course, p, activeChest.id, { gems: CHEST_GEMS }))
                 setScreen('path')
               }}
             />
@@ -196,7 +247,12 @@ export default function App() {
           )}
 
           {screen === 'challenge' && (
-            <LessonScreen exercises={challengeExercises} onExit={() => setScreen('path')} onFinish={finishChallenge} />
+            <LessonScreen
+              exercises={challengeExercises}
+              lang={course.id}
+              onExit={() => setScreen('path')}
+              onFinish={finishChallenge}
+            />
           )}
 
           {screen === 'challengecomplete' && (
@@ -209,13 +265,16 @@ export default function App() {
             />
           )}
 
-          {screen === 'trophies' && <TrophiesScreen progress={progress} onBack={() => setScreen('path')} />}
+          {screen === 'trophies' && (
+            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen('path')} />
+          )}
         </PhoneFrame>
 
         <div className="mt-5 hidden flex-wrap items-center justify-center gap-2 text-sm sm:flex">
           {[
             ['welcome', 'Accueil'],
             ['path', 'Chemin'],
+            ['langues', 'Langues'],
           ].map(([id, label]) => (
             <button
               key={id}

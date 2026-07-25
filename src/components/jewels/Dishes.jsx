@@ -4,7 +4,6 @@
  * Deux plats sont déjà des mots du vocabulaire (aghrum, atay) :
  * la récompense devient une mini-leçon.
  */
-import { orderedNodes } from '../../data/units.js'
 
 function Seksu({ width = 150 }) {
   return (
@@ -109,9 +108,9 @@ export const DISHES = [
 ]
 
 /** Plat associé à un coffre : rotation stable par POSITION du coffre sur le
- *  chemin (les ids sautent des numéros, ex. chest6/chest8 absents). */
-export function dishForChest(chestId) {
-  const chests = orderedNodes.filter((n) => n.type === 'chest')
+ *  chemin de la langue en cours (les ids sautent des numéros). */
+export function dishForChest(course, chestId) {
+  const chests = (course?.orderedNodes || []).filter((n) => n.type === 'chest')
   const i = chests.findIndex((c) => c.id === chestId)
   return DISHES[Math.max(0, i) % DISHES.length]
 }

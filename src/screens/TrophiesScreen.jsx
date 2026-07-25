@@ -1,5 +1,5 @@
-import { BADGES } from '../data/badges.js'
-import { units, isUnitComplete } from '../data/units.js'
+import { makeBadges } from '../data/badges.js'
+import { isUnitComplete } from '../data/courses.js'
 import { landOf } from '../data/journey.js'
 import { lessonsDone } from '../lib/progress.js'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
@@ -33,14 +33,18 @@ function CheckIcon({ size = 20 }) {
  * voyage (une tabzimt par unité, révélée quand l'unité est terminée),
  * puis badges dérivés de la progression.
  */
-export function TrophiesScreen({ progress, onBack }) {
+export function TrophiesScreen({ course, progress, onBack }) {
+  const badges = makeBadges(course)
+  const { units } = course
   return (
     <div className="animate-enter flex flex-1 flex-col bg-cream">
       <div className="flex items-center gap-3 px-4 pt-8 pb-2">
         <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
           ←
         </button>
-        <h2 className="text-lg font-extrabold">Trophées</h2>
+        <h2 className="text-lg font-extrabold">
+          Trophées <span className="text-[12px] font-bold text-ink-soft">· {course.name}</span>
+        </h2>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-5">
@@ -48,7 +52,7 @@ export function TrophiesScreen({ progress, onBack }) {
           <Stat icon={<GemIcon size={20} />} value={progress.gems} label="Gemmes" />
           <Stat icon={<StarIcon size={20} />} value={progress.xp} label="XP" />
           <Stat icon={<FlameIcon size={20} />} value={progress.streak} label="Série" />
-          <Stat icon={<CheckIcon size={20} />} value={lessonsDone(progress)} label="Leçons" />
+          <Stat icon={<CheckIcon size={20} />} value={lessonsDone(course, progress)} label="Leçons" />
         </div>
 
         <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
@@ -87,7 +91,7 @@ export function TrophiesScreen({ progress, onBack }) {
 
         <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">Badges</div>
         <div className="grid grid-cols-3 gap-3">
-          {BADGES.map((b) => {
+          {badges.map((b) => {
             const earned = b.earned(progress)
             return (
               <div

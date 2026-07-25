@@ -14,7 +14,7 @@ function Stat({ className = '', icon, children }) {
 
 export function TopBar({ streak = 0, xp = 0, gems = 0 }) {
   return (
-    <div className="flex items-center justify-between px-[18px] pt-8 pb-2.5">
+    <div className="flex items-center justify-between px-[18px] pt-1 pb-2.5">
       <Stat className="text-coral-dark" icon={<FlameIcon size={24} />}>
         <span className="sr-only">Série : </span>
         {streak}

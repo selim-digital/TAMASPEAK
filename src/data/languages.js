@@ -1,0 +1,56 @@
+/**
+ * Les langues amazighes proposées par Tama Speak.
+ *
+ * Chaque langue est un cours indépendant : l'élève peut en suivre plusieurs
+ * en parallèle, chacune avec sa propre progression, sa série et ses trophées.
+ * Les identifiants sont les codes ISO 639-3 (kab, shi, rif, tzm).
+ *
+ * Chaque langue reçoit un paysage « chez soi » et une couleur d'accent tirée
+ * de la palette des émaux d'Ath Yenni.
+ */
+export const LANGUAGES = [
+  {
+    id: 'kab',
+    name: 'Kabyle',
+    autonym: 'Taqbaylit',
+    region: 'Kabylie · Algérie',
+    land: 'kmont',
+    accent: '#10C4A8',
+    accentDeep: '#0a7a69',
+    blurb: 'Les montagnes du Djurdjura, la mer à Bgayet.',
+  },
+  {
+    id: 'shi',
+    name: 'Tachelhit',
+    autonym: 'Tacelḥit',
+    region: 'Souss & Anti-Atlas · Maroc',
+    land: 'ksar',
+    accent: '#F0B429',
+    accentDeep: '#C08A10',
+    blurb: 'Le pays de l’arganier, d’Agadir au Sahara.',
+  },
+  {
+    id: 'rif',
+    name: 'Tarifit',
+    autonym: 'Tarifit',
+    region: 'Rif · Maroc',
+    land: 'rif',
+    accent: '#2E7BDA',
+    accentDeep: '#1F5AA8',
+    blurb: 'Les collines du nord et la Méditerranée.',
+  },
+  {
+    id: 'tzm',
+    name: 'Tamazight',
+    autonym: 'Tamaziɣt',
+    region: 'Atlas central · Maroc',
+    land: 'atlas',
+    accent: '#34A163',
+    accentDeep: '#2C7F4F',
+    blurb: 'Les cèdres et les hauts plateaux du Moyen Atlas.',
+  },
+]
+
+export const DEFAULT_LANG = 'kab'
+
+export const findLanguage = (id) => LANGUAGES.find((l) => l.id === id) || LANGUAGES[0]
