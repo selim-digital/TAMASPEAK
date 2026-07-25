@@ -10,6 +10,9 @@ import { UnitCompleteScreen } from './screens/UnitCompleteScreen.jsx'
 import { ChallengeCompleteScreen } from './screens/ChallengeCompleteScreen.jsx'
 import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
 import { LanguagesScreen } from './screens/LanguagesScreen.jsx'
+import { ProfileScreen } from './screens/ProfileScreen.jsx'
+import { DuelIntroScreen, DuelResultScreen } from './screens/DuelScreen.jsx'
+import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
 import { JewelDefs } from './components/jewels/JewelDefs.jsx'
@@ -54,14 +57,34 @@ export default function App() {
   const [completedUnit, setCompletedUnit] = useState(null)
   const [lastResult, setLastResult] = useState({ correct: 0, total: 0 })
   const [challengeExercises, setChallengeExercises] = useState([])
+  const [duel, setDuel] = useState(null)
 
   useEffect(() => {
     saveStore(store)
   }, [store])
 
+  // Un lien de défi ouvre directement l'écran d'annonce — au chargement, mais
+  // aussi si l'app est DÉJÀ ouverte (cas de la PWA : le clic sur le lien ne
+  // change alors que le fragment, sans recharger la page).
+  useEffect(() => {
+    const handle = () => {
+      const incoming = readDuelFromUrl()
+      if (!incoming) return
+      setDuel(incoming)
+      setScreen('duelintro')
+      clearDuelFromUrl()
+    }
+    handle()
+    window.addEventListener('hashchange', handle)
+    return () => window.removeEventListener('hashchange', handle)
+  }, [])
+
   // Langue active → son cours et sa progression.
   const course = getCourse(store.lang)
   const progress = progressOf(store, course)
+  // Un défi peut porter sur une langue que l'élève n'a pas commencée : on
+  // utilise son cours sans toucher à sa langue active.
+  const duelCourse = duel ? getCourse(duel.lang) : null
 
   /** Met à jour la progression de la langue active. */
   const setProgress = (updater) =>
@@ -133,6 +156,17 @@ export default function App() {
     setScreen('challengecomplete')
   }
 
+  /** Lance un défi sur la langue en cours (le lien sera créé à la fin). */
+  function startDuel() {
+    setDuel({ lang: course.id, seed: makeSeed(), size: CHALLENGE.size, correct: null, total: null, from: '' })
+    setScreen('duelintro')
+  }
+
+  function finishDuel(result) {
+    setLastResult(result)
+    setScreen('duelresult')
+  }
+
   function handleReset() {
     setStore(resetStore())
     setPendingLang(null)
@@ -183,6 +217,53 @@ export default function App() {
               onTrophies={() => setScreen('trophies')}
               onFamily={() => setScreen('famille')}
               onLanguages={() => setScreen('langues')}
+              onProfile={() => setScreen('profil')}
+              avatar={store.profile?.avatar}
+            />
+          )}
+
+          {screen === 'profil' && (
+            <ProfileScreen
+              store={store}
+              onSave={setStore}
+              onDuel={startDuel}
+              onBack={() => setScreen('path')}
+            />
+          )}
+
+          {screen === 'duelintro' && duelCourse && (
+            <DuelIntroScreen
+              duel={duel}
+              course={duelCourse}
+              avatar={store.profile?.avatar}
+              onStart={() => setScreen('duel')}
+              onCancel={() => {
+                setDuel(null)
+                setScreen('path')
+              }}
+            />
+          )}
+
+          {screen === 'duel' && duelCourse && (
+            <LessonScreen
+              exercises={seededPick(duelCourse.challengePool(), duel.size, duel.seed)}
+              lang={duelCourse.id}
+              onExit={() => setScreen('path')}
+              onFinish={finishDuel}
+            />
+          )}
+
+          {screen === 'duelresult' && duelCourse && (
+            <DuelResultScreen
+              duel={duel}
+              course={duelCourse}
+              result={lastResult}
+              name={store.profile?.name}
+              avatar={store.profile?.avatar}
+              onDone={() => {
+                setDuel(null)
+                setScreen('path')
+              }}
             />
           )}
 
@@ -218,6 +299,7 @@ export default function App() {
               xp={XP_PER_LESSON}
               streak={progress.streak}
               cheerCount={lessonsDone(course, progress)}
+              courseName={course.name}
               onContinue={afterLessonComplete}
             />
           )}
@@ -239,6 +321,7 @@ export default function App() {
               unit={completedUnit}
               gems={UNIT_BONUS}
               hasNext={nextUnitExists}
+              courseName={course.name}
               onContinue={() => {
                 setCompletedUnit(null)
                 setScreen('path')

@@ -168,5 +168,37 @@ export function withProgress(store, langId, progress) {
 /** Langues déjà commencées par l'élève. */
 export const startedLangs = (store) => Object.keys(store.byLang || {})
 
+/** Identité publique (pseudo + avatar) — utilisée par le profil et les défis. */
+export function setIdentity(store, { name, avatar }) {
+  return { ...store, profile: { ...(store.profile || {}), name, avatar } }
+}
+
+/** Bilan cumulé sur toutes les langues, pour le profil et le partage. */
+export function globalStats(store, courses) {
+  let xp = 0
+  let gems = 0
+  let lessons = 0
+  let medals = 0
+  let bestStreak = 0
+  const perLang = []
+  for (const [langId, saved] of Object.entries(store.byLang || {})) {
+    const course = courses[langId]
+    if (!course) continue
+    const p = progressOf(store, course)
+    const done = lessonsDone(course, p)
+    const units = course.units.filter((u) =>
+      u.lessons.filter((l) => l.type !== 'chest').every((l) => p.statuses[l.id] === 'done'),
+    ).length
+    xp += p.xp || 0
+    gems += p.gems || 0
+    lessons += done
+    medals += units
+    bestStreak = Math.max(bestStreak, p.streak || 0)
+    perLang.push({ course, xp: p.xp || 0, streak: p.streak || 0, done, total: course.lessonCount, medals: units })
+  }
+  perLang.sort((a, b) => b.xp - a.xp)
+  return { xp, gems, lessons, medals, bestStreak, perLang }
+}
+
 /** L'élève a-t-il déjà fait l'onboarding général (pourquoi / objectif) ? */
 export const hasProfile = (store) => !!store.profile
