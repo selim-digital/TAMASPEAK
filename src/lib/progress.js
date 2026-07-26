@@ -36,6 +36,12 @@ export function defaultProgress(course) {
     // XP gagnés aujourd'hui (pour l'objectif quotidien).
     xpToday: 0,
     xpDay: null,
+    // Mots rapportés d'une mission auprès d'un proche : le seul contenu de
+    // l'app que l'élève a écrit lui-même, et donc le seul qui porte le parler
+    // de sa famille plutôt qu'une norme.
+    lexique: [],
+    // Missions déjà accomplies (ids), pour ne pas les reproposer.
+    missionsFaites: [],
   }
 }
 
@@ -97,6 +103,39 @@ export function recordChallenge(progress, { xpGain = 15, gems = 10 } = {}) {
 }
 
 export const challengeAvailable = (progress) => progress.dailyDay !== todayKey()
+
+/* ------------------------------------------------------------------ */
+/* Lexique personnel — les mots rapportés d'une mission                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Ajoute un mot recueilli auprès d'un proche. On garde qui l'a dit : c'est
+ * l'attribution qui donne sa valeur à l'entrée — « chez nous on dit ça » n'a
+ * de sens que si l'on sait qui est « nous ».
+ *
+ * Un même mot rapporté deux fois remplace l'ancien plutôt que de doubler.
+ */
+export function addToLexique(progress, { mot, sens, de, missionId }) {
+  const propre = (mot || '').trim()
+  if (!propre) return progress
+  const lexique = (progress.lexique || []).filter((e) => e.mot.toLowerCase() !== propre.toLowerCase())
+  return {
+    ...progress,
+    lexique: [
+      ...lexique,
+      { mot: propre, sens: (sens || '').trim(), de: (de || '').trim(), at: todayKey() },
+    ],
+    missionsFaites: missionId
+      ? [...new Set([...(progress.missionsFaites || []), missionId])]
+      : progress.missionsFaites || [],
+  }
+}
+
+export function removeFromLexique(progress, mot) {
+  return { ...progress, lexique: (progress.lexique || []).filter((e) => e.mot !== mot) }
+}
+
+export const lexiqueSize = (progress) => (progress.lexique || []).length
 
 /** Nombre de leçons terminées (hors coffres) dans cette langue. */
 export const lessonsDone = (course, progress) =>

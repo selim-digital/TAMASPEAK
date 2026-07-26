@@ -13,6 +13,8 @@ import { LanguagesScreen } from './screens/LanguagesScreen.jsx'
 import { ProfileScreen } from './screens/ProfileScreen.jsx'
 import { DuelIntroScreen, DuelResultScreen } from './screens/DuelScreen.jsx'
 import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.jsx'
+import { DuoScreen } from './screens/DuoScreen.jsx'
+import { MissionScreen } from './screens/MissionScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
@@ -34,6 +36,7 @@ import {
   challengeAvailable,
   xpToday,
   lessonsDone,
+  lexiqueSize,
 } from './lib/progress.js'
 
 const XP_PER_LESSON = 20
@@ -228,6 +231,9 @@ export default function App() {
               onFamily={() => setScreen('famille')}
               onLanguages={() => setScreen('langues')}
               onProfile={() => setScreen('profil')}
+              onDuo={() => setScreen('duo')}
+              onMissions={() => setScreen('missions')}
+              lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
           )}
@@ -313,6 +319,20 @@ export default function App() {
 
           {screen === 'contribuer' && (
             <ContributeVoiceScreen course={course} onBack={() => setScreen('famille')} />
+          )}
+
+          {screen === 'duo' && (
+            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen('path')} />
+          )}
+
+          {screen === 'missions' && (
+            <MissionScreen
+              course={course}
+              progress={progress}
+              profile={store.profile}
+              onSave={setProgress}
+              onBack={() => setScreen('path')}
+            />
           )}
 
           {screen === 'lesson' && (

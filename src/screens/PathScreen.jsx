@@ -170,6 +170,9 @@ export function PathScreen({
   onFamily,
   onLanguages,
   onProfile,
+  onDuo,
+  onMissions,
+  lexiqueCount = 0,
   avatar,
 }) {
   const cheer = cheerFor(cheerCount)
@@ -264,6 +267,39 @@ export function PathScreen({
               <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
             )}
           </svg>
+        </button>
+      </div>
+
+      {/* Les deux façons d'apprendre qui ne se jouent pas seul face à l'écran :
+          à deux sur ce téléphone, ou dehors auprès de quelqu'un qui parle. */}
+      <div className="flex gap-2 px-3.5 pt-1.5">
+        <button
+          type="button"
+          onClick={onDuo}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3 py-2 text-[12px] font-extrabold text-ink transition"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="8.5" cy="8" r="3.2" />
+            <circle cx="16.5" cy="8" r="3.2" />
+            <path d="M3 19c0-2.6 2.4-4.5 5.5-4.5S14 16.4 14 19M13.5 19c.3-2.2 2.4-3.7 5-3.7 1.2 0 2.4.3 3.3.9" />
+          </svg>
+          À deux
+        </button>
+        <button
+          type="button"
+          onClick={onMissions}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3 py-2 text-[12px] font-extrabold text-ink transition"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 21s7-5.4 7-10.5A7 7 0 0 0 5 10.5C5 15.6 12 21 12 21z" />
+            <circle cx="12" cy="10.2" r="2.4" />
+          </svg>
+          Missions
+          {lexiqueCount > 0 && (
+            <span className="rounded-full bg-turquoise/15 px-1.5 text-[9px] font-extrabold tabular-nums text-turquoise-deep">
+              {lexiqueCount}
+            </span>
+          )}
         </button>
       </div>
 
