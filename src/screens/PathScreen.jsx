@@ -172,6 +172,7 @@ export function PathScreen({
   onProfile,
   onDuo,
   onMissions,
+  onTifinagh,
   lexiqueCount = 0,
   avatar,
 }) {
@@ -300,6 +301,14 @@ export function PathScreen({
               {lexiqueCount}
             </span>
           )}
+        </button>
+        <button
+          type="button"
+          onClick={onTifinagh}
+          aria-label="Écrire le tifinagh"
+          className="flex flex-none items-center justify-center rounded-xl border border-line bg-cream px-3 py-2 text-[13px] font-extrabold text-ink tifinagh"
+        >
+          ⵣ
         </button>
       </div>
 
