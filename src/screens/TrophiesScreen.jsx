@@ -37,7 +37,7 @@ export function TrophiesScreen({ course, progress, onBack }) {
   const badges = makeBadges(course)
   const { units } = course
   return (
-    <div className="animate-enter flex flex-1 flex-col bg-cream">
+    <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
       <div className="flex items-center gap-3 px-4 pt-8 pb-2">
         <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
           ←
@@ -47,7 +47,7 @@ export function TrophiesScreen({ course, progress, onBack }) {
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-5">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
         <div className="mt-1 flex gap-2.5">
           <Stat icon={<GemIcon size={20} />} value={progress.gems} label="Gemmes" />
           <Stat icon={<StarIcon size={20} />} value={progress.xp} label="XP" />

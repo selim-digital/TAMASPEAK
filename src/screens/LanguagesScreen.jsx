@@ -28,7 +28,7 @@ export function LanguagesScreen({ store, onPick, onBack }) {
         Tu peux en apprendre plusieurs en parallèle — chacune garde sa propre progression.
       </p>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-5">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
         <div className="flex flex-col gap-2.5">
           {LANGUAGES.map((lang) => {
             const ready = hasCourse(lang.id)

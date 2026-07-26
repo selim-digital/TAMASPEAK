@@ -130,7 +130,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const actionDisabled = !answered && (isMatch || !selected)
 
   return (
-    <div className="animate-enter flex flex-1 flex-col bg-cream">
+    <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
       <div className="flex items-center gap-3 px-4 pt-8 pb-2">
         <button type="button" onClick={onExit} aria-label="Quitter la leçon" className="text-xl font-extrabold text-ink-soft">
           ✕
@@ -143,7 +143,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col overflow-y-auto px-4 pt-4">
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 pt-4">
         {answered && isCorrect && praise && (
           <div
             key={praise.key}

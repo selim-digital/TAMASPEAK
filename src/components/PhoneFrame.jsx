@@ -15,7 +15,10 @@ export function PhoneFrame({ children, className = '' }) {
       ].join(' ')}
     >
       <div className="absolute top-0 left-1/2 z-30 hidden h-6 w-[130px] -translate-x-1/2 rounded-b-2xl bg-[#0f1319] sm:block" />
-      <div className="flex flex-1 flex-col overflow-hidden bg-cream">{children}</div>
+      {/* `min-h-0` est indispensable : sans lui, un enfant flex refuse de
+          rétrécir sous la hauteur de son contenu, la zone de défilement
+          s'étire et tout le bas de l'écran se retrouve coupé. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-cream">{children}</div>
     </div>
   )
 }

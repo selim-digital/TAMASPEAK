@@ -62,7 +62,7 @@ export function ProfileScreen({ store, onSave, onDuel, onBack }) {
         <h2 className="text-lg font-extrabold">Mon profil</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-5">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
         {/* Identité */}
         <div className="mt-2 flex items-center gap-3">
           <button type="button" onClick={() => setPicking((v) => !v)} aria-label="Changer d'avatar" className="relative">

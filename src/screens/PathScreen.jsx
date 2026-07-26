@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TopBar } from '../components/TopBar.jsx'
 import { LessonNode } from '../components/LessonNode.jsx'
 import { landOf } from '../data/journey.js'
@@ -174,6 +174,35 @@ export function PathScreen({
 }) {
   const cheer = cheerFor(cheerCount)
   const [soundOn, setSoundOn] = useState(isSfxOn)
+  const scrollerRef = useRef(null)
+
+  // À l'ouverture, on se place sur la leçon en cours plutôt qu'en haut du
+  // chemin : avec dix unités, l'élève ne doit pas avoir à se chercher.
+  // On calcule la position nous-mêmes plutôt que d'utiliser scrollIntoView,
+  // qui se laisse interrompre par les animations d'entrée des nœuds.
+  useEffect(() => {
+    const placer = () => {
+      const zone = scrollerRef.current
+      const cible = zone?.querySelector('[data-courant="1"]')
+      if (!zone || !cible) return
+      // On mesure par rectangles : offsetTop se rapporterait au conteneur de
+      // l'unité (positionné), pas à la zone de défilement.
+      const zoneBox = zone.getBoundingClientRect()
+      const cibleBox = cible.getBoundingClientRect()
+      const ecart = cibleBox.top - zoneBox.top - zone.clientHeight / 2 + cibleBox.height / 2
+      // Positionnement INSTANTANÉ : un défilement animé se fait interrompre par
+      // l'entrée échelonnée des nœuds, et l'élève n'a de toute façon aucune
+      // raison de regarder l'écran défiler sur dix unités.
+      zone.scrollTop = Math.max(0, zone.scrollTop + ecart)
+    }
+    // Appel direct (la mise en page est déjà calculée après le commit), plus un
+    // rattrapage différé — requestAnimationFrame ne conviendrait pas : il ne se
+    // déclenche pas dans un onglet qui n'est pas peint.
+    placer()
+    const t = setTimeout(placer, 120)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course?.id])
 
   function toggleSound() {
     const next = !soundOn
@@ -190,7 +219,7 @@ export function PathScreen({
   }
 
   return (
-    <div className="animate-enter flex flex-1 flex-col bg-cream">
+    <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
       <TopRow course={course} onOpen={onLanguages} onProfile={onProfile} avatar={avatar} />
       <TopBar streak={streak} xp={xp} gems={gems} />
 
@@ -240,7 +269,7 @@ export function PathScreen({
 
       <DailyGoal value={xpTodayValue} goal={dailyGoalXp} />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div ref={scrollerRef} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-16">
         <div className="relative">
           <Filigree />
           {units.map((unit, unitIndex) => {
@@ -253,7 +282,11 @@ export function PathScreen({
                 {hasCurrent && <FamilyCheer cheer={cheer} onOpen={onFamily} />}
                 <div className="flex flex-col items-center py-5">
                   {unit.lessons.map((node, i) => (
-                    <div key={node.id} className="flex flex-col items-center">
+                    <div
+                      key={node.id}
+                      data-courant={node.status === 'current' || node.status === 'available' ? '1' : undefined}
+                      className="flex flex-col items-center"
+                    >
                       {i > 0 && <Connector from={offsetOf(i - 1)} to={offsetOf(i)} />}
                       <div className="animate-enter" style={{ animationDelay: `${i * 60}ms` }}>
                         <LessonNode node={node} offset={offsetOf(i)} onClick={() => handleNode(node)} unitProgress={progress} />
