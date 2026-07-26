@@ -1,13 +1,24 @@
-# Tama Speak — application (MVP)
+# Tama Speak — ⵣ apprends les langues amazighes
 
-Apprends le kabyle (taqbaylit), un mot après l'autre. Web app façon Duolingo.
-Ce dépôt contient le **socle technique** et le **design system** de la marque.
+Application web (PWA) d'apprentissage des langues amazighes, dans l'esprit de
+Duolingo : un chemin de leçons, des exercices courts, une mascotte qui
+encourage, et un design tiré des **bijoux d'argent émaillé d'Ath Yenni**.
 
-## Stack
+Cinq cours indépendants — on peut en suivre plusieurs en parallèle, chacun
+gardant sa propre progression :
 
-- **React 18** + **Vite** — interface & build
-- **Tailwind CSS v4** — styles utilitaires + tokens de marque (`src/index.css`, bloc `@theme`)
-- Cible : **PWA** installable · back-end **Supabase** (à brancher en Phase 4)
+| Cours | Autonyme | Région | Contenu |
+| --- | --- | --- | --- |
+| Kabyle | Taqbaylit | Kabylie · Algérie | 10 unités, 35 leçons |
+| Tachelhit | Tacelḥit | Souss & Anti-Atlas · Maroc | 2 unités, 9 leçons |
+| Tarifit | Tarifit | Rif · Maroc | 2 unités, 9 leçons |
+| Tamazight (Atlas) | Tamaziɣt | Maroc central · Moyen Atlas | 2 unités, 9 leçons |
+| Amazighe standard | Tamaziɣt tanawayt | Norme officielle · tifinagh | 2 unités, 11 leçons |
+
+> **Le contenu linguistique est PROVISOIRE** et doit être validé par des
+> locuteurs natifs avant diffusion large. Chaque cours cite ses sources en tête
+> de son fichier (`src/data/courses/*.js`) et signale explicitement ce qui est
+> néologisme militant, emprunt arabe d'usage courant ou forme contestée.
 
 ## Démarrer
 
@@ -16,45 +27,82 @@ npm install
 npm run dev
 ```
 
-Puis ouvrir l'URL affichée (par défaut http://localhost:5173).
-
-Autres commandes :
+## Construire
 
 ```bash
-npm run build     # build de production dans dist/
-npm run preview   # prévisualiser le build
+npm run build                # PWA installable → dist/
+SINGLEFILE=1 npm run build   # un seul fichier HTML autonome (démo hors-ligne)
 ```
 
-## Design system
+Le mode `SINGLEFILE` inline tout (JS, CSS, police) dans un `dist/index.html`
+qu'on peut envoyer par mail et ouvrir d'un double-clic ; il ne contient pas de
+service worker.
 
-Les couleurs de marque sont définies une seule fois dans `src/index.css` (`@theme`)
-et disponibles comme utilitaires Tailwind :
+## Déploiement
 
-| Token | Utilitaire | Hex |
-|-------|-----------|-----|
-| Turquoise | `bg-turquoise` | `#10C4A8` |
-| Turquoise foncé | `bg-turquoise-dark` | `#04A88F` |
-| Corail | `bg-coral` | `#FF6F61` |
-| Corail foncé | `text-coral-dark` | `#EF5646` |
-| Sable | `bg-sand` | `#F6EEE0` |
-| Encre | `text-ink` | `#1E2530` |
+Le projet se déploie tel quel sur **Vercel** — le preset Vite est détecté
+automatiquement (build `npm run build`, sortie `dist`). `vercel.json` fixe les
+en-têtes de cache, notamment ceux du service worker : il ne doit jamais être mis
+en cache, sinon une nouvelle version n'atteint pas les téléphones déjà
+installés.
 
-Règle d'illustration : **jamais de visage ni d'yeux** sur les mascottes.
+Une fois en ligne, les **liens de défi entre amis** deviennent réellement
+utilisables (ils ne fonctionnent pas depuis un fichier local).
 
-### Composants (`src/components/`)
+## Architecture
 
-- `Logo.jsx` — `YazMark`, `AppIcon`, `Wordmark`, `LogoLockup`
-- `Button.jsx` — bouton pressable (variants `primary`, `coral`, `neutral`, `ghost`)
-- `PhoneFrame.jsx` — coquille téléphone pour prévisualiser les écrans
-- `mascots/Yemma.jsx` — mascotte (sans yeux, foudha)
+```
+src/
+  data/
+    languages.js     registre des cours (codes ISO 639-3)
+    courses.js       fabrique liant chaque langue à son contenu
+    exercises.js     fabriques d'exercices partagées
+    courses/*.js     contenu par langue (+ sources en commentaire)
+    units.js         unités du cours de kabyle
+    lessons.js       exercices du cours de kabyle
+    journey.js       les 11 paysages ; le voyage part de « chez » la langue
+    badges.js        badges dérivés de la progression
+  lib/
+    progress.js      store multi-langues + migration, localStorage
+    audio.js         natif → synthèse → voix du navigateur
+    challenge.js     défi entre amis par graine (sans serveur)
+    share.js         cartes de partage, Web Share + presse-papiers
+    sfx.js           sons de jeu synthétisés (WebAudio, aucun fichier)
+  components/        design system, mascottes, bijoux
+  screens/           un fichier par écran
+scripts/
+  gen-icons.mjs      icônes PWA générées (rasterizer maison, sans dépendance)
+  gen-audio-manifest.mjs
+```
 
-### Écrans (`src/screens/`)
+### Partis pris
 
-- `WelcomeScreen.jsx` — écran d'accueil / onboarding
+- **Aucun backend.** Toute la progression vit dans `localStorage`. Le défi entre
+  amis transporte une *graine* dans le lien : les deux joueurs tirent les mêmes
+  questions du même cours, sans serveur ni compte.
+- **Pas de photo, pas de compte, pas de pistage.** Les avatars sont les
+  personnages de l'app ; le partage passe par la feuille de partage du système.
+- **Règle d'illustration** : les mascottes n'ont jamais d'yeux — l'émotion passe
+  par la posture et les joues. Les ornements sont uniquement géométriques,
+  jamais talismaniques.
+- **Audio** : un enregistrement natif est toujours préféré ; à défaut une voix
+  de synthèse clairement étiquetée « provisoire ». Les cours autres que le
+  kabyle n'ont volontairement aucun audio tant qu'il n'existe pas
+  d'enregistrement natif — un enregistrement kabyle ne peut pas y être recyclé
+  (le kabyle spirantise t/d/k, le tachelhit non).
+- **Accessibilité** : toutes les animations sont coupées si le système demande
+  « réduire les animations ».
 
-## Prochaines étapes (voir roadmap)
+## Reste à faire
 
-1. Écran **Chemin d'apprentissage** (nœuds de leçons)
-2. **Moteur d'exercices** (QCM, association, écoute) + feedback
-3. **Comptes & gamification** (Supabase, XP, séries)
-4. **PWA** + audio natif + bêta
+- Validation du vocabulaire et des enregistrements par des locuteurs natifs
+- Comptes et synchronisation (Supabase) — la couche `lib/progress.js` est isolée
+  pour être remplaçable
+- Étoffer les cours autres que le kabyle
+
+## Licences
+
+Code du projet : privé. La police **Noto Sans Tifinagh** est embarquée sous
+licence **SIL Open Font License 1.1** (voir `src/fonts/`) : elle est nécessaire
+parce qu'iOS et macOS ne fournissent aucune police tifinagh, et que le cours
+d'amazighe standard enseigne précisément à lire cette écriture.
