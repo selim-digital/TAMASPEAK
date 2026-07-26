@@ -19,9 +19,9 @@ const pwa = VitePWA({
   injectRegister: 'script-defer',
   includeManifestIcons: false,
   manifest: {
-    name: 'Tama Speak — Apprends le kabyle',
+    name: 'Tama Speak — Apprends les langues amazighes',
     short_name: 'Tama Speak',
-    description: 'Apprends le kabyle, un mot après l’autre.',
+    description: 'Kabyle, tachelhit, tarifit, tamazight, amazighe standard — un mot après l’autre.',
     lang: 'fr',
     display: 'standalone',
     orientation: 'portrait',
