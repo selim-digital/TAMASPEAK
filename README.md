@@ -41,10 +41,18 @@ service worker.
 ## Déploiement
 
 Le projet se déploie tel quel sur **Vercel** — le preset Vite est détecté
-automatiquement (build `npm run build`, sortie `dist`). `vercel.json` fixe les
-en-têtes de cache, notamment ceux du service worker : il ne doit jamais être mis
-en cache, sinon une nouvelle version n'atteint pas les téléphones déjà
-installés.
+automatiquement (build `npm run build`, sortie `dist`). Ne pas renseigner de
+« Root Directory » : la racine du dépôt est le projet.
+
+`vercel.json` fixe les en-têtes de cache (le format n'admet aucun commentaire,
+d'où cette explication ici) :
+
+| Chemin | Politique | Pourquoi |
+| --- | --- | --- |
+| `sw.js`, `registerSW.js`, `manifest.webmanifest` | jamais mis en cache | sinon une nouvelle version n'atteint pas les téléphones déjà installés — le piège classique des PWA |
+| `/assets/*` | un an, immuable | les noms portent une empreinte, ils changent à chaque build |
+| `/audio/*` | un jour, puis revalidation | les enregistrements bougent rarement |
+| `/icons/*` | une semaine | idem |
 
 Une fois en ligne, les **liens de défi entre amis** deviennent réellement
 utilisables (ils ne fonctionnent pas depuis un fichier local).

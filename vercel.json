@@ -2,22 +2,18 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
-      "comment": "Le service worker et le manifeste ne doivent JAMAIS être mis en cache : sinon une nouvelle version de l'app ne parvient pas aux téléphones déjà installés.",
       "source": "/(sw.js|registerSW.js|manifest.webmanifest)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
     },
     {
-      "comment": "Les fichiers générés portent une empreinte dans leur nom : ils peuvent être gardés indéfiniment.",
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
-      "comment": "Les enregistrements audio changent rarement ; un jour de cache, revalidé ensuite.",
       "source": "/audio/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }]
     },
     {
-      "comment": "Icônes de l'app.",
       "source": "/icons/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
