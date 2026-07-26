@@ -12,6 +12,8 @@ import { TrophiesScreen } from './screens/TrophiesScreen.jsx'
 import { LanguagesScreen } from './screens/LanguagesScreen.jsx'
 import { ProfileScreen } from './screens/ProfileScreen.jsx'
 import { DuelIntroScreen, DuelResultScreen } from './screens/DuelScreen.jsx'
+import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.jsx'
+import { loadVoiceIndex } from './lib/speakerVoice.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -58,10 +60,18 @@ export default function App() {
   const [lastResult, setLastResult] = useState({ correct: 0, total: 0 })
   const [challengeExercises, setChallengeExercises] = useState([])
   const [duel, setDuel] = useState(null)
+  const [, setVoicesReady] = useState(false)
 
   useEffect(() => {
     saveStore(store)
   }, [store])
+
+  // `hasVoice()` est synchrone (elle est appelée en plein rendu d'exercice) et
+  // s'appuie sur un index chargé une fois depuis IndexedDB. Sans le re-rendu
+  // qui suit, les mots enregistrés ne deviendraient audibles qu'au 2ᵉ passage.
+  useEffect(() => {
+    loadVoiceIndex().then(() => setVoicesReady(true))
+  }, [])
 
   // Un lien de défi ouvre directement l'écran d'annonce — au chargement, mais
   // aussi si l'app est DÉJÀ ouverte (cas de la PWA : le clic sur le lien ne
@@ -280,7 +290,29 @@ export default function App() {
                 <h2 className="text-lg font-extrabold">La famille</h2>
               </div>
               <FamilyCarousel />
+
+              {/* Les personnages sont dessinés ; les voix, elles, viennent de
+                  vraies personnes. C'est ici qu'on va les chercher. */}
+              <button
+                type="button"
+                onClick={() => setScreen('contribuer')}
+                className="mt-4 flex w-full items-center gap-3 rounded-2xl border-2 border-turquoise/40 bg-turquoise/5 px-3.5 py-3 text-left"
+              >
+                <span className="grid h-11 w-11 flex-none place-items-center rounded-full bg-turquoise text-white">
+                  <MicIcon size={20} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[13px] font-extrabold">Faire parler le cours</span>
+                  <span className="block text-[10.5px] leading-snug text-ink-soft">
+                    Un locuteur enregistre les mots, les leçons deviennent sonores.
+                  </span>
+                </span>
+              </button>
             </div>
+          )}
+
+          {screen === 'contribuer' && (
+            <ContributeVoiceScreen course={course} onBack={() => setScreen('famille')} />
           )}
 
           {screen === 'lesson' && (

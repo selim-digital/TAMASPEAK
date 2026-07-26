@@ -11,18 +11,10 @@
  * l'app joue automatiquement les vrais sons, sans changement de code.
  */
 
-/** Transforme « Azul fell-ak » → « azul-fell-ak » (nom de fichier stable). */
-export function slug(word) {
-  return word
-    .toLowerCase()
-    // lettres propres au kabyle, translittérées pour les noms de fichiers
-    .replace(/ɣ/g, 'gh')
-    .replace(/ɛ/g, 'e')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // enlève les accents
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
+import { slug } from './slug.js'
+import { voiceUrl } from './speakerVoice.js'
+
+export { slug }
 
 /**
  * Chemin d'un enregistrement natif.
@@ -67,12 +59,24 @@ function trySynth(word) {
 
 /**
  * Joue la prononciation d'un mot, par ordre de préférence :
- *   1. enregistrement natif   → 'file'  (authentique, pas de badge)
- *   2. mp3 de synthèse espeak → 'synth' (provisoire, badge)
- *   3. voix du navigateur     → 'tts'   (provisoire, badge)
- * @returns {Promise<'file'|'synth'|'tts'|'none'>}
+ *   1. contribution d'un locuteur → 'contrib' (enregistrée sur cet appareil)
+ *   2. enregistrement natif       → 'file'    (authentique, pas de badge)
+ *   3. mp3 de synthèse espeak     → 'synth'   (provisoire, badge)
+ *   4. voix du navigateur         → 'tts'     (provisoire, badge)
+ *
+ * La contribution passe AVANT le natif : quand un locuteur a pris la peine
+ * d'enregistrer un mot pour ce cours, c'est lui qui fait référence — et pour
+ * quatre des cinq langues, c'est le seul son qui existe.
+ *
+ * @returns {Promise<'contrib'|'file'|'synth'|'tts'|'none'>}
  */
 export async function playWord(word, lang) {
+  try {
+    const url = await voiceUrl(lang, word)
+    if (url) return await tryFile(url, 'contrib')
+  } catch {
+    /* aucune contribution pour ce mot */
+  }
   try {
     return await tryFile(audioUrl(word, lang), 'file')
   } catch {

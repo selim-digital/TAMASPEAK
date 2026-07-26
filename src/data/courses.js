@@ -27,6 +27,45 @@ function makeCourse(lang, units, byLesson) {
         .flat()
         .filter((ex) => ['qcm', 'listen', 'sentence', 'image', 'culture'].includes(ex.type)),
 
+    /**
+     * Vocabulaire du cours, unité par unité — la liste qu'un locuteur peut
+     * enregistrer pour rendre le cours sonore. On la dérive du contenu
+     * existant plutôt que de tenir une seconde liste qui divergerait :
+     * tout mot amazigh qui apparaît dans un exercice y figure une seule fois,
+     * dans l'ordre du parcours.
+     */
+    vocabulary: () => {
+      const vus = new Set()
+      return units
+        .map((u) => {
+          const mots = []
+          for (const lesson of u.lessons) {
+            for (const ex of byLesson[lesson.id] ?? []) {
+              // Attention : en fr→kab l'énoncé est FRANÇAIS et le mot amazigh
+              // est la réponse. Prendre `ex.word` sans distinguer ferait
+              // enregistrer « Oui » ou « Merci » à la grand-mère.
+              const paires =
+                ex.type === 'match'
+                  ? ex.pairs.map((p) => ({ mot: p.kab, sens: p.fr }))
+                  : ex.word
+                    ? [
+                        ex.kind === 'fr-to-kab'
+                          ? { mot: ex.answer, sens: ex.word }
+                          : { mot: ex.word, sens: ex.answer },
+                      ]
+                    : []
+              for (const p of paires) {
+                if (!p.mot || vus.has(p.mot)) continue
+                vus.add(p.mot)
+                mots.push(p)
+              }
+            }
+          }
+          return { id: u.id, label: u.unitLabel, mots }
+        })
+        .filter((u) => u.mots.length > 0)
+    },
+
     findUnit: (unitId) => units.find((u) => u.id === unitId),
     unitOfLesson: (lessonId) => units.find((u) => u.lessons.some((l) => l.id === lessonId)),
 

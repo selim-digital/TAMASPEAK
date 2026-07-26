@@ -6,6 +6,7 @@ import { MatchExercise } from '../components/MatchExercise.jsx'
 import { Scene } from '../components/illustrations/Scenes.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { playWord, isProvisional } from '../lib/audio.js'
+import { hasVoice } from '../lib/speakerVoice.js'
 import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -25,6 +26,31 @@ function SpeakerButton({ onPlay, big }) {
       </svg>
     </button>
   )
+}
+
+/**
+ * D'où vient le son qu'on vient d'entendre. Une contribution enregistrée par
+ * un locuteur est signalée comme telle — c'est une vraie voix humaine, pas la
+ * voix de l'app ; la synthèse est signalée comme provisoire ; l'enregistrement
+ * natif, lui, ne dit rien — c'est la référence attendue.
+ */
+function AudioBadge({ mode }) {
+  if (mode === 'contrib')
+    return (
+      <span className="rounded-full bg-turquoise/15 px-1.5 py-0.5 text-[9px] font-bold text-turquoise-deep">
+        voix d’un locuteur
+      </span>
+    )
+  if (isProvisional(mode))
+    return (
+      <span
+        className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft"
+        title="Voix de synthèse — enregistrement natif à venir"
+      >
+        voix provisoire
+      </span>
+    )
+  return null
 }
 
 /**
@@ -51,6 +77,15 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const isListen = ex.type === 'listen'
   const audioFirst = isListen || isSentence // audio d'abord, texte révélé après
   const isLast = index === total - 1
+  // Le mot amazigh de l'exercice : c'est `word`, sauf en fr→kab où l'énoncé
+  // est français et où le mot à prononcer est la réponse.
+  const motAmazigh = ex.kind === 'fr-to-kab' ? ex.answer : ex.word
+  // Une contribution rend audible un mot qui ne l'était pas : c'est ainsi que
+  // les langues sans aucun enregistrement natif gagnent du son. On ne dévoile
+  // jamais la réponse avant l'heure (fr→kab : après validation).
+  const contribution = motAmazigh ? hasVoice(lang, motAmazigh) : false
+  const montreSon =
+    ex.audio || (answered && ex.kind === 'fr-to-kab') || (contribution && ex.kind !== 'fr-to-kab')
   const isCorrect = answered && (isMatch || selected === ex.answer)
   const progress = answered ? ((index + 1) / total) * 100 : (index / total) * 100
 
@@ -97,8 +132,8 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
 
   function handlePlay() {
     setPulse((p) => p + 1)
-    // fr→kab : le mot affiché est français — on prononce la réponse kabyle.
-    playWord(ex.audio ? ex.word : ex.answer, lang).then(setAudioMode)
+    // fr→kab : le mot affiché est français — on prononce la réponse amazighe.
+    playWord(motAmazigh, lang).then(setAudioMode)
   }
 
   function goNext() {
@@ -180,20 +215,16 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
             ) : (
               <>
                 <div className={`relative mt-4 flex items-center gap-3 rounded-2xl border-2 border-line bg-sand p-3.5 ${audioFirst ? 'justify-center' : ''}`}>
-                  {(ex.audio || (answered && ex.kind === 'fr-to-kab')) && <SpeakerButton onPlay={handlePlay} big={audioFirst} />}
+                  {montreSon && <SpeakerButton onPlay={handlePlay} big={audioFirst} />}
                   {!audioFirst && (
                     <div>
                       <div key={pulse} className="animate-pop text-[17px] font-extrabold">
                         {ex.word}
                       </div>
-                      {(ex.audio || (answered && ex.kind === 'fr-to-kab')) && (
+                      {montreSon && (
                         <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-ink-soft">
-                          {ex.audio ? '▶ écouter la prononciation' : `▶ écouter « ${ex.answer} »`}
-                          {isProvisional(audioMode) && (
-                            <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft" title="Voix de synthèse — enregistrement natif à venir">
-                              voix provisoire
-                            </span>
-                          )}
+                          {ex.kind === 'fr-to-kab' ? `▶ écouter « ${ex.answer} »` : '▶ écouter la prononciation'}
+                          <AudioBadge mode={audioMode} />
                         </div>
                       )}
                     </div>
@@ -202,9 +233,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
                 {audioFirst && (
                   <div className="mt-1.5 flex items-center justify-center gap-2 text-center text-[11px] font-semibold text-ink-soft">
                     {answered ? `« ${ex.word} »` : isSentence ? 'écoute la phrase, puis choisis' : 'appuie pour réécouter'}
-                    {isProvisional(audioMode) && (
-                      <span className="rounded-full bg-sand-2 px-1.5 py-0.5 text-[9px] font-bold text-ink-soft">voix provisoire</span>
-                    )}
+                    <AudioBadge mode={audioMode} />
                   </div>
                 )}
               </>
