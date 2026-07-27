@@ -173,6 +173,7 @@ export function PathScreen({
   onDuo,
   onMissions,
   onTifinagh,
+  onHistoire,
   lexiqueCount = 0,
   avatar,
 }) {
@@ -301,6 +302,17 @@ export function PathScreen({
               {lexiqueCount}
             </span>
           )}
+        </button>
+        <button
+          type="button"
+          onClick={onHistoire}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3 py-2 text-[12px] font-extrabold text-ink transition"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+            <path d="M9 7.5h6M9 11h4" />
+          </svg>
+          Histoire
         </button>
         <button
           type="button"

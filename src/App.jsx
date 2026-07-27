@@ -16,6 +16,7 @@ import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.
 import { DuoScreen } from './screens/DuoScreen.jsx'
 import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
+import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
@@ -235,6 +236,7 @@ export default function App() {
               onDuo={() => setScreen('duo')}
               onMissions={() => setScreen('missions')}
               onTifinagh={() => setScreen('tifinagh')}
+              onHistoire={() => setScreen('histoire')}
               lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
@@ -328,6 +330,10 @@ export default function App() {
           )}
 
           {screen === 'tifinagh' && <TifinaghScreen onBack={() => setScreen('path')} />}
+
+          {screen === 'histoire' && (
+            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen('path')} />
+          )}
 
           {screen === 'missions' && (
             <MissionScreen

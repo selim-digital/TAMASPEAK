@@ -42,6 +42,8 @@ export function defaultProgress(course) {
     lexique: [],
     // Missions déjà accomplies (ids), pour ne pas les reproposer.
     missionsFaites: [],
+    // Récits d'histoire lus et dont la question a été trouvée.
+    recitsLus: [],
   }
 }
 
@@ -136,6 +138,23 @@ export function removeFromLexique(progress, mot) {
 }
 
 export const lexiqueSize = (progress) => (progress.lexique || []).length
+
+/* ------------------------------------------------------------------ */
+/* Récits d'histoire                                                    */
+/* ------------------------------------------------------------------ */
+
+/** Marque un récit comme lu et sa question trouvée. Les XP ne comptent qu'une fois. */
+export function recordRecit(progress, recitId, { xpGain = 10 } = {}) {
+  if ((progress.recitsLus || []).includes(recitId)) return progress
+  return {
+    ...progress,
+    ...addXp(progress, xpGain),
+    recitsLus: [...(progress.recitsLus || []), recitId],
+  }
+}
+
+export const recitLu = (progress, recitId) => (progress.recitsLus || []).includes(recitId)
+export const recitsLus = (progress) => (progress.recitsLus || []).length
 
 /** Nombre de leçons terminées (hors coffres) dans cette langue. */
 export const lessonsDone = (course, progress) =>
