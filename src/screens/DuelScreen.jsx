@@ -4,18 +4,34 @@ import { Akermus } from '../components/mascots/Akermus.jsx'
 import { Avatar } from '../components/Avatar.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 import { scoreBar, shareText, duelInvite, duelReply } from '../lib/share.js'
-import { duelUrl } from '../lib/challenge.js'
+import { duelUrl, contentDigest, memeContenu } from '../lib/challenge.js'
 import { sfx } from '../lib/sfx.js'
 
 /**
  * Défi entre amis. Les deux joueurs répondent EXACTEMENT aux mêmes questions
  * (tirées d'une graine commune transportée par le lien), donc la comparaison
  * est honnête — sans qu'aucun serveur n'entre en jeu.
+ *
+ * Deux réserves sont désormais affichées au lieu d'être tues : le contenu du
+ * cours peut avoir changé depuis la création du lien, et le score annoncé
+ * n'est pas vérifiable sans serveur. Mieux vaut une comparaison qu'on sait
+ * imparfaite qu'une comparaison faussée qui se présente comme exacte.
  */
+
+/** Bandeau d'avertissement, discret mais lisible. */
+function Reserve({ children }) {
+  return (
+    <p className="mt-3 w-full rounded-xl border border-coral/40 bg-coral/10 px-3 py-2 text-[11px] leading-snug text-ink">
+      {children}
+    </p>
+  )
+}
 
 /** Écran d'annonce : soit on lance un défi, soit on en reçoit un. */
 export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
   const incoming = duel?.correct != null
+  const contenuIdentique = memeContenu(duel, course.challengePool())
+  const scoreDouteux = incoming && duel.scoreVerifie === false
 
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(255,111,97,0.16),var(--color-cream)_62%)]">
@@ -31,11 +47,19 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
             {duel.from ? ` ${duel.from}` : ' ton ami'}.
           </p>
           <div className="mt-4 w-full rounded-2xl border border-line bg-cream px-4 py-3">
-            <div className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">Score à battre</div>
+            <div className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
+              Score {scoreDouteux ? 'annoncé' : 'à battre'}
+            </div>
             <div className="mt-1 text-[15px] font-extrabold tabular-nums">
               {scoreBar(duel.correct, duel.total)} {duel.correct}/{duel.total}
             </div>
           </div>
+          {scoreDouteux && (
+            <Reserve>
+              Ce score a été <b>modifié dans le lien</b>. Tu peux jouer quand même, mais la
+              comparaison ne veut plus rien dire.
+            </Reserve>
+          )}
         </>
       ) : (
         <>
@@ -46,6 +70,13 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
             exactement les mêmes.
           </p>
         </>
+      )}
+
+      {incoming && !contenuIdentique && (
+        <Reserve>
+          Le cours de {course.name} a été <b>enrichi depuis</b> l’envoi de ce défi : tes questions ne
+          seront pas exactement les mêmes. À jouer pour le plaisir, pas pour départager.
+        </Reserve>
       )}
 
       <div className="min-h-4 flex-1" />
@@ -77,24 +108,30 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
 
   async function send() {
     sfx.click()
-    if (replying) {
-      const res = await shareText(
-        duelReply({ name: duel.from, courseName: course.name, mine, theirs, total: result.total }),
-        duelUrl({ lang: course.id, seed: duel.seed, size: duel.size, correct: mine, total: result.total, from: name }),
-      )
-      setFlash(res === 'copied' ? 'Réponse copiée — colle-la à ton ami' : res === 'failed' ? 'Partage indisponible' : null)
-    } else {
-      const url = duelUrl({
-        lang: course.id,
-        seed: duel.seed,
-        size: duel.size,
-        correct: mine,
-        total: result.total,
-        from: name,
-      })
-      const res = await shareText(duelInvite({ name, courseName: course.name, correct: mine, total: result.total }), url)
-      setFlash(res === 'copied' ? 'Lien copié — envoie-le à ton ami' : res === 'failed' ? 'Partage indisponible' : null)
-    }
+    // L'empreinte est calculée À L'ÉMISSION : c'est l'état du cours au moment
+    // où le lien part qui fait foi, et que le destinataire pourra comparer.
+    const lien = duelUrl({
+      lang: course.id,
+      seed: duel.seed,
+      size: duel.size,
+      correct: mine,
+      total: result.total,
+      from: name,
+      version: contentDigest(course.challengePool()),
+    })
+    const texte = replying
+      ? duelReply({ name: duel.from, courseName: course.name, mine, theirs, total: result.total })
+      : duelInvite({ name, courseName: course.name, correct: mine, total: result.total })
+    const res = await shareText(texte, lien)
+    setFlash(
+      res === 'copied'
+        ? replying
+          ? 'Réponse copiée — colle-la à ton ami'
+          : 'Lien copié — envoie-le à ton ami'
+        : res === 'failed'
+          ? 'Partage indisponible'
+          : null,
+    )
     setTimeout(() => setFlash(null), 2600)
   }
 
@@ -121,7 +158,12 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
             <span className="grid h-[34px] w-[34px] flex-none place-items-center rounded-full border border-line bg-sand text-[13px] font-extrabold text-ink-soft">
               {(duel.from || '?').slice(0, 1).toUpperCase()}
             </span>
-            <span className="flex-1 text-left text-[12.5px] font-extrabold">{duel.from || 'Ton ami'}</span>
+            <span className="flex-1 text-left text-[12.5px] font-extrabold">
+              {duel.from || 'Ton ami'}
+              {duel.scoreVerifie === false && (
+                <span className="ml-1 text-[10px] font-bold text-coral-dark">score annoncé</span>
+              )}
+            </span>
             <span className="text-[13px] font-extrabold tabular-nums text-ink-soft">
               {scoreBar(theirs, duel.total)} {theirs}/{duel.total}
             </span>
