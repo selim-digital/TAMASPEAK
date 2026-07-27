@@ -79,7 +79,9 @@ function DailyGoal({ value = 0, goal }) {
   const C = 2 * Math.PI * 14
   const done = p >= 1
   return (
-    <div className="mx-3.5 mb-1.5 flex items-center gap-2.5 rounded-xl border border-line bg-cream px-3 py-2">
+    // `mt-2.5` : la rangée d'actions au-dessus n'a pas de padding bas, la carte
+    // se retrouvait collée à elle. 10 px reprend l'écart des autres rangées.
+    <div className="mx-3.5 mt-2.5 mb-1.5 flex items-center gap-2.5 rounded-xl border border-line bg-cream px-3 py-2">
       <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
         <circle cx="17" cy="17" r="14" fill="none" stroke="var(--color-sand-2)" strokeWidth="4.5" />
         <circle
