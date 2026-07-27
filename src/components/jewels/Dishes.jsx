@@ -107,10 +107,6 @@ export const DISHES = [
   { id: 'tighrifin', name: 'Tiɣrifin', fr: 'les crêpes mille trous', note: 'Avec un filet de miel.', Art: Tighrifin },
 ]
 
-/** Plat associé à un coffre : rotation stable par POSITION du coffre sur le
- *  chemin de la langue en cours (les ids sautent des numéros). */
-export function dishForChest(course, chestId) {
-  const chests = (course?.orderedNodes || []).filter((n) => n.type === 'chest')
-  const i = chests.findIndex((c) => c.id === chestId)
-  return DISHES[Math.max(0, i) % DISHES.length]
-}
+// L'attribution coffre → récompense vit désormais dans
+// components/treasures/treasures.js, qui fond les plats et les objets
+// dans une même collection.

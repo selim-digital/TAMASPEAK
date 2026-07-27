@@ -3,17 +3,18 @@ import { Button } from '../components/Button.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
 import { GemIcon } from '../components/jewels/StatIcons.jsx'
-import { dishForChest } from '../components/jewels/Dishes.jsx'
+import { treasureForChest } from '../components/treasures/treasures.js'
 import { sfx } from '../lib/sfx.js'
 
 /**
- * Écran d'ouverture de coffre (v3.1) : le médaillon tabzimt s'ouvre sur un
- * plat berbère + des gemmes. Deux plats (aghrum, atay) sont des mots du
- * vocabulaire : la récompense devient une mini-leçon.
+ * Écran d'ouverture de coffre : le médaillon tabzimt s'ouvre sur un trésor
+ * — plat, objet du quotidien ou monument — plus des gemmes. Plusieurs
+ * trésors sont des mots du vocabulaire : la récompense devient une
+ * mini-leçon.
  */
 export function ChestRewardScreen({ gems = 15, chest, course, onContinue }) {
   const [open, setOpen] = useState(false)
-  const dish = dishForChest(course, chest?.id)
+  const dish = treasureForChest(course, chest?.id)
   const Art = dish.Art
 
   useEffect(() => {
