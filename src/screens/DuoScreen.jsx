@@ -4,11 +4,11 @@ import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { Scene } from '../components/illustrations/Scenes.jsx'
 import { seededPick, makeSeed } from '../lib/challenge.js'
+import { DUO_TOURS as TOURS } from '../data/economy.js'
 import { playWord } from '../lib/audio.js'
 import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
-const TOURS = 6 // pair : chacun joue autant de fois
 
 /** Les deux joueurs ont chacun leur couleur, pour ne jamais se tromper de tour. */
 const COULEURS = [

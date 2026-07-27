@@ -1,8 +1,11 @@
 import { DEFAULT_LANG } from '../data/languages.js'
+import { lireJson, ecrireJson, effacer } from './storage.js'
 
 /**
- * Persistance de la progression (localStorage). Couche isolée,
- * remplaçable par Supabase.
+ * Persistance de la progression. Le stockage lui-même est dans
+ * `lib/storage.js` : c'est le seul fichier qui touche `localStorage`, et donc
+ * le seul point à changer le jour où la progression se synchronise avec un
+ * serveur.
  *
  * L'élève peut apprendre PLUSIEURS langues amazighes en parallèle : le
  * stockage est un « store » global
@@ -170,15 +173,13 @@ export function defaultStore() {
 
 export function loadStore() {
   try {
-    const raw = localStorage.getItem(KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
+    const parsed = lireJson(KEY)
+    if (parsed) {
       return { ...defaultStore(), ...parsed, byLang: parsed.byLang || {} }
     }
     // Migration depuis la v2 (mono-langue kabyle).
-    const legacy = localStorage.getItem(LEGACY_KEY)
-    if (legacy) {
-      const old = JSON.parse(legacy)
+    const old = lireJson(LEGACY_KEY)
+    if (old) {
       const { profile, ...rest } = old
       return {
         lang: DEFAULT_LANG,
@@ -192,21 +193,11 @@ export function loadStore() {
   }
 }
 
-export function saveStore(store) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(store))
-  } catch {
-    /* stockage indisponible */
-  }
-}
+export const saveStore = (store) => ecrireJson(KEY, store)
 
 export function resetStore() {
-  try {
-    localStorage.removeItem(KEY)
-    localStorage.removeItem(LEGACY_KEY)
-  } catch {
-    /* ignore */
-  }
+  effacer(KEY)
+  effacer(LEGACY_KEY)
   return defaultStore()
 }
 

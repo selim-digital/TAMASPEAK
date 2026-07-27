@@ -22,8 +22,11 @@ import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/c
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
 import { JewelDefs } from './components/jewels/JewelDefs.jsx'
+import { DebugBar } from './components/DebugBar.jsx'
 import { GemIcon } from './components/jewels/StatIcons.jsx'
 import { getCourse, isUnitComplete } from './data/courses.js'
+import { ECRANS } from './data/screens.js'
+import { XP_PER_LESSON, CHEST_GEMS, UNIT_BONUS, CHALLENGE } from './data/economy.js'
 import {
   loadStore,
   saveStore,
@@ -41,11 +44,6 @@ import {
   lexiqueSize,
 } from './lib/progress.js'
 
-const XP_PER_LESSON = 20
-const CHEST_GEMS = 15
-const UNIT_BONUS = 25
-const CHALLENGE = { xpGain: 15, gems: 10, size: 5 }
-
 function pickRandom(arr, n) {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -56,7 +54,7 @@ function pickRandom(arr, n) {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState('welcome')
+  const [screen, setScreen] = useState(ECRANS.ACCUEIL)
   const [store, setStore] = useState(loadStore)
   const [pendingLang, setPendingLang] = useState(null)
   const [activeLesson, setActiveLesson] = useState(null)
@@ -86,7 +84,7 @@ export default function App() {
       const incoming = readDuelFromUrl()
       if (!incoming) return
       setDuel(incoming)
-      setScreen('duelintro')
+      setScreen(ECRANS.DUEL_INTRO)
       clearDuelFromUrl()
     }
     handle()
@@ -116,10 +114,10 @@ export default function App() {
   function pickLanguage(langId) {
     if (store.byLang?.[langId]) {
       setStore((s) => ({ ...s, lang: langId }))
-      setScreen('path')
+      setScreen(ECRANS.CHEMIN)
     } else {
       setPendingLang(langId)
-      setScreen('onboarding')
+      setScreen(ECRANS.ONBOARDING)
     }
   }
 
@@ -135,12 +133,12 @@ export default function App() {
       return withProgress(next, langId, { ...langProgress, level })
     })
     setPendingLang(null)
-    setScreen('path')
+    setScreen(ECRANS.CHEMIN)
   }
 
   function startLesson(node) {
     setActiveLesson(node)
-    setScreen('lesson')
+    setScreen(ECRANS.LECON)
   }
 
   function finishLesson(result) {
@@ -152,7 +150,7 @@ export default function App() {
     setProgress(np)
     setLastResult(result)
     setCompletedUnit(justDone ? unit : null)
-    setScreen('complete')
+    setScreen(ECRANS.LECON_FINIE)
   }
 
   function afterLessonComplete() {
@@ -161,31 +159,31 @@ export default function App() {
 
   function startChallenge() {
     setChallengeExercises(pickRandom(course.challengePool(), CHALLENGE.size))
-    setScreen('challenge')
+    setScreen(ECRANS.DEFI)
   }
 
   function finishChallenge(result) {
     setLastResult(result)
     const passed = result.correct >= Math.ceil(result.total * 0.6)
     if (passed) setProgress((p) => recordChallenge(p, { xpGain: CHALLENGE.xpGain, gems: CHALLENGE.gems }))
-    setScreen('challengecomplete')
+    setScreen(ECRANS.DEFI_FINI)
   }
 
   /** Lance un défi sur la langue en cours (le lien sera créé à la fin). */
   function startDuel() {
     setDuel({ lang: course.id, seed: makeSeed(), size: CHALLENGE.size, correct: null, total: null, from: '' })
-    setScreen('duelintro')
+    setScreen(ECRANS.DUEL_INTRO)
   }
 
   function finishDuel(result) {
     setLastResult(result)
-    setScreen('duelresult')
+    setScreen(ECRANS.DUEL_RESULTAT)
   }
 
   function handleReset() {
     setStore(resetStore())
     setPendingLang(null)
-    setScreen('welcome')
+    setScreen(ECRANS.ACCUEIL)
   }
 
   const nextUnitExists = completedUnit
@@ -204,15 +202,15 @@ export default function App() {
         </header>
 
         <PhoneFrame>
-          {screen === 'welcome' && (
+          {screen === ECRANS.ACCUEIL && (
             <WelcomeScreen onStart={() => setScreen(hasProfile(store) ? 'path' : 'onboarding')} />
           )}
 
-          {screen === 'onboarding' && (
+          {screen === ECRANS.ONBOARDING && (
             <OnboardingScreen hasProfile={hasProfile(store)} presetLang={pendingLang} onFinish={finishOnboarding} />
           )}
 
-          {screen === 'path' && (
+          {screen === ECRANS.CHEMIN && (
             <PathScreen
               course={course}
               units={unitsWithStatuses}
@@ -226,54 +224,54 @@ export default function App() {
               onSelectLesson={startLesson}
               onOpenChest={(node) => {
                 setActiveChest(node)
-                setScreen('chest')
+                setScreen(ECRANS.COFFRE)
               }}
               onChallenge={startChallenge}
-              onTrophies={() => setScreen('trophies')}
-              onFamily={() => setScreen('famille')}
-              onLanguages={() => setScreen('langues')}
-              onProfile={() => setScreen('profil')}
-              onDuo={() => setScreen('duo')}
-              onMissions={() => setScreen('missions')}
-              onTifinagh={() => setScreen('tifinagh')}
-              onHistoire={() => setScreen('histoire')}
+              onTrophies={() => setScreen(ECRANS.TROPHEES)}
+              onFamily={() => setScreen(ECRANS.FAMILLE)}
+              onLanguages={() => setScreen(ECRANS.LANGUES)}
+              onProfile={() => setScreen(ECRANS.PROFIL)}
+              onDuo={() => setScreen(ECRANS.DUO)}
+              onMissions={() => setScreen(ECRANS.MISSIONS)}
+              onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
+              onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
           )}
 
-          {screen === 'profil' && (
+          {screen === ECRANS.PROFIL && (
             <ProfileScreen
               store={store}
               onSave={setStore}
               onDuel={startDuel}
-              onBack={() => setScreen('path')}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
             />
           )}
 
-          {screen === 'duelintro' && duelCourse && (
+          {screen === ECRANS.DUEL_INTRO && duelCourse && (
             <DuelIntroScreen
               duel={duel}
               course={duelCourse}
               avatar={store.profile?.avatar}
-              onStart={() => setScreen('duel')}
+              onStart={() => setScreen(ECRANS.DUEL)}
               onCancel={() => {
                 setDuel(null)
-                setScreen('path')
+                setScreen(ECRANS.CHEMIN)
               }}
             />
           )}
 
-          {screen === 'duel' && duelCourse && (
+          {screen === ECRANS.DUEL && duelCourse && (
             <LessonScreen
               exercises={seededPick(duelCourse.challengePool(), duel.size, duel.seed)}
               lang={duelCourse.id}
-              onExit={() => setScreen('path')}
+              onExit={() => setScreen(ECRANS.CHEMIN)}
               onFinish={finishDuel}
             />
           )}
 
-          {screen === 'duelresult' && duelCourse && (
+          {screen === ECRANS.DUEL_RESULTAT && duelCourse && (
             <DuelResultScreen
               duel={duel}
               course={duelCourse}
@@ -282,19 +280,19 @@ export default function App() {
               avatar={store.profile?.avatar}
               onDone={() => {
                 setDuel(null)
-                setScreen('path')
+                setScreen(ECRANS.CHEMIN)
               }}
             />
           )}
 
-          {screen === 'langues' && (
-            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen('path')} />
+          {screen === ECRANS.LANGUES && (
+            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen(ECRANS.CHEMIN)} />
           )}
 
-          {screen === 'famille' && (
+          {screen === ECRANS.FAMILLE && (
             <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-5 text-center">
               <div className="mb-2 flex items-center gap-3 text-left">
-                <button type="button" onClick={() => setScreen('path')} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
+                <button type="button" onClick={() => setScreen(ECRANS.CHEMIN)} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
                   ←
                 </button>
                 <h2 className="text-lg font-extrabold">La famille</h2>
@@ -305,7 +303,7 @@ export default function App() {
                   vraies personnes. C'est ici qu'on va les chercher. */}
               <button
                 type="button"
-                onClick={() => setScreen('contribuer')}
+                onClick={() => setScreen(ECRANS.CONTRIBUER)}
                 className="mt-4 flex w-full items-center gap-3 rounded-2xl border-2 border-turquoise/40 bg-turquoise/5 px-3.5 py-3 text-left"
               >
                 <span className="grid h-11 w-11 flex-none place-items-center rounded-full bg-turquoise text-white">
@@ -321,40 +319,40 @@ export default function App() {
             </div>
           )}
 
-          {screen === 'contribuer' && (
-            <ContributeVoiceScreen course={course} onBack={() => setScreen('famille')} />
+          {screen === ECRANS.CONTRIBUER && (
+            <ContributeVoiceScreen course={course} onBack={() => setScreen(ECRANS.FAMILLE)} />
           )}
 
-          {screen === 'duo' && (
-            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen('path')} />
+          {screen === ECRANS.DUO && (
+            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen(ECRANS.CHEMIN)} />
           )}
 
-          {screen === 'tifinagh' && <TifinaghScreen onBack={() => setScreen('path')} />}
+          {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.CHEMIN)} />}
 
-          {screen === 'histoire' && (
-            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen('path')} />
+          {screen === ECRANS.HISTOIRE && (
+            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.CHEMIN)} />
           )}
 
-          {screen === 'missions' && (
+          {screen === ECRANS.MISSIONS && (
             <MissionScreen
               course={course}
               progress={progress}
               profile={store.profile}
               onSave={setProgress}
-              onBack={() => setScreen('path')}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
             />
           )}
 
-          {screen === 'lesson' && (
+          {screen === ECRANS.LECON && (
             <LessonScreen
               exercises={course.getExercises(activeLesson?.id)}
               lang={course.id}
-              onExit={() => setScreen('path')}
+              onExit={() => setScreen(ECRANS.CHEMIN)}
               onFinish={finishLesson}
             />
           )}
 
-          {screen === 'complete' && (
+          {screen === ECRANS.LECON_FINIE && (
             <LessonCompleteScreen
               correct={lastResult.correct}
               total={lastResult.total}
@@ -366,19 +364,19 @@ export default function App() {
             />
           )}
 
-          {screen === 'chest' && (
+          {screen === ECRANS.COFFRE && (
             <ChestRewardScreen
               gems={CHEST_GEMS}
               chest={activeChest}
               course={course}
               onContinue={() => {
                 setProgress((p) => openChest(course, p, activeChest.id, { gems: CHEST_GEMS }))
-                setScreen('path')
+                setScreen(ECRANS.CHEMIN)
               }}
             />
           )}
 
-          {screen === 'unitcomplete' && (
+          {screen === ECRANS.UNITE_FINIE && (
             <UnitCompleteScreen
               unit={completedUnit}
               gems={UNIT_BONUS}
@@ -386,59 +384,36 @@ export default function App() {
               courseName={course.name}
               onContinue={() => {
                 setCompletedUnit(null)
-                setScreen('path')
+                setScreen(ECRANS.CHEMIN)
               }}
             />
           )}
 
-          {screen === 'challenge' && (
+          {screen === ECRANS.DEFI && (
             <LessonScreen
               exercises={challengeExercises}
               lang={course.id}
-              onExit={() => setScreen('path')}
+              onExit={() => setScreen(ECRANS.CHEMIN)}
               onFinish={finishChallenge}
             />
           )}
 
-          {screen === 'challengecomplete' && (
+          {screen === ECRANS.DEFI_FINI && (
             <ChallengeCompleteScreen
               correct={lastResult.correct}
               total={lastResult.total}
               xp={CHALLENGE.xpGain}
               gems={CHALLENGE.gems}
-              onContinue={() => setScreen('path')}
+              onContinue={() => setScreen(ECRANS.CHEMIN)}
             />
           )}
 
-          {screen === 'trophies' && (
-            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen('path')} />
+          {screen === ECRANS.TROPHEES && (
+            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen(ECRANS.CHEMIN)} />
           )}
         </PhoneFrame>
 
-        <div className="mt-5 hidden flex-wrap items-center justify-center gap-2 text-sm sm:flex">
-          {[
-            ['welcome', 'Accueil'],
-            ['path', 'Chemin'],
-            ['langues', 'Langues'],
-          ].map(([id, label]) => (
-            <button
-              key={id}
-              onClick={() => setScreen(id)}
-              className={`rounded-full px-4 py-2 font-bold transition ${
-                screen === id ? 'bg-turquoise text-white' : 'border border-line bg-cream text-ink-soft'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-          <button
-            onClick={handleReset}
-            className="rounded-full border border-line bg-cream px-4 py-2 font-bold text-ink-soft transition hover:text-coral-dark"
-            title="Efface la progression sauvegardée"
-          >
-            ↺ Réinitialiser
-          </button>
-        </div>
+        <DebugBar screen={screen} onGo={setScreen} onReset={handleReset} />
       </div>
     </div>
   )

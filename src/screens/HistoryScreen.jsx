@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { RECITS } from '../data/history.js'
+import { XP_RECIT } from '../data/economy.js'
 import { LAND_BY_ID } from '../data/journey.js'
 import { recordRecit, recitLu, recitsLus } from '../lib/progress.js'
 import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
-const XP_RECIT = 10
 
 /**
  * La lecture d'un récit, puis sa question.

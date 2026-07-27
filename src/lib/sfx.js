@@ -2,8 +2,10 @@
  * Petits sons de jeu — synthétisés en WebAudio (aucun fichier, fonctionne
  * hors-ligne, léger). Toujours déclenchés par un geste utilisateur (clics),
  * donc l'AudioContext démarre sans blocage. Volume doux, coupable via le
- * bouton son (persisté en localStorage).
+ * bouton son (persisté par la couche de stockage).
  */
+import { lire, ecrire } from './storage.js'
+
 const KEY = 'tama-speak:sfx'
 
 let ctx = null
@@ -17,21 +19,10 @@ const ac = () => {
   return ctx
 }
 
-export function isSfxOn() {
-  try {
-    return localStorage.getItem(KEY) !== 'off'
-  } catch {
-    return true
-  }
-}
+/** Le son est actif par défaut : l'absence de clé vaut « allumé ». */
+export const isSfxOn = () => lire(KEY) !== 'off'
 
-export function setSfxOn(on) {
-  try {
-    localStorage.setItem(KEY, on ? 'on' : 'off')
-  } catch {
-    /* ignore */
-  }
-}
+export const setSfxOn = (on) => ecrire(KEY, on ? 'on' : 'off')
 
 /** Une note : oscillateur + enveloppe douce. */
 function tone(freq, { at = 0, dur = 0.14, type = 'sine', vol = 0.11, to } = {}) {
