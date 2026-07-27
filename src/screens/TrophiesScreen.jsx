@@ -3,6 +3,7 @@ import { isUnitComplete } from '../data/courses.js'
 import { landOf } from '../data/journey.js'
 import { lessonsDone } from '../lib/progress.js'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
+import { treasureCollection } from '../components/treasures/treasures.js'
 import { FlameIcon, StarIcon, GemIcon } from '../components/jewels/StatIcons.jsx'
 
 function Stat({ icon, value, label }) {
@@ -36,6 +37,7 @@ function CheckIcon({ size = 20 }) {
 export function TrophiesScreen({ course, progress, onBack }) {
   const badges = makeBadges(course)
   const { units } = course
+  const tresors = treasureCollection(course, progress.statuses)
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
       <div className="flex items-center gap-3 px-4 pt-8 pb-2">
@@ -83,6 +85,40 @@ export function TrophiesScreen({ course, progress, onBack }) {
                     {done && <span className="ml-1 text-turquoise-deep">✓</span>}
                   </div>
                   <div className="mt-0.5 text-[9px] leading-tight text-ink-soft">{land.region}</div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* La collection des trésors : ce que les coffres ont déjà offert,
+            et tout ce qu'il reste à découvrir. Les trésors non atteignables
+            dans CE cours (moins de coffres que de trésors) restent visibles :
+            c'est une invitation à ouvrir une autre langue. */}
+        <div className="mt-6 mb-2 flex items-baseline gap-2">
+          <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">Trésors</span>
+          <span className="text-[10px] font-extrabold tabular-nums text-ink-soft">
+            {tresors.filter((t) => t.earned).length}/{tresors.length}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {tresors.map((t) => {
+            const TArt = t.Art
+            return (
+              <div
+                key={t.id}
+                className={`flex flex-col items-center rounded-2xl border p-2 text-center ${
+                  t.earned ? 'border-turquoise/40 bg-cream' : 'border-line bg-sand'
+                }`}
+              >
+                <div className={t.earned ? '' : 'opacity-45 grayscale'} aria-hidden="true">
+                  <TArt width={64} />
+                </div>
+                <div className="mt-1 text-[10px] font-extrabold leading-tight">
+                  {t.earned ? t.name : '· · ·'}
+                </div>
+                <div className="mt-0.5 text-[8.5px] leading-tight text-ink-soft">
+                  {t.earned ? t.fr : 'dans un coffre'}
                 </div>
               </div>
             )
