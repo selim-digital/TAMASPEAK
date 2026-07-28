@@ -1,9 +1,16 @@
 /**
  * Toutes les routes d'authentification (/api/auth/*) — Better Auth les gère :
  * lien magique, Google OAuth, session, déconnexion, suppression de compte.
+ *
+ * POURQUOI UNE FONCTION PLATE ET PAS `api/auth/[...all].js` : vérifié en
+ * production, Vercel (projet Vite, hors Next) traite `[...all].js` comme un
+ * segment UNIQUE — /api/auth/get-session atteignait la fonction, mais
+ * /api/auth/sign-in/magic-link (deux segments) mourait en NOT_FOUND avant
+ * elle. La réécriture de vercel.json envoie tout /api/auth/* ici, et Better
+ * Auth route lui-même d'après req.url, que la réécriture préserve.
  */
-import { serverReady, notConfigured } from '../_lib/db.js'
-import { auth } from '../_lib/auth.js'
+import { serverReady, notConfigured } from './_lib/db.js'
+import { auth } from './_lib/auth.js'
 import { toNodeHandler } from 'better-auth/node'
 
 export default async function handler(req, res) {
