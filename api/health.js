@@ -20,6 +20,10 @@ export default async function handler(req, res) {
 
   for (const k of ['DATABASE_URL', 'BETTER_AUTH_SECRET', 'BETTER_AUTH_URL', 'GOOGLE_CLIENT_ID', 'RESEND_API_KEY', 'ADMIN_EMAILS'])
     out.env[k] = !!process.env[k]
+  // La VALEUR de l'URL de base n'est pas un secret (c'est l'adresse publique
+  // de l'app) et un écart avec le domaine réel casse les cookies de session
+  // — le symptôme est une reconnexion en boucle.
+  out.env.BETTER_AUTH_URL_VALUE = process.env.BETTER_AUTH_URL || '(défaut)'
 
   await step('import-neon', () => import('@neondatabase/serverless'))
   await step('import-better-auth', () => import('better-auth'))
