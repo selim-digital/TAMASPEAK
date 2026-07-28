@@ -50,6 +50,25 @@ export function auth() {
     // Suppression de compte en libre-service — engagement RGPD : la purge
     // en base suit par cascade (voir db/schema.sql), sans intervention.
     user: { deleteUser: { enabled: true } },
+    // Limiteur de débit RÉGLÉ, pas subi. Vécu en production : la règle par
+    // défaut sur les routes de connexion (~3 requêtes/10 s) transformait un
+    // double-clic sur « Continuer avec Google » en « Google est
+    // injoignable » (429). On garde le limiteur — il protège surtout le
+    // quota Resend (100 emails/jour en gratuit) contre le spam d'envoi de
+    // codes — mais avec des seuils qu'un humain pressé ne peut pas
+    // atteindre. Nota : stockage en mémoire d'instance serverless, donc
+    // approximatif par nature ; c'est un garde-fou, pas une forteresse.
+    rateLimit: {
+      enabled: true,
+      window: 60,
+      max: 600,
+      customRules: {
+        '/sign-in/social': { window: 10, max: 10 },
+        '/email-otp/send-verification-otp': { window: 60, max: 4 },
+        '/sign-in/email-otp': { window: 60, max: 12 },
+        '/sign-in/magic-link': { window: 60, max: 4 },
+      },
+    },
     plugins: [
       magicLink({
         sendMagicLink: async ({ email, url }) => {
