@@ -23,6 +23,8 @@ export default async function handler(req, res) {
     return await toNodeHandler(auth())(req, res)
   } catch (e) {
     console.error('[tama] auth handler', e)
-    return res.status(500).json({ error: 'erreur interne' })
+    // Message d'erreur remonté TEMPORAIREMENT (jamais de valeurs d'env
+    // dedans) : sans accès aux logs Vercel, c'est le seul stéthoscope.
+    return res.status(500).json({ error: String(e?.message || e).slice(0, 300) })
   }
 }
