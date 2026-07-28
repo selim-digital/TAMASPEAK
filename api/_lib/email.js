@@ -19,7 +19,7 @@ import { renderTemplate } from './templates.js'
 export const emailReady = () => !!process.env.RESEND_API_KEY
 
 const FROM = process.env.EMAIL_FROM || 'Tama Speak <bonjour@send.tamaspeak.com>'
-const UNSUB_URL = process.env.UNSUB_URL || 'https://tamaspeak.vercel.app/api/unsubscribe'
+const UNSUB_URL = process.env.UNSUB_URL || 'https://tamaspeak.com/api/unsubscribe'
 
 /**
  * @param {object} p

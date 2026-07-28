@@ -10,7 +10,7 @@ comptes, la synchronisation, le feedback et l'admin. Ordre de branchement :
 2. Dans l'éditeur SQL de Neon, coller et exécuter `db/schema.sql`.
 3. Copier la **pooled connection string** → variable Vercel `DATABASE_URL`.
 4. Générer un secret : `openssl rand -base64 32` → `BETTER_AUTH_SECRET`,
-   et poser `BETTER_AUTH_URL=https://tamaspeak.vercel.app`.
+   et poser `BETTER_AUTH_URL=https://tamaspeak.com`.
 
 Dès ce moment : lien magique opérationnel (le lien s'écrit dans les logs
 Vercel tant que Resend n'est pas branché), sync et feedback actifs.
@@ -23,7 +23,7 @@ produit le SQL exact — comparer avec `schema.sql` et ajuster.
 
 [console.cloud.google.com](https://console.cloud.google.com) → Credentials →
 OAuth client ID (Web) → redirect URI :
-`https://tamaspeak.vercel.app/api/auth/callback/google`
+`https://tamaspeak.com/api/auth/callback/google`
 → `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`.
 
 ## 3. Resend (les emails)

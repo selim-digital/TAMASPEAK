@@ -10,7 +10,7 @@
  * jamais un reproche.
  */
 
-const APP_URL = process.env.APP_URL || 'https://tamaspeak.vercel.app'
+const APP_URL = process.env.APP_URL || 'https://tamaspeak.com'
 const LOGO = `${APP_URL}/icon-192.png`
 
 /* Palette de la marque (index.css) en dur : les emails n'ont pas nos CSS. */

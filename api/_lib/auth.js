@@ -36,7 +36,7 @@ export function auth() {
   _auth = betterAuth({
     database: new Pool({ connectionString: process.env.DATABASE_URL }),
     secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL || 'https://tamaspeak.vercel.app',
+    baseURL: process.env.BETTER_AUTH_URL || 'https://tamaspeak.com',
     // Pas d'emailAndPassword : lien magique et Google seulement.
     socialProviders: social,
     // Suppression de compte en libre-service — engagement RGPD : la purge
