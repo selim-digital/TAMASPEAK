@@ -18,6 +18,7 @@ import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
+import { track, flushEvents } from './lib/api.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -74,6 +75,13 @@ export default function App() {
   // qui suit, les mots enregistrés ne deviendraient audibles qu'au 2ᵉ passage.
   useEffect(() => {
     loadVoiceIndex().then(() => setVoicesReady(true))
+  }, [])
+
+  // Trace d'usage (pseudonyme, mise en file hors-ligne — voir lib/api.js).
+  // Sans compte ou sans serveur, tout ceci est inerte : le local d'abord.
+  useEffect(() => {
+    track('app_opened')
+    flushEvents()
   }, [])
 
   // Un lien de défi ouvre directement l'écran d'annonce — au chargement, mais
@@ -150,6 +158,7 @@ export default function App() {
     setProgress(np)
     setLastResult(result)
     setCompletedUnit(justDone ? unit : null)
+    track('lesson_completed', { lang: course.id, xp: XP_PER_LESSON })
     setScreen(ECRANS.LECON_FINIE)
   }
 
@@ -165,7 +174,10 @@ export default function App() {
   function finishChallenge(result) {
     setLastResult(result)
     const passed = result.correct >= Math.ceil(result.total * 0.6)
-    if (passed) setProgress((p) => recordChallenge(p, { xpGain: CHALLENGE.xpGain, gems: CHALLENGE.gems }))
+    if (passed) {
+      setProgress((p) => recordChallenge(p, { xpGain: CHALLENGE.xpGain, gems: CHALLENGE.gems }))
+      track('challenge_done', { lang: course.id, xp: CHALLENGE.xpGain })
+    }
     setScreen(ECRANS.DEFI_FINI)
   }
 
@@ -371,6 +383,7 @@ export default function App() {
               course={course}
               onContinue={() => {
                 setProgress((p) => openChest(course, p, activeChest.id, { gems: CHEST_GEMS }))
+                track('chest_opened', { lang: course.id })
                 setScreen(ECRANS.CHEMIN)
               }}
             />
