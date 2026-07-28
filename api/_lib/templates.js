@@ -6,7 +6,7 @@
  * Le ton suit la règle du produit : ON N'ACCUSE JAMAIS. La recherche sur ce
  * public (anxiété de la langue d'héritage) comme l'exemple de Duolingo
  * (notifications culpabilisantes devenues un mème) interdisent le
- * « tu nous manques 😢 » : chaque relance donne une RAISON de revenir,
+ * « tu nous manques » larmoyant : chaque relance donne une RAISON de revenir,
  * jamais un reproche.
  */
 
