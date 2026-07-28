@@ -251,3 +251,54 @@ export function globalStats(store, courses) {
 
 /** L'élève a-t-il déjà fait l'onboarding général (pourquoi / objectif) ? */
 export const hasProfile = (store) => !!store.profile
+
+/* ------------------------------------------------------------------ */
+/* Fusion de deux stores — le cœur de la synchronisation.              */
+/* ------------------------------------------------------------------ */
+
+const RANG_STATUT = { locked: 0, available: 1, current: 2, done: 3 }
+
+/** Fusionne la progression d'UNE langue : rien ne se perd, jamais. */
+function mergeProgress(a = {}, b = {}) {
+  const statuses = { ...(a.statuses || {}) }
+  for (const [id, st] of Object.entries(b.statuses || {})) {
+    if ((RANG_STATUT[st] ?? 0) > (RANG_STATUT[statuses[id]] ?? 0)) statuses[id] = st
+  }
+  const parMot = new Map()
+  for (const e of [...(a.lexique || []), ...(b.lexique || [])]) parMot.set(e.mot.toLowerCase(), e)
+  return {
+    ...a,
+    ...b,
+    statuses,
+    xp: Math.max(a.xp || 0, b.xp || 0),
+    gems: Math.max(a.gems || 0, b.gems || 0),
+    streak: Math.max(a.streak || 0, b.streak || 0),
+    perfectCount: Math.max(a.perfectCount || 0, b.perfectCount || 0),
+    // Le jour le plus récent gagne les compteurs quotidiens.
+    ...((a.xpDay || '') > (b.xpDay || '')
+      ? { xpDay: a.xpDay, xpToday: a.xpToday }
+      : { xpDay: b.xpDay, xpToday: b.xpToday }),
+    lastDay: (a.lastDay || '') > (b.lastDay || '') ? a.lastDay : b.lastDay,
+    lexique: [...parMot.values()],
+    missionsFaites: [...new Set([...(a.missionsFaites || []), ...(b.missionsFaites || [])])],
+  }
+}
+
+/**
+ * Fusionne le store local et l'instantané du serveur, par MAXIMUM et UNION :
+ * le pire cas d'une fusion est « rien de nouveau », jamais « j'ai perdu mes
+ * 200 XP » — c'est LE piège classique de la première connexion.
+ */
+export function mergeStores(local, remote) {
+  if (!remote) return local
+  if (!local) return remote
+  const langs = new Set([...Object.keys(local.byLang || {}), ...Object.keys(remote.byLang || {})])
+  const byLang = {}
+  for (const l of langs) byLang[l] = mergeProgress(remote.byLang?.[l], local.byLang?.[l])
+  return {
+    ...remote,
+    ...local, // les préférences de CET appareil (langue active, profil) priment
+    profile: { ...(remote.profile || {}), ...(local.profile || {}) },
+    byLang,
+  }
+}
