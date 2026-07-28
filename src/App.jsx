@@ -18,7 +18,8 @@ import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents } from './lib/api.js'
+import { track, flushEvents, me, syncStore } from './lib/api.js'
+import { AccountScreen } from './screens/AccountScreen.jsx'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -82,6 +83,19 @@ export default function App() {
   useEffect(() => {
     track('app_opened')
     flushEvents()
+  }, [])
+
+  // Connecté ? On synchronise à l'ouverture : lecture du serveur, fusion
+  // max/union, réécriture. C'est ici que le retour d'un lien magique
+  // aboutit — la session est posée, la progression se retrouve.
+  useEffect(() => {
+    me().then((u) => {
+      if (!u) return
+      syncStore(loadStore()).then(({ store: fusion, synced }) => {
+        if (synced) setStore(fusion)
+      })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Un lien de défi ouvre directement l'écran d'annonce — au chargement, mais
@@ -257,7 +271,16 @@ export default function App() {
               store={store}
               onSave={setStore}
               onDuel={startDuel}
+              onAccount={() => setScreen(ECRANS.COMPTE)}
               onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.COMPTE && (
+            <AccountScreen
+              store={store}
+              onStoreMerged={setStore}
+              onBack={() => setScreen(ECRANS.PROFIL)}
             />
           )}
 
