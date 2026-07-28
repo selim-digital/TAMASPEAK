@@ -34,6 +34,10 @@ export function auth() {
     social.google = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Sans ceci, Google resélectionne SILENCIEUSEMENT le dernier compte :
+      // impossible d'en changer, et la déconnexion semble « ne pas marcher »
+      // (on se retrouve reconnecté au même compte au clic suivant).
+      prompt: 'select_account',
     }
   }
 

@@ -57,6 +57,22 @@
   --animate-spring-pick: springPick 0.55s cubic-bezier(0.25, 1.6, 0.35, 1) both;
   --animate-halo: halo 2s ease-out infinite;
   --animate-tabz-in: tabzIn 0.9s cubic-bezier(0.25, 1.6, 0.35, 1) both;
+
+  /* Attente longue (OAuth Google : plusieurs secondes) — la tabzimt tourne
+     lentement et respire, comme un bijou qu'on fait jouer dans la lumière. */
+  --animate-bijou: bijou 2.8s ease-in-out infinite;
+}
+
+@keyframes bijou {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.08);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 @keyframes bob {

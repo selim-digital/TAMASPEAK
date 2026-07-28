@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
+import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
 import { sfx } from '../lib/sfx.js'
 import {
   me,
@@ -36,6 +37,7 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
   const [envoi, setEnvoi] = useState(null) // null | 'encours' | 'envoye' | 'verif' | 'erreur'
   const [flash, setFlash] = useState(null)
   const [confirmerSuppr, setConfirmerSuppr] = useState(false)
+  const [googleEnCours, setGoogleEnCours] = useState(false)
 
   useEffect(() => {
     me().then((u) => {
@@ -105,9 +107,30 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
     }
   }
 
+  async function lancerGoogle() {
+    sfx.click()
+    // Le bijou tourne dès le clic : l'aller-retour OAuth chez Google prend
+    // plusieurs secondes, et un bouton muet ressemble à un bouton cassé.
+    // Le loader reste affiché jusqu'à ce que la page parte chez Google.
+    setGoogleEnCours(true)
+    const parti = await signInWithGoogle()
+    if (!parti) {
+      setGoogleEnCours(false)
+      note('Google est injoignable pour le moment — réessaie, ou passe par le code email.')
+    }
+  }
+
   async function deconnecter() {
     sfx.click()
     await signOut()
+    // On vérifie que la session est RÉELLEMENT tombée : afficher
+    // « déconnecté » alors que le serveur garde la session, c'est la recette
+    // du « impossible de me déconnecter de Google ».
+    const encore = await me()
+    if (encore) {
+      note('La déconnexion a échoué — réessaie dans un instant.')
+      return
+    }
     setUser(null)
     setEtat('deconnecte')
     setEnvoi(null)
@@ -128,6 +151,24 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
     } else {
       note('La suppression a échoué — réessaie, ou écris-nous via le feedback.')
     }
+  }
+
+  // L'attente Google, habillée : la tabzimt tourne comme un bijou qu'on fait
+  // jouer dans la lumière. Plein écran pour que rien d'autre ne soit cliqué
+  // pendant l'aller-retour OAuth.
+  if (googleEnCours) {
+    return (
+      <div className="animate-enter flex min-h-0 flex-1 flex-col items-center justify-center bg-cream px-8 text-center">
+        <div className="animate-bijou" aria-hidden="true">
+          <Tabzimt size={110} />
+        </div>
+        <p className="mt-5 text-[15px] font-extrabold">Google ouvre sa porte…</p>
+        <p className="mt-1 text-[11.5px] leading-snug text-ink-soft">
+          L’aller-retour prend quelques secondes. Choisis ton compte quand Google te le demande —
+          tu reviendras ici tout seul.
+        </p>
+      </div>
+    )
   }
 
   return (
@@ -202,7 +243,7 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
                   type="button"
                   onClick={valider}
                   disabled={code.length < 6 || envoi === 'verif'}
-                  className="mt-3 w-full rounded-xl bg-turquoise py-2.5 text-[13.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] disabled:opacity-40 disabled:shadow-none"
+                  className="mt-3 w-full rounded-xl bg-turquoise py-2.5 text-[13.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] transition-[transform,box-shadow] duration-75 active:translate-y-[2px] active:shadow-none disabled:opacity-40 disabled:shadow-none"
                 >
                   {envoi === 'verif' ? 'Vérification…' : 'Me connecter'}
                 </button>
@@ -236,7 +277,7 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
                   type="button"
                   onClick={envoyerCode}
                   disabled={envoi === 'encours' || !email.trim()}
-                  className="mt-2 w-full rounded-xl bg-turquoise py-2.5 text-[13.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] disabled:opacity-40 disabled:shadow-none"
+                  className="mt-2 w-full rounded-xl bg-turquoise py-2.5 text-[13.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] transition-[transform,box-shadow] duration-75 active:translate-y-[2px] active:shadow-none disabled:opacity-40 disabled:shadow-none"
                 >
                   {envoi === 'encours' ? 'Envoi…' : 'Recevoir mon code'}
                 </button>
@@ -254,8 +295,8 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
 
                 <button
                   type="button"
-                  onClick={() => signInWithGoogle()}
-                  className="flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-line bg-white py-2.5 text-[13.5px] font-extrabold text-ink"
+                  onClick={lancerGoogle}
+                  className="flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-b-4 border-line bg-white py-2.5 text-[13.5px] font-extrabold text-ink transition-transform duration-75 active:translate-y-[2px] active:border-b-2"
                 >
                   {/* Le « G » officiel, en SVG inline : pas de requête externe. */}
                   <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
