@@ -32,4 +32,5 @@ export const ECRANS = Object.freeze({
   DUEL: 'duel',
   DUEL_RESULTAT: 'duelresult',
   COMPTE: 'compte',
+  FEEDBACK: 'feedback',
 })

@@ -27,7 +27,7 @@ function Tile({ icon, value, label }) {
  * Aucune donnée ne quitte l'appareil : le partage passe par la feuille de
  * partage du système ou le presse-papiers, jamais par un serveur.
  */
-export function ProfileScreen({ store, onSave, onDuel, onAccount, onBack }) {
+export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, onBack }) {
   const profile = store.profile || {}
   const [name, setName] = useState(profile.name || '')
   const [avatar, setAvatar] = useState(profile.avatar || 'akermus')
@@ -166,6 +166,9 @@ export function ProfileScreen({ store, onSave, onDuel, onAccount, onBack }) {
           </Button>
           <Button variant="neutral" onClick={share}>
             Partager ma progression
+          </Button>
+          <Button variant="ghost" onClick={onFeedback}>
+            💬 Donner mon avis
           </Button>
           <Button variant="neutral" onClick={onAccount}>
             Mon compte — sauvegarde en ligne

@@ -20,6 +20,7 @@ import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
 import { track, flushEvents, me, syncStore, serverKnown } from './lib/api.js'
 import { AccountScreen } from './screens/AccountScreen.jsx'
+import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -295,8 +296,13 @@ export default function App() {
                 setCompteObligatoire(false)
                 setScreen(ECRANS.COMPTE)
               }}
+              onFeedback={() => setScreen(ECRANS.FEEDBACK)}
               onBack={() => setScreen(ECRANS.CHEMIN)}
             />
+          )}
+
+          {screen === ECRANS.FEEDBACK && (
+            <FeedbackScreen lang={course.id} onBack={() => setScreen(ECRANS.PROFIL)} />
           )}
 
           {screen === ECRANS.COMPTE && (
