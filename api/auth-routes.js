@@ -22,9 +22,9 @@ export default async function handler(req, res) {
   try {
     return await toNodeHandler(auth())(req, res)
   } catch (e) {
+    // Le détail vit dans les logs et dans /api/health (sonde magic-link-dry) ;
+    // au client, on ne renvoie jamais l'intérieur d'une exception.
     console.error('[tama] auth handler', e)
-    // Message d'erreur remonté TEMPORAIREMENT (jamais de valeurs d'env
-    // dedans) : sans accès aux logs Vercel, c'est le seul stéthoscope.
-    return res.status(500).json({ error: String(e?.message || e).slice(0, 300) })
+    return res.status(500).json({ error: 'erreur interne' })
   }
 }
