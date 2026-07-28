@@ -1,5 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/api/auth/:path*", "destination": "/api/auth-routes" }
+  ],
+  "functions": {
+    "api/setup.js": { "includeFiles": "db/schema.sql" }
+  },
   "headers": [
     {
       "source": "/(sw.js|registerSW.js|manifest.webmanifest)",
