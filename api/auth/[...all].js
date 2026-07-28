@@ -7,13 +7,15 @@ import { auth } from '../_lib/auth.js'
 import { toNodeHandler } from 'better-auth/node'
 
 export default async function handler(req, res) {
-  if (!serverReady()) return notConfigured(res)
+  // Better Auth REFUSE de tourner sans secret en production (vérifié : c'est
+  // lui qui lève, et la fonction entière tombait en 500). Sans le secret,
+  // les comptes ne sont simplement « pas encore ouverts » — 503, comme pour
+  // toute capacité non configurée.
+  if (!serverReady() || !process.env.BETTER_AUTH_SECRET) return notConfigured(res)
   try {
     return await toNodeHandler(auth())(req, res)
   } catch (e) {
-    // FUNCTION_INVOCATION_FAILED sans logs ne dit rien : on remonte le
-    // message (jamais les valeurs d'env) le temps de stabiliser la prod.
     console.error('[tama] auth handler', e)
-    return res.status(500).json({ error: String(e?.message || e).slice(0, 300) })
+    return res.status(500).json({ error: 'erreur interne' })
   }
 }
