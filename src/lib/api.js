@@ -28,6 +28,13 @@ const isApi = (r) => (r.headers.get('content-type') || '').includes('application
 
 export const isLoggedIn = async () => !!(await me())
 
+/**
+ * Le serveur existe-t-il ? Fiable seulement APRÈS un premier appel (me(),
+ * flushEvents…) ; null tant qu'on ne sait pas. L'écran compte s'en sert pour
+ * distinguer « déconnecté » de « les comptes ne sont pas encore ouverts ».
+ */
+export const serverKnown = () => _configured
+
 /** L'utilisateur connecté, ou null (pas de compte, pas de réseau, pas de serveur). */
 export async function me() {
   try {
@@ -58,7 +65,7 @@ export async function requestMagicLink(email) {
       credentials: 'include',
       body: JSON.stringify({ email, callbackURL: '/' }),
     })
-    if (r.status === 503) return 'unavailable'
+    if (r.status === 503 || !isApi(r)) return 'unavailable'
     return r.ok ? 'sent' : 'error'
   } catch {
     return 'error'

@@ -27,7 +27,7 @@ function Tile({ icon, value, label }) {
  * Aucune donnée ne quitte l'appareil : le partage passe par la feuille de
  * partage du système ou le presse-papiers, jamais par un serveur.
  */
-export function ProfileScreen({ store, onSave, onDuel, onBack }) {
+export function ProfileScreen({ store, onSave, onDuel, onAccount, onBack }) {
   const profile = store.profile || {}
   const [name, setName] = useState(profile.name || '')
   const [avatar, setAvatar] = useState(profile.avatar || 'akermus')
@@ -167,6 +167,9 @@ export function ProfileScreen({ store, onSave, onDuel, onBack }) {
           <Button variant="neutral" onClick={share}>
             Partager ma progression
           </Button>
+          <Button variant="neutral" onClick={onAccount}>
+            Mon compte — sauvegarde en ligne
+          </Button>
         </div>
 
         {flash && (
@@ -174,8 +177,8 @@ export function ProfileScreen({ store, onSave, onDuel, onBack }) {
         )}
 
         <p className="mt-4 text-center text-[10px] leading-snug text-ink-soft">
-          Rien n’est envoyé sur Internet : ton profil reste sur cet appareil, et le partage passe par
-          ton téléphone.
+          Ton profil vit sur cet appareil. Il n’est envoyé en ligne que si tu crées un compte —
+          et uniquement pour te suivre d’un appareil à l’autre.
         </p>
       </div>
     </div>
