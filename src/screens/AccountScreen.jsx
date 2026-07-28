@@ -5,7 +5,8 @@ import { sfx } from '../lib/sfx.js'
 import {
   me,
   serverKnown,
-  requestMagicLink,
+  requestCode,
+  verifyCode,
   signInWithGoogle,
   signOut,
   deleteAccount,
@@ -15,22 +16,24 @@ import {
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /**
- * Mon compte — la porte vers la sauvegarde en ligne.
+ * Mon compte — connexion par CODE À 6 CHIFFRES ou Google.
  *
- * Le discours de l'écran suit la règle du produit : le compte est un FILET
- * DE SÉCURITÉ, pas une obligation. L'app entière fonctionne sans — ce que
- * l'écran dit en toutes lettres, parce qu'un public familial doit pouvoir
- * refuser sans se demander ce qu'il perd (réponse : rien, sauf la
- * synchronisation entre appareils).
+ * Pourquoi un code et pas un lien : un lien cliqué dans Gmail ouvre le
+ * NAVIGATEUR, jamais l'app installée — et sur iPhone la PWA a un stockage
+ * séparé de Safari : on se retrouvait « connecté ailleurs », avec une app
+ * qui semblait repartie de zéro. Le code, lui, se tape ICI : on ne quitte
+ * jamais l'app, la session naît au bon endroit.
  *
- * Pas de mot de passe, par choix : un lien envoyé par email, ou Google.
- * Rien à retenir, rien à se faire voler.
+ * `obligatoire` : l'app exige un compte pour commencer (décision produit).
+ * L'écran garde un ton d'accueil, pas de barrière — et si le serveur est
+ * absent, l'app laisse passer en local : on n'exige pas l'impossible.
  */
-export function AccountScreen({ store, onStoreMerged, onBack }) {
+export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSession, onBack }) {
   const [etat, setEtat] = useState('chargement') // chargement | deconnecte | connecte | indisponible
   const [user, setUser] = useState(null)
   const [email, setEmail] = useState('')
-  const [envoi, setEnvoi] = useState(null) // null | 'encours' | 'envoye' | 'erreur'
+  const [code, setCode] = useState('')
+  const [envoi, setEnvoi] = useState(null) // null | 'encours' | 'envoye' | 'verif' | 'erreur'
   const [flash, setFlash] = useState(null)
   const [confirmerSuppr, setConfirmerSuppr] = useState(false)
 
@@ -40,7 +43,9 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
       // Après me(), on sait si le serveur existe : sans lui, inutile de
       // montrer un formulaire dont l'envoi ne peut qu'échouer.
       setEtat(u ? 'connecte' : serverKnown() === false ? 'indisponible' : 'deconnecte')
+      if (u) onSession?.(u)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function note(msg, duree = 2600) {
@@ -48,20 +53,44 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
     setTimeout(() => setFlash(null), duree)
   }
 
-  async function envoyerLien() {
+  async function envoyerCode() {
     if (!EMAIL_OK.test(email)) {
       note('Vérifie l’adresse email — elle semble incomplète.')
       return
     }
     setEnvoi('encours')
     sfx.click()
-    const r = await requestMagicLink(email.trim().toLowerCase())
-    if (r === 'sent') setEnvoi('envoye')
-    else if (r === 'unavailable') {
+    const r = await requestCode(email.trim().toLowerCase())
+    if (r === 'sent') {
+      setEnvoi('envoye')
+      setCode('')
+    } else if (r === 'unavailable') {
       setEtat('indisponible')
       setEnvoi(null)
     } else {
       setEnvoi('erreur')
+    }
+  }
+
+  async function valider() {
+    if (code.trim().length < 6) return
+    setEnvoi('verif')
+    sfx.click()
+    const r = await verifyCode(email.trim().toLowerCase(), code.trim())
+    if (r === 'ok') {
+      const u = await me()
+      setUser(u)
+      setEtat('connecte')
+      setEnvoi(null)
+      sfx.correct()
+      // La promesse tenue : fusion max/union — rien ne se perd, jamais.
+      const { store: fusion, synced } = await syncStore(store)
+      if (synced) onStoreMerged(fusion)
+      onSession?.(u)
+      note('Connecté ! Ta progression est maintenant sauvegardée.', 3200)
+    } else {
+      setEnvoi('envoye')
+      note(r === 'wrong' ? 'Code faux ou expiré — vérifie, ou renvoie un code.' : 'Vérification impossible — réessaie.')
     }
   }
 
@@ -70,9 +99,9 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
     const { store: fusion, synced } = await syncStore(store)
     if (synced) {
       onStoreMerged(fusion)
-      note('Progression synchronisée — rien ne se perd, jamais.')
+      note('Progression synchronisée.')
     } else {
-      note('Synchronisation impossible pour le moment. Ta progression locale est intacte.')
+      note('Synchronisation impossible pour le moment — ta progression locale est intacte.')
     }
   }
 
@@ -81,8 +110,10 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
     await signOut()
     setUser(null)
     setEtat('deconnecte')
+    setEnvoi(null)
     setConfirmerSuppr(false)
-    note('Déconnecté. Tout continue de fonctionner sur cet appareil.')
+    onSession?.(null)
+    note('Déconnecté. Ta progression locale reste sur cet appareil.')
   }
 
   async function supprimer() {
@@ -92,6 +123,7 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
       setUser(null)
       setEtat('deconnecte')
       setConfirmerSuppr(false)
+      onSession?.(null)
       note('Compte supprimé. Tes données en ligne sont effacées ; ta progression locale reste à toi.', 4000)
     } else {
       note('La suppression a échoué — réessaie, ou écris-nous via le feedback.')
@@ -104,7 +136,7 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
         <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
           ←
         </button>
-        <h2 className="text-lg font-extrabold">Mon compte</h2>
+        <h2 className="text-lg font-extrabold">{obligatoire ? 'Bienvenue !' : 'Mon compte'}</h2>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
@@ -117,7 +149,7 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
           <div className="mt-4 rounded-2xl border border-line bg-sand px-4 py-4 text-center">
             <Akermus height={72} state="console" className="mx-auto" />
             <p className="mt-2 text-[12.5px] leading-snug text-ink">
-              Les comptes ne sont pas encore ouverts sur cette version.
+              Les comptes ne sont pas joignables pour le moment.
             </p>
             <p className="mt-1 text-[11px] leading-snug text-ink-soft">
               Rien d’inquiétant : toute ta progression vit sur cet appareil et ne bouge pas.
@@ -125,40 +157,70 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
           </div>
         )}
 
-        {/* ---------- Pas connecté : les deux portes d'entrée ------------ */}
+        {/* ---------- Pas connecté ---------------------------------------- */}
         {etat === 'deconnecte' && (
           <>
             <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
               <Akermus height={64} state="curious" className="flex-none" />
               <p className="text-[11.5px] leading-snug text-ink">
-                Un compte sert à <strong>une seule chose</strong> : garder ta progression si tu
-                changes de téléphone, et la partager entre tes appareils.
+                {obligatoire ? (
+                  <>
+                    Crée ton compte en <strong>30 secondes</strong> — il garde ta progression pour
+                    toujours, sur tous tes appareils.
+                  </>
+                ) : (
+                  <>
+                    Un compte sert à <strong>une seule chose</strong> : garder ta progression si tu
+                    changes de téléphone, et la partager entre tes appareils.
+                  </>
+                )}
                 <span className="mt-1 block text-ink-soft">
-                  Sans compte, tout fonctionne pareil — simplement, tout reste ici.
+                  Pas de mot de passe : un code reçu par email, ou Google.
                 </span>
               </p>
             </div>
 
-            {envoi === 'envoye' ? (
+            {envoi === 'envoye' || envoi === 'verif' ? (
+              /* --- Saisie du code : on ne quitte jamais cet écran --- */
               <div className="animate-rise mt-5 rounded-2xl border-2 border-turquoise bg-turquoise/5 px-4 py-4 text-center">
                 <p className="text-[26px]" aria-hidden="true">📬</p>
-                <p className="mt-1 text-[13px] font-extrabold">Le lien est parti !</p>
+                <p className="mt-1 text-[13px] font-extrabold">Un code à 6 chiffres est parti !</p>
                 <p className="mt-1 text-[11.5px] leading-snug text-ink-soft">
-                  Ouvre l’email envoyé à <b className="text-ink">{email}</b> et appuie sur le
-                  bouton. Le lien est valable 10 minutes.
+                  Regarde l’email envoyé à <b className="text-ink">{email}</b> (et les spams la
+                  première fois), puis tape le code ici :
                 </p>
+                <input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  placeholder="••••••"
+                  aria-label="Code à 6 chiffres"
+                  className="mx-auto mt-3 block w-[190px] rounded-xl border-2 border-line bg-white px-3 py-2.5 text-center text-[24px] font-extrabold tracking-[0.4em] outline-none focus:border-turquoise"
+                />
                 <button
                   type="button"
-                  onClick={() => setEnvoi(null)}
+                  onClick={valider}
+                  disabled={code.length < 6 || envoi === 'verif'}
+                  className="mt-3 w-full rounded-xl bg-turquoise py-2.5 text-[13.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] disabled:opacity-40 disabled:shadow-none"
+                >
+                  {envoi === 'verif' ? 'Vérification…' : 'Me connecter'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEnvoi(null)
+                    setCode('')
+                  }}
                   className="mt-2 text-[11px] font-bold text-ink-soft underline"
                 >
-                  Me tromper d’adresse ? Renvoyer
+                  Changer d’adresse ou renvoyer un code
                 </button>
               </div>
             ) : (
               <>
                 <label htmlFor="email" className="mt-5 block text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
-                  Par email — un lien, pas de mot de passe
+                  Ton adresse email
                 </label>
                 <input
                   id="email"
@@ -172,11 +234,11 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
                 />
                 <button
                   type="button"
-                  onClick={envoyerLien}
+                  onClick={envoyerCode}
                   disabled={envoi === 'encours' || !email.trim()}
                   className="mt-2 w-full rounded-xl bg-turquoise py-2.5 text-[13.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] disabled:opacity-40 disabled:shadow-none"
                 >
-                  {envoi === 'encours' ? 'Envoi…' : 'Recevoir mon lien de connexion'}
+                  {envoi === 'encours' ? 'Envoi…' : 'Recevoir mon code'}
                 </button>
                 {envoi === 'erreur' && (
                   <p className="mt-2 text-center text-[11px] font-bold text-coral-dark">
@@ -204,10 +266,13 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
                   </svg>
                   Continuer avec Google
                 </button>
+                <p className="mt-1.5 text-center text-[10px] text-ink-soft">
+                  Google fait un aller-retour de quelques secondes — c’est normal.
+                </p>
 
-                <p className="mt-5 text-center text-[10px] leading-snug text-ink-soft">
-                  En te connectant, ta progression locale est <b>fusionnée</b> avec celle du
-                  compte : on garde toujours le meilleur des deux, rien ne s’écrase.
+                <p className="mt-4 text-center text-[10px] leading-snug text-ink-soft">
+                  À la connexion, ta progression locale est <b>fusionnée</b> avec celle du compte :
+                  on garde toujours le meilleur des deux, rien ne s’écrase.
                 </p>
               </>
             )}
@@ -228,47 +293,55 @@ export function AccountScreen({ store, onStoreMerged, onBack }) {
             </div>
 
             <div className="mt-4 flex flex-col gap-2">
-              <Button variant="primary" onClick={synchroniser}>
-                Synchroniser maintenant
-              </Button>
+              {obligatoire ? (
+                <Button variant="primary" onClick={onBack}>
+                  Continuer →
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={synchroniser}>
+                  Synchroniser maintenant
+                </Button>
+              )}
               <Button variant="neutral" onClick={deconnecter}>
                 Se déconnecter
               </Button>
             </div>
 
-            <div className="mt-8 rounded-2xl border border-line bg-sand px-4 py-3">
-              <div className="text-[11px] font-extrabold">Supprimer mon compte</div>
-              <p className="mt-1 text-[10.5px] leading-snug text-ink-soft">
-                Efface tout ce que le serveur sait de toi — définitivement. Ta progression sur cet
-                appareil, elle, reste à toi.
-              </p>
-              {confirmerSuppr ? (
-                <div className="mt-2 flex gap-2">
+            {!obligatoire && (
+              <div className="mt-8 rounded-2xl border border-line bg-sand px-4 py-3">
+                <div className="text-[11px] font-extrabold">Supprimer mon compte</div>
+                <p className="mt-1 text-[10.5px] leading-snug text-ink-soft">
+                  Efface tout ce que le serveur sait de toi — définitivement. Ta progression sur cet
+                  appareil, elle, reste à toi.
+                </p>
+                {confirmerSuppr ? (
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmerSuppr(false)}
+                      className="flex-1 rounded-xl border-2 border-line bg-cream py-2 text-[12px] font-extrabold text-ink-soft"
+                    >
+                      Garder mon compte
+                    </button>
+                    <button
+                      type="button"
+                      onClick={supprimer}
+                      className="flex-1 rounded-xl bg-coral py-2 text-[12px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)]"
+                    >
+                      Oui, tout effacer
+                    </button>
+                  </div>
+                ) : (
                   <button
                     type="button"
-                    onClick={() => setConfirmerSuppr(false)}
-                    className="flex-1 rounded-xl border-2 border-line bg-cream py-2 text-[12px] font-extrabold text-ink-soft"
+                    onClick={() => setConfirmerSuppr(true)}
+                    className="mt-2 text-[11.5px] font-extrabold text-coral-dark underline"
                   >
-                    Garder mon compte
+                    Supprimer…
                   </button>
-                  <button
-                    type="button"
-                    onClick={supprimer}
-                    className="flex-1 rounded-xl bg-coral py-2 text-[12px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)]"
-                  >
-                    Oui, tout effacer
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setConfirmerSuppr(true)}
-                  className="mt-2 text-[11.5px] font-extrabold text-coral-dark underline"
-                >
-                  Supprimer…
-                </button>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </>
         )}
 

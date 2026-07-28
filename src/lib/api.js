@@ -56,6 +56,46 @@ export async function me() {
 /* Connexion                                                            */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Demande un code de connexion à 6 chiffres par email — le mode principal :
+ * le code se tape DANS l'app, on n'en sort jamais (un lien ouvrirait le
+ * navigateur, et sur iPhone la PWA installée a un stockage séparé de
+ * Safari : l'utilisateur serait connecté « ailleurs »).
+ * Renvoie 'sent' | 'unavailable' | 'error'.
+ */
+export async function requestCode(email) {
+  try {
+    const r = await fetch('/api/auth/email-otp/send-verification-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, type: 'sign-in' }),
+    })
+    if (r.status === 503 || !isApi(r)) return 'unavailable'
+    return r.ok ? 'sent' : 'error'
+  } catch {
+    return 'error'
+  }
+}
+
+/** Vérifie le code : crée la session ici même. 'ok' | 'wrong' | 'error'. */
+export async function verifyCode(email, otp) {
+  try {
+    const r = await fetch('/api/auth/sign-in/email-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, otp }),
+    })
+    if (!isApi(r)) return 'error'
+    if (r.ok) return 'ok'
+    // 400/401 : code faux ou expiré — distinct d'une panne.
+    return r.status < 500 ? 'wrong' : 'error'
+  } catch {
+    return 'error'
+  }
+}
+
 /** Envoie le lien magique. Renvoie 'sent' | 'unavailable' | 'error'. */
 export async function requestMagicLink(email) {
   try {

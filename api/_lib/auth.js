@@ -6,17 +6,21 @@
  * utilisateur chez un tiers — revue RGPD), et couvre lien magique + Google
  * sans palier payant ni verrouillage.
  *
- * Trois modes de connexion, tous optionnels par variable d'env :
- *   • lien magique (RESEND_API_KEY présent → email ; absent → lien loggé,
- *     suffisant pour tester en préversion) ;
- *   • Google (GOOGLE_CLIENT_ID/SECRET présents) ;
- *   • jamais de mot de passe : rien à retenir, rien à fuiter.
+ * Modes de connexion :
+ *   • CODE À 6 CHIFFRES par email — le mode principal. Un lien cliqué dans
+ *    Gmail ouvre toujours le NAVIGATEUR, jamais la PWA installée ; sur
+ *    iPhone, la PWA a même un stockage séparé de Safari — l'utilisateur se
+ *    retrouvait connecté dans Safari et « à zéro » dans l'app. Un code se
+ *    tape DANS l'app : on n'en sort jamais.
+ *   • lien magique conservé (utile sur ordinateur, où le contexte ne change
+ *     pas) ; • Google ; • jamais de mot de passe.
+ * Sans RESEND_API_KEY, codes et liens s'écrivent dans les logs Vercel.
  *
  * L'instance est créée PARESSEUSEMENT : sans DATABASE_URL le module se
  * charge sans rien initialiser, et l'endpoint répond 503 (voir db.js).
  */
 import { betterAuth } from 'better-auth'
-import { magicLink } from 'better-auth/plugins'
+import { magicLink, emailOTP } from 'better-auth/plugins'
 import { Pool } from '@neondatabase/serverless'
 import { sendEmail } from './email.js'
 
@@ -56,6 +60,21 @@ export function auth() {
           if (!ok) console.log(`[tama] lien magique pour ${email} : ${url}`)
         },
         expiresIn: 600, // 10 minutes
+      }),
+      emailOTP({
+        otpLength: 6,
+        expiresIn: 600,
+        sendVerificationOTP: async ({ email, otp }) => {
+          const ok = await sendEmail({
+            to: email,
+            // Le code dans l'objet : lisible depuis la bannière de
+            // notification, sans même ouvrir l'email.
+            subject: `${otp} — ton code Tama Speak`,
+            template: 'code-otp',
+            data: { otp },
+          })
+          if (!ok) console.log(`[tama] code pour ${email} : ${otp}`)
+        },
       }),
     ],
   })

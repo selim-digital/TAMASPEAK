@@ -11,7 +11,9 @@
  */
 
 const APP_URL = process.env.APP_URL || 'https://tamaspeak.com'
-const LOGO = `${APP_URL}/icon-192.png`
+// Les icônes de la PWA vivent sous /icons/ — la racine renvoie 404 (vécu :
+// le logo ne s'affichait dans aucun email).
+const LOGO = `${APP_URL}/icons/icon-192.png`
 
 /* Palette de la marque (index.css) en dur : les emails n'ont pas nos CSS. */
 const C = {
@@ -70,6 +72,24 @@ const petit = (t) => `<p style="margin:12px 0 0;font-size:12px;line-height:1.5;c
 /* ------------------------------------------------------------------ */
 
 const TEMPLATES = {
+  /**
+   * Transactionnel — le code de connexion à 6 chiffres, mode principal :
+   * il se tape DANS l'app, donc on ne quitte jamais l'app (un lien, lui,
+   * ouvre le navigateur — et sur iPhone la PWA installée a un stockage
+   * séparé de Safari).
+   */
+  'code-otp': ({ otp }) =>
+    shell({
+      body:
+        h1('Ton code de connexion') +
+        p('Retourne dans l’app et tape ce code. Il est valable <b>10 minutes</b>.') +
+        `<p style="margin:18px 0;text-align:center;">
+           <span style="display:inline-block;background:${C.cream};border:2px solid ${C.line};border-radius:14px;
+             padding:14px 22px;font-size:30px;font-weight:800;letter-spacing:8px;color:${C.turquoiseDeep};">${esc(otp)}</span>
+         </p>` +
+        petit('Si tu n’as pas demandé ce code, ignore simplement cet email — rien ne se passera.'),
+    }),
+
   /** Transactionnel — le lien magique de connexion. */
   'magic-link': ({ url }) =>
     shell({
