@@ -28,6 +28,70 @@ const isApi = (r) => (r.headers.get('content-type') || '').includes('application
 
 export const isLoggedIn = async () => !!(await me())
 
+/* ------------------------------------------------------------------ */
+/* État de session — la vérité en trois états, jamais deux             */
+/* ------------------------------------------------------------------ */
+
+const HINT_KEY = 'tama-speak:session-hint'
+
+/**
+ * Indice local de session : « la dernière fois qu'on a su, on était
+ * connecté ». Permet de démarrer OPTIMISTE (règle anti-boucle n°3 du
+ * comité) : on n'exige pas du réseau qu'il réponde avant de laisser entrer
+ * quelqu'un qui était connecté hier — on ne dégrade que sur un refus
+ * EXPLICITE du serveur, jamais sur une erreur réseau.
+ */
+export function sessionHint() {
+  try {
+    return !!localStorage.getItem(HINT_KEY)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * L'état de session, en TROIS états — et jamais deux :
+ *   'authenticated' | 'anonymous' | 'unreachable'
+ * La distinction anonymous/unreachable est décisive : « le serveur a
+ * répondu qu'il n'y a pas de session » autorise à demander une connexion ;
+ * « le serveur n'a pas répondu » ne l'autorise PAS (mode local).
+ */
+export async function sessionState() {
+  // Crochet de test, DEV UNIQUEMENT (import.meta.env.DEV est faux en prod,
+  // la branche entière disparaît du bundle) : `?session-test=anon|ok` force
+  // l'état — le poste de dev n'a pas de serveur d'auth, et vérifier les
+  // parcours « anonyme confirmé » et « connecté » exige de pouvoir les
+  // produire.
+  if (import.meta.env.DEV) {
+    const force = new URLSearchParams(window.location.search).get('session-test')
+    if (force === 'anon') return { state: 'anonymous', user: null }
+    if (force === 'ok')
+      return {
+        state: 'authenticated',
+        user: { id: 'test', email: 'test@tamaspeak.com', name: 'Selim' },
+      }
+  }
+  try {
+    const r = await fetch('/api/auth/get-session', { credentials: 'include' })
+    if (r.status === 503 || !isApi(r)) {
+      _configured = false
+      return { state: 'unreachable', user: null }
+    }
+    _configured = true
+    const s = await r.json()
+    const user = s?.user || null
+    try {
+      if (user) localStorage.setItem(HINT_KEY, '1')
+      else localStorage.removeItem(HINT_KEY)
+    } catch {
+      /* stockage indisponible */
+    }
+    return { state: user ? 'authenticated' : 'anonymous', user }
+  } catch {
+    return { state: 'unreachable', user: null }
+  }
+}
+
 /**
  * Le serveur existe-t-il ? Fiable seulement APRÈS un premier appel (me(),
  * flushEvents…) ; null tant qu'on ne sait pas. L'écran compte s'en sert pour
@@ -35,21 +99,13 @@ export const isLoggedIn = async () => !!(await me())
  */
 export const serverKnown = () => _configured
 
-/** L'utilisateur connecté, ou null (pas de compte, pas de réseau, pas de serveur). */
+/**
+ * L'utilisateur connecté, ou null. Passe par sessionState() : l'indice
+ * local de session est ainsi tenu à jour par TOUS les appels (connexion,
+ * déconnexion, suppression), sans que les appelants y pensent.
+ */
 export async function me() {
-  try {
-    const r = await fetch('/api/auth/get-session', { credentials: 'include' })
-    if (r.status === 503 || !isApi(r)) {
-      _configured = false
-      return null
-    }
-    if (!r.ok) return null
-    _configured = true
-    const s = await r.json()
-    return s?.user || null
-  } catch {
-    return null
-  }
+  return (await sessionState()).user
 }
 
 /* ------------------------------------------------------------------ */

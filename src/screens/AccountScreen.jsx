@@ -29,7 +29,14 @@ const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
  * L'écran garde un ton d'accueil, pas de barrière — et si le serveur est
  * absent, l'app laisse passer en local : on n'exige pas l'impossible.
  */
-export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSession, onBack }) {
+export function AccountScreen({
+  store,
+  obligatoire = false,
+  intention = 'creer', // 'creer' | 'connexion' — même flux, wording adapté
+  onStoreMerged,
+  onSession,
+  onBack,
+}) {
   const [etat, setEtat] = useState('chargement') // chargement | deconnecte | connecte | indisponible
   const [user, setUser] = useState(null)
   const [email, setEmail] = useState('')
@@ -54,6 +61,18 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
     setFlash(msg)
     setTimeout(() => setFlash(null), duree)
   }
+
+  // Avis du comité : après connexion en mode obligatoire, PAS d'écran
+  // intermédiaire « Continuer → » — un flash « ✓ » d'une seconde, puis on
+  // entre. Vaut aussi pour qui arrive ici déjà connecté (retour Google,
+  // double passage) : l'écran de connexion devient inatteignable une fois
+  // connecté.
+  useEffect(() => {
+    if (!obligatoire || etat !== 'connecte') return
+    const t = setTimeout(onBack, 1000)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [obligatoire, etat])
 
   async function envoyerCode() {
     if (!EMAIL_OK.test(email)) {
@@ -177,7 +196,9 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
         <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
           ←
         </button>
-        <h2 className="text-lg font-extrabold">{obligatoire ? 'Bienvenue !' : 'Mon compte'}</h2>
+        <h2 className="text-lg font-extrabold">
+          {!obligatoire ? 'Mon compte' : intention === 'connexion' ? 'Content de te revoir !' : 'Crée ton compte'}
+        </h2>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
@@ -204,7 +225,12 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
             <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
               <Akermus height={64} state="curious" className="flex-none" />
               <p className="text-[11.5px] leading-snug text-ink">
-                {obligatoire ? (
+                {obligatoire && intention === 'connexion' ? (
+                  <>
+                    Entre ton adresse : on t’envoie un <strong>code</strong>, et tu retrouves ta
+                    progression exactement où tu l’avais laissée.
+                  </>
+                ) : obligatoire ? (
                   <>
                     Crée ton compte en <strong>30 secondes</strong> — il garde ta progression pour
                     toujours, sur tous tes appareils.
@@ -333,20 +359,22 @@ export function AccountScreen({ store, obligatoire = false, onStoreMerged, onSes
               </p>
             </div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              {obligatoire ? (
-                <Button variant="primary" onClick={onBack}>
-                  Continuer →
-                </Button>
-              ) : (
+            {obligatoire ? (
+              // L'avance est automatique (effet ci-dessus) : on montre
+              // juste que c'est gagné, une seconde.
+              <p className="animate-rise mt-4 text-center text-[15px] font-extrabold text-turquoise-deep">
+                ✓ C'est bon{user.name ? `, ${user.name}` : ''} ! On y va…
+              </p>
+            ) : (
+              <div className="mt-4 flex flex-col gap-2">
                 <Button variant="primary" onClick={synchroniser}>
                   Synchroniser maintenant
                 </Button>
-              )}
-              <Button variant="neutral" onClick={deconnecter}>
-                Se déconnecter
-              </Button>
-            </div>
+                <Button variant="neutral" onClick={deconnecter}>
+                  Se déconnecter
+                </Button>
+              </div>
+            )}
 
             {!obligatoire && (
               <div className="mt-8 rounded-2xl border border-line bg-sand px-4 py-3">

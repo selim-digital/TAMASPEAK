@@ -18,7 +18,7 @@ import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, me, syncStore, serverKnown } from './lib/api.js'
+import { track, flushEvents, syncStore, sessionState, sessionHint } from './lib/api.js'
 import { AccountScreen } from './screens/AccountScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
@@ -69,9 +69,28 @@ export default function App() {
   const [, setVoicesReady] = useState(false)
   // undefined = on ne sait pas encore ; null = pas de session ; objet = connecté.
   const [user, setUser] = useState(undefined)
+  /**
+   * L'état de session, en clair — règles anti-boucle du comité :
+   *   'inconnu'   : vérification en cours — ON NE ROUTE JAMAIS VERS LA
+   *                 CONNEXION DEPUIS CET ÉTAT (c'était le bug : connecté,
+   *                 mais renvoyé vers la connexion à chaque ouverture) ;
+   *   'optimiste' : un indice local dit « connecté hier » — on laisse
+   *                 entrer, la vérification confirme en arrière-plan et ne
+   *                 dégrade que sur refus EXPLICITE du serveur ;
+   *   'connecte' | 'anonyme' : confirmés par le serveur ;
+   *   'horsligne' : le serveur n'a pas répondu — mode local, on n'exige
+   *                 pas l'impossible.
+   */
+  const [sessionEtat, setSessionEtat] = useState(() => (sessionHint() ? 'optimiste' : 'inconnu'))
+  // Tap sur « Commencer » pendant la vérification : on mémorise l'intention
+  // et on route dès que la réponse arrive (bouton « · · · » en attendant).
+  const [departEnAttente, setDepartEnAttente] = useState(false)
   // L'écran compte a deux visages : porte d'entrée obligatoire (verrou de
   // l'accueil) ou gestion volontaire (depuis le profil).
   const [compteObligatoire, setCompteObligatoire] = useState(false)
+  // Le wording de l'écran compte suit l'intention ('creer' | 'connexion') :
+  // le flux est le même derrière, mais l'utilisateur doit reconnaître son cas.
+  const [compteIntention, setCompteIntention] = useState('creer')
 
   useEffect(() => {
     saveStore(store)
@@ -91,18 +110,36 @@ export default function App() {
     flushEvents()
   }, [])
 
-  // Connecté ? On synchronise à l'ouverture : lecture du serveur, fusion
-  // max/union, réécriture. C'est aussi ici qu'aboutit le retour de Google
-  // (rechargement complet de la page) — la session est posée, la
+  // Vérification de session à l'ouverture — c'est aussi ici qu'aboutit le
+  // retour de Google (rechargement complet). Connecté : sync max/union, la
   // progression locale est INTACTE et se retrouve enrichie, jamais écrasée.
+  // La dégradation vers « anonyme » n'arrive que sur réponse EXPLICITE du
+  // serveur ; une panne réseau laisse l'optimisme (ou passe hors-ligne).
   useEffect(() => {
-    me().then((u) => {
-      setUser(u ?? null)
-      if (!u) return
-      syncStore(loadStore()).then(({ store: fusion, synced }) => {
-        if (synced) setStore(fusion)
-      })
+    let timeout = null
+    sessionState().then(({ state, user: u }) => {
+      clearTimeout(timeout)
+      if (state === 'authenticated') {
+        setUser(u)
+        setSessionEtat('connecte')
+        syncStore(loadStore()).then(({ store: fusion, synced }) => {
+          if (synced) setStore(fusion)
+        })
+      } else if (state === 'anonymous') {
+        setUser(null)
+        setSessionEtat('anonyme')
+      } else {
+        // Injoignable : l'indice local décide — optimiste si connecté hier,
+        // hors-ligne sinon. Jamais « anonyme » sans réponse du serveur.
+        setUser(sessionHint() ? undefined : null)
+        setSessionEtat(sessionHint() ? 'optimiste' : 'horsligne')
+      }
     })
+    // Réseau muet : au bout de 5 s on cesse d'attendre — mode local.
+    timeout = setTimeout(() => {
+      setSessionEtat((s) => (s === 'inconnu' ? 'horsligne' : s))
+    }, 5000)
+    return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -139,6 +176,30 @@ export default function App() {
 
   const unitsWithStatuses = course.units.map((u) => applyStatuses(u, progress.statuses))
   const canChallenge = challengeAvailable(progress)
+
+  /** Entrer dans l'app depuis l'accueil, selon l'état de session. */
+  function demarrer() {
+    // Règles du comité : connecté, optimiste ou hors-ligne → on entre.
+    // Anonyme CONFIRMÉ → connexion. Inconnu → on attend la réponse
+    // (bouton « · · · »), on ne route JAMAIS vers la connexion à l'aveugle.
+    if (sessionEtat === 'anonyme') {
+      setCompteIntention('creer')
+      setCompteObligatoire(true)
+      setScreen(ECRANS.COMPTE)
+    } else if (sessionEtat === 'inconnu') {
+      setDepartEnAttente(true)
+    } else {
+      setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+    }
+  }
+
+  // L'intention de départ mémorisée se réalise dès que la session est connue.
+  useEffect(() => {
+    if (!departEnAttente || sessionEtat === 'inconnu') return
+    setDepartEnAttente(false)
+    demarrer()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [departEnAttente, sessionEtat])
 
   /** Bascule vers une langue : déjà commencée → chemin, sinon onboarding court. */
   function pickLanguage(langId) {
@@ -238,17 +299,18 @@ export default function App() {
         <PhoneFrame>
           {screen === ECRANS.ACCUEIL && (
             <WelcomeScreen
-              onStart={() => {
-                // Le compte est requis pour commencer (décision produit) —
-                // SAUF si le serveur est absent ou pas encore sondé : on
-                // n'exige pas l'impossible, et on ne bloque jamais l'entrée
-                // sur un aléa réseau.
-                if (user || serverKnown() === false) {
-                  setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
-                } else {
-                  setCompteObligatoire(true)
-                  setScreen(ECRANS.COMPTE)
-                }
+              etat={sessionEtat}
+              name={user?.name || store.profile?.name}
+              attente={departEnAttente}
+              onStart={demarrer}
+              onLogin={() => {
+                setCompteIntention('connexion')
+                setCompteObligatoire(true)
+                setScreen(ECRANS.COMPTE)
+              }}
+              onChangeAccount={() => {
+                setCompteObligatoire(false)
+                setScreen(ECRANS.COMPTE)
               }}
             />
           )}
@@ -309,13 +371,17 @@ export default function App() {
             <AccountScreen
               store={store}
               obligatoire={compteObligatoire}
+              intention={compteIntention}
               onStoreMerged={setStore}
-              onSession={setUser}
+              onSession={(u) => {
+                setUser(u)
+                setSessionEtat(u ? 'connecte' : 'anonyme')
+              }}
               onBack={() => {
                 if (!compteObligatoire) {
                   setScreen(ECRANS.PROFIL)
                 } else if (user) {
-                  // « Continuer → » après connexion : on entre dans l'app.
+                  // Connexion faite (l'écran avance tout seul) : on entre.
                   setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
                 } else {
                   // Retour sans connexion : l'accueil, toujours verrouillé.
