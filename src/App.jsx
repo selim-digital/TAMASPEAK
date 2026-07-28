@@ -18,7 +18,7 @@ import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, me, syncStore } from './lib/api.js'
+import { track, flushEvents, me, syncStore, serverKnown } from './lib/api.js'
 import { AccountScreen } from './screens/AccountScreen.jsx'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
@@ -66,6 +66,11 @@ export default function App() {
   const [challengeExercises, setChallengeExercises] = useState([])
   const [duel, setDuel] = useState(null)
   const [, setVoicesReady] = useState(false)
+  // undefined = on ne sait pas encore ; null = pas de session ; objet = connecté.
+  const [user, setUser] = useState(undefined)
+  // L'écran compte a deux visages : porte d'entrée obligatoire (verrou de
+  // l'accueil) ou gestion volontaire (depuis le profil).
+  const [compteObligatoire, setCompteObligatoire] = useState(false)
 
   useEffect(() => {
     saveStore(store)
@@ -86,10 +91,12 @@ export default function App() {
   }, [])
 
   // Connecté ? On synchronise à l'ouverture : lecture du serveur, fusion
-  // max/union, réécriture. C'est ici que le retour d'un lien magique
-  // aboutit — la session est posée, la progression se retrouve.
+  // max/union, réécriture. C'est aussi ici qu'aboutit le retour de Google
+  // (rechargement complet de la page) — la session est posée, la
+  // progression locale est INTACTE et se retrouve enrichie, jamais écrasée.
   useEffect(() => {
     me().then((u) => {
+      setUser(u ?? null)
       if (!u) return
       syncStore(loadStore()).then(({ store: fusion, synced }) => {
         if (synced) setStore(fusion)
@@ -229,7 +236,20 @@ export default function App() {
 
         <PhoneFrame>
           {screen === ECRANS.ACCUEIL && (
-            <WelcomeScreen onStart={() => setScreen(hasProfile(store) ? 'path' : 'onboarding')} />
+            <WelcomeScreen
+              onStart={() => {
+                // Le compte est requis pour commencer (décision produit) —
+                // SAUF si le serveur est absent ou pas encore sondé : on
+                // n'exige pas l'impossible, et on ne bloque jamais l'entrée
+                // sur un aléa réseau.
+                if (user || serverKnown() === false) {
+                  setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+                } else {
+                  setCompteObligatoire(true)
+                  setScreen(ECRANS.COMPTE)
+                }
+              }}
+            />
           )}
 
           {screen === ECRANS.ONBOARDING && (
@@ -271,7 +291,10 @@ export default function App() {
               store={store}
               onSave={setStore}
               onDuel={startDuel}
-              onAccount={() => setScreen(ECRANS.COMPTE)}
+              onAccount={() => {
+                setCompteObligatoire(false)
+                setScreen(ECRANS.COMPTE)
+              }}
               onBack={() => setScreen(ECRANS.CHEMIN)}
             />
           )}
@@ -279,8 +302,20 @@ export default function App() {
           {screen === ECRANS.COMPTE && (
             <AccountScreen
               store={store}
+              obligatoire={compteObligatoire}
               onStoreMerged={setStore}
-              onBack={() => setScreen(ECRANS.PROFIL)}
+              onSession={setUser}
+              onBack={() => {
+                if (!compteObligatoire) {
+                  setScreen(ECRANS.PROFIL)
+                } else if (user) {
+                  // « Continuer → » après connexion : on entre dans l'app.
+                  setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+                } else {
+                  // Retour sans connexion : l'accueil, toujours verrouillé.
+                  setScreen(ECRANS.ACCUEIL)
+                }
+              }}
             />
           )}
 
