@@ -43,5 +43,20 @@ export default async function handler(req, res) {
     await sessionOf(req)
   })
 
+  // Le paquet resend est-il réellement embarqué dans le bundle Vercel ?
+  // (import dynamique : le traceur peut le manquer)
+  await step('import-resend', () => import('resend'))
+
+  // Déclenche le VRAI flux du lien magique côté serveur (écriture du jeton
+  // en base + envoi d'email) vers une adresse de test — c'est la sonde qui
+  // dit pourquoi /sign-in/magic-link répond 500 corps vide.
+  await step('magic-link-dry', async () => {
+    const { auth } = await import('./_lib/auth.js')
+    await auth().api.signInMagicLink({
+      body: { email: 'delivered@resend.dev', callbackURL: '/' },
+      headers: new Headers({ origin: process.env.BETTER_AUTH_URL || 'https://tamaspeak.com' }),
+    })
+  })
+
   res.status(200).json(out)
 }
