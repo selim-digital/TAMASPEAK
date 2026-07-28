@@ -12,16 +12,21 @@ import { sendFeedback } from '../lib/api.js'
  * accepte l'anonyme), et hors-ligne le retour part à la file d'attente —
  * l'utilisateur n'a pas à savoir ce qu'est le réseau.
  */
+/**
+ * L'échelle d'humeur est un dégradé MÉTÉO — règle maison : aucun visage,
+ * aucun œil, aucun être. Le ciel dit l'humeur aussi bien qu'une figure,
+ * et se lit dans toutes les langues.
+ */
 const HUMEURS = [
-  { id: 'love', emoji: '😍', label: 'J’adore' },
-  { id: 'good', emoji: '🙂', label: 'Ça va' },
-  { id: 'meh', emoji: '😐', label: 'Bof' },
-  { id: 'bad', emoji: '😕', label: 'Ça coince' },
+  { id: 'love', emoji: '☀️', label: 'J’adore' },
+  { id: 'good', emoji: '🌤️', label: 'Ça va' },
+  { id: 'meh', emoji: '🌧️', label: 'Bof' },
+  { id: 'bad', emoji: '⛈️', label: 'Ça coince' },
 ]
 
 const CATEGORIES = [
   { id: 'idee', label: '💡 Une idée' },
-  { id: 'bug', label: '🐛 Un problème' },
+  { id: 'bug', label: '🔧 Un problème' },
   { id: 'contenu', label: '📚 Le contenu' },
   { id: 'autre', label: '💬 Autre chose' },
 ]
