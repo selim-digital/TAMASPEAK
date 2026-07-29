@@ -233,6 +233,7 @@ export function PathScreen({
   onProfile,
   onDuo,
   onMissions,
+  onJeux,
   onTifinagh,
   onHistoire,
   onNotifs,
@@ -323,6 +324,18 @@ export function PathScreen({
             <path d="M6 4h12v4a6 6 0 0 1-12 0zM9 20h6M12 14v6" />
           </svg>
           Trophées
+        </button>
+        <button
+          type="button"
+          onClick={onJeux}
+          className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-[12.5px] font-extrabold text-ink transition"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.8" />
+            <rect x="13" y="13" width="7.5" height="7.5" rx="1.8" />
+            <path d="M16.75 3.5v7.5M13 7.25h7.5M7.25 13v7.5M3.5 16.75H11" />
+          </svg>
+          Jeux
         </button>
         <button
           type="button"

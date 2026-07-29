@@ -47,6 +47,9 @@ export function defaultProgress(course) {
     missionsFaites: [],
     // Récits d'histoire lus et dont la question a été trouvée.
     recitsLus: [],
+    // Le coin jeux : parties de Mémory gagnées, niveaux de mots croisés
+    // réussis (ids) — ces derniers conditionnent la récompense unique.
+    jeux: { memoryVictoires: 0, motsFaits: [] },
   }
 }
 
@@ -108,6 +111,45 @@ export function recordChallenge(progress, { xpGain = 15, gems = 10 } = {}) {
 }
 
 export const challengeAvailable = (progress) => progress.dailyDay !== todayKey()
+
+/* ------------------------------------------------------------------ */
+/* Le coin jeux — Mémory et Mots croisés                                */
+/* ------------------------------------------------------------------ */
+
+/** Partie de Mémory gagnée : +XP, compteur de victoires. */
+export function recordMemoryWin(progress, { xpGain = 10 } = {}) {
+  const jeux = progress.jeux || {}
+  return {
+    ...progress,
+    ...addXp(progress, xpGain),
+    jeux: { ...jeux, memoryVictoires: (jeux.memoryVictoires || 0) + 1 },
+  }
+}
+
+/**
+ * Niveau de mots croisés terminé. La première réussite paie plein pot
+ * (XP + gemmes) ; les suivantes un petit XP — rejouer reste utile pour
+ * réviser, sans devenir une machine à gemmes.
+ */
+export function recordMotsNiveau(progress, niveauId, { xpGain = 15, gems = 10, xpRejoue = 5 } = {}) {
+  const jeux = progress.jeux || {}
+  const faits = jeux.motsFaits || []
+  if (faits.includes(niveauId)) {
+    return { ...progress, ...addXp(progress, xpRejoue) }
+  }
+  return {
+    ...progress,
+    ...addXp(progress, xpGain),
+    gems: (progress.gems || 0) + gems,
+    jeux: { ...jeux, motsFaits: [...faits, niveauId] },
+  }
+}
+
+/** Dépense de gemmes (indice) — refuse net plutôt que de passer en négatif. */
+export function depenserGemmes(progress, cout) {
+  if ((progress.gems || 0) < cout) return progress
+  return { ...progress, gems: progress.gems - cout }
+}
 
 /* ------------------------------------------------------------------ */
 /* Lexique personnel — les mots rapportés d'une mission                 */
@@ -316,6 +358,10 @@ function mergeProgress(a = {}, b = {}) {
     lastDay: (a.lastDay || '') > (b.lastDay || '') ? a.lastDay : b.lastDay,
     lexique: [...parMot.values()],
     missionsFaites: [...new Set([...(a.missionsFaites || []), ...(b.missionsFaites || [])])],
+    jeux: {
+      memoryVictoires: Math.max(a.jeux?.memoryVictoires || 0, b.jeux?.memoryVictoires || 0),
+      motsFaits: [...new Set([...(a.jeux?.motsFaits || []), ...(b.jeux?.motsFaits || [])])],
+    },
   }
 }
 

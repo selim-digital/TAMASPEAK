@@ -17,6 +17,9 @@ import { DuoScreen } from './screens/DuoScreen.jsx'
 import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
 import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
+import { JeuxScreen } from './screens/JeuxScreen.jsx'
+import { MemoryScreen } from './screens/MemoryScreen.jsx'
+import { MotsCroisesScreen } from './screens/MotsCroisesScreen.jsx'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
@@ -31,7 +34,7 @@ import { DebugBar } from './components/DebugBar.jsx'
 import { GemIcon } from './components/jewels/StatIcons.jsx'
 import { getCourse, isUnitComplete } from './data/courses.js'
 import { ECRANS } from './data/screens.js'
-import { XP_PER_LESSON, CHEST_GEMS, UNIT_BONUS, CHALLENGE } from './data/economy.js'
+import { XP_PER_LESSON, CHEST_GEMS, UNIT_BONUS, CHALLENGE, JEUX } from './data/economy.js'
 import {
   loadStore,
   saveStore,
@@ -48,6 +51,9 @@ import {
   lessonsDone,
   lexiqueSize,
   resetLanguage,
+  recordMemoryWin,
+  recordMotsNiveau,
+  depenserGemmes,
 } from './lib/progress.js'
 
 /**
@@ -390,6 +396,7 @@ export default function App() {
               onProfile={() => setScreen(ECRANS.PROFIL)}
               onDuo={() => setScreen(ECRANS.DUO)}
               onMissions={() => setScreen(ECRANS.MISSIONS)}
+              onJeux={() => setScreen(ECRANS.JEUX)}
               onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
               onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
@@ -528,6 +535,41 @@ export default function App() {
           )}
 
           {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.CHEMIN)} />}
+
+          {screen === ECRANS.JEUX && (
+            <JeuxScreen
+              course={course}
+              progress={progress}
+              onMemory={() => setScreen(ECRANS.MEMORY)}
+              onMots={() => setScreen(ECRANS.MOTS)}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.MEMORY && (
+            <MemoryScreen
+              course={course}
+              onWin={() => {
+                setProgress((p) => recordMemoryWin(p, { xpGain: JEUX.memory.xpGain }))
+                track('memory_won', { lang: course.id, xp: JEUX.memory.xpGain })
+              }}
+              onBack={() => setScreen(ECRANS.JEUX)}
+            />
+          )}
+
+          {screen === ECRANS.MOTS && (
+            <MotsCroisesScreen
+              course={course}
+              progress={progress}
+              gems={progress.gems}
+              onNiveauFini={(niveauId, dejaFait) => {
+                setProgress((p) => recordMotsNiveau(p, niveauId, JEUX.mots))
+                track('mots_level_done', { lang: course.id, xp: dejaFait ? JEUX.mots.xpRejoue : JEUX.mots.xpGain })
+              }}
+              onIndice={() => setProgress((p) => depenserGemmes(p, JEUX.indice))}
+              onBack={() => setScreen(ECRANS.JEUX)}
+            />
+          )}
 
           {screen === ECRANS.NOTIFS && (
             <NotificationsScreen
