@@ -197,13 +197,32 @@ export async function signOut() {
   }
 }
 
-/** Suppression du compte : purge serveur (cascade SQL), le local reste. */
+/**
+ * Suppression du compte. Nos comptes sont sans mot de passe : le serveur
+ * envoie un email de confirmation, et l'effacement réel se fait au clic.
+ * Renvoie 'email-envoye' | 'supprime' | 'erreur'.
+ */
 export async function deleteAccount() {
   try {
-    const r = await fetch('/api/auth/delete-user', { method: 'POST', credentials: 'include' })
-    return r.ok
+    const r = await fetch('/api/auth/delete-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ callbackURL: '/?compte-supprime=1' }),
+    })
+    if (!r.ok || !isApi(r)) {
+      // On lit la raison du serveur au lieu de la taire : c'est l'absence
+      // de ce message qui a rendu le premier échec indéchiffrable.
+      const d = await r.json().catch(() => null)
+      console.error('[tama] suppression refusée :', d?.message || r.status)
+      return 'erreur'
+    }
+    const d = await r.json().catch(() => ({}))
+    // Better Auth répond success avec un message « verification email sent »
+    // pour les comptes sans mot de passe ; sinon la suppression est directe.
+    return d?.message?.toLowerCase?.().includes('verification') ? 'email-envoye' : 'supprime'
   } catch {
-    return false
+    return 'erreur'
   }
 }
 

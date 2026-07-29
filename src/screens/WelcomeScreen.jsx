@@ -25,7 +25,7 @@ const ERREURS = {
   access_denied: 'Tu as annulé la connexion Google — aucun souci.',
 }
 
-export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur, onStart, onLogin, onChangeAccount }) {
+export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur, info, onStart, onLogin, onChangeAccount }) {
   const connecte = etat === 'connecte'
   const anonyme = etat === 'anonyme'
   const horsLigne = etat === 'horsligne'
@@ -54,6 +54,12 @@ export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur,
       </div>
 
       <div className="flex-1" />
+
+      {info && (
+        <p className="mb-2 w-full rounded-xl border border-turquoise/40 bg-turquoise/10 px-3 py-2 text-[11px] leading-snug text-ink">
+          {info}
+        </p>
+      )}
 
       {erreur && (
         <p className="mb-2 w-full rounded-xl border border-coral/40 bg-coral/10 px-3 py-2 text-[11px] leading-snug text-ink">

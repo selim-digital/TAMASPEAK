@@ -50,6 +50,27 @@ import {
   resetLanguage,
 } from './lib/progress.js'
 
+/**
+ * Paramètres de retour lus UNE FOIS, au chargement du module — pas dans un
+ * initialiseur d'état : en développement, le mode strict de React monte
+ * chaque composant deux fois, et un initialiseur qui consomme l'URL au
+ * premier montage ne voit plus rien au second (vécu : le bandeau « compte
+ * supprimé » n'apparaissait jamais).
+ */
+const PARAMS_RETOUR = new URLSearchParams(window.location.search)
+const AUTH_ERREUR = PARAMS_RETOUR.get('error')
+const COMPTE_SUPPRIME = PARAMS_RETOUR.has('compte-supprime')
+if (AUTH_ERREUR || COMPTE_SUPPRIME) {
+  window.history.replaceState(null, '', window.location.pathname)
+  if (COMPTE_SUPPRIME) {
+    try {
+      localStorage.removeItem('tama-speak:session-hint')
+    } catch {
+      /* stockage indisponible */
+    }
+  }
+}
+
 function pickRandom(arr, n) {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -91,11 +112,11 @@ export default function App() {
   // Un retour de Google en échec revient sur /?error=… : on le dit en clair
   // sur l'accueil au lieu de laisser un « rien » inexplicable, puis on
   // nettoie l'URL.
-  const [authErreur] = useState(() => {
-    const e = new URLSearchParams(window.location.search).get('error')
-    if (e) window.history.replaceState(null, '', window.location.pathname)
-    return e
-  })
+  const authErreur = AUTH_ERREUR
+  // Retour du clic de confirmation de suppression : le compte n'existe
+  // plus, l'accueil le dit clairement — et l'indice de session est tombé
+  // (voir la lecture au chargement du module, au-dessus du composant).
+  const compteSupprime = COMPTE_SUPPRIME
   // L'écran compte a deux visages : porte d'entrée obligatoire (verrou de
   // l'accueil) ou gestion volontaire (depuis le profil).
   const [compteObligatoire, setCompteObligatoire] = useState(false)
@@ -314,6 +335,7 @@ export default function App() {
               name={user?.name || store.profile?.name}
               attente={departEnAttente}
               erreur={authErreur}
+              info={compteSupprime ? 'Ton compte a été supprimé — tout ce que le serveur savait de toi est effacé. Ta progression locale reste sur cet appareil.' : null}
               onStart={demarrer}
               onLogin={() => {
                 setCompteIntention('connexion')

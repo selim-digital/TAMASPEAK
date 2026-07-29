@@ -90,6 +90,20 @@ const TEMPLATES = {
         petit('Si tu n’as pas demandé ce code, ignore simplement cet email — rien ne se passera.'),
     }),
 
+  /**
+   * Transactionnel — confirmation de suppression du compte. Nos comptes
+   * n'ont pas de mot de passe : ce clic est LA preuve que la demande vient
+   * bien du titulaire de la boîte mail, pas d'un téléphone volé.
+   */
+  'confirmer-suppression': ({ name, url }) =>
+    shell({
+      body:
+        h1(`On se quitte${name ? `, ${esc(name)}` : ''} ?`) +
+        p('Tu as demandé la <b>suppression définitive</b> de ton compte Tama Speak. Un appui sur le bouton, et tout ce que le serveur sait de toi est effacé.') +
+        bouton(url, 'Oui, supprimer mon compte') +
+        petit('Si tu n’as rien demandé, ignore simplement cet email — ton compte reste intact. Et la progression sur ton téléphone t’appartient dans tous les cas.'),
+    }),
+
   /** Transactionnel — le lien magique de connexion. */
   'magic-link': ({ url }) =>
     shell({

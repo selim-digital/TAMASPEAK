@@ -160,8 +160,13 @@ export function AccountScreen({
 
   async function supprimer() {
     sfx.click()
-    const ok = await deleteAccount()
-    if (ok) {
+    const r = await deleteAccount()
+    if (r === 'email-envoye') {
+      // Sans mot de passe, la preuve d'identité c'est la boîte mail : la
+      // suppression réelle se fait au clic dans l'email de confirmation.
+      setConfirmerSuppr(false)
+      note('Un email de confirmation vient de partir — la suppression se fait en cliquant dedans.', 5000)
+    } else if (r === 'supprime') {
       setUser(null)
       setEtat('deconnecte')
       setConfirmerSuppr(false)

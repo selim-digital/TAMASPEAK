@@ -55,7 +55,35 @@ export function auth() {
     socialProviders: social,
     // Suppression de compte en libre-service — engagement RGPD : la purge
     // en base suit par cascade (voir db/schema.sql), sans intervention.
-    user: { deleteUser: { enabled: true } },
+    // Nos comptes sont SANS mot de passe : Better Auth exige alors une
+    // confirmation par email avant d'effacer — c'est le circuit branché ici
+    // (sans lui, « Supprimer mon compte » échouait en silence). Bonus
+    // sécurité réel : un téléphone volé ne peut pas effacer le compte.
+    user: {
+      deleteUser: {
+        enabled: true,
+        sendDeleteAccountVerification: async ({ user, url }) => {
+          const ok = await sendEmail({
+            to: user.email,
+            subject: 'Confirme la suppression de ton compte Tama Speak',
+            template: 'confirmer-suppression',
+            data: { name: user.name, url },
+          })
+          if (!ok) console.log(`[tama] lien de suppression pour ${user.email} : ${url}`)
+        },
+        afterDelete: async (user) => {
+          // La cascade SQL purge les tables liées ; le compteur de quota est
+          // hors cascade (clé = email, pas user_id) — on le purge ici, même
+          // exigence RGPD que le reste.
+          try {
+            const { sql } = await import('./db.js')
+            await sql()`DELETE FROM email_quota WHERE email = ${user.email.toLowerCase()}`
+          } catch (e) {
+            console.error('[tama] purge email_quota après suppression :', e?.message)
+          }
+        },
+      },
+    },
     // Audit : 7 jours de session (défaut) forcent un public à usage
     // épisodique à se reconnecter sans cesse — 60 jours glissants, c'est
     // une app d'apprentissage, pas une banque. Le cache de cookie évite un
