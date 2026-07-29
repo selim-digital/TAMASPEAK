@@ -44,8 +44,23 @@ export default async function handler(req, res) {
 
   await step('auth-session', async () => {
     const { sessionOf } = await import('./_lib/auth.js')
-    await sessionOf(req)
+    const s = await sessionOf(req)
+    // Le juge de paix de la boucle de connexion : si l'utilisateur ouvre
+    // cette page APRÈS un passage par Google, « présente » signifie que le
+    // cookie existe et que la panne est côté affichage ; « absente » que le
+    // cookie n'a jamais été posé (panne côté rappel OAuth).
+    out.session = s?.user ? 'présente' : 'absente'
   })
+  // Noms des cookies reçus (jamais les valeurs) + hôte : de quoi voir en un
+  // coup d'œil si le navigateur envoie bien les cookies d'auth, et depuis
+  // quel domaine la page est servie.
+  out.requete = {
+    host: req.headers.host || null,
+    cookies: (req.headers.cookie || '')
+      .split(';')
+      .map((c) => c.split('=')[0].trim())
+      .filter(Boolean),
+  }
 
   // Le secret Google est-il VALIDE ? Le sélecteur de comptes n'utilise que
   // l'identifiant public — un secret faux ne casse qu'à l'échange final du

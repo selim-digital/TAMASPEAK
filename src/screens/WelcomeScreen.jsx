@@ -68,8 +68,10 @@ export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur,
       )}
 
       <div className="w-full flex flex-col gap-2">
+        {/* Demande de Selim : deux mots sans ambiguïté — « M'inscrire » et
+            « Connexion » — et plus aucun badge de niveau prédéfini. */}
         <Button variant="primary" onClick={onStart} disabled={attente}>
-          {attente ? '· · ·' : connecte ? 'Reprendre ma leçon' : 'Commencer'}
+          {attente ? '· · ·' : connecte ? 'Reprendre ma leçon' : anonyme ? 'M’inscrire' : 'Commencer'}
         </Button>
 
         {connecte ? (
@@ -88,14 +90,10 @@ export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur,
             onClick={onLogin}
             className="w-full rounded-2xl border-2 border-b-4 border-turquoise/50 bg-white py-[13px] text-[15px] font-extrabold tracking-tight text-turquoise-deep transition-transform duration-75 active:translate-y-[2px] active:border-b-2"
           >
-            J'ai déjà un compte
+            Connexion
           </button>
         ) : null}
       </div>
-
-      <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-sand-2 px-3 py-1.5 text-xs font-semibold text-ink">
-        ◇ Niveau : Initiation
-      </span>
     </div>
   )
 }

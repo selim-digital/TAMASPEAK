@@ -72,6 +72,48 @@ function progressOf(unit) {
   return lessons.filter((l) => l.status === 'done').length / lessons.length
 }
 
+/**
+ * Proposition d'installation (Android/Chrome). L'événement est capturé très
+ * tôt dans main.jsx ; ici on ne fait qu'offrir le bouton quand il existe.
+ * La carte disparaît après installation, refus, ou si le navigateur ne
+ * propose rien (iPhone : l'installation passe par le menu Partager).
+ */
+function InstallCard() {
+  const [dispo, setDispo] = useState(() => !!window.__installPrompt)
+  useEffect(() => {
+    const f = () => setDispo(true)
+    window.addEventListener('tama-installable', f)
+    return () => window.removeEventListener('tama-installable', f)
+  }, [])
+  if (!dispo) return null
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        const p = window.__installPrompt
+        if (!p) return
+        p.prompt()
+        await p.userChoice.catch(() => {})
+        window.__installPrompt = null
+        setDispo(false)
+      }}
+      className="mx-3.5 mt-1.5 flex items-center gap-2.5 rounded-xl border-2 border-turquoise/40 bg-turquoise/5 px-3 py-2 text-left"
+    >
+      <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise text-white" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3v12M7 10l5 5 5-5M4 19h16" />
+        </svg>
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[12px] font-extrabold">Installer Tama Speak</span>
+        <span className="block text-[10px] leading-snug text-ink-soft">
+          Sur ton écran d'accueil, comme une vraie app.
+        </span>
+      </span>
+    </button>
+  )
+}
+
 /** Anneau d'objectif quotidien (issu de l'onboarding). */
 function DailyGoal({ value = 0, goal }) {
   if (!goal) return null
@@ -325,6 +367,8 @@ export function PathScreen({
           ⵣ
         </button>
       </div>
+
+      <InstallCard />
 
       <DailyGoal value={xpTodayValue} goal={dailyGoalXp} />
 
