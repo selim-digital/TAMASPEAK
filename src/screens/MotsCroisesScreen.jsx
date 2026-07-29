@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Confetti } from '../components/Confetti.jsx'
-import { niveauxMots, enTifinagh, enLatin, estTifinagh } from '../lib/jeux.js'
+import { niveauxMots, grilleDuel, enTifinagh, enLatin, estTifinagh } from '../lib/jeux.js'
 import { playWord } from '../lib/audio.js'
 import { sfx } from '../lib/sfx.js'
 import { lire, ecrire } from '../lib/storage.js'
@@ -29,13 +29,42 @@ const maj = (l) => l.toLocaleUpperCase('fr')
 /** L'écriture d'affichage choisie, mémorisée par langue. */
 const cleScript = (courseId) => `tama-speak:mots-script:${courseId}`
 
-export function MotsCroisesScreen({ course, progress, gems, onNiveauFini, onIndice, onBack }) {
+/** Un temps de jeu compact pour l'en-tête (« 1:23 »). */
+const chrono = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+
+export function MotsCroisesScreen({ course, progress = {}, gems = 0, duel = null, onNiveauFini, onIndice, onFinishDuel, onBack }) {
   const niveaux = useMemo(() => niveauxMots(course), [course])
   const faits = progress.jeux?.motsFaits || []
   const [niveau, setNiveau] = useState(null)
   // Le niveau était-il déjà réussi à son OUVERTURE ? La récompense de fin
   // en dépend, et le statut « fait » change justement pendant la partie.
   const [dejaFait, setDejaFait] = useState(false)
+
+  // En duel, pas de liste : la grille vient de la graine du lien — la même
+  // que celle de l'ami, quel que soit le téléphone.
+  const niveauDuel = useMemo(() => (duel ? grilleDuel(course, duel.seed) : null), [course, duel])
+  if (duel) {
+    if (!niveauDuel) {
+      // Cours trop pauvre pour une grille (ne devrait pas arriver) : on le
+      // dit au lieu d'un écran vide.
+      return (
+        <div className="animate-enter grid min-h-0 flex-1 place-items-center px-6 text-center text-[12px] text-ink-soft">
+          Ce cours n'a pas assez de mots pour un duel de grille.
+        </div>
+      )
+    }
+    return (
+      <NiveauMots
+        key={niveauDuel.id}
+        course={course}
+        niveau={niveauDuel}
+        duel={duel}
+        gems={0}
+        onFinishDuel={onFinishDuel}
+        onQuitter={onBack}
+      />
+    )
+  }
 
   if (!niveau) {
     return (
@@ -116,9 +145,12 @@ export function MotsCroisesScreen({ course, progress, gems, onNiveauFini, onIndi
 /* Un niveau en cours de jeu                                           */
 /* ------------------------------------------------------------------ */
 
-function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitter }) {
+function NiveauMots({ course, niveau, dejaFait, gems, duel = null, onIndice, onFini, onFinishDuel, onQuitter }) {
   const { grille, lettres } = niveau
   const [trouves, setTrouves] = useState(() => new Set()) // index de mots
+  // Le chrono du duel : il court dès l'ouverture de la grille et s'arrête
+  // à la victoire — c'est LE score, le plus rapide gagne.
+  const [secondes, setSecondes] = useState(0)
   const [reveles, setReveles] = useState(() => new Set()) // "x,y" révélés à l'indice
   const [sel, setSel] = useState([]) // indices de lettres de la roue
   const [modeTap, setModeTap] = useState(false)
@@ -153,6 +185,12 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
   )
 
   const gagne = trouves.size === grille.mots.length
+
+  useEffect(() => {
+    if (!duel || gagne) return undefined
+    const t = setInterval(() => setSecondes((s) => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [duel, gagne])
 
   // Les cases de la grille, chacune avec la liste des mots qui la portent.
   const cellules = useMemo(() => {
@@ -329,12 +367,23 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
             ⵣⴰ
           </button>
         </div>
-        <span className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-ink-soft">
-          <GemIcon size={13} /> {gems}
-        </span>
+        {duel ? (
+          <span className="rounded-lg bg-coral/10 px-2 py-1 text-[12px] font-extrabold tabular-nums text-coral-dark">
+            ⏱ {chrono(secondes)}
+          </span>
+        ) : (
+          <span className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-ink-soft">
+            <GemIcon size={13} /> {gems}
+          </span>
+        )}
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 pb-5">
+        {duel && !gagne && (
+          <p className="text-center text-[10px] font-bold text-ink-soft">
+            La même grille que {duel.from || 'ton ami'} — sans indices, la plus rapide gagne.
+          </p>
+        )}
         {/* La grille */}
         <div className="mt-1 flex justify-center">
           <div
@@ -400,7 +449,11 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
           <div className="animate-pop-in mx-auto mt-3 w-full max-w-[280px] rounded-2xl border-2 border-turquoise bg-turquoise/10 px-3 py-3.5 text-center">
             <div className="text-[15px] font-extrabold text-turquoise-deep">Grille remplie — Igerrez !</div>
             <div className="mt-0.5 flex items-center justify-center gap-1 text-[11px] font-bold text-ink-soft">
-              {dejaFait ? (
+              {duel ? (
+                <>
+                  {grille.mots.length} mots en {chrono(secondes)}
+                </>
+              ) : dejaFait ? (
                 <>+{JEUX.mots.xpRejoue} XP (niveau rejoué)</>
               ) : (
                 <>
@@ -410,10 +463,12 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
             </div>
             <button
               type="button"
-              onClick={onQuitter}
+              onClick={() =>
+                duel ? onFinishDuel?.({ secondes, mots: grille.mots.length }) : onQuitter()
+              }
               className="mt-2.5 w-full rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
             >
-              Autres niveaux
+              {duel ? 'Voir le résultat' : 'Autres niveaux'}
             </button>
           </div>
         ) : (
@@ -514,6 +569,12 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                     Valider
                   </button>
                 </>
+              ) : duel ? (
+                // Pas d'indice en duel : les deux joueurs affrontent la même
+                // grille avec les mêmes armes.
+                <p className="flex-1 py-2 text-center text-[10.5px] font-bold text-ink-soft">
+                  Pas d'indice en duel — que le meilleur gagne !
+                </p>
               ) : (
                 <button
                   type="button"

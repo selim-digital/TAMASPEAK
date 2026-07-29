@@ -8,7 +8,7 @@ import { JEUX } from '../data/economy.js'
  * revenir les mêmes mots par un autre chemin. Règle de dessin : jamais de
  * visage ni d'yeux — lettres, losanges et silhouettes des leçons.
  */
-export function JeuxScreen({ course, progress, onMemory, onMemoryDuel, onMots, onBack }) {
+export function JeuxScreen({ course, progress, onMemory, onMemoryDuel, onMots, onMotsDuel, onBack }) {
   const niveaux = niveauxMots(course)
   const faits = (progress.jeux?.motsFaits || []).filter((id) => niveaux.some((n) => n.id === id)).length
   const victoires = progress.jeux?.memoryVictoires || 0
@@ -101,6 +101,25 @@ export function JeuxScreen({ course, progress, onMemory, onMemoryDuel, onMots, o
               {faits}/{niveaux.length}
             </span>
             <span className="block text-[9px] font-bold uppercase tracking-wide text-ink-soft">niveaux</span>
+          </span>
+        </button>
+
+        {/* Duel de grille à distance : même principe que le Mémory —
+            la graine voyage dans le lien, le chrono départage. */}
+        <button
+          type="button"
+          onClick={onMotsDuel}
+          className="mt-1.5 flex w-full items-center gap-2.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-left transition active:scale-[0.99]"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-coral-dark)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="13" r="8" />
+            <path d="M12 9v4l3 2M9 2h6" />
+          </svg>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-extrabold">Défier un ami aux mots croisés</span>
+            <span className="block text-[10px] leading-snug text-ink-soft">
+              La même grille sur vos deux téléphones — la plus vite remplie gagne.
+            </span>
           </span>
         </button>
 

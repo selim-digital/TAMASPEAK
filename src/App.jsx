@@ -314,6 +314,12 @@ export default function App() {
     setScreen(ECRANS.DUEL_INTRO)
   }
 
+  /** Duel de mots croisés : même grille, chrono — la plus rapide gagne. */
+  function startMotsDuel() {
+    setDuel({ jeu: 'mots', lang: course.id, seed: makeSeed(), size: 5, correct: null, total: null, from: '' })
+    setScreen(ECRANS.DUEL_INTRO)
+  }
+
   function finishDuel(result) {
     setLastResult(result)
     setScreen(ECRANS.DUEL_RESULTAT)
@@ -470,7 +476,16 @@ export default function App() {
             />
           )}
 
-          {screen === ECRANS.DUEL && duelCourse && duel.jeu !== 'memory' && (
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu === 'mots' && (
+            <MotsCroisesScreen
+              course={duelCourse}
+              duel={duel}
+              onFinishDuel={finishDuel}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu !== 'memory' && duel.jeu !== 'mots' && (
             <LessonScreen
               exercises={seededPick(duelCourse.challengePool(), duel.size, duel.seed)}
               lang={duelCourse.id}
@@ -544,6 +559,7 @@ export default function App() {
               onMemory={() => setScreen(ECRANS.MEMORY)}
               onMemoryDuel={startMemoryDuel}
               onMots={() => setScreen(ECRANS.MOTS)}
+              onMotsDuel={startMotsDuel}
               onBack={() => setScreen(ECRANS.CHEMIN)}
             />
           )}

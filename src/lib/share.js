@@ -91,6 +91,28 @@ export const memoryReply = ({ name, courseName, mine, theirs, paires }) => {
   ].join('\n')
 }
 
+/** Un temps de jeu lisible dans un message (« 1 min 23 s », « 47 s »). */
+export const fmtTemps = (s) => (s >= 60 ? `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s` : `${s} s`)
+
+/** Invitation à un duel de mots croisés (la grille la plus vite remplie). */
+export const motsInvite = ({ name, courseName, temps, mots }) =>
+  [
+    'ⵣ Tama Speak — duel de mots croisés !',
+    `${courseName} · ${mots} mots en ${fmtTemps(temps)} ⏱️`,
+    name ? `Rempliras-tu la grille plus vite que ${name} ?` : 'Rempliras-tu la grille plus vite ?',
+  ].join('\n')
+
+/** Réponse à un duel de mots croisés relevé. */
+export const motsReply = ({ name, courseName, mine, theirs, mots }) => {
+  const verdict = mine < theirs ? 'J’ai gagné ! 🎉' : mine === theirs ? 'Égalité ! 🤝' : 'Tu gardes l’avantage 💪'
+  return [
+    'ⵣ Tama Speak — duel de mots croisés relevé',
+    `${courseName} · ${mots} mots`,
+    `moi : ${fmtTemps(mine)} · ${name || 'toi'} : ${fmtTemps(theirs)}`,
+    verdict,
+  ].join('\n')
+}
+
 /** Réponse à un défi relevé. */
 export const duelReply = ({ name, courseName, mine, theirs, total }) => {
   const verdict = mine > theirs ? 'J’ai gagné ! 🎉' : mine === theirs ? 'Égalité ! 🤝' : 'Tu gardes l’avantage 💪'

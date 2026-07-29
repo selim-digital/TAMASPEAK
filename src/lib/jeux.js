@@ -353,6 +353,39 @@ export function niveauxMots(course) {
 }
 
 /**
+ * Grille de DUEL : générée depuis la graine du lien, avec des mots piochés
+ * dans TOUT le cours — les deux téléphones distants reconstruisent la même.
+ * On ne donne à l'algorithme glouton qu'une poignée de candidats tirés par
+ * la graine : sans cela, il choisirait presque toujours les mêmes mots
+ * courts, et tous les duels se ressembleraient.
+ */
+export function grilleDuel(course, graine, { maxMots = 5 } = {}) {
+  const vus = new Set()
+  const candidats = []
+  for (const unite of course.vocabulary()) {
+    for (const { mot, sens } of unite.mots) {
+      const m = propre(mot)
+      if (!jouable(m) || !sens) continue
+      const k = m.toLowerCase()
+      if (vus.has(k)) continue
+      vus.add(k)
+      candidats.push({ mot: m, sens: sens.trim() })
+    }
+  }
+  const ordre = seededPick(candidats, candidats.length, `${graine}:mots`)
+  let choix = choisirMots(ordre.slice(0, 15), { maxRoue: 9, maxMots })
+  if (choix.mots.length < 3) choix = choisirMots(ordre, { maxRoue: 10, maxMots })
+  if (choix.mots.length < 2) return null
+  const graineNum = Array.from(String(graine)).reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
+  return {
+    id: `duel-${graine}`,
+    titre: 'Duel de mots croisés',
+    lettres: melangerStable(choix.lettres, graineNum),
+    grille: poserGrille(choix.mots),
+  }
+}
+
+/**
  * Mélange DÉTERMINISTE des lettres de la roue (petit générateur congruentiel) :
  * l'ordre ne doit pas épeler le mot, mais doit rester le même d'une
  * ouverture à l'autre — un niveau est un lieu, pas un tirage.
