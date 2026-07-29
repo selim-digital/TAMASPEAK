@@ -175,7 +175,10 @@ export async function signInWithGoogle() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ provider: 'google', callbackURL: '/' }),
+      // errorCallbackURL : un échec au retour de Google revient DANS l'app
+      // (avec ?error=… dans l'URL) au lieu d'échouer en silence sur une
+      // page technique — l'accueil l'affiche en clair.
+      body: JSON.stringify({ provider: 'google', callbackURL: '/', errorCallbackURL: '/' }),
     })
     if (!r.ok) return false
     const { url } = await r.json()

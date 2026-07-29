@@ -85,6 +85,14 @@ export default function App() {
   // Tap sur « Commencer » pendant la vérification : on mémorise l'intention
   // et on route dès que la réponse arrive (bouton « · · · » en attendant).
   const [departEnAttente, setDepartEnAttente] = useState(false)
+  // Un retour de Google en échec revient sur /?error=… : on le dit en clair
+  // sur l'accueil au lieu de laisser un « rien » inexplicable, puis on
+  // nettoie l'URL.
+  const [authErreur] = useState(() => {
+    const e = new URLSearchParams(window.location.search).get('error')
+    if (e) window.history.replaceState(null, '', window.location.pathname)
+    return e
+  })
   // L'écran compte a deux visages : porte d'entrée obligatoire (verrou de
   // l'accueil) ou gestion volontaire (depuis le profil).
   const [compteObligatoire, setCompteObligatoire] = useState(false)
@@ -302,6 +310,7 @@ export default function App() {
               etat={sessionEtat}
               name={user?.name || store.profile?.name}
               attente={departEnAttente}
+              erreur={authErreur}
               onStart={demarrer}
               onLogin={() => {
                 setCompteIntention('connexion')
