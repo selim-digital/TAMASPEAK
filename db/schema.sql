@@ -166,3 +166,37 @@ CREATE TABLE IF NOT EXISTS email_prefs (
   unsubscribed_at TIMESTAMPTZ, -- désabonnement one-click : tout s'arrête
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Le palmarès du cercle : le consentement vient de l'ACTE de rejoindre un
+-- cercle (l'app le dit en clair à ce moment-là), il est donc posé à TRUE
+-- par l'endpoint d'adhésion — pas par défaut de schéma pour les autres
+-- colonnes, qui restent opt-in classique. Révocable dans l'app et par le
+-- désabonnement one-click, comme tout le reste.
+ALTER TABLE email_prefs ADD COLUMN IF NOT EXISTS palmares BOOLEAN NOT NULL DEFAULT TRUE;
+
+-- ------------------------------------------------------------------
+-- Les cercles — famille et amis qui apprennent ensemble.
+-- Un classement par semaine/mois/année se calcule depuis `events`
+-- (c'était sa raison d'être annoncée) ; le cercle ne stocke QUE le lien
+-- entre les personnes. Un utilisateur n'appartient qu'à un cercle à la
+-- fois (règle d'application, pas de schéma : quitter avant de rejoindre).
+-- RGPD : l'appartenance est purgée par cascade avec le compte.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS cercles (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nom TEXT NOT NULL,
+  code TEXT NOT NULL UNIQUE,   -- code d'invitation court, à partager
+  created_by TEXT REFERENCES "user"("id") ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT cercles_nom_len CHECK (char_length(nom) BETWEEN 1 AND 40)
+);
+
+CREATE TABLE IF NOT EXISTS cercle_membres (
+  cercle_id BIGINT NOT NULL REFERENCES cercles(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (cercle_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS cercle_membres_user ON cercle_membres (user_id);

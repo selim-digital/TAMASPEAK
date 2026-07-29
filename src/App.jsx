@@ -20,6 +20,7 @@ import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
 import { MotsCroisesScreen } from './screens/MotsCroisesScreen.jsx'
+import { CercleScreen } from './screens/CercleScreen.jsx'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
@@ -322,6 +323,15 @@ export default function App() {
 
   function finishDuel(result) {
     setLastResult(result)
+    // L'effort compte pour le classement du cercle : chaque duel joué est
+    // tracé, une victoire (en RELEVANT un défi — au lancement il n'y a
+    // encore personne en face) l'est en plus.
+    const memory = duel?.jeu === 'memory'
+    const mots = duel?.jeu === 'mots'
+    const mine = memory ? result.coups : mots ? result.secondes : result.correct
+    const releve = duel?.correct != null
+    const gagne = releve && (memory || mots ? mine < duel.correct : mine > duel.correct)
+    track(gagne ? 'duel_won' : 'duel_played', { lang: duel?.lang })
     setScreen(ECRANS.DUEL_RESULTAT)
   }
 
@@ -560,7 +570,20 @@ export default function App() {
               onMemoryDuel={startMemoryDuel}
               onMots={() => setScreen(ECRANS.MOTS)}
               onMotsDuel={startMotsDuel}
+              onCercle={() => setScreen(ECRANS.CERCLE)}
               onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.CERCLE && (
+            <CercleScreen
+              user={user}
+              onCompte={() => {
+                setCompteObligatoire(false)
+                setCompteIntention('connexion')
+                setScreen(ECRANS.COMPTE)
+              }}
+              onBack={() => setScreen(ECRANS.JEUX)}
             />
           )}
 

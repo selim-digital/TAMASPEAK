@@ -160,6 +160,47 @@ const TEMPLATES = {
         p(`${name ? esc(name) + ' : ' : ''}<b>${xp} XP</b>, <b>${lecons} leçon${lecons > 1 ? 's' : ''}</b>${serie > 1 ? `, série de <b>${serie} jours</b> 🔥` : ''}.`) +
         bouton(APP_URL, 'Reprendre'),
     }),
+
+  /**
+   * Palmarès du cercle — hebdo, mensuel ou annuel. La règle du produit vaut
+   * double ici : on célèbre le vainqueur ET l'effort. Le « plus assidu »
+   * (jours de pratique) a son trophée au même rang que la première place,
+   * et chaque ligne montre ce que la personne a FAIT, jamais ce qu'elle n'a
+   * pas fait.
+   */
+  palmares: ({ name, cercle, periode, lignes = [], vainqueur, assidu, totalXp = 0, unsubscribe }) => {
+    const medaille = (i) => (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`)
+    const rangs = lignes
+      .slice(0, 10)
+      .map(
+        (l, i) => `<tr>
+          <td style="padding:7px 6px;font-size:14px;white-space:nowrap;">${medaille(i)}</td>
+          <td style="padding:7px 6px;font-size:14px;font-weight:${i === 0 ? 800 : 600};">${esc(l.nom)}</td>
+          <td align="right" style="padding:7px 6px;font-size:14px;font-weight:800;color:${C.turquoiseDeep};white-space:nowrap;">${l.points} pts</td>
+          <td align="right" style="padding:7px 6px;font-size:11px;color:${C.inkSoft};white-space:nowrap;">${l.xp} XP · ${l.jours} j</td>
+        </tr>`,
+      )
+      .join('')
+    return shell({
+      unsubscribe,
+      body:
+        h1(`Le palmarès ${esc(periode)} de « ${esc(cercle)} » 🏆`) +
+        p(
+          `${vainqueur ? `<b>${esc(vainqueur)}</b> remporte la période` : 'Personne n’a pris la tête cette fois'}` +
+            `${assidu && assidu !== vainqueur ? ` — et <b>${esc(assidu)}</b> est la personne la plus assidue` : assidu ? ', et c’est aussi la personne la plus assidue' : ''}. ` +
+            `Ensemble, le cercle a gagné <b>${totalXp} XP</b> : chaque leçon, chaque partie compte.`,
+        ) +
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+           style="border:1px solid ${C.line};border-radius:12px;border-collapse:separate;overflow:hidden;background:${C.cream};">
+           ${rangs}
+         </table>` +
+        p(
+          `<span style="font-size:12px;color:${C.inkSoft};">Points = XP gagnés + 5 par duel joué + 20 par duel gagné — jouer compte toujours.</span>`,
+        ) +
+        bouton(APP_URL, name ? `À toi de jouer, ${esc(name)}` : 'À toi de jouer') +
+        petit('Cet email accompagne le cercle que tu as rejoint dans l’app. Quitter le cercle ou te désabonner l’arrête aussitôt.'),
+    })
+  },
 }
 
 export function renderTemplate(name, data = {}) {

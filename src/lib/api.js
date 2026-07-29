@@ -338,6 +338,51 @@ export async function flushEvents() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Le cercle — classements et palmarès                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Le cercle de l'utilisateur et ses classements (semaine/mois/année en
+ * cours). États possibles, jamais d'exception :
+ *   'ok' | 'anonyme' (pas connecté) | 'indisponible' (pas de serveur)
+ *   | 'horsligne' | 'erreur'
+ */
+export async function getCercle() {
+  try {
+    const r = await fetch('/api/cercle', { credentials: 'include' })
+    if (r.status === 503 || !isApi(r)) return { etat: 'indisponible' }
+    if (r.status === 401) return { etat: 'anonyme' }
+    if (!r.ok) return { etat: 'erreur' }
+    return { etat: 'ok', ...(await r.json()) }
+  } catch {
+    return { etat: 'horsligne' }
+  }
+}
+
+/**
+ * Créer / rejoindre / quitter. Renvoie { etat, cercle?, message? } — le
+ * message est celui du serveur (« ce cercle est complet », etc.), fait
+ * pour être affiché tel quel.
+ */
+export async function actionCercle(action, params = {}) {
+  try {
+    const r = await fetch('/api/cercle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ action, ...params }),
+    })
+    if (r.status === 503 || !isApi(r)) return { etat: 'indisponible' }
+    if (r.status === 401) return { etat: 'anonyme' }
+    const d = await r.json().catch(() => ({}))
+    if (!r.ok) return { etat: 'refus', message: d?.error || 'refusé' }
+    return { etat: 'ok', cercle: d?.cercle }
+  } catch {
+    return { etat: 'horsligne' }
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Feedback                                                             */
 /* ------------------------------------------------------------------ */
 

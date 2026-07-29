@@ -15,7 +15,8 @@
     "api/setup.js": { "includeFiles": "db/schema.sql" }
   },
   "crons": [
-    { "path": "/api/cron/relances", "schedule": "0 9 * * *" }
+    { "path": "/api/cron/relances", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/palmares", "schedule": "30 8 * * *" }
   ],
   "headers": [
     {
