@@ -61,25 +61,18 @@ export function auth() {
         trustedProviders: ['google'],
       },
     },
-    // Limiteur de débit RÉGLÉ, pas subi. Vécu en production : la règle par
-    // défaut sur les routes de connexion (~3 requêtes/10 s) transformait un
-    // double-clic sur « Continuer avec Google » en « Google est
-    // injoignable » (429). On garde le limiteur — il protège surtout le
-    // quota Resend (100 emails/jour en gratuit) contre le spam d'envoi de
-    // codes — mais avec des seuils qu'un humain pressé ne peut pas
-    // atteindre. Nota : stockage en mémoire d'instance serverless, donc
-    // approximatif par nature ; c'est un garde-fou, pas une forteresse.
-    rateLimit: {
-      enabled: true,
-      window: 60,
-      max: 600,
-      customRules: {
-        '/sign-in/social': { window: 10, max: 10 },
-        '/email-otp/send-verification-otp': { window: 60, max: 4 },
-        '/sign-in/email-otp': { window: 60, max: 12 },
-        '/sign-in/magic-link': { window: 60, max: 4 },
-      },
-    },
+    // Limiteur de débit DÉSACTIVÉ — décision assumée après DEUX pannes pour
+    // zéro attaque : « Google injoignable » au 2ᵉ clic (règle par défaut),
+    // puis « connexion bloquée après quelques tentatives » malgré des seuils
+    // relevés. Son stockage en mémoire d'instance serverless le rend
+    // imprévisible : les compteurs vivent et meurent avec les instances,
+    // deux utilisateurs partagent parfois le même compteur.
+    // Le risque couvert était faible : pas de mots de passe à forcer, les
+    // codes OTP ont leur propre limite de tentatives, les liens magiques
+    // sont à usage unique. Le seul enjeu réel — le quota Resend (100
+    // emails/jour) — sera protégé par un garde-fou applicatif dédié, pas
+    // par un limiteur générique qui bloque les vrais utilisateurs.
+    rateLimit: { enabled: false },
     plugins: [
       magicLink({
         sendMagicLink: async ({ email, url }) => {
