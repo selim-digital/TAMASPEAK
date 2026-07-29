@@ -15,9 +15,14 @@ export const units = [
     title: 'Les salutations — Azul !',
     trophy: '👋',
     lessons: [
-      { id: 'l1', title: 'Azul', icon: '👋', status: 'done' },
-      { id: 'l2', title: 'Politesse', icon: '🙏', status: 'done' },
-      { id: 'l3', title: 'Se présenter', icon: '★', status: 'current' },
+      // Le parcours COMMENCE à Azul. Les statuts « done/current » qui
+      // traînaient ici depuis le premier maquettage faisaient démarrer tout
+      // nouvel apprenant à la leçon 3, les deux premières faussement
+      // cochées — signalé par Selim, corrigé avec une migration des profils
+      // touchés (voir loadStore).
+      { id: 'l1', title: 'Azul', icon: '👋', status: 'current' },
+      { id: 'l2', title: 'Politesse', icon: '🙏', status: 'locked' },
+      { id: 'l3', title: 'Se présenter', icon: '★', status: 'locked' },
       { id: 'chest1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'l4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'l5', title: 'Au revoir', icon: '👋', status: 'locked' },

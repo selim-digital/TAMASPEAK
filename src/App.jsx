@@ -47,6 +47,7 @@ import {
   xpToday,
   lessonsDone,
   lexiqueSize,
+  resetLanguage,
 } from './lib/progress.js'
 
 function pickRandom(arr, n) {
@@ -372,6 +373,14 @@ export default function App() {
                 setScreen(ECRANS.COMPTE)
               }}
               onFeedback={() => setScreen(ECRANS.FEEDBACK)}
+              onResetLang={(langId) => {
+                // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
+                setStore((s) => {
+                  const apres = resetLanguage(s, langId)
+                  pushStore(apres)
+                  return apres
+                })
+              }}
               onBack={() => setScreen(ECRANS.CHEMIN)}
             />
           )}

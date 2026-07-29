@@ -234,6 +234,26 @@ export async function syncStore(localStore) {
   }
 }
 
+/**
+ * Écrit le store TEL QUEL au serveur, SANS fusion préalable — réservé aux
+ * remises à zéro voulues : la fusion max/union ne sait pas revenir en
+ * arrière, c'est sa raison d'être, donc un reset doit l'outrepasser
+ * explicitement.
+ */
+export async function pushStore(store) {
+  try {
+    const r = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ store }),
+    })
+    return r.ok && isApi(r)
+  } catch {
+    return false
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Événements — file d'attente hors-ligne                               */
 /* ------------------------------------------------------------------ */

@@ -27,7 +27,8 @@ function Tile({ icon, value, label }) {
  * Aucune donnée ne quitte l'appareil : le partage passe par la feuille de
  * partage du système ou le presse-papiers, jamais par un serveur.
  */
-export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, onBack }) {
+export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, onResetLang, onBack }) {
+  const [resetEnCours, setResetEnCours] = useState(null) // langId en attente de confirmation
   const profile = store.profile || {}
   const [name, setName] = useState(profile.name || '')
   const [avatar, setAvatar] = useState(profile.avatar || 'akermus')
@@ -154,6 +155,40 @@ export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, on
                     <Tabzimt size={22} className="block" />
                     <span className="text-[10px] font-extrabold text-ink-soft">×{l.medals}</span>
                   </span>
+                )}
+                {/* Recommencer la langue — en deux temps, et c'est un vrai
+                    zéro : la remise est aussi poussée au serveur, sinon la
+                    fusion ressusciterait tout à la prochaine connexion. */}
+                {resetEnCours === l.course.id ? (
+                  <span className="flex flex-none gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setResetEnCours(null)}
+                      className="rounded-lg border border-line bg-cream px-1.5 py-1 text-[9.5px] font-extrabold text-ink-soft"
+                    >
+                      Garder
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onResetLang(l.course.id)
+                        setResetEnCours(null)
+                        sfx.click()
+                      }}
+                      className="rounded-lg bg-coral px-1.5 py-1 text-[9.5px] font-extrabold text-white"
+                    >
+                      À zéro
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setResetEnCours(l.course.id)}
+                    aria-label={`Recommencer ${l.course.name} depuis le début`}
+                    className="flex-none text-[13px] text-ink-soft"
+                  >
+                    ↺
+                  </button>
                 )}
               </div>
             ))}

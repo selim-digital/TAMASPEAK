@@ -171,11 +171,34 @@ export function defaultStore() {
   return { lang: DEFAULT_LANG, profile: null, byLang: {} }
 }
 
+/**
+ * Répare les profils touchés par les statuts de démonstration qui ont
+ * traîné dans les données du cours kabyle (Azul et Politesse « done »
+ * d'origine, départ à la leçon 3). L'invariant qui permet de trancher :
+ * TERMINER UNE LEÇON RAPPORTE TOUJOURS DES XP — une langue à 0 XP ne peut
+ * donc avoir aucune leçon « done ». Ces statuts-là sont l'héritage du
+ * maquettage : on les jette, le parcours repart d'Azul.
+ * (Une langue avec des XP réels n'est pas touchée : impossible d'y
+ * distinguer le vrai du semé — c'est le bouton « recommencer » qui sert.)
+ */
+function reparerStatutsSemes(byLang) {
+  const repare = {}
+  for (const [lang, p] of Object.entries(byLang || {})) {
+    if (!p || (p.xp || 0) > 0 || !p.statuses) {
+      repare[lang] = p
+      continue
+    }
+    const pollue = Object.values(p.statuses).some((s) => s === 'done')
+    repare[lang] = pollue ? { ...p, statuses: undefined } : p
+  }
+  return repare
+}
+
 export function loadStore() {
   try {
     const parsed = lireJson(KEY)
     if (parsed) {
-      return { ...defaultStore(), ...parsed, byLang: parsed.byLang || {} }
+      return { ...defaultStore(), ...parsed, byLang: reparerStatutsSemes(parsed.byLang || {}) }
     }
     // Migration depuis la v2 (mono-langue kabyle).
     const old = lireJson(LEGACY_KEY)
@@ -216,6 +239,18 @@ export function withProgress(store, langId, progress) {
 
 /** Langues déjà commencées par l'élève. */
 export const startedLangs = (store) => Object.keys(store.byLang || {})
+
+/**
+ * Recommencer une langue à zéro — voulu et assumé par l'élève, donc on
+ * supprime sa progression au lieu de la fusionner. L'appelant doit AUSSI
+ * pousser ce store au serveur tel quel (pushStore, sans fusion) : sinon la
+ * fusion max/union de la prochaine connexion ressusciterait tout.
+ */
+export function resetLanguage(store, langId) {
+  const byLang = { ...store.byLang }
+  delete byLang[langId]
+  return { ...store, byLang }
+}
 
 /** Identité publique (pseudo + avatar) — utilisée par le profil et les défis. */
 export function setIdentity(store, { name, avatar }) {
@@ -292,6 +327,10 @@ function mergeProgress(a = {}, b = {}) {
 export function mergeStores(local, remote) {
   if (!remote) return local
   if (!local) return remote
+  // L'instantané serveur d'un compte existant peut porter les statuts semés
+  // par l'ancien maquettage : même réparation qu'au chargement local, sinon
+  // la fusion max/union les ressuscite à chaque connexion.
+  remote = { ...remote, byLang: reparerStatutsSemes(remote.byLang || {}) }
   const langs = new Set([...Object.keys(local.byLang || {}), ...Object.keys(remote.byLang || {})])
   const byLang = {}
   for (const l of langs) byLang[l] = mergeProgress(remote.byLang?.[l], local.byLang?.[l])
