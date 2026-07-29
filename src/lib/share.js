@@ -3,6 +3,14 @@
  * repli sur le presse-papiers ailleurs. Aucun serveur, aucun pistage.
  */
 
+/**
+ * L'adresse de l'app, présente dans CHAQUE carte partagée : un partage sans
+ * lien est une impasse — le destinataire ne peut rien en faire. Grâce aux
+ * balises Open Graph d'index.html, ce lien arrive dans WhatsApp avec le
+ * logo yaz et le titre.
+ */
+export const APP_URL = 'https://tamaspeak.com'
+
 /** Barre de score en carrés, façon Wordle — lisible même en texte brut. */
 export function scoreBar(correct, total) {
   const c = Math.max(0, Math.min(correct, total))
@@ -39,15 +47,22 @@ export const lessonShare = ({ courseName, correct, total, streak }) =>
     `${courseName} — leçon terminée`,
     `${scoreBar(correct, total)} ${correct}/${total}`,
     `Série : ${streak} jour${streak > 1 ? 's' : ''} 🔥`,
+    APP_URL,
   ].join('\n')
 
 /** Carte de fin d'unité (le médaillon tabzimt). */
 export const unitShare = ({ courseName, unitLabel, unitTitle }) =>
-  ['ⵣ Tama Speak', `${courseName} — ${unitLabel} terminée !`, `« ${unitTitle} »`, 'Médaillon gagné 🏅'].join('\n')
+  ['ⵣ Tama Speak', `${courseName} — ${unitLabel} terminée !`, `« ${unitTitle} »`, 'Médaillon gagné 🏅', APP_URL].join('\n')
 
 /** Carte de profil : une ligne par langue commencée. */
 export const profileShare = ({ name, lines, totalXp }) =>
-  ['ⵣ Tama Speak', name ? `${name} apprend les langues amazighes :` : 'J’apprends les langues amazighes :', ...lines, `Total : ${totalXp} XP`].join('\n')
+  [
+    'ⵣ Tama Speak',
+    name ? `${name} apprend les langues amazighes :` : 'J’apprends les langues amazighes :',
+    ...lines,
+    `Total : ${totalXp} XP`,
+    APP_URL,
+  ].join('\n')
 
 /** Invitation à un défi. */
 export const duelInvite = ({ name, courseName, correct, total }) =>

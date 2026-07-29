@@ -175,7 +175,7 @@ function FamilyCheer({ cheer, onOpen }) {
 }
 
 /** Bandeau du haut : langue en cours à gauche, avatar (profil) à droite. */
-function TopRow({ course, onOpen, onProfile, avatar }) {
+function TopRow({ course, onOpen, onProfile, onNotifs, notifCount = 0, avatar }) {
   if (!course) return null
   return (
     <div className="flex items-center gap-2 px-[18px] pt-7 pb-0.5">
@@ -189,6 +189,23 @@ function TopRow({ course, onOpen, onProfile, avatar }) {
         <span className="text-[12px] font-extrabold">{course.name}</span>
         {course.autonym !== course.name && <span className="text-[11px] font-bold text-ink-soft">{course.autonym}</span>}
         <span className="text-[11px] font-extrabold text-ink-soft">⌄</span>
+      </button>
+      {/* La cloche : badge corail tant qu'il reste du non-lu. */}
+      <button
+        type="button"
+        onClick={onNotifs}
+        aria-label={notifCount > 0 ? `Notifications — ${notifCount} non lues` : 'Notifications'}
+        className="relative flex-none text-ink-soft transition-transform active:scale-90"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M6 9a6 6 0 1 1 12 0c0 4 1.6 5.4 2.4 6.2.3.3.1.8-.4.8H4c-.5 0-.7-.5-.4-.8C4.4 14.4 6 13 6 9z" />
+          <path d="M10 19a2 2 0 0 0 4 0" />
+        </svg>
+        {notifCount > 0 && (
+          <span className="absolute -right-1.5 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-coral px-0.5 text-[9px] font-extrabold text-white">
+            {notifCount > 9 ? '9+' : notifCount}
+          </span>
+        )}
       </button>
       <button type="button" onClick={onProfile} aria-label="Mon profil" className="flex-none">
         <Avatar id={avatar} size={30} />
@@ -218,6 +235,8 @@ export function PathScreen({
   onMissions,
   onTifinagh,
   onHistoire,
+  onNotifs,
+  notifCount = 0,
   lexiqueCount = 0,
   avatar,
 }) {
@@ -269,7 +288,14 @@ export function PathScreen({
 
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
-      <TopRow course={course} onOpen={onLanguages} onProfile={onProfile} avatar={avatar} />
+      <TopRow
+        course={course}
+        onOpen={onLanguages}
+        onProfile={onProfile}
+        onNotifs={onNotifs}
+        notifCount={notifCount}
+        avatar={avatar}
+      />
       <TopBar streak={streak} xp={xp} gems={gems} />
 
       {/* Actions */}

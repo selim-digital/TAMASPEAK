@@ -16,6 +16,8 @@ import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.
 import { DuoScreen } from './screens/DuoScreen.jsx'
 import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
+import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
+import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
 import { track, flushEvents, syncStore, sessionState, sessionHint } from './lib/api.js'
@@ -353,6 +355,8 @@ export default function App() {
               onMissions={() => setScreen(ECRANS.MISSIONS)}
               onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
               onHistoire={() => setScreen(ECRANS.HISTOIRE)}
+              onNotifs={() => setScreen(ECRANS.NOTIFS)}
+              notifCount={nonLues(store, course, progress).length}
               lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
@@ -479,6 +483,16 @@ export default function App() {
           )}
 
           {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.CHEMIN)} />}
+
+          {screen === ECRANS.NOTIFS && (
+            <NotificationsScreen
+              store={store}
+              course={course}
+              progress={progress}
+              onSave={setStore}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
 
           {screen === ECRANS.HISTOIRE && (
             <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.CHEMIN)} />
