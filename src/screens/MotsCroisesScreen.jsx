@@ -139,8 +139,18 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
   }
   /** Une lettre, dans l'écriture d'affichage choisie. */
   const afficher = (l) => (script === 'tif' ? enTifinagh(l) : maj(enLatin(l)))
-  /** Un mot entier — en latin, la graphie du cours reste la référence. */
-  const afficherMot = (mot) => (script === 'tif' ? enTifinagh(mot) : estTifinagh(mot) ? enLatin(mot) : mot)
+  /** Un mot entier en latin — la graphie du cours reste la référence. */
+  const motLatin = (mot) => (estTifinagh(mot) ? enLatin(mot) : mot)
+  /**
+   * Un mot trouvé se montre TOUJOURS en entier : tifinagh, latin, et la
+   * traduction vient à côté — c'est le moment d'apprentissage, on ne le
+   * tronque pas selon l'écriture choisie.
+   */
+  const motComplet = (mot) => (
+    <>
+      <span className="tifinagh">{enTifinagh(mot)}</span> · {motLatin(mot)}
+    </>
+  )
 
   const gagne = trouves.size === grille.mots.length
 
@@ -373,7 +383,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
               >
                 {fait ? (
                   <>
-                    <span className="tifinagh">{afficherMot(m.mot)}</span> — {m.sens}
+                    {motComplet(m.mot)} — {m.sens}
                   </>
                 ) : (
                   <>
@@ -414,7 +424,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                 <span className="text-[10.5px] text-ink-soft">
                   {toast?.info || (toast ? (
                     <b className="text-turquoise-deep">
-                      <span className="tifinagh">{afficherMot(toast.mot)}</span> — {toast.sens}
+                      {motComplet(toast.mot)} — {toast.sens}
                     </b>
                   ) : 'relie les lettres pour former un mot')}
                 </span>

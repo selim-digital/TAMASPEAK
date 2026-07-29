@@ -308,6 +308,12 @@ export default function App() {
     setScreen(ECRANS.DUEL_INTRO)
   }
 
+  /** Duel de Mémory : même tapis de cartes sur les deux téléphones. */
+  function startMemoryDuel() {
+    setDuel({ jeu: 'memory', lang: course.id, seed: makeSeed(), size: 8, correct: null, total: null, from: '' })
+    setScreen(ECRANS.DUEL_INTRO)
+  }
+
   function finishDuel(result) {
     setLastResult(result)
     setScreen(ECRANS.DUEL_RESULTAT)
@@ -455,7 +461,16 @@ export default function App() {
             />
           )}
 
-          {screen === ECRANS.DUEL && duelCourse && (
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu === 'memory' && (
+            <MemoryScreen
+              course={duelCourse}
+              duel={duel}
+              onFinishDuel={finishDuel}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu !== 'memory' && (
             <LessonScreen
               exercises={seededPick(duelCourse.challengePool(), duel.size, duel.seed)}
               lang={duelCourse.id}
@@ -527,6 +542,7 @@ export default function App() {
               course={course}
               progress={progress}
               onMemory={() => setScreen(ECRANS.MEMORY)}
+              onMemoryDuel={startMemoryDuel}
               onMots={() => setScreen(ECRANS.MOTS)}
               onBack={() => setScreen(ECRANS.CHEMIN)}
             />

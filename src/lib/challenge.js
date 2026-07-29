@@ -6,10 +6,13 @@
  * et obtiennent donc exactement les mêmes exercices dans le même ordre. Le
  * lien reste court et l'app fonctionne hors-ligne.
  *
- * Format du lien :  …/#d=<base64url({l,s,n,c,t,f,v,g})>
+ * Format du lien :  …/#d=<base64url({l,s,n,c,t,f,v,g,j})>
  *   l = langue · s = graine · n = nombre de questions
  *   c = score de celui qui défie · t = total · f = son pseudo
  *   v = empreinte du contenu · g = garde du score
+ *   j = jeu ('memory' : duel de Mémory — c devient le nombre de COUPS,
+ *       t le nombre de paires, et c'est le plus petit score qui gagne ;
+ *       absent = défi de questions historique)
  *
  * DEUX FAILLES CORRIGÉES, dont une seule peut l'être vraiment sans serveur.
  *
@@ -100,7 +103,7 @@ const fromB64Url = (s) => {
   return decodeURIComponent(escape(atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4))))
 }
 
-export function encodeDuel({ lang, seed, size, correct, total, from, version }) {
+export function encodeDuel({ lang, seed, size, correct, total, from, version, jeu }) {
   return toB64Url(
     JSON.stringify({
       l: lang,
@@ -110,6 +113,7 @@ export function encodeDuel({ lang, seed, size, correct, total, from, version }) 
       t: total,
       f: from || '',
       v: version || '',
+      ...(jeu && jeu !== 'quiz' ? { j: jeu } : {}),
       g: guard({ seed, correct, total, from }),
     }),
   )
@@ -127,6 +131,7 @@ export function decodeDuel(str) {
       total: d.t ?? null,
       from: d.f || '',
       version: d.v || '',
+      jeu: d.j || 'quiz',
     }
     // Un lien d'avant cette version n'a pas de garde : on ne le déclare pas
     // truqué pour autant, seulement « non vérifiable ».

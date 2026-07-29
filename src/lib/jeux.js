@@ -6,10 +6,10 @@
  * sont servies d'office. Le jour où un locuteur corrige un mot du cours,
  * les jeux suivent sans changement de code.
  *
- * Contrainte assumée pour le Mémory : pas de visages ni d'êtres vivants —
- * les cartes portent du TEXTE (mot amazigh ↔ sens français) et le dos des
- * cartes un motif géométrique de losanges, comme le filigrane du chemin.
+ * Contrainte assumée pour le Mémory : pas de visages ni d'yeux — texte,
+ * silhouettes et losanges seulement.
  */
+import { seededPick } from './challenge.js'
 
 /** Normalise un mot (NFC : « ḍ » composé et décomposé doivent se confondre). */
 const propre = (mot) => (mot || '').normalize('NFC').trim()
@@ -115,8 +115,11 @@ function scenesParMot(course) {
  * une même partie : deux paires au sens identique rendraient l'association
  * ambiguë, donc injuste. Les phrases longues sont écartées — une carte
  * doit se lire d'un coup d'œil.
+ *
+ * `graine` (facultative) rend le tirage déterministe — c'est elle qui
+ * permet le duel entre téléphones distants.
  */
-export function pairesMemoire(course, n = 6) {
+export function pairesMemoire(course, n = 6, graine = null) {
   const scenes = scenesParMot(course)
   const vusMots = new Set()
   const vusSens = new Set()
@@ -146,9 +149,14 @@ export function pairesMemoire(course, n = 6) {
       candidats.push({ mot: m, sens: s, scene: scenes.get(km) || null })
     }
   }
-  const illustres = melanger(candidats.filter((c) => c.scene))
-  const autres = melanger(candidats.filter((c) => !c.scene))
-  return [...illustres, ...autres].slice(0, n)
+  // Avec une graine (duel), le tirage est DÉTERMINISTE : deux téléphones
+  // distants reconstruisent exactement le même tapis à partir du lien.
+  const illustres = candidats.filter((c) => c.scene)
+  const autres = candidats.filter((c) => !c.scene)
+  const tirage = graine
+    ? [...seededPick(illustres, illustres.length, `${graine}:i`), ...seededPick(autres, autres.length, `${graine}:a`)]
+    : [...melanger(illustres), ...melanger(autres)]
+  return tirage.slice(0, n)
 }
 
 /**
@@ -156,15 +164,16 @@ export function pairesMemoire(course, n = 6) {
  * « mot » (tifinagh + latin) et sa jumelle « scene » (illustration) ou
  * « sens » (texte français) — mélangées. `paire` relie les deux.
  */
-export function cartesMemoire(paires) {
-  return melanger(
-    paires.flatMap((p, i) => [
-      { id: `m${i}`, paire: i, face: 'mot', texte: p.mot, mot: p.mot },
-      p.scene
-        ? { id: `s${i}`, paire: i, face: 'scene', scene: p.scene, texte: p.sens, mot: p.mot }
-        : { id: `s${i}`, paire: i, face: 'sens', texte: p.sens, mot: p.mot },
-    ]),
-  )
+export function cartesMemoire(paires, graine = null) {
+  const cartes = paires.flatMap((p, i) => [
+    // La carte « mot » emporte sens et scène : l'écran sait ainsi s'il
+    // peut afficher le français sans trahir la paire (jumelle illustrée).
+    { id: `m${i}`, paire: i, face: 'mot', texte: p.mot, mot: p.mot, sens: p.sens, scene: p.scene || null },
+    p.scene
+      ? { id: `s${i}`, paire: i, face: 'scene', scene: p.scene, texte: p.sens, mot: p.mot }
+      : { id: `s${i}`, paire: i, face: 'sens', texte: p.sens, mot: p.mot },
+  ])
+  return graine ? seededPick(cartes, cartes.length, `${graine}:c`) : melanger(cartes)
 }
 
 /* ------------------------------------------------------------------ */

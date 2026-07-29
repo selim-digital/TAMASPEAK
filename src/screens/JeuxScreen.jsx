@@ -5,10 +5,10 @@ import { JEUX } from '../data/economy.js'
  * Le coin jeux — deux façons de réviser sans en avoir l'air.
  *
  * Le Mémory et les Mots croisés ne remplacent pas les leçons : ils font
- * revenir les mêmes mots par un autre chemin. Volontairement sans visage
- * ni être vivant dessiné : des lettres, des losanges, c'est tout.
+ * revenir les mêmes mots par un autre chemin. Règle de dessin : jamais de
+ * visage ni d'yeux — lettres, losanges et silhouettes des leçons.
  */
-export function JeuxScreen({ course, progress, onMemory, onMots, onBack }) {
+export function JeuxScreen({ course, progress, onMemory, onMemoryDuel, onMots, onBack }) {
   const niveaux = niveauxMots(course)
   const faits = (progress.jeux?.motsFaits || []).filter((id) => niveaux.some((n) => n.id === id)).length
   const victoires = progress.jeux?.memoryVictoires || 0
@@ -52,6 +52,24 @@ export function JeuxScreen({ course, progress, onMemory, onMots, onBack }) {
             <span className="block text-[13px] font-extrabold tabular-nums text-turquoise-deep">{victoires}</span>
             <span className="block text-[9px] font-bold uppercase tracking-wide text-ink-soft">
               {victoires > 1 ? 'parties' : 'partie'}
+            </span>
+          </span>
+        </button>
+
+        {/* Défi Mémory à distance : même tapis sur les deux téléphones,
+            le lien transporte la graine — aucun serveur, comme le Défi. */}
+        <button
+          type="button"
+          onClick={onMemoryDuel}
+          className="mt-1.5 flex w-full items-center gap-2.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-left transition active:scale-[0.99]"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-turquoise-deep)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M13 19l6-6M16 22l3-3M19 16l3 3M5 2l6 6M2 5l3-3M8 5L5 8M14 8L8 14M21 3l-4.5 4.5M10.5 13.5L3 21" />
+          </svg>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-extrabold">Défier un ami au Mémory</span>
+            <span className="block text-[10px] leading-snug text-ink-soft">
+              Le même tapis sur vos deux téléphones — le moins de coups gagne.
             </span>
           </span>
         </button>

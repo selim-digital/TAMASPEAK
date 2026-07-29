@@ -72,6 +72,25 @@ export const duelInvite = ({ name, courseName, correct, total }) =>
     name ? `Feras-tu mieux que ${name} ?` : 'Feras-tu mieux ?',
   ].join('\n')
 
+/** Invitation à un duel de Mémory (le moins de coups gagne). */
+export const memoryInvite = ({ name, courseName, coups, paires }) =>
+  [
+    'ⵣ Tama Speak — duel de Mémory !',
+    `${courseName} · ${paires} paires en ${coups} coups 🃏`,
+    name ? `Feras-tu moins de coups que ${name} ?` : 'Feras-tu moins de coups ?',
+  ].join('\n')
+
+/** Réponse à un duel de Mémory relevé. */
+export const memoryReply = ({ name, courseName, mine, theirs, paires }) => {
+  const verdict = mine < theirs ? 'J’ai gagné ! 🎉' : mine === theirs ? 'Égalité ! 🤝' : 'Tu gardes l’avantage 💪'
+  return [
+    'ⵣ Tama Speak — duel de Mémory relevé',
+    `${courseName} · ${paires} paires`,
+    `moi : ${mine} coups · ${name || 'toi'} : ${theirs} coups`,
+    verdict,
+  ].join('\n')
+}
+
 /** Réponse à un défi relevé. */
 export const duelReply = ({ name, courseName, mine, theirs, total }) => {
   const verdict = mine > theirs ? 'J’ai gagné ! 🎉' : mine === theirs ? 'Égalité ! 🤝' : 'Tu gardes l’avantage 💪'

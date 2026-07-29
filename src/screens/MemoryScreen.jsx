@@ -4,18 +4,29 @@ import { pairesMemoire, cartesMemoire, enTifinagh, estTifinagh } from '../lib/je
 import { Scene } from '../components/illustrations/Scenes.jsx'
 import { playWord } from '../lib/audio.js'
 import { sfx } from '../lib/sfx.js'
+import { lire, ecrire } from '../lib/storage.js'
 import { JEUX } from '../data/economy.js'
 
 /**
  * Mémory — retrouve chaque mot amazigh (écrit en TIFINAGH, graphie latine
- * en dessous) et son image, ou son sens français quand le mot n'a pas
- * d'illustration.
+ * et sens français en appui) et son image, ou son sens quand le mot n'a
+ * pas d'illustration.
+ *
+ * Deux niveaux de jeu :
+ *   · Normal    — la carte « mot » porte aussi le sens français (quand sa
+ *                 jumelle est une image : si la jumelle EST le sens, le
+ *                 répéter ici donnerait la paire d'office) ;
+ *   · Difficile — sans français : tifinagh et latin seuls, la mémoire du
+ *                 SENS travaille avec celle des positions.
+ *
+ * En DUEL (téléphones distants), le tapis est tiré d'une graine commune
+ * transportée par le lien : les deux joueurs retournent exactement les
+ * mêmes cartes, et le moins de coups gagne.
  *
  * Règle de dessin assumée : PAS de visage, pas d'yeux — les illustrations
  * sont celles des leçons (Scenes.jsx, formes simples et silhouettes), et
  * le dos des cartes un losange tissé (le motif du chemin). Retourner une
- * carte « mot » la fait aussi entendre : la mémoire de l'oreille
- * travaille avec celle des yeux.
+ * carte « mot » la fait aussi entendre.
  */
 
 /** Dos de carte : losange kabyle sur fond turquoise, purement géométrique. */
@@ -33,19 +44,24 @@ function DosCarte() {
 
 const TAILLES = [
   { paires: 6, label: '12 cartes' },
-  { paires: 8, label: '16 cartes' },
+  { paires: 8, label: '16' },
+  { paires: 10, label: '20' },
 ]
 
-export function MemoryScreen({ course, onWin, onBack }) {
-  const [taille, setTaille] = useState(6)
+const CLE_DIFFICILE = 'tama-speak:memory-difficile'
+
+export function MemoryScreen({ course, duel = null, onWin, onFinishDuel, onBack }) {
+  const [taille, setTaille] = useState(duel ? duel.size : 6)
+  const [dur, setDur] = useState(() => !duel && lire(CLE_DIFFICILE) === 'oui')
   // `manche` force un nouveau tirage — les cartes ne se re-mélangent
   // jamais en cours de partie, même si le composant se re-rend.
   const [manche, setManche] = useState(0)
   const cartes = useMemo(() => {
-    const paires = pairesMemoire(course, taille)
-    return cartesMemoire(paires)
+    const graine = duel?.seed || null
+    const paires = pairesMemoire(course, duel ? duel.size : taille, graine)
+    return cartesMemoire(paires, graine)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course.id, taille, manche])
+  }, [course.id, taille, manche, duel?.seed])
   const nbPaires = cartes.length / 2
 
   const [ouvertes, setOuvertes] = useState([]) // ids des cartes face visible (0, 1 ou 2)
@@ -57,15 +73,25 @@ export function MemoryScreen({ course, onWin, onBack }) {
 
   const gagne = trouvees.size === nbPaires && nbPaires > 0
 
-  function rejouer(nouvellesPaires = taille) {
-    setTaille(nouvellesPaires)
-    setManche((m) => m + 1)
+  function raz() {
     setOuvertes([])
     setTrouvees(new Set())
     setCoups(0)
     setSerie(0)
     verrou.current = false
     recompense.current = false
+  }
+
+  function rejouer(nouvellesPaires = taille) {
+    setTaille(nouvellesPaires)
+    setManche((m) => m + 1)
+    raz()
+    sfx.click()
+  }
+
+  function changerNiveau(difficile) {
+    setDur(difficile)
+    ecrire(CLE_DIFFICILE, difficile ? 'oui' : 'non')
     sfx.click()
   }
 
@@ -91,6 +117,7 @@ export function MemoryScreen({ course, onWin, onBack }) {
       // Le verrou garantit qu'aucune autre paire ne se résout d'ici le
       // timeout : `trouvees` capturé ici est donc bien l'état courant, et
       // la récompense (qui touche App) reste HORS de l'updater d'état.
+      const coupsFinaux = coups + 1
       verrou.current = true
       setTimeout(() => {
         const suivantes = new Set(trouvees)
@@ -101,7 +128,7 @@ export function MemoryScreen({ course, onWin, onBack }) {
         if (suivantes.size === nbPaires && !recompense.current) {
           recompense.current = true
           sfx.complete()
-          onWin?.()
+          onWin?.({ coups: coupsFinaux, paires: nbPaires })
         }
       }, 450)
       setSerie((s) => {
@@ -129,33 +156,62 @@ export function MemoryScreen({ course, onWin, onBack }) {
         <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
           ←
         </button>
-        <h2 className="text-lg font-extrabold">Mémory</h2>
+        <h2 className="text-lg font-extrabold">{duel ? 'Mémory — duel' : 'Mémory'}</h2>
         <span className="ml-auto text-[11px] font-bold tabular-nums text-ink-soft">
           {trouvees.size}/{nbPaires} paires · {coups} {coups > 1 ? 'coups' : 'coup'}
         </span>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6">
-        {/* Taille de la partie */}
-        <div className="mt-1 flex gap-1.5">
-          {TAILLES.map((t) => (
-            <button
-              key={t.paires}
-              type="button"
-              onClick={() => rejouer(t.paires)}
-              className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11.5px] font-extrabold transition ${
-                taille === t.paires
-                  ? 'border-turquoise bg-turquoise/10 text-turquoise-deep'
-                  : 'border-line bg-cream text-ink-soft'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        {duel ? (
+          <p className="mt-1 text-center text-[10.5px] font-bold text-ink-soft">
+            Le même tapis que {duel.from || 'ton ami'} — le moins de coups gagne.
+          </p>
+        ) : (
+          <>
+            {/* Taille de la partie */}
+            <div className="mt-1 flex gap-1.5">
+              {TAILLES.map((t) => (
+                <button
+                  key={t.paires}
+                  type="button"
+                  onClick={() => rejouer(t.paires)}
+                  className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11.5px] font-extrabold transition ${
+                    taille === t.paires
+                      ? 'border-turquoise bg-turquoise/10 text-turquoise-deep'
+                      : 'border-line bg-cream text-ink-soft'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {/* Niveau : avec ou sans le français */}
+            <div className="mt-1.5 flex gap-1.5">
+              <button
+                type="button"
+                onClick={() => changerNiveau(false)}
+                className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11px] font-extrabold transition ${
+                  !dur ? 'border-turquoise bg-turquoise/10 text-turquoise-deep' : 'border-line bg-cream text-ink-soft'
+                }`}
+              >
+                Normal · avec français
+              </button>
+              <button
+                type="button"
+                onClick={() => changerNiveau(true)}
+                className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11px] font-extrabold transition ${
+                  dur ? 'border-coral bg-coral/10 text-coral-dark' : 'border-line bg-cream text-ink-soft'
+                }`}
+              >
+                Difficile · sans français
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Le tapis de cartes */}
-        <div className={`mt-3 grid gap-2 ${taille === 8 ? 'grid-cols-4' : 'grid-cols-3'}`}>
+        <div className={`mt-3 grid gap-2 ${taille === 6 ? 'grid-cols-3' : 'grid-cols-4'}`}>
           {cartes.map((carte) => {
             const visible = ouvertes.includes(carte.id) || trouvees.has(carte.paire)
             const acquise = trouvees.has(carte.paire)
@@ -188,6 +244,8 @@ export function MemoryScreen({ course, onWin, onBack }) {
                     {carte.face === 'mot' ? (
                       // Le mot : tifinagh en grand, graphie latine en appui —
                       // sauf pour l'amazighe standard, déjà écrit en tifinagh.
+                      // Le sens français s'ajoute en mode normal, quand la
+                      // jumelle est une image (sinon il donnerait la paire).
                       <span className="flex flex-col items-center gap-0.5">
                         <span
                           className={`tifinagh font-extrabold leading-tight text-turquoise-deep ${
@@ -199,6 +257,11 @@ export function MemoryScreen({ course, onWin, onBack }) {
                         {!estTifinagh(carte.mot) && (
                           <span className="break-words text-[8.5px] font-bold leading-tight text-ink-soft">
                             {carte.mot}
+                          </span>
+                        )}
+                        {!dur && carte.scene && (
+                          <span className="break-words text-[8px] font-bold italic leading-tight text-coral-dark">
+                            {carte.sens}
                           </span>
                         )}
                       </span>
@@ -222,23 +285,36 @@ export function MemoryScreen({ course, onWin, onBack }) {
           <div className="animate-pop-in mt-4 rounded-2xl border-2 border-turquoise bg-turquoise/10 px-3 py-3.5 text-center">
             <div className="text-[15px] font-extrabold text-turquoise-deep">Igerrez ! Toutes les paires !</div>
             <div className="mt-0.5 text-[11px] font-bold text-ink-soft">
-              {coups} coups pour {nbPaires} paires · +{JEUX.memory.xpGain} XP
+              {coups} coups pour {nbPaires} paires
+              {!duel && <> · +{JEUX.memory.xpGain} XP</>}
             </div>
             <div className="mt-2.5 flex gap-2">
-              <button
-                type="button"
-                onClick={() => rejouer()}
-                className="flex-1 rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
-              >
-                Rejouer
-              </button>
-              <button
-                type="button"
-                onClick={onBack}
-                className="flex-1 rounded-xl border-2 border-line bg-cream py-2.5 text-[13px] font-extrabold text-ink-soft"
-              >
-                Retour
-              </button>
+              {duel ? (
+                <button
+                  type="button"
+                  onClick={() => onFinishDuel?.({ coups, paires: nbPaires })}
+                  className="flex-1 rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
+                >
+                  Voir le résultat
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => rejouer()}
+                    className="flex-1 rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
+                  >
+                    Rejouer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    className="flex-1 rounded-xl border-2 border-line bg-cream py-2.5 text-[13px] font-extrabold text-ink-soft"
+                  >
+                    Retour
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ) : (
