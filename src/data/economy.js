@@ -31,3 +31,16 @@ export const XP_RECIT = 10
 
 /** Duel à deux sur un même téléphone : pair, pour que chacun joue autant. */
 export const DUO_TOURS = 6
+
+/**
+ * Le coin jeux — Mémory et Mots croisés. Rejouables à volonté (même règle
+ * que partout : rien n'interrompt jamais une partie). Les gemmes d'un
+ * niveau de mots croisés ne tombent qu'à la PREMIÈRE réussite ; rejouer
+ * rapporte un petit XP d'entretien. L'indice est la première DÉPENSE de
+ * gemmes de l'app : ce qu'on gagne aux coffres sert enfin à quelque chose.
+ */
+export const JEUX = {
+  memory: { xpGain: 10 },
+  mots: { xpGain: 15, gems: 10, xpRejoue: 5 },
+  indice: 5,
+}
