@@ -56,6 +56,16 @@ export function auth() {
     // Suppression de compte en libre-service — engagement RGPD : la purge
     // en base suit par cascade (voir db/schema.sql), sans intervention.
     user: { deleteUser: { enabled: true } },
+    // Audit : 7 jours de session (défaut) forcent un public à usage
+    // épisodique à se reconnecter sans cesse — 60 jours glissants, c'est
+    // une app d'apprentissage, pas une banque. Le cache de cookie évite un
+    // aller-retour Neon à chaque getSession (latence à froid, CU-heures).
+    session: {
+      expiresIn: 60 * 60 * 24 * 60,
+      updateAge: 60 * 60 * 24,
+      cookieCache: { enabled: true, maxAge: 300 },
+    },
+    telemetry: { enabled: false },
     // LIAISON DES COMPTES. Sans ceci, quelqu'un qui s'est déjà connecté par
     // code email puis essaie Google avec LA MÊME adresse est refusé
     // (account_not_linked) — vécu : « je choisis mon compte Gmail puis
@@ -97,6 +107,10 @@ export function auth() {
       emailOTP({
         otpLength: 6,
         expiresIn: 600,
+        // Audit : 3 essais (défaut) puis code invalidé EN SILENCE — un
+        // enfant qui tape mal trois fois voit ensuite « code invalide »
+        // même avec le bon code. Cinq essais, et le client explique.
+        allowedAttempts: 5,
         sendVerificationOTP: async ({ email, otp }) => {
           const ok = await sendEmail({
             to: email,
@@ -123,7 +137,11 @@ export async function sessionOf(req) {
     }
     const s = await auth().api.getSession({ headers })
     return s?.user ? s : null
-  } catch {
+  } catch (e) {
+    // Audit : avaler l'erreur déguisait une panne de base en « utilisateur
+    // déconnecté ». On répond toujours null (l'appelant fera son 401), mais
+    // la panne est désormais VISIBLE dans les journaux.
+    console.error('[tama] sessionOf en échec — panne technique, pas une déconnexion :', e?.message || e)
     return null
   }
 }

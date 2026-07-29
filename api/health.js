@@ -77,15 +77,28 @@ export default async function handler(req, res) {
   // (import dynamique : le traceur peut le manquer)
   await step('import-resend', () => import('resend'))
 
-  // Déclenche le VRAI flux du lien magique côté serveur (écriture du jeton
-  // en base + envoi d'email) vers une adresse de test — c'est la sonde qui
-  // dit pourquoi /sign-in/magic-link répond 500 corps vide.
-  await step('magic-link-dry', async () => {
-    const { auth } = await import('./_lib/auth.js')
-    await auth().api.signInMagicLink({
-      body: { email: 'delivered@resend.dev', callbackURL: '/' },
-      headers: new Headers({ origin: process.env.BETTER_AUTH_URL || 'https://tamaspeak.com' }),
+  // ⚠️ Leçon d'audit : l'ancienne sonde déclenchait un VRAI envoi d'email à
+  // chaque consultation — un moniteur d'uptime à 5 min aurait épuisé le
+  // quota Resend (100/jour) à lui seul et CAUSÉ la panne qu'il surveillait.
+  // Désormais : la clé Resend se vérifie par une LECTURE (zéro quota), et
+  // la table des jetons par une écriture aussitôt effacée, sans email.
+  await step('resend-key', async () => {
+    if (!process.env.RESEND_API_KEY) throw new Error('clé absente')
+    const r = await fetch('https://api.resend.com/domains', {
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
     })
+    if (!r.ok) throw new Error(`clé refusée (${r.status})`)
+  })
+
+  await step('verification-table', async () => {
+    const { sql } = await import('./_lib/db.js')
+    const [row] = await sql()`
+      INSERT INTO "verification" ("id", "identifier", "value", "expiresAt")
+      VALUES ('health-probe', 'health', 'probe', NOW() + INTERVAL '1 minute')
+      ON CONFLICT ("id") DO UPDATE SET "expiresAt" = NOW() + INTERVAL '1 minute'
+      RETURNING "id"`
+    await sql()`DELETE FROM "verification" WHERE "id" = 'health-probe'`
+    if (row?.id !== 'health-probe') throw new Error('écriture non relue')
   })
 
   res.status(200).json(out)
