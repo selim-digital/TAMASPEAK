@@ -101,7 +101,7 @@ const TEMPLATES = {
         h1(`On se quitte${name ? `, ${esc(name)}` : ''} ?`) +
         p('Tu as demandé la <b>suppression définitive</b> de ton compte Tama Speak. Un appui sur le bouton, et tout ce que le serveur sait de toi est effacé.') +
         bouton(url, 'Oui, supprimer mon compte') +
-        petit('Si tu n’as rien demandé, ignore simplement cet email — ton compte reste intact. Et la progression sur ton téléphone t’appartient dans tous les cas.'),
+        petit('Si tu n’as rien demandé, ignore simplement cet email — ton compte reste intact.'),
     }),
 
   /** Transactionnel — le lien magique de connexion. */

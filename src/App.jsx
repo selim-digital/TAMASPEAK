@@ -63,8 +63,15 @@ const COMPTE_SUPPRIME = PARAMS_RETOUR.has('compte-supprime')
 if (AUTH_ERREUR || COMPTE_SUPPRIME) {
   window.history.replaceState(null, '', window.location.pathname)
   if (COMPTE_SUPPRIME) {
+    // Supprimer son compte, c'est demander une VRAIE table rase : garder la
+    // progression locale (l'ancien choix) faisait revenir l'utilisateur
+    // « déjà connu » — sans onboarding, avec « Reprendre » au lieu de
+    // « Commencer ». Vécu et corrigé : tout part.
     try {
       localStorage.removeItem('tama-speak:session-hint')
+      localStorage.removeItem('tama-speak:v3')
+      localStorage.removeItem('tama-speak:events-queue')
+      localStorage.removeItem('tama-speak:feedback-queue')
     } catch {
       /* stockage indisponible */
     }
@@ -332,10 +339,11 @@ export default function App() {
           {screen === ECRANS.ACCUEIL && (
             <WelcomeScreen
               etat={sessionEtat}
+              dejaCommence={hasProfile(store)}
               name={user?.name || store.profile?.name}
               attente={departEnAttente}
               erreur={authErreur}
-              info={compteSupprime ? 'Ton compte a été supprimé — tout ce que le serveur savait de toi est effacé. Ta progression locale reste sur cet appareil.' : null}
+              info={compteSupprime ? 'Ton compte et tes données ont été supprimés — tu repars de zéro. Ansuf, quand tu veux !' : null}
               onStart={demarrer}
               onLogin={() => {
                 setCompteIntention('connexion')

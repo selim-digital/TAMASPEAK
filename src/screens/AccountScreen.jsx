@@ -385,8 +385,8 @@ export function AccountScreen({
               <div className="mt-8 rounded-2xl border border-line bg-sand px-4 py-3">
                 <div className="text-[11px] font-extrabold">Supprimer mon compte</div>
                 <p className="mt-1 text-[10.5px] leading-snug text-ink-soft">
-                  Efface tout ce que le serveur sait de toi — définitivement. Ta progression sur cet
-                  appareil, elle, reste à toi.
+                  Efface définitivement ton compte, ta progression et tout ce que le serveur sait
+                  de toi. Tu repars de zéro.
                 </p>
                 {confirmerSuppr ? (
                   <div className="mt-2 flex gap-2">
