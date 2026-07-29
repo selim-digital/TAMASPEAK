@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Confetti } from '../components/Confetti.jsx'
-import { niveauxMots } from '../lib/jeux.js'
+import { niveauxMots, enTifinagh, enLatin, estTifinagh } from '../lib/jeux.js'
 import { playWord } from '../lib/audio.js'
 import { sfx } from '../lib/sfx.js'
+import { lire, ecrire } from '../lib/storage.js'
 import { JEUX } from '../data/economy.js'
 import { GemIcon } from '../components/jewels/StatIcons.jsx'
 
@@ -24,6 +25,9 @@ const LARGEUR_GRILLE = 312 // px disponibles pour la grille dans le téléphone
 
 /** Majuscule d'affichage — inerte pour le tifinagh, correcte pour ɣ, ḍ, ẓ… */
 const maj = (l) => l.toLocaleUpperCase('fr')
+
+/** L'écriture d'affichage choisie, mémorisée par langue. */
+const cleScript = (courseId) => `tama-speak:mots-script:${courseId}`
 
 export function MotsCroisesScreen({ course, progress, gems, onNiveauFini, onIndice, onBack }) {
   const niveaux = useMemo(() => niveauxMots(course), [course])
@@ -122,6 +126,21 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
   const [secousse, setSecousse] = useState(0)
   const drag = useRef(null)
   const recompense = useRef(false)
+  // L'écriture d'affichage : celle du cours par défaut, et le choix du
+  // joueur est retenu par langue. Seul l'AFFICHAGE change — la grille,
+  // la roue et la validation vivent dans la graphie d'origine du cours.
+  const [script, setScript] = useState(
+    () => lire(cleScript(course.id)) || (estTifinagh(lettres.join('')) ? 'tif' : 'lat'),
+  )
+  const changerScript = (s) => {
+    setScript(s)
+    ecrire(cleScript(course.id), s)
+    sfx.click()
+  }
+  /** Une lettre, dans l'écriture d'affichage choisie. */
+  const afficher = (l) => (script === 'tif' ? enTifinagh(l) : maj(enLatin(l)))
+  /** Un mot entier — en latin, la graphie du cours reste la référence. */
+  const afficherMot = (mot) => (script === 'tif' ? enTifinagh(mot) : estTifinagh(mot) ? enLatin(mot) : mot)
 
   const gagne = trouves.size === grille.mots.length
 
@@ -281,6 +300,25 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
           ←
         </button>
         <h2 className="min-w-0 flex-1 truncate text-lg font-extrabold">{niveau.titre}</h2>
+        {/* La bascule d'écriture : latin ⇄ tifinagh, les deux se valent. */}
+        <div className="flex flex-none overflow-hidden rounded-lg border border-line" role="group" aria-label="Écriture d'affichage">
+          <button
+            type="button"
+            onClick={() => changerScript('lat')}
+            aria-pressed={script === 'lat'}
+            className={`px-2 py-1 text-[10px] font-extrabold ${script === 'lat' ? 'bg-turquoise text-white' : 'bg-cream text-ink-soft'}`}
+          >
+            Abc
+          </button>
+          <button
+            type="button"
+            onClick={() => changerScript('tif')}
+            aria-pressed={script === 'tif'}
+            className={`tifinagh px-2 py-1 text-[10px] font-extrabold ${script === 'tif' ? 'bg-turquoise text-white' : 'bg-cream text-ink-soft'}`}
+          >
+            ⵣⴰ
+          </button>
+        </div>
         <span className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-ink-soft">
           <GemIcon size={13} /> {gems}
         </span>
@@ -313,7 +351,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                       : 'border-line bg-white'
                   }`}
                 >
-                  <span style={{ fontSize: Math.max(12, caseW * 0.48) }}>{visible ? maj(c.lettre) : ''}</span>
+                  <span style={{ fontSize: Math.max(12, caseW * 0.48) }}>{visible ? afficher(c.lettre) : ''}</span>
                 </div>
               )
             })}
@@ -335,7 +373,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
               >
                 {fait ? (
                   <>
-                    <span className="tifinagh">{m.mot}</span> — {m.sens}
+                    <span className="tifinagh">{afficherMot(m.mot)}</span> — {m.sens}
                   </>
                 ) : (
                   <>
@@ -376,7 +414,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                 <span className="text-[10.5px] text-ink-soft">
                   {toast?.info || (toast ? (
                     <b className="text-turquoise-deep">
-                      <span className="tifinagh">{toast.mot}</span> — {toast.sens}
+                      <span className="tifinagh">{afficherMot(toast.mot)}</span> — {toast.sens}
                     </b>
                   ) : 'relie les lettres pour former un mot')}
                 </span>
@@ -386,7 +424,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                     key={j}
                     className="tifinagh grid h-8 w-7 place-items-center rounded-md bg-turquoise text-[15px] font-extrabold text-white"
                   >
-                    {maj(lettres[i])}
+                    {afficher(lettres[i])}
                   </span>
                 ))
               )}
@@ -437,9 +475,9 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                         top: p.y - tailleLettre / 2,
                         fontSize: tailleLettre * 0.42,
                       }}
-                      aria-label={`Lettre ${maj(l)}`}
+                      aria-label={`Lettre ${afficher(l)}`}
                     >
-                      {maj(l)}
+                      {afficher(l)}
                     </button>
                   )
                 })}

@@ -57,6 +57,18 @@ const LATIN_VERS_TIFINAGH = {
   v: 'ⵠ', w: 'ⵡ', x: 'ⵅ', y: 'ⵢ', z: 'ⵣ', ẓ: 'ⵥ',
 }
 
+/**
+ * L'inverse, pour afficher en latin un cours écrit en tifinagh. La table
+ * directe n'est pas inversible telle quelle : o/u, c/š et r/ř partagent
+ * une même lettre tifinagh — on écarte les graphies secondaires et la
+ * lettre canonique gagne (ⵓ→u, ⵛ→c, ⵔ→r).
+ */
+const TIFINAGH_VERS_LATIN = Object.fromEntries(
+  Object.entries(LATIN_VERS_TIFINAGH)
+    .filter(([lat]) => !['o', 'ř', 'š'].includes(lat))
+    .map(([lat, tif]) => [tif, lat]),
+)
+
 /** Le mot contient-il déjà du tifinagh (cours d'amazighe standard) ? */
 export const estTifinagh = (mot) => /[ⴰ-⵿]/.test(mot || '')
 
@@ -67,6 +79,13 @@ export const estTifinagh = (mot) => /[ⴰ-⵿]/.test(mot || '')
 export function enTifinagh(mot) {
   return Array.from(propre(mot).toLowerCase())
     .map((l) => (l >= 'ⴰ' && l <= '⵿' ? l : LATIN_VERS_TIFINAGH[l] ?? l))
+    .join('')
+}
+
+/** Écrit en latin un mot du cours, quelle que soit sa graphie d'origine. */
+export function enLatin(mot) {
+  return Array.from(propre(mot).toLowerCase())
+    .map((l) => TIFINAGH_VERS_LATIN[l] ?? l)
     .join('')
 }
 
