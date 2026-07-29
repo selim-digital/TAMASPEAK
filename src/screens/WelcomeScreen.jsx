@@ -16,7 +16,16 @@ import { Akermus } from '../components/mascots/Akermus.jsx'
  *
  * Hors-ligne : on entre quand même (mode local), avec un bandeau sobre.
  */
-export function WelcomeScreen({ etat = 'inconnu', name, attente = false, onStart, onLogin, onChangeAccount }) {
+/** Traduction humaine des codes d'erreur OAuth — jamais de jargon à l'écran. */
+const ERREURS = {
+  account_not_linked:
+    'Cette adresse a déjà un compte créé par code email. Réessaie : les deux sont maintenant reliés.',
+  state_mismatch: 'La connexion a expiré en route — réessaie, ça ira vite.',
+  state_not_found: 'La connexion a expiré en route — réessaie, ça ira vite.',
+  access_denied: 'Tu as annulé la connexion Google — aucun souci.',
+}
+
+export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur, onStart, onLogin, onChangeAccount }) {
   const connecte = etat === 'connecte'
   const anonyme = etat === 'anonyme'
   const horsLigne = etat === 'horsligne'
@@ -45,6 +54,12 @@ export function WelcomeScreen({ etat = 'inconnu', name, attente = false, onStart
       </div>
 
       <div className="flex-1" />
+
+      {erreur && (
+        <p className="mb-2 w-full rounded-xl border border-coral/40 bg-coral/10 px-3 py-2 text-[11px] leading-snug text-ink">
+          {ERREURS[erreur] || 'La connexion Google n’a pas abouti — réessaie, ou passe par le code email.'}
+        </p>
+      )}
 
       {horsLigne && (
         <p className="mb-2 w-full rounded-xl border border-line bg-sand px-3 py-2 text-[11px] leading-snug text-ink-soft">
