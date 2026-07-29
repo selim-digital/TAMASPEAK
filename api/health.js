@@ -84,10 +84,16 @@ export default async function handler(req, res) {
   // la table des jetons par une écriture aussitôt effacée, sans email.
   await step('resend-key', async () => {
     if (!process.env.RESEND_API_KEY) throw new Error('clé absente')
-    const r = await fetch('https://api.resend.com/domains', {
-      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
+    // Une clé « envoi seulement » (le bon réglage) n'a pas le droit de LIRE
+    // /domains — on sonde donc l'endpoint d'envoi avec un corps vide : la
+    // validation échoue AVANT tout envoi (422 = clé acceptée, zéro email ;
+    // 401 = clé réellement invalide).
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: '{}',
     })
-    if (!r.ok) throw new Error(`clé refusée (${r.status})`)
+    if (r.status === 401 || r.status === 403) throw new Error(`clé refusée (${r.status})`)
   })
 
   await step('verification-table', async () => {
