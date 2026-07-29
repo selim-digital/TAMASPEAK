@@ -27,11 +27,18 @@ function Reserve({ children }) {
   )
 }
 
-/** Écran d'annonce : soit on lance un défi, soit on en reçoit un. */
+/**
+ * Écran d'annonce : soit on lance un défi, soit on en reçoit un.
+ * `duel.distant` = défi de cercle (serveur) : même mécanique de graine,
+ * mais chacun sur SON téléphone et les scores gardés au serveur.
+ */
 export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
   const incoming = duel?.correct != null
+  const distant = duel?.distant
   const contenuIdentique = memeContenu(duel, course.challengePool())
-  const scoreDouteux = incoming && duel.scoreVerifie === false
+  // Un score serveur n'est pas falsifiable dans une URL : le doute ne
+  // concerne que les défis par lien.
+  const scoreDouteux = incoming && !distant && duel.scoreVerifie === false
 
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-6 pt-10 text-center bg-[radial-gradient(120%_70%_at_50%_10%,rgba(255,111,97,0.16),var(--color-cream)_62%)]">
@@ -63,11 +70,20 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
         </>
       ) : (
         <>
-          <h2 className="mt-3 text-[21px] font-extrabold leading-tight">Défier un ami</h2>
+          <h2 className="mt-3 text-[21px] font-extrabold leading-tight">
+            {distant ? `Défier ${distant.avec}` : 'Défier un ami'}
+          </h2>
           <p className="mt-1.5 max-w-[290px] text-[13px] leading-snug text-ink-soft">
             Tu réponds d’abord à <b className="text-ink">5 questions</b> en{' '}
-            <b className="text-ink">{course.name}</b>, puis tu envoies le lien. Ton ami aura
-            exactement les mêmes.
+            <b className="text-ink">{course.name}</b>
+            {distant ? (
+              <>
+                , puis {distant.avec} reçoit le défi <b className="text-ink">sur son téléphone</b> —
+                exactement les mêmes questions.
+              </>
+            ) : (
+              <>, puis tu envoies le lien. Ton ami aura exactement les mêmes.</>
+            )}
           </p>
         </>
       )}
@@ -91,7 +107,9 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
       </div>
 
       <p className="mt-3 text-[10px] leading-snug text-ink-soft">
-        Le défi voyage entièrement dans le lien — aucun compte, aucun serveur.
+        {distant
+          ? 'Défi de cercle : chacun joue sur son téléphone, les scores sont gardés pour vous deux.'
+          : 'Le défi voyage entièrement dans le lien — aucun compte, aucun serveur.'}
       </p>
     </div>
   )
@@ -100,6 +118,7 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
 /** Écran de résultat : score seul (défi lancé) ou comparaison (défi relevé). */
 export function DuelResultScreen({ duel, course, result, name, avatar, onDone }) {
   const [flash, setFlash] = useState(null)
+  const distant = duel?.distant
   const replying = duel?.correct != null
   const theirs = duel?.correct ?? 0
   const mine = result.correct
@@ -142,8 +161,23 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
       <Akermus height={128} state={replying && !won && !tie ? 'console' : 'celebrate'} />
 
       <h2 className="mt-3 text-[21px] font-extrabold leading-tight">
-        {replying ? (won ? 'Tu as gagné ! 🎉' : tie ? 'Égalité ! 🤝' : 'Presque !') : 'Ton défi est prêt'}
+        {replying
+          ? won
+            ? 'Tu as gagné ! 🎉'
+            : tie
+              ? 'Égalité ! 🤝'
+              : 'Presque !'
+          : distant
+            ? `Défi envoyé à ${distant.avec} ⚔`
+            : 'Ton défi est prêt'}
       </h2>
+
+      {distant && !replying && (
+        <p className="mt-1.5 text-[12px] leading-snug text-ink-soft">
+          {distant.avec} vient de recevoir une notification — tu seras prévenu·e dès qu’il ou elle
+          aura joué.
+        </p>
+      )}
 
       <div className="mt-4 w-full rounded-2xl border border-line bg-cream px-4 py-3">
         <div className="flex items-center gap-2.5">
@@ -174,12 +208,21 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
       <div className="min-h-4 flex-1" />
 
       <div className="flex w-full flex-col gap-2">
-        <Button variant="primary" onClick={send}>
-          {replying ? 'Renvoyer mon score' : 'Envoyer le défi'}
-        </Button>
-        <Button variant="ghost" onClick={onDone}>
-          Retour au chemin
-        </Button>
+        {/* Défi de cercle : le serveur a déjà tout transmis, rien à partager. */}
+        {distant ? (
+          <Button variant="primary" onClick={onDone}>
+            Retour au chemin
+          </Button>
+        ) : (
+          <>
+            <Button variant="primary" onClick={send}>
+              {replying ? 'Renvoyer mon score' : 'Envoyer le défi'}
+            </Button>
+            <Button variant="ghost" onClick={onDone}>
+              Retour au chemin
+            </Button>
+          </>
+        )}
       </div>
 
       {flash && <p className="animate-rise mt-3 text-[11.5px] font-bold text-turquoise-deep">{flash}</p>}

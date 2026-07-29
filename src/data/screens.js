@@ -37,4 +37,6 @@ export const ECRANS = Object.freeze({
   COMPTE: 'compte',
   NOTIFS: 'notifs',
   FEEDBACK: 'feedback',
+  CERCLE: 'cercle',
+  ENREGISTRER: 'enregistrer',
 })

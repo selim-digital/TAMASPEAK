@@ -2,12 +2,28 @@ import { useEffect } from 'react'
 import { YazMark } from '../components/Logo.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { notificationsPour, toutMarquerLu } from '../lib/notifications.js'
+import { marquerNotifsServeurLues } from '../lib/distance.js'
 
 /** Pastille du genre de notification, à côté du logo. */
 const KINDS = {
   serie: { icone: '🔥', teinte: 'var(--color-coral)' },
   objectif: { icone: '⭐', teinte: 'var(--color-gold, #F0B429)' },
   nouveaute: { icone: 'ⵣ', teinte: 'var(--color-turquoise)' },
+  'demande-audio': { icone: '🎙', teinte: 'var(--color-turquoise)' },
+  'audio-recu': { icone: '🎁', teinte: 'var(--color-turquoise)' },
+  cercle: { icone: '🤝', teinte: 'var(--color-turquoise)' },
+  defi: { icone: '⚔', teinte: 'var(--color-coral)' },
+  'defi-fini': { icone: '⚔', teinte: 'var(--color-coral)' },
+  info: { icone: 'ⵣ', teinte: 'var(--color-turquoise)' },
+}
+
+/** Les genres sur lesquels on peut AGIR en touchant la carte. */
+const ACTIONS = {
+  'demande-audio': 'Enregistrer →',
+  'audio-recu': 'Écouter →',
+  defi: 'Jouer →',
+  'defi-fini': 'Voir →',
+  cercle: 'Voir →',
 }
 
 /**
@@ -15,18 +31,28 @@ const KINDS = {
  * demande explicite du propriétaire, et c'est juste : une notification
  * est une prise de parole de la marque.
  *
- * Tout est généré localement (série, objectif, nouveautés) : aucun serveur
- * ne décide de te déranger. L'ouverture de l'écran marque tout comme lu.
+ * Deux sources, fondues dans la même liste :
+ *   • locales (série, objectif, nouveautés) — décidées sur le téléphone ;
+ *   • serveur (cercle : défis, demandes de voix) — de vraies personnes qui
+ *     t'écrivent, jamais un automate qui te relance.
+ * L'ouverture de l'écran marque tout comme lu, des deux côtés.
  */
-export function NotificationsScreen({ store, course, progress, onSave, onBack }) {
-  const notifs = notificationsPour(store, course, progress)
+export function NotificationsScreen({ store, course, progress, serveur = [], onAction, onSave, onBack }) {
+  const locales = notificationsPour(store, course, progress)
   const lues = new Set(store.notifsLues || [])
 
   // Ouvrir le centre, c'est lire : le badge tombe à zéro en repartant.
   useEffect(() => {
     onSave(toutMarquerLu(store, course, progress))
+    if (serveur.some((n) => !n.lue)) marquerNotifsServeurLues()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Serveur d'abord (des personnes), locales ensuite (des rappels).
+  const cartes = [
+    ...serveur.map((n) => ({ ...n, nonLue: !n.lue, action: ACTIONS[n.kind] || null })),
+    ...locales.map((n) => ({ ...n, nonLue: !lues.has(n.id), action: null })),
+  ]
 
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
@@ -38,25 +64,26 @@ export function NotificationsScreen({ store, course, progress, onSave, onBack })
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
-        {notifs.length === 0 ? (
+        {cartes.length === 0 ? (
           <div className="mt-8 text-center">
             <Akermus height={90} state="idle" className="mx-auto" />
             <p className="mt-3 text-[12.5px] font-bold">Rien pour l’instant.</p>
             <p className="mt-1 text-[11px] text-ink-soft">
-              Les nouveautés et tes rappels d’objectif arriveront ici.
+              Les nouveautés, tes rappels d’objectif et les messages de ton cercle arriveront ici.
             </p>
           </div>
         ) : (
           <div className="mt-2 flex flex-col gap-2">
-            {notifs.map((n) => {
+            {cartes.map((n) => {
               const k = KINDS[n.kind] || KINDS.nouveaute
-              const nonLue = !lues.has(n.id)
+              const Carte = n.action ? 'button' : 'div'
               return (
-                <div
+                <Carte
                   key={n.id}
-                  className={`flex items-start gap-2.5 rounded-2xl border px-3 py-3 ${
-                    nonLue ? 'border-turquoise/40 bg-white' : 'border-line bg-cream'
-                  }`}
+                  {...(n.action ? { type: 'button', onClick: () => onAction?.(n) } : {})}
+                  className={`flex w-full items-start gap-2.5 rounded-2xl border px-3 py-3 text-left ${
+                    n.nonLue ? 'border-turquoise/40 bg-white' : 'border-line bg-cream'
+                  } ${n.action ? 'transition-transform active:scale-[0.98]' : ''}`}
                 >
                   {/* Le logo de la marque, comme sur une vraie notification
                       système — avec la pastille du genre par-dessus. */}
@@ -72,21 +99,25 @@ export function NotificationsScreen({ store, course, progress, onSave, onBack })
                       {k.icone}
                     </span>
                   </span>
-                  <span className="min-w-0 pt-0.5">
+                  <span className="min-w-0 flex-1 pt-0.5">
                     <span className="flex items-center gap-1.5">
                       <span className="text-[12.5px] font-extrabold leading-tight">{n.title}</span>
-                      {nonLue && <span className="h-2 w-2 flex-none rounded-full bg-coral" aria-label="non lue" />}
+                      {n.nonLue && <span className="h-2 w-2 flex-none rounded-full bg-coral" aria-label="non lue" />}
                     </span>
                     <span className="mt-0.5 block text-[11px] leading-snug text-ink-soft">{n.body}</span>
+                    {n.action && (
+                      <span className="mt-1 block text-[11px] font-extrabold text-turquoise-deep">{n.action}</span>
+                    )}
                   </span>
-                </div>
+                </Carte>
               )
             })}
           </div>
         )}
 
         <p className="mt-6 text-center text-[10px] leading-snug text-ink-soft">
-          Tout est décidé sur ton téléphone — aucun serveur ne choisit quand te déranger.
+          Les rappels sont décidés sur ton téléphone ; le reste vient de ton cercle — de vraies
+          personnes, jamais un automate.
         </p>
       </div>
     </div>

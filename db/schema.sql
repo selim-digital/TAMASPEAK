@@ -129,9 +129,12 @@ CREATE INDEX IF NOT EXISTS feedbacks_status ON feedbacks (status, created_at DES
 CREATE TABLE IF NOT EXISTS notifications (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
-  kind TEXT NOT NULL,          -- 'nouveaute' | 'defi' | 'info'
+  kind TEXT NOT NULL,          -- 'nouveaute' | 'defi' | 'info' | 'demande-audio'
+                               -- | 'audio-recu' | 'cercle' | 'defi-fini'
+                               -- (+ 'email-…' : anti-doublon du cron, jamais affiché)
   title TEXT NOT NULL,
   body TEXT,
+  data JSONB,                  -- de quoi AGIR : {demandeId} ou {code} du défi
   read_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -166,3 +169,89 @@ CREATE TABLE IF NOT EXISTS email_prefs (
   unsubscribed_at TIMESTAMPTZ, -- désabonnement one-click : tout s'arrête
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- ------------------------------------------------------------------
+-- Le CERCLE — jouer à distance, en famille et entre amis.
+--
+-- Un lien de cercle relie DEUX personnes, point. Pas de « groupe » avec
+-- rôles et administrateurs : l'app modélise « ma grand-mère et moi », pas
+-- une organisation. L'invitation est un code à partager (WhatsApp) ; le
+-- lien n'existe qu'une fois le code utilisé par quelqu'un de connecté.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS cercle_liens (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  createur TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  invite TEXT REFERENCES "user"("id") ON DELETE CASCADE, -- NULL tant que le code n'est pas utilisé
+  code TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  accepted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS cercle_createur ON cercle_liens (createur);
+CREATE INDEX IF NOT EXISTS cercle_invite ON cercle_liens (invite);
+
+-- ------------------------------------------------------------------
+-- Demandes d'enregistrement — « dis-moi ce mot avec ta voix ».
+--
+-- A demande un mot à B (membre de son cercle) ; B reçoit une notification
+-- dans l'app, enregistre sur SON téléphone, et l'audio revient à A — qui
+-- peut l'installer dans ses leçons (IndexedDB local, plomberie E2).
+--
+-- L'audio est stocké en base64 TEXT, plafonné (~500 Ko binaire) : quelques
+-- secondes de voix compressée pèsent 30 à 80 Ko, le plafond est large.
+-- Même règle que les contributions locales : AUCUNE IA, AUCUNE notation —
+-- on transporte la voix telle quelle, attribuée et effaçable.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS demandes_audio (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  de_user TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,   -- qui demande
+  pour_user TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE, -- qui enregistre
+  lang TEXT,
+  texte TEXT NOT NULL,          -- le mot ou l'expression demandée
+  sens TEXT,                    -- ce que ça veut dire (facultatif)
+  status TEXT NOT NULL DEFAULT 'attente', -- 'attente' | 'fait' | 'decline'
+  audio_b64 TEXT,               -- l'enregistrement, en base64
+  audio_type TEXT,              -- mime (audio/webm, audio/mp4…)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  answered_at TIMESTAMPTZ,
+  CONSTRAINT demandes_texte_len CHECK (char_length(texte) <= 120),
+  CONSTRAINT demandes_audio_len CHECK (char_length(audio_b64) <= 800000)
+);
+
+CREATE INDEX IF NOT EXISTS demandes_pour ON demandes_audio (pour_user, status);
+CREATE INDEX IF NOT EXISTS demandes_de ON demandes_audio (de_user, created_at DESC);
+
+-- ------------------------------------------------------------------
+-- Défis à distance — même mécanique que le défi par lien (une GRAINE
+-- commune, les deux joueurs tirent les mêmes questions), mais les scores
+-- vivent au serveur : plus modifiables dans une URL, et chacun joue
+-- depuis son téléphone, quand il peut.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS defis (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  createur TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  adversaire TEXT REFERENCES "user"("id") ON DELETE CASCADE,
+  lang TEXT NOT NULL,
+  seed TEXT NOT NULL,
+  size INT NOT NULL DEFAULT 5,
+  version TEXT,                 -- empreinte du contenu (voir lib/challenge.js)
+  score_createur INT,
+  total_createur INT,
+  score_adversaire INT,
+  total_adversaire INT,
+  status TEXT NOT NULL DEFAULT 'ouvert', -- 'ouvert' | 'fini'
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  finished_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS defis_createur ON defis (createur, created_at DESC);
+CREATE INDEX IF NOT EXISTS defis_adversaire ON defis (adversaire, created_at DESC);
+
+-- Les notifications actionnables (défi reçu, demande d'audio) transportent
+-- de quoi agir : l'id de la demande, le code du défi. Colonne ajoutée après
+-- coup — l'ALTER est idempotent pour les bases déjà installées.
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS data JSONB;

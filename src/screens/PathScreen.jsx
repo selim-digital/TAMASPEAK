@@ -236,6 +236,7 @@ export function PathScreen({
   onJeux,
   onTifinagh,
   onHistoire,
+  onCercle,
   onNotifs,
   notifCount = 0,
   lexiqueCount = 0,
@@ -404,6 +405,23 @@ export function PathScreen({
           className="flex flex-none items-center justify-center rounded-xl border border-line bg-cream px-3 py-2 text-[13px] font-extrabold text-ink tifinagh"
         >
           ⵣ
+        </button>
+      </div>
+
+      {/* Le cercle : jouer avec sa famille et ses amis, chacun sur SON
+          téléphone — défis à distance et voix demandées aux proches. */}
+      <div className="px-3.5 pt-1.5">
+        <button
+          type="button"
+          onClick={onCercle}
+          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-turquoise/40 bg-turquoise/5 px-3 py-2 text-[12px] font-extrabold text-turquoise-deep transition-transform active:scale-[0.98]"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="9" r="2.6" />
+            <path d="M6.8 18.4c.7-2.3 2.8-3.7 5.2-3.7s4.5 1.4 5.2 3.7" />
+          </svg>
+          Mon cercle — famille & amis à distance
         </button>
       </div>
 

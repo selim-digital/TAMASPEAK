@@ -24,7 +24,7 @@ let _configured = null // null = on ne sait pas encore
  * /api inexistant renvoie la PAGE HTML avec un statut 200. S'y fier ferait
  * vider la file d'événements dans le vide.
  */
-const isApi = (r) => (r.headers.get('content-type') || '').includes('application/json')
+export const isApi = (r) => (r.headers.get('content-type') || '').includes('application/json')
 
 export const isLoggedIn = async () => !!(await me())
 
