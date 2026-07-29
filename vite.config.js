@@ -39,6 +39,15 @@ const pwa = VitePWA({
     // 206, que la route precache ne sait pas produire. Le cache est
     // réchauffé côté page (warmAudioCache) pour garder le hors-ligne.
     globPatterns: ['**/*.{js,css,html,svg,png}'],
+    // ⚠️ LA LIGNE QUI A COÛTÉ DES HEURES. Sans elle, le repli de navigation
+    // (navigateFallback → index.html) intercepte AUSSI le retour OAuth
+    // `GET /api/auth/callback/google?code=…` : le service worker sert
+    // l'app à la place du serveur, le code n'est JAMAIS échangé, aucune
+    // session, aucune erreur — la connexion Google « tourne en rond » en
+    // silence. curl ne passe pas par le SW, donc toutes les sondes serveur
+    // juraient que le rappel fonctionnait. Rien sous /api ne doit être
+    // servi par le shell.
+    navigateFallbackDenylist: [/^\/api\//],
     runtimeCaching: [
       {
         urlPattern: /\/audio\/.*\.(mp3|json)$/,
