@@ -47,6 +47,32 @@ export default async function handler(req, res) {
     await sessionOf(req)
   })
 
+  // Le secret Google est-il VALIDE ? Le sélecteur de comptes n'utilise que
+  // l'identifiant public — un secret faux ne casse qu'à l'échange final du
+  // code, précisément le symptôme « je choisis mon compte puis rien ».
+  // Astuce : un échange avec un code bidon répond `invalid_grant` si le
+  // couple id/secret est BON, `invalid_client` s'il est MAUVAIS. Aucun
+  // secret n'est exposé — seule la classe d'erreur de Google remonte.
+  await step('google-secret', async () => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET)
+      throw new Error('identifiants Google absents')
+    const r = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        code: 'code-bidon-diagnostic',
+        grant_type: 'authorization_code',
+        redirect_uri: (process.env.BETTER_AUTH_URL || 'https://tamaspeak.com') + '/api/auth/callback/google',
+      }),
+    })
+    const d = await r.json()
+    if (d.error === 'invalid_client') throw new Error('SECRET GOOGLE INVALIDE (invalid_client)')
+    if (d.error !== 'invalid_grant') throw new Error(`réponse inattendue : ${d.error}`)
+    // invalid_grant = le code bidon est refusé mais le couple id/secret est bon.
+  })
+
   // Le paquet resend est-il réellement embarqué dans le bundle Vercel ?
   // (import dynamique : le traceur peut le manquer)
   await step('import-resend', () => import('resend'))
