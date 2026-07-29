@@ -274,6 +274,36 @@ export async function pushStore(store) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Préférences email — l'interrupteur des relances                      */
+/* ------------------------------------------------------------------ */
+
+/** Lit les préférences ; null si pas connecté ou serveur absent. */
+export async function getEmailPrefs() {
+  try {
+    const r = await fetch('/api/email-prefs', { credentials: 'include' })
+    if (!r.ok || !isApi(r)) return null
+    return await r.json()
+  } catch {
+    return null
+  }
+}
+
+/** Écrit les préférences (recocher efface un désabonnement passé). */
+export async function setEmailPrefs({ relances = false, resumeHebdo = false }) {
+  try {
+    const r = await fetch('/api/email-prefs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ relances, resumeHebdo }),
+    })
+    return r.ok && isApi(r)
+  } catch {
+    return false
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Événements — file d'attente hors-ligne                               */
 /* ------------------------------------------------------------------ */
 

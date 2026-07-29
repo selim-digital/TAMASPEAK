@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Avatar, AVATARS } from '../components/Avatar.jsx'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
@@ -6,6 +6,7 @@ import { FlameIcon, StarIcon, GemIcon } from '../components/jewels/StatIcons.jsx
 import { COURSES } from '../data/courses.js'
 import { globalStats, setIdentity } from '../lib/progress.js'
 import { shareText, profileShare } from '../lib/share.js'
+import { getEmailPrefs, setEmailPrefs } from '../lib/api.js'
 import { sfx } from '../lib/sfx.js'
 
 function Tile({ icon, value, label }) {
@@ -16,6 +17,90 @@ function Tile({ icon, value, label }) {
       </div>
       <div className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wide text-ink-soft">{label}</div>
     </div>
+  )
+}
+
+/** Interrupteur à glissière — le motif standard, au doigt comme au clavier. */
+function Toggle({ checked, onChange, label, detail, disabled = false }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => {
+        sfx.click()
+        onChange(!checked)
+      }}
+      className="flex w-full items-center gap-3 rounded-2xl border border-line bg-cream px-3 py-2.5 text-left disabled:opacity-50"
+    >
+      <div className="flex-1">
+        <div className="text-[12.5px] font-extrabold">{label}</div>
+        <div className="mt-0.5 text-[10.5px] leading-snug text-ink-soft">{detail}</div>
+      </div>
+      <span
+        className={`relative h-6 w-11 flex-none rounded-full transition-colors ${checked ? 'bg-turquoise' : 'bg-sand-2'}`}
+      >
+        <span
+          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${checked ? 'left-[22px]' : 'left-0.5'}`}
+        />
+      </span>
+    </button>
+  )
+}
+
+/**
+ * Rappels par email — les deux opt-in que le cron des relances consulte.
+ * La section n'apparaît que si le serveur répond ET que l'élève est
+ * connecté (getEmailPrefs rend null sinon) : hors-ligne ou en mode local,
+ * pas de promesse d'email qu'on ne peut pas tenir.
+ */
+function EmailPrefs() {
+  const [prefs, setPrefs] = useState(null) // null = pas connecté / pas encore su
+  const [envoi, setEnvoi] = useState(false)
+
+  useEffect(() => {
+    let actif = true
+    getEmailPrefs().then((p) => actif && p && setPrefs(p))
+    return () => {
+      actif = false
+    }
+  }, [])
+
+  if (!prefs) return null
+
+  async function change(patch) {
+    const avant = prefs
+    const apres = { ...prefs, ...patch }
+    setPrefs(apres) // optimiste — l'interrupteur répond au doigt
+    setEnvoi(true)
+    const ok = await setEmailPrefs(apres)
+    setEnvoi(false)
+    if (!ok) setPrefs(avant)
+  }
+
+  return (
+    <>
+      <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+        Rappels par email
+      </div>
+      <div className="flex flex-col gap-2">
+        <Toggle
+          checked={prefs.relances}
+          disabled={envoi}
+          onChange={(v) => change({ relances: v, ...(v ? {} : { resumeHebdo: false }) })}
+          label="Un rappel de temps en temps"
+          detail="Si tu t'absentes quelques jours, un petit mot — jamais de reproche."
+        />
+        <Toggle
+          checked={prefs.resumeHebdo}
+          disabled={envoi || !prefs.relances}
+          onChange={(v) => change({ resumeHebdo: v })}
+          label="Le résumé de ma semaine"
+          detail="Chaque semaine : tes XP, ta série, tes découvertes."
+        />
+      </div>
+    </>
   )
 }
 
@@ -194,6 +279,8 @@ export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, on
             ))}
           </div>
         )}
+
+        <EmailPrefs />
 
         <div className="mt-6 flex flex-col gap-2">
           <Button variant="primary" onClick={onDuel}>

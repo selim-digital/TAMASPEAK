@@ -20,7 +20,7 @@ import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, syncStore, sessionState, sessionHint } from './lib/api.js'
+import { track, flushEvents, syncStore, pushStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
 import { AccountScreen } from './screens/AccountScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
@@ -251,7 +251,7 @@ export default function App() {
     }
   }
 
-  function finishOnboarding({ lang, level, reason, dailyGoalXp }) {
+  function finishOnboarding({ lang, level, reason, dailyGoalXp, contact }) {
     const langId = lang || store.lang
     setStore((s) => {
       const next = {
@@ -262,6 +262,12 @@ export default function App() {
       const langProgress = progressOf(next, getCourse(langId))
       return withProgress(next, langId, { ...langProgress, level })
     })
+    // L'opt-in email choisi à l'étape « reste en contact » part au serveur —
+    // c'est l'interrupteur que le cron des relances consulte. Envoi en
+    // arrière-plan : un échec réseau ne bloque pas l'entrée dans l'app.
+    if (contact && contact !== 'non') {
+      setEmailPrefs({ relances: true, resumeHebdo: contact === 'tout' })
+    }
     setPendingLang(null)
     setScreen(ECRANS.CHEMIN)
   }

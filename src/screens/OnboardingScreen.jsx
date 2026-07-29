@@ -36,9 +36,25 @@ const levelStep = (langName) => ({
   ],
 })
 
+/**
+ * Opt-in email — RGPD et délivrabilité : rien n'est précoché, et « non »
+ * est une réponse aussi légitime que les autres. Le ton annonce ce que
+ * seront les emails : une raison de revenir, jamais un reproche.
+ */
+const CONTACT_STEP = {
+  id: 'contact',
+  bubble:
+    'Veux-tu que je t’écrive parfois par email ? Jamais de reproche — juste un rappel doux, ou le bilan de ta semaine.',
+  options: [
+    { value: 'rappels', label: '🔔 Oui, un rappel de temps en temps' },
+    { value: 'tout', label: '📬 Oui, rappels + résumé de ma semaine' },
+    { value: 'non', label: '🌿 Non merci, je viendrai de moi-même' },
+  ],
+}
+
 const DAILY_STEP = {
   id: 'daily',
-  bubble: 'Dernier détail : quel objectif chaque jour ? Je te le rappellerai sur le chemin.',
+  bubble: 'Et quel objectif chaque jour ? Je te le rappellerai sur le chemin.',
   options: [
     { value: 20, label: 'Tranquille — 5 min / jour (20 XP)' },
     { value: 40, label: 'Régulier — 10 min / jour (40 XP)' },
@@ -198,7 +214,7 @@ export function OnboardingScreen({ hasProfile = false, presetLang = null, onFini
     ...(presetLang ? [] : [{ id: 'lang', bubble: 'Azul ! Moi c’est Akermus. Quelle langue amazighe veux-tu apprendre ?' }]),
     ...(hasProfile ? [] : [REASON_STEP]),
     levelStep(chosenLang ? findLanguage(chosenLang).name : 'cette langue'),
-    ...(hasProfile ? [] : [DAILY_STEP]),
+    ...(hasProfile ? [] : [DAILY_STEP, CONTACT_STEP]),
   ]
 
   const done = (extra = {}) => {
@@ -208,6 +224,7 @@ export function OnboardingScreen({ hasProfile = false, presetLang = null, onFini
       level: a.level,
       reason: a.reason,
       dailyGoalXp: a.daily,
+      contact: a.contact, // 'rappels' | 'tout' | 'non' — l'opt-in email
     })
   }
 
