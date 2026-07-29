@@ -14,6 +14,9 @@
   "functions": {
     "api/setup.js": { "includeFiles": "db/schema.sql" }
   },
+  "crons": [
+    { "path": "/api/cron/relances", "schedule": "0 9 * * *" }
+  ],
   "headers": [
     {
       "source": "/(sw.js|registerSW.js|manifest.webmanifest)",

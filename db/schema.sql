@@ -144,6 +144,21 @@ CREATE INDEX IF NOT EXISTS notifications_user ON notifications (user_id, created
 -- moins de plaintes spam, et Resend suspend à 0,08 %).
 -- ------------------------------------------------------------------
 
+-- ------------------------------------------------------------------
+-- Quota d'emails — le garde-fou de l'audit. Le palier Resend gratuit est
+-- de 100 envois/JOUR : sans compteur partagé, un bug de relance ou un
+-- abus d'envoi de codes épuise le quota et TUE la connexion par code.
+-- Règles appliquées dans api/_lib/email.js : 5/jour par adresse,
+-- 80/jour au total (marge de 20 pour les codes de connexion).
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS email_quota (
+  day DATE NOT NULL,
+  email TEXT NOT NULL,
+  n INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, email)
+);
+
 CREATE TABLE IF NOT EXISTS email_prefs (
   user_id TEXT PRIMARY KEY REFERENCES "user"("id") ON DELETE CASCADE,
   relances BOOLEAN NOT NULL DEFAULT FALSE,
