@@ -40,45 +40,110 @@ export function melanger(arr) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Tifinagh                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Latin usuel → tifinaghe-IRCAM, lettre à lettre. Les valeurs reprennent
+ * la table des 33 lettres de data/tifinagh.js (bloc Unicode U+2D30–2D7F),
+ * complétée des graphies propres aux cours : č/ǧ du kabyle, š du tamazight
+ * de l'Atlas (= c), ř du rifain (roulement du r).
+ */
+const LATIN_VERS_TIFINAGH = {
+  a: 'ⴰ', b: 'ⴱ', c: 'ⵛ', č: 'ⵞ', d: 'ⴷ', ḍ: 'ⴹ', e: 'ⴻ', ɛ: 'ⵄ',
+  f: 'ⴼ', g: 'ⴳ', ǧ: 'ⴵ', ɣ: 'ⵖ', h: 'ⵀ', ḥ: 'ⵃ', i: 'ⵉ', j: 'ⵊ',
+  k: 'ⴽ', l: 'ⵍ', m: 'ⵎ', n: 'ⵏ', o: 'ⵓ', p: 'ⵒ', q: 'ⵇ', r: 'ⵔ',
+  ř: 'ⵔ', ṛ: 'ⵕ', s: 'ⵙ', ṣ: 'ⵚ', š: 'ⵛ', t: 'ⵜ', ṭ: 'ⵟ', u: 'ⵓ',
+  v: 'ⵠ', w: 'ⵡ', x: 'ⵅ', y: 'ⵢ', z: 'ⵣ', ẓ: 'ⵥ',
+}
+
+/** Le mot contient-il déjà du tifinagh (cours d'amazighe standard) ? */
+export const estTifinagh = (mot) => /[ⴰ-⵿]/.test(mot || '')
+
+/**
+ * Écrit un mot du cours en tifinagh. Un mot déjà en tifinagh passe tel
+ * quel ; les caractères inconnus (espace, tiret) restent en place.
+ */
+export function enTifinagh(mot) {
+  return Array.from(propre(mot).toLowerCase())
+    .map((l) => (l >= 'ⴰ' && l <= '⵿' ? l : LATIN_VERS_TIFINAGH[l] ?? l))
+    .join('')
+}
+
+/* ------------------------------------------------------------------ */
 /* Mémory                                                              */
 /* ------------------------------------------------------------------ */
 
 /**
- * Tire `n` paires (mot amazigh ↔ sens français) dans le vocabulaire du
- * cours. Ni mot ni sens ne se répètent dans une même partie : deux paires
- * au sens identique rendraient l'association ambiguë, donc injuste.
- * Les phrases longues sont écartées — une carte doit se lire d'un coup d'œil.
+ * Illustrations disponibles pour un cours : mot → identifiant de scène,
+ * dérivé des exercices « image » (Scenes.jsx, style maison : formes
+ * simples, silhouettes, AUCUN œil). Là encore, rien à maintenir en double.
+ */
+function scenesParMot(course) {
+  const scenes = new Map()
+  for (const ex of course.challengePool()) {
+    if (ex.type === 'image' && ex.scene && ex.answer) {
+      scenes.set(ex.answer.toLowerCase(), ex.scene)
+    }
+  }
+  return scenes
+}
+
+/**
+ * Tire `n` paires dans le vocabulaire du cours : le mot amazigh d'un côté,
+ * son ILLUSTRATION de l'autre quand elle existe (priorité aux mots
+ * illustrés), le sens français sinon. Ni mot ni sens ne se répètent dans
+ * une même partie : deux paires au sens identique rendraient l'association
+ * ambiguë, donc injuste. Les phrases longues sont écartées — une carte
+ * doit se lire d'un coup d'œil.
  */
 export function pairesMemoire(course, n = 6) {
+  const scenes = scenesParMot(course)
   const vusMots = new Set()
   const vusSens = new Set()
   const candidats = []
   for (const unite of course.vocabulary()) {
     for (const { mot, sens } of unite.mots) {
       const m = propre(mot)
-      const s = (sens || '').trim()
+      // Certains sens du cours standard s'écrivent « azul — salut » : la
+      // carte ne doit porter que le sens, pas la réponse.
+      let s = (sens || '').trim()
+      if (s.includes('—')) s = s.split('—').pop().trim()
       if (!m || !s) continue
+      // Un mot de carte : des lettres (espace et tiret admis), pas de
+      // ponctuation — « Labas ? » reste aux leçons. Et deux lettres au
+      // moins : le cours standard enseigne des lettres seules (ⴹ, ⵏ…)
+      // qui ne sont pas des mots à retenir.
+      if (!/^[\p{L}\s-]+$/u.test(m)) continue
+      if (Array.from(m.replace(/[\s-]/g, '')).length < 2) continue
       if (m.length > 14 || s.length > 16) continue
       const km = m.toLowerCase()
       const ks = s.toLowerCase()
+      // Sens identique au mot (donnée incomplète du cours) : inassociable.
+      if (km === ks) continue
       if (vusMots.has(km) || vusSens.has(ks)) continue
       vusMots.add(km)
       vusSens.add(ks)
-      candidats.push({ mot: m, sens: s })
+      candidats.push({ mot: m, sens: s, scene: scenes.get(km) || null })
     }
   }
-  return melanger(candidats).slice(0, n)
+  const illustres = melanger(candidats.filter((c) => c.scene))
+  const autres = melanger(candidats.filter((c) => !c.scene))
+  return [...illustres, ...autres].slice(0, n)
 }
 
 /**
- * Le paquet de cartes d'une partie : deux cartes par paire (face « mot »
- * et face « sens »), mélangées. `paire` relie les deux.
+ * Le paquet de cartes d'une partie : deux cartes par paire — la face
+ * « mot » (tifinagh + latin) et sa jumelle « scene » (illustration) ou
+ * « sens » (texte français) — mélangées. `paire` relie les deux.
  */
 export function cartesMemoire(paires) {
   return melanger(
     paires.flatMap((p, i) => [
       { id: `m${i}`, paire: i, face: 'mot', texte: p.mot, mot: p.mot },
-      { id: `s${i}`, paire: i, face: 'sens', texte: p.sens, mot: p.mot },
+      p.scene
+        ? { id: `s${i}`, paire: i, face: 'scene', scene: p.scene, texte: p.sens, mot: p.mot }
+        : { id: `s${i}`, paire: i, face: 'sens', texte: p.sens, mot: p.mot },
     ]),
   )
 }

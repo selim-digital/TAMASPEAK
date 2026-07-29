@@ -45,7 +45,7 @@ export function JeuxScreen({ course, progress, onMemory, onMots, onBack }) {
           <span className="min-w-0 flex-1">
             <span className="block text-[13.5px] font-extrabold">Mémory</span>
             <span className="block text-[10.5px] leading-snug text-ink-soft">
-              Retrouve chaque mot et son sens — les cartes s'écoutent aussi.
+              Associe tifinagh et images — les cartes s'écoutent aussi.
             </span>
           </span>
           <span className="flex-none text-right">

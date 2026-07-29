@@ -1,17 +1,21 @@
 import { useMemo, useRef, useState } from 'react'
 import { Confetti } from '../components/Confetti.jsx'
-import { pairesMemoire, cartesMemoire } from '../lib/jeux.js'
+import { pairesMemoire, cartesMemoire, enTifinagh, estTifinagh } from '../lib/jeux.js'
+import { Scene } from '../components/illustrations/Scenes.jsx'
 import { playWord } from '../lib/audio.js'
 import { sfx } from '../lib/sfx.js'
 import { JEUX } from '../data/economy.js'
 
 /**
- * Mémory — retrouve chaque mot amazigh et son sens français.
+ * Mémory — retrouve chaque mot amazigh (écrit en TIFINAGH, graphie latine
+ * en dessous) et son image, ou son sens français quand le mot n'a pas
+ * d'illustration.
  *
- * Règle de dessin assumée : PAS de visage, pas d'être vivant. Les cartes
- * portent du texte, et leur dos un losange tissé (le motif du chemin).
- * Retourner une carte « mot » la fait aussi entendre : la mémoire de
- * l'oreille travaille avec celle des yeux.
+ * Règle de dessin assumée : PAS de visage, pas d'yeux — les illustrations
+ * sont celles des leçons (Scenes.jsx, formes simples et silhouettes), et
+ * le dos des cartes un losange tissé (le motif du chemin). Retourner une
+ * carte « mot » la fait aussi entendre : la mémoire de l'oreille
+ * travaille avec celle des yeux.
  */
 
 /** Dos de carte : losange kabyle sur fond turquoise, purement géométrique. */
@@ -178,16 +182,34 @@ export function MemoryScreen({ course, onWin, onBack }) {
                         : carte.face === 'mot'
                           ? 'border-line bg-white'
                           : 'border-line bg-sand'
-                    }`}
+                    } ${acquise ? 'opacity-90' : ''}`}
                     style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                   >
-                    <span
-                      className={`tifinagh break-words text-[11.5px] font-extrabold leading-tight ${
-                        carte.face === 'mot' ? 'text-turquoise-deep' : 'text-ink'
-                      } ${acquise ? 'opacity-80' : ''}`}
-                    >
-                      {carte.texte}
-                    </span>
+                    {carte.face === 'mot' ? (
+                      // Le mot : tifinagh en grand, graphie latine en appui —
+                      // sauf pour l'amazighe standard, déjà écrit en tifinagh.
+                      <span className="flex flex-col items-center gap-0.5">
+                        <span
+                          className={`tifinagh font-extrabold leading-tight text-turquoise-deep ${
+                            enTifinagh(carte.mot).length > 6 ? 'break-all text-[11px]' : 'text-[14px]'
+                          }`}
+                        >
+                          {enTifinagh(carte.mot)}
+                        </span>
+                        {!estTifinagh(carte.mot) && (
+                          <span className="break-words text-[8.5px] font-bold leading-tight text-ink-soft">
+                            {carte.mot}
+                          </span>
+                        )}
+                      </span>
+                    ) : carte.face === 'scene' ? (
+                      // L'illustration des leçons — formes simples, sans yeux.
+                      <Scene id={carte.scene} className="w-full" />
+                    ) : (
+                      <span className="tifinagh break-words text-[11.5px] font-extrabold leading-tight text-ink">
+                        {carte.texte}
+                      </span>
+                    )}
                   </span>
                 </span>
               </button>
@@ -221,7 +243,7 @@ export function MemoryScreen({ course, onWin, onBack }) {
           </div>
         ) : (
           <p className="mt-3 text-center text-[10.5px] leading-snug text-ink-soft">
-            Chaque mot amazigh a son sens français quelque part — les cartes « mot » se font entendre.
+            Chaque mot en tifinagh a son image (ou son sens) quelque part — les cartes « mot » se font entendre.
           </p>
         )}
       </div>
