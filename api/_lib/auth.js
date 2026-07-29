@@ -50,6 +50,17 @@ export function auth() {
     // Suppression de compte en libre-service — engagement RGPD : la purge
     // en base suit par cascade (voir db/schema.sql), sans intervention.
     user: { deleteUser: { enabled: true } },
+    // LIAISON DES COMPTES. Sans ceci, quelqu'un qui s'est déjà connecté par
+    // code email puis essaie Google avec LA MÊME adresse est refusé
+    // (account_not_linked) — vécu : « je choisis mon compte Gmail puis
+    // rien ». Google vérifie l'email de ses comptes : la liaison est sûre,
+    // c'est le même titulaire.
+    account: {
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ['google'],
+      },
+    },
     // Limiteur de débit RÉGLÉ, pas subi. Vécu en production : la règle par
     // défaut sur les routes de connexion (~3 requêtes/10 s) transformait un
     // double-clic sur « Continuer avec Google » en « Google est
