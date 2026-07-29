@@ -1,5 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "tamaspeak.vercel.app" }],
+      "destination": "https://tamaspeak.com/:path",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/api/auth/:path*", "destination": "/api/auth-routes" }
   ],

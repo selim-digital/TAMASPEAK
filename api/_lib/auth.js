@@ -45,6 +45,12 @@ export function auth() {
     database: new Pool({ connectionString: process.env.DATABASE_URL }),
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL: process.env.BETTER_AUTH_URL || 'https://tamaspeak.com',
+    // Vécu en prod (« Invalid origin: https://tamaspeak.vercel.app ») : les
+    // PWA installées AVANT le branchement du domaine vivent encore sur
+    // l'adresse Vercel, et toute connexion en était rejetée. On accepte les
+    // deux anciennes formes le temps que la redirection (vercel.json) ramène
+    // tout le monde sur tamaspeak.com.
+    trustedOrigins: ['https://tamaspeak.vercel.app', 'https://www.tamaspeak.com'],
     // Pas d'emailAndPassword : lien magique et Google seulement.
     socialProviders: social,
     // Suppression de compte en libre-service — engagement RGPD : la purge
