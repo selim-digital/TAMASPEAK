@@ -1,5 +1,6 @@
 import { niveauxMots } from '../lib/jeux.js'
 import { JEUX } from '../data/economy.js'
+import { NB_FAITS } from '../data/faits.js'
 
 /**
  * Le coin jeux — deux façons de réviser sans en avoir l'air.
@@ -8,7 +9,18 @@ import { JEUX } from '../data/economy.js'
  * revenir les mêmes mots par un autre chemin. Règle de dessin : jamais de
  * visage ni d'yeux — lettres, losanges et silhouettes des leçons.
  */
-export function JeuxScreen({ course, progress, onMemory, onMemoryDuel, onMots, onMotsDuel, onCercle, onBack }) {
+export function JeuxScreen({
+  course,
+  progress,
+  faitIndex = 0,
+  onMemory,
+  onMemoryDuel,
+  onMots,
+  onMotsDuel,
+  onQuiz,
+  onCercle,
+  onBack,
+}) {
   const niveaux = niveauxMots(course)
   const faits = (progress.jeux?.motsFaits || []).filter((id) => niveaux.some((n) => n.id === id)).length
   const victoires = progress.jeux?.memoryVictoires || 0
@@ -145,6 +157,29 @@ export function JeuxScreen({ course, progress, onMemory, onMemoryDuel, onMots, o
           </span>
           <span className="flex-none text-[15px]" aria-hidden="true">
             🏆
+          </span>
+        </button>
+
+        {/* Quiz Tamazgha — les cartes « Le savais-tu ? » deviennent un jeu. */}
+        <button
+          type="button"
+          onClick={onQuiz}
+          className="mt-2.5 flex w-full items-center gap-3 rounded-2xl border-2 border-turquoise-deep/40 bg-cream px-3.5 py-3.5 text-left transition active:scale-[0.99]"
+        >
+          <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-turquoise-deep text-white text-[22px] font-extrabold tifinagh" aria-hidden="true">
+            ⵣ
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-extrabold">Quiz Tamazgha</span>
+            <span className="block text-[10.5px] leading-snug text-ink-soft">
+              Histoire, langue, culture — en solo ou à deux. Les réponses sont dans les cartes « Le savais-tu ? ».
+            </span>
+          </span>
+          <span className="flex-none text-right">
+            <span className="block text-[13px] font-extrabold tabular-nums text-turquoise-deep">
+              {Math.min(faitIndex, NB_FAITS)}/{NB_FAITS}
+            </span>
+            <span className="block text-[9px] font-bold uppercase tracking-wide text-ink-soft">faits vus</span>
           </span>
         </button>
 

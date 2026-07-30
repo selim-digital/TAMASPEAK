@@ -20,6 +20,18 @@
  *     2002, officielle le 7 février 2016)
  *   • Yennayer (12 janvier ; calendrier fixé par Ammar Negadi en 1980, an 1 =
  *     943 av. J.-C. ; férié en Algérie depuis 2018, au Maroc depuis 2023)
+ *   • Shoshenq I (Meshwesh, XXIIᵉ dynastie, v. 943 av. J.-C., « Shishak »)
+ *   • Juba II (roi de Maurétanie, Caesarea/Cherchell, Cléopâtre Séléné ;
+ *     fils Ptolémée tué en 40, annexion romaine)
+ *   • Augustine of Hippo (Thagaste 354, évêque d'Hippone 396, mort en 430
+ *     pendant le siège vandale)
+ *   • Tin Hinan (tombeau d'Abalessa, Hoggar, IVᵉ–Vᵉ s., fouillé en 1925)
+ *   • Tariq ibn Ziyad (711, Guadalete ; Gibraltar = Jabal Ṭāriq)
+ *   • Ibn Khaldun (Tunis 1332 – Le Caire 1406, Kitāb al-ʿIbar)
+ *   • Lalla Fatma n'Soumer (résistance 1854–1857, capturée en 1857,
+ *     morte en 1863)
+ *   • Abd el-Krim / Rif War (Anoual juillet 1921, république du Rif,
+ *     reddition 1926)
  *
  * ⚠️ UN CHIFFRE ÉCARTÉ VOLONTAIREMENT. Les articles du « Printemps berbère »
  * (1980) et du « Printemps noir » (2001) annoncent tous deux 128 morts : c'est
@@ -56,6 +68,27 @@ export const RECITS = [
         'Des scènes de guerre entre royaumes',
         'Des cartes du désert actuel',
         'Des textes en tifinagh',
+      ],
+    },
+  },
+  {
+    id: 'chachnaq',
+    epoque: 'Vers 943 av. J.-C.',
+    titre: 'Chachnaq, l’Amazigh pharaon',
+    land: 'oasis',
+    texte: [
+      'Vers 943 avant notre ère, un chef issu des Meshwesh — un peuple libyen, ancêtre des Amazighs — monte sur le trône d’Égypte : Chachnaq Iᵉʳ fonde la XXIIᵉ dynastie.',
+      'Ce n’est pas une légende : les pierres d’Égypte portent son nom, et la Bible se souvient de lui sous celui de « Shishak », le roi qui marcha sur Jérusalem.',
+      'C’est depuis son accession que le calendrier amazigh compte les années. Quand tu fêtes Yennayer, c’est à ce règne-là que remonte le compte.',
+    ],
+    question: {
+      prompt: 'Qu’a fondé Chachnaq vers 943 avant notre ère ?',
+      answer: 'La XXIIᵉ dynastie d’Égypte',
+      choices: [
+        'La XXIIᵉ dynastie d’Égypte',
+        'Le royaume de Numidie',
+        'La ville de Carthage',
+        'Le premier alphabet tifinagh',
       ],
     },
   },
@@ -97,6 +130,59 @@ export const RECITS = [
     },
   },
   {
+    id: 'juba',
+    epoque: 'Ier siècle av.–ap. J.-C.',
+    titre: 'Juba II, le roi savant',
+    land: 'kcote',
+    texte: [
+      'Fils d’un roi numide vaincu, élevé à Rome, Juba II reçoit de l’empereur le trône de Maurétanie. Il épouse Cléopâtre Séléné — la fille de Cléopâtre et de Marc Antoine.',
+      'Sa capitale, Caesarea — aujourd’hui Cherchell, sur la côte algérienne — devient une ville d’art et de savoir. Car Juba est d’abord un érudit : géographie, histoire, botanique, il écrit des dizaines d’ouvrages, que les auteurs romains citeront pendant des siècles.',
+      'Son fils Ptolémée, dernier roi amazigh de Maurétanie, est tué en 40 sur ordre de l’empereur Caligula. Rome annexe alors le royaume — la souveraineté amazighe antique s’éteint là.',
+    ],
+    question: {
+      prompt: 'Qui Juba II épousa-t-il ?',
+      answer: 'Cléopâtre Séléné, fille de Cléopâtre',
+      choices: [
+        'Cléopâtre Séléné, fille de Cléopâtre',
+        'Une princesse romaine',
+        'La fille de Massinissa',
+        'Une reine de Carthage',
+      ],
+    },
+  },
+  {
+    id: 'augustin',
+    epoque: '354–430',
+    titre: 'Augustin, le géant de Thagaste',
+    land: 'kmont',
+    texte: [
+      'En 354 naît à Thagaste — aujourd’hui Souk Ahras, en Algérie — un enfant de Numidie nommé Augustin. Sa mère, Monique, porte un nom que l’on rattache souvent à cette terre.',
+      'Professeur à Carthage, puis à Rome et Milan, il devient évêque d’Hippone — l’actuelle Annaba. Ses Confessions et La Cité de Dieu comptent parmi les livres les plus lus de l’histoire humaine.',
+      'Il meurt en 430, pendant le siège de sa ville. Seize siècles plus tard, on le lit toujours — et il est né, a pensé et est mort en Afrique du Nord.',
+    ],
+    question: {
+      prompt: 'De quelle ville Augustin fut-il évêque ?',
+      answer: 'Hippone, l’actuelle Annaba',
+      choices: ['Hippone, l’actuelle Annaba', 'Carthage', 'Rome', 'Alexandrie'],
+    },
+  },
+  {
+    id: 'tinhinan',
+    epoque: 'IVᵉ–Vᵉ siècle',
+    titre: 'Tin Hinan, la mère des Touaregs',
+    land: 'hoggar',
+    texte: [
+      'Au cœur du Hoggar, à Abalessa, se dresse un monument funéraire du IVᵉ ou Vᵉ siècle. Les Touaregs y voient le tombeau de Tin Hinan, l’ancêtre dont leurs nobles se disent les descendants.',
+      'En 1925, des fouilles y ont mis au jour le squelette d’une femme parée de bijoux d’or et d’argent, enterrée avec les honneurs d’une reine.',
+      'Que la tradition et l’archéologie parlent exactement de la même personne, nul ne peut le jurer. Mais l’idée demeure, immense : tout un peuple du désert qui fait remonter son origine à une femme.',
+    ],
+    question: {
+      prompt: 'Où se trouve le tombeau attribué à Tin Hinan ?',
+      answer: 'À Abalessa, dans le Hoggar',
+      choices: ['À Abalessa, dans le Hoggar', 'À Tombouctou', 'Dans les Aurès', 'À Ghadamès'],
+    },
+  },
+  {
     id: 'kusayla',
     epoque: 'VIIᵉ siècle',
     titre: 'Kusayla',
@@ -134,6 +220,27 @@ export const RECITS = [
     },
   },
   {
+    id: 'tariq',
+    epoque: '711',
+    titre: 'Tariq et la montagne',
+    land: 'rif',
+    texte: [
+      'En 711, le général amazigh Tariq ibn Ziyad franchit le détroit qui sépare l’Afrique de l’Espagne, à la tête d’une armée en grande partie berbère.',
+      'À la bataille du Guadalete, il défait le roi wisigoth Rodéric. En quelques années, la péninsule bascule : c’est le début d’al-Andalus, huit siècles d’histoire.',
+      'Le rocher où il posa le pied porte toujours son nom : Gibraltar, de Jabal Ṭāriq — « la montagne de Tariq ». Un nom amazigh à la porte de l’Europe, sur toutes les cartes du monde.',
+    ],
+    question: {
+      prompt: 'Que signifie « Gibraltar » ?',
+      answer: 'Jabal Ṭāriq — la montagne de Tariq',
+      choices: [
+        'Jabal Ṭāriq — la montagne de Tariq',
+        'Le rocher des singes',
+        'La porte de l’Espagne',
+        'Le détroit du couchant',
+      ],
+    },
+  },
+  {
     id: 'almoravides',
     epoque: 'XIᵉ–XIIᵉ siècle',
     titre: 'Les Almoravides',
@@ -167,6 +274,69 @@ export const RECITS = [
         'Les Lamtuna du Sahara',
         'Les Awraba de l’ouest',
         'Les Jarawa des Aurès',
+      ],
+    },
+  },
+  {
+    id: 'ibnkhaldoun',
+    epoque: 'XIVᵉ siècle',
+    titre: 'Ibn Khaldoun et les Berbères',
+    land: 'mzab',
+    texte: [
+      'Né à Tunis en 1332, mort au Caire en 1406, Ibn Khaldoun est l’un des plus grands historiens de tous les temps — beaucoup voient en lui un fondateur de la sociologie.',
+      'Dans sa grande œuvre, le Kitāb al-ʿIbar, il consacre des volumes entiers à l’histoire des Berbères : dynasties, tribus, généalogies — la source majeure sur le Maghreb médiéval.',
+      'Lui qui avait servi les cours mérinide, hafside et zianide écrit des Berbères qu’ils possèdent les vertus qui font l’honneur des nations. Le compliment, sept siècles plus tard, se lit encore.',
+    ],
+    question: {
+      prompt: 'Que contient le Kitāb al-ʿIbar d’Ibn Khaldoun ?',
+      answer: 'Une histoire monumentale, dont des volumes sur les Berbères',
+      choices: [
+        'Une histoire monumentale, dont des volumes sur les Berbères',
+        'Un recueil de poésie andalouse',
+        'Un traité de médecine',
+        'Un atlas des routes sahariennes',
+      ],
+    },
+  },
+  {
+    id: 'fatma',
+    epoque: '1850–1863',
+    titre: 'Lalla Fatma n’Soumer',
+    land: 'kmont',
+    texte: [
+      'Quand l’armée française pénètre en Kabylie, dans les années 1850, une jeune femme du village de Werja galvanise la résistance : Lalla Fatma n’Soumer.',
+      'En 1854, sur l’oued Sebaou, les combattants qu’elle soutient infligent de lourdes pertes aux colonnes françaises. Il faudra au maréchal Randon une campagne massive pour soumettre la région.',
+      'Capturée en 1857, elle meurt en détention en 1863, à trente-trois ans. La Kabylie n’a jamais cessé de dire son nom.',
+    ],
+    question: {
+      prompt: 'Contre quelle conquête Lalla Fatma n’Soumer a-t-elle résisté ?',
+      answer: 'La conquête française de la Kabylie',
+      choices: [
+        'La conquête française de la Kabylie',
+        'La conquête espagnole du Rif',
+        'La conquête romaine',
+        'La conquête ottomane',
+      ],
+    },
+  },
+  {
+    id: 'abdelkrim',
+    epoque: '1921–1926',
+    titre: 'Abd el-Krim et la république du Rif',
+    land: 'rif',
+    texte: [
+      'En juillet 1921, à Anoual, les combattants rifains d’Abd el-Krim al-Khattabi infligent à l’armée espagnole l’une des pires défaites qu’une puissance coloniale ait connues.',
+      'Dans la foulée, Abd el-Krim proclame la république du Rif : un État moderne, avec ses institutions, dressé au cœur des montagnes.',
+      'Il faudra l’alliance de deux puissances — l’Espagne et la France — et des années de guerre pour en venir à bout, en 1926. Exilé, Abd el-Krim restera jusqu’au bout une référence des luttes anticoloniales du monde entier.',
+    ],
+    question: {
+      prompt: 'Que se passe-t-il à Anoual en juillet 1921 ?',
+      answer: 'Les Rifains d’Abd el-Krim écrasent l’armée espagnole',
+      choices: [
+        'Les Rifains d’Abd el-Krim écrasent l’armée espagnole',
+        'La France annexe le Rif',
+        'La république du Rif capitule',
+        'Un traité de paix est signé',
       ],
     },
   },

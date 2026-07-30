@@ -193,7 +193,7 @@ export const rifUnits = [
     title: 'Les premiers mots',
     trophy: '🏠',
     lessons: [
-      { id: 'rif6', title: 'La famille', icon: '👪', status: 'locked' },
+      { id: 'rif6', title: 'La famille', icon: '🪢', status: 'locked' },
       { id: 'rif7', title: 'Le quotidien', icon: '🍞', status: 'locked' },
       { id: 'rif-c2', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'rif8', title: 'Compter', icon: '🔢', status: 'locked' },

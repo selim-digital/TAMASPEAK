@@ -18,7 +18,7 @@ import { sendFeedback } from '../lib/api.js'
  * et se lit dans toutes les langues.
  */
 const HUMEURS = [
-  { id: 'love', emoji: '☀️', label: 'J’adore' },
+  { id: 'love', emoji: '☀️', label: 'Excellent' },
   { id: 'good', emoji: '🌤️', label: 'Ça va' },
   { id: 'meh', emoji: '🌧️', label: 'Bof' },
   { id: 'bad', emoji: '⛈️', label: 'Ça coince' },

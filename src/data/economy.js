@@ -43,4 +43,7 @@ export const JEUX = {
   memory: { xpGain: 10 },
   mots: { xpGain: 15, gems: 10, xpRejoue: 5 },
   indice: 5,
+  // Le Quiz Tamazgha : un petit XP par bonne réponse — assez pour compter,
+  // pas assez pour transformer la culture en ferme à points.
+  quiz: { xpParBonne: 2 },
 }

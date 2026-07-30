@@ -31,6 +31,7 @@ export const ECRANS = Object.freeze({
   JEUX: 'jeux',
   MEMORY: 'memory',
   MOTS: 'motscroises',
+  QUIZ: 'quiz',
   DUEL_INTRO: 'duelintro',
   DUEL: 'duel',
   DUEL_RESULTAT: 'duelresult',

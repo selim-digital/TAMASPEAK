@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { PhoneFrame } from './components/PhoneFrame.jsx'
 import { WelcomeScreen } from './screens/WelcomeScreen.jsx'
 import { OnboardingScreen } from './screens/OnboardingScreen.jsx'
@@ -20,6 +20,9 @@ import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
 import { MotsCroisesScreen } from './screens/MotsCroisesScreen.jsx'
+import { QuizScreen } from './screens/QuizScreen.jsx'
+import { FaitCard } from './components/FaitCard.jsx'
+import { faitPour } from './data/faits.js'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
@@ -56,6 +59,7 @@ import {
   resetLanguage,
   recordMemoryWin,
   recordMotsNiveau,
+  recordQuiz,
   depenserGemmes,
 } from './lib/progress.js'
 
@@ -232,6 +236,33 @@ export default function App() {
       )
     })
   }, [sessionEtat])
+
+  /**
+   * La respiration : toutes les ~75 secondes, sur un écran CALME (jamais
+   * en plein exercice), une carte « Le savais-tu ? » se pose. L'index vit
+   * dans le store (ordre fixe) : le quiz sait exactement ce qui a été vu.
+   */
+  const [faitAffiche, setFaitAffiche] = useState(null)
+  // Refs lues depuis l'intervalle : le réarmer à chaque navigation
+  // remettrait le compte à rebours à zéro sans cesse.
+  const screenRef = useRef(screen)
+  screenRef.current = screen
+  const faitIndexRef = useRef(store.faitIndex || 0)
+  faitIndexRef.current = store.faitIndex || 0
+  const faitVisibleRef = useRef(false)
+  faitVisibleRef.current = !!faitAffiche
+  useEffect(() => {
+    const CALMES = new Set([
+      ECRANS.CHEMIN, ECRANS.PROFIL, ECRANS.CERCLE, ECRANS.LANGUES, ECRANS.TROPHEES,
+      ECRANS.JEUX, ECRANS.MISSIONS, ECRANS.HISTOIRE, ECRANS.FAMILLE, ECRANS.LECON_FINIE,
+    ])
+    const intervalle = setInterval(() => {
+      if (!CALMES.has(screenRef.current) || faitVisibleRef.current) return
+      setFaitAffiche(faitPour(faitIndexRef.current))
+      setStore((s) => ({ ...s, faitIndex: (s.faitIndex || 0) + 1 }))
+    }, 75000)
+    return () => clearInterval(intervalle)
+  }, [])
 
   // Un lien de défi ouvre directement l'écran d'annonce — au chargement, mais
   // aussi si l'app est DÉJÀ ouverte (cas de la PWA : le clic sur le lien ne
@@ -698,7 +729,20 @@ export default function App() {
               onMots={() => setScreen(ECRANS.MOTS)}
               onMotsDuel={startMotsDuel}
               onCercle={() => setScreen(ECRANS.CERCLE)}
+              onQuiz={() => setScreen(ECRANS.QUIZ)}
+              faitIndex={store.faitIndex || 0}
               onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.QUIZ && (
+            <QuizScreen
+              faitIndex={store.faitIndex || 0}
+              onRecompense={(xp) => {
+                setProgress((p) => recordQuiz(p, xp))
+                track('quiz_done', { lang: course.id, xp })
+              }}
+              onBack={() => setScreen(ECRANS.JEUX)}
             />
           )}
 
@@ -853,6 +897,15 @@ export default function App() {
           {screen === ECRANS.TROPHEES && (
             <TrophiesScreen course={course} progress={progress} onBack={() => setScreen(ECRANS.CHEMIN)} />
           )}
+          {/* La respiration : posée par-dessus l'écran calme du moment. */}
+          <FaitCard
+            fait={faitAffiche}
+            onClose={() => setFaitAffiche(null)}
+            onQuiz={() => {
+              setFaitAffiche(null)
+              setScreen(ECRANS.QUIZ)
+            }}
+          />
         </PhoneFrame>
 
         <DebugBar screen={screen} onGo={setScreen} onReset={handleReset} />

@@ -200,7 +200,7 @@ export const shiUnits = [
     title: 'Les premiers mots',
     trophy: '🏠',
     lessons: [
-      { id: 'shi6', title: 'La famille', icon: '👪', status: 'locked' },
+      { id: 'shi6', title: 'La famille', icon: '🪢', status: 'locked' },
       { id: 'shi7', title: 'Le quotidien', icon: '🍞', status: 'locked' },
       { id: 'shi-c2', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'shi8', title: 'Compter', icon: '🔢', status: 'locked' },

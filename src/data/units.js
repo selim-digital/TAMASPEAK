@@ -53,7 +53,7 @@ export const units = [
       { id: 'l11', title: 'Manger & boire', icon: '🍞', status: 'locked' },
       { id: 'chest3', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'l12', title: 'Le thé', icon: '🫖', status: 'locked' },
-      { id: 'l13', title: 'Autour de moi', icon: '🐈', status: 'locked' },
+      { id: 'l13', title: 'Autour de moi', icon: '🐾', status: 'locked' },
     ],
   },
   {
@@ -61,10 +61,12 @@ export const units = [
     level: 'Initiation',
     unitLabel: 'Unité 4',
     title: 'La famille & les phrases',
-    trophy: '👨‍👩‍👧',
+    // Règle maison : aucun visage, aucun œil — la famille se dit par le
+    // lien (nœud, mains, cœurs), jamais par des figures.
+    trophy: '🤝',
     lessons: [
-      { id: 'l14', title: 'La famille', icon: '👪', status: 'locked' },
-      { id: 'l15', title: 'Frère & sœur', icon: '🧒', status: 'locked' },
+      { id: 'l14', title: 'La famille', icon: '🪢', status: 'locked' },
+      { id: 'l15', title: 'Frère & sœur', icon: '💞', status: 'locked' },
       { id: 'chest4', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'l16', title: 'Phrases du jour', icon: '💬', status: 'locked' },
       { id: 'l17', title: 'Grande révision', icon: '🏅', status: 'locked' },
@@ -143,6 +145,51 @@ export const units = [
       { id: 'l33', title: 'Le tifinagh', icon: '🔤', status: 'locked' },
       { id: 'l34', title: 'Figures & fêtes', icon: '🎉', status: 'locked' },
       { id: 'l35', title: 'Grande révision', icon: '🏅', status: 'locked' },
+    ],
+  },
+
+  // ---- Niveau Confirmé — demandé par Selim : « ajoute les niveaux
+  // supérieurs ». Corps, personnes, temps qui passe, pronoms et premières
+  // phrases d'action. Vocabulaire à valider par un locuteur natif, comme
+  // tout le cours (il entre automatiquement dans la liste d'enregistrement).
+  {
+    id: 'u11',
+    level: 'Confirmé',
+    unitLabel: 'Unité 11',
+    title: 'Le corps & les gens',
+    trophy: '🖐️',
+    lessons: [
+      { id: 'l36', title: 'Le corps', icon: '🖐️', status: 'locked' },
+      { id: 'l37', title: 'Les gens', icon: '👣', status: 'locked' },
+      { id: 'chest11', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l38', title: 'Réviser le corps', icon: '🏅', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u12',
+    level: 'Confirmé',
+    unitLabel: 'Unité 12',
+    title: 'Le temps qui passe',
+    trophy: '🌙',
+    lessons: [
+      { id: 'l39', title: 'Jour & nuit', icon: '🌙', status: 'locked' },
+      { id: 'l40', title: 'Matin & soir', icon: '🌅', status: 'locked' },
+      { id: 'chest12', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l41', title: 'Hier & demain', icon: '📅', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u13',
+    level: 'Confirmé',
+    unitLabel: 'Unité 13',
+    title: 'Parler & agir',
+    trophy: '🎓',
+    lessons: [
+      { id: 'l42', title: 'Moi, toi, lui', icon: 'ⵏ', status: 'locked' },
+      { id: 'l43', title: 'Manger & boire', icon: '🍽️', status: 'locked' },
+      { id: 'chest13', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l44', title: 'Phrases utiles', icon: '💬', status: 'locked' },
+      { id: 'l45', title: 'Grande révision', icon: '🎓', status: 'locked' },
     ],
   },
 ]
