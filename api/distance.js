@@ -10,7 +10,7 @@
  *   • on ne parle qu'aux membres de son cercle — CHAQUE écriture revérifie
  *     le lien, on ne fait jamais confiance aux ids envoyés par le client.
  */
-import { serverReady, notConfigured, sql } from './_lib/db.js'
+import { serverReady, notConfigured, sql, assurerSchema } from './_lib/db.js'
 import { sessionOf } from './_lib/auth.js'
 
 /** Code court à partager (invitation, défi) — lisible, sans ambiguïté O/0. */
@@ -91,6 +91,14 @@ async function cerclePost(req, res, me) {
       `${me.name || 'Quelqu’un'} a rejoint ton cercle 🎉`,
       'Vous pouvez maintenant vous défier et vous demander des mots, chacun sur son téléphone.',
     )
+    // Se relier vaut consentement au palmarès par email (l'écran du cercle
+    // le dit en clair) — pour les DEUX personnes. DO NOTHING et pas UPDATE :
+    // un refus explicite déjà posé ne se ré-active JAMAIS tout seul.
+    for (const uid of [me.id, lien.createur]) {
+      await sql()`
+        INSERT INTO email_prefs (user_id, palmares) VALUES (${uid}, TRUE)
+        ON CONFLICT (user_id) DO NOTHING`
+    }
     return res.status(200).json({ ok: true, avec: { name: autre?.name || '' } })
   }
 
@@ -345,9 +353,86 @@ async function notifsPost(req, res, me) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Classement du cercle — semaine, mois, année EN COURS.                */
+/*                                                                      */
+/* Le cercle est fait de liens deux-à-deux : « mon cercle », c'est moi   */
+/* plus mes reliés — chacun voit donc SON classement, honnête vis-à-vis */
+/* de qui il connaît. Le barème VALORISE L'EFFORT (règle du produit) :  */
+/*   points = XP + 5 par duel joué + 20 par duel gagné                  */
+/* Jouer rapporte toujours ; gagner rapporte plus. Le cron du palmarès  */
+/* (api/cron/relances.js → _lib/palmares.js) applique le même barème.   */
+/* ------------------------------------------------------------------ */
+
+export const POINTS = { duelJoue: 5, duelGagne: 20 }
+
+/** Les ids de mon cercle : moi + tous mes reliés. */
+async function idsDeMonCercle(me) {
+  const relies = await sql()`
+    SELECT CASE WHEN l.createur = ${me.id} THEN l.invite ELSE l.createur END AS id
+    FROM cercle_liens l
+    WHERE l.accepted_at IS NOT NULL AND (l.createur = ${me.id} OR l.invite = ${me.id})`
+  return [me.id, ...relies.map((r) => r.id)]
+}
+
+/** Classement d'un ensemble d'utilisateurs entre `debut` et `fin` (exclu, facultatif). */
+export async function classementEntre(ids, debut, fin = null) {
+  const lignes = await sql()`
+    SELECT u.id, u."name" AS nom,
+      COALESCE(SUM(e.xp), 0)::int AS xp,
+      COUNT(e.id) FILTER (WHERE e.type = 'duel_won')::int AS duels_gagnes,
+      COUNT(e.id) FILTER (WHERE e.type IN ('duel_won', 'duel_played'))::int AS duels_joues,
+      COUNT(DISTINCT DATE(e.at))::int AS jours
+    FROM "user" u
+    LEFT JOIN events e ON e.user_id = u.id
+      AND e.at >= ${debut.toISOString()}
+      AND (${fin === null} OR e.at < ${fin ? fin.toISOString() : new Date().toISOString()})
+    WHERE u.id = ANY(${ids})
+    GROUP BY u.id, u."name"`
+  return lignes
+    .map((l) => ({
+      id: l.id,
+      nom: l.nom,
+      xp: l.xp,
+      duelsJoues: l.duels_joues,
+      duelsGagnes: l.duels_gagnes,
+      jours: l.jours,
+      points: l.xp + POINTS.duelJoue * l.duels_joues + POINTS.duelGagne * l.duels_gagnes,
+    }))
+    .sort((a, b) => b.points - a.points || b.jours - a.jours || a.nom.localeCompare(b.nom))
+}
+
+/** Débuts des périodes EN COURS (lundi ISO, 1ᵉʳ du mois, 1ᵉʳ janvier — UTC). */
+export function debutsPeriodes(maintenant = new Date()) {
+  const d = maintenant
+  const jour = (d.getUTCDay() + 6) % 7 // lundi = 0
+  return {
+    semaine: new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - jour)),
+    mois: new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)),
+    annee: new Date(Date.UTC(d.getUTCFullYear(), 0, 1)),
+  }
+}
+
+async function classementGet(res, me) {
+  const ids = await idsDeMonCercle(me)
+  const { semaine, mois, annee } = debutsPeriodes()
+  const [clSemaine, clMois, clAnnee] = await Promise.all([
+    classementEntre(ids, semaine),
+    classementEntre(ids, mois),
+    classementEntre(ids, annee),
+  ])
+  return res.status(200).json({
+    moi: me.id,
+    bareme: POINTS,
+    classements: { semaine: clSemaine, mois: clMois, annee: clAnnee },
+  })
+}
+
+/* ------------------------------------------------------------------ */
 
 export default async function handler(req, res) {
   if (!serverReady()) return notConfigured(res)
+  // Zéro manip au déploiement : les tables récentes s'installent seules.
+  await assurerSchema()
   const session = await sessionOf(req)
   if (!session) return res.status(401).json({ error: 'non connecté' })
   const me = session.user
@@ -359,6 +444,7 @@ export default async function handler(req, res) {
     if (r === 'audio') return audioGet(req, res, me)
     if (r === 'defis') return req.method === 'POST' ? defisPost(req, res, me) : defisGet(req, res, me)
     if (r === 'notifs') return req.method === 'POST' ? notifsPost(req, res, me) : notifsGet(res, me)
+    if (r === 'classement') return classementGet(res, me)
     return res.status(404).json({ error: 'route inconnue' })
   } catch (e) {
     console.error(`[distance:${r}]`, e)

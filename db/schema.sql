@@ -170,6 +170,12 @@ CREATE TABLE IF NOT EXISTS email_prefs (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Le palmarès du cercle (classements semaine/mois/année envoyés par
+-- email) : le consentement vient de l'ACTE de se relier à quelqu'un —
+-- l'écran du cercle le dit en clair. Révocable dans l'app et par le
+-- désabonnement one-click, comme tout le reste.
+ALTER TABLE email_prefs ADD COLUMN IF NOT EXISTS palmares BOOLEAN NOT NULL DEFAULT TRUE;
+
 -- ------------------------------------------------------------------
 -- Le CERCLE — jouer à distance, en famille et entre amis.
 --

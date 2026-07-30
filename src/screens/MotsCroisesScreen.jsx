@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Confetti } from '../components/Confetti.jsx'
-import { niveauxMots } from '../lib/jeux.js'
+import { niveauxMots, grilleDuel, enTifinagh, enLatin, estTifinagh } from '../lib/jeux.js'
 import { playWord } from '../lib/audio.js'
 import { sfx } from '../lib/sfx.js'
+import { lire, ecrire } from '../lib/storage.js'
 import { JEUX } from '../data/economy.js'
 import { GemIcon } from '../components/jewels/StatIcons.jsx'
 
@@ -25,13 +26,45 @@ const LARGEUR_GRILLE = 312 // px disponibles pour la grille dans le téléphone
 /** Majuscule d'affichage — inerte pour le tifinagh, correcte pour ɣ, ḍ, ẓ… */
 const maj = (l) => l.toLocaleUpperCase('fr')
 
-export function MotsCroisesScreen({ course, progress, gems, onNiveauFini, onIndice, onBack }) {
+/** L'écriture d'affichage choisie, mémorisée par langue. */
+const cleScript = (courseId) => `tama-speak:mots-script:${courseId}`
+
+/** Un temps de jeu compact pour l'en-tête (« 1:23 »). */
+const chrono = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+
+export function MotsCroisesScreen({ course, progress = {}, gems = 0, duel = null, onNiveauFini, onIndice, onFinishDuel, onBack }) {
   const niveaux = useMemo(() => niveauxMots(course), [course])
   const faits = progress.jeux?.motsFaits || []
   const [niveau, setNiveau] = useState(null)
   // Le niveau était-il déjà réussi à son OUVERTURE ? La récompense de fin
   // en dépend, et le statut « fait » change justement pendant la partie.
   const [dejaFait, setDejaFait] = useState(false)
+
+  // En duel, pas de liste : la grille vient de la graine du lien — la même
+  // que celle de l'ami, quel que soit le téléphone.
+  const niveauDuel = useMemo(() => (duel ? grilleDuel(course, duel.seed) : null), [course, duel])
+  if (duel) {
+    if (!niveauDuel) {
+      // Cours trop pauvre pour une grille (ne devrait pas arriver) : on le
+      // dit au lieu d'un écran vide.
+      return (
+        <div className="animate-enter grid min-h-0 flex-1 place-items-center px-6 text-center text-[12px] text-ink-soft">
+          Ce cours n'a pas assez de mots pour un duel de grille.
+        </div>
+      )
+    }
+    return (
+      <NiveauMots
+        key={niveauDuel.id}
+        course={course}
+        niveau={niveauDuel}
+        duel={duel}
+        gems={0}
+        onFinishDuel={onFinishDuel}
+        onQuitter={onBack}
+      />
+    )
+  }
 
   if (!niveau) {
     return (
@@ -112,9 +145,12 @@ export function MotsCroisesScreen({ course, progress, gems, onNiveauFini, onIndi
 /* Un niveau en cours de jeu                                           */
 /* ------------------------------------------------------------------ */
 
-function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitter }) {
+function NiveauMots({ course, niveau, dejaFait, gems, duel = null, onIndice, onFini, onFinishDuel, onQuitter }) {
   const { grille, lettres } = niveau
   const [trouves, setTrouves] = useState(() => new Set()) // index de mots
+  // Le chrono du duel : il court dès l'ouverture de la grille et s'arrête
+  // à la victoire — c'est LE score, le plus rapide gagne.
+  const [secondes, setSecondes] = useState(0)
   const [reveles, setReveles] = useState(() => new Set()) // "x,y" révélés à l'indice
   const [sel, setSel] = useState([]) // indices de lettres de la roue
   const [modeTap, setModeTap] = useState(false)
@@ -122,8 +158,39 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
   const [secousse, setSecousse] = useState(0)
   const drag = useRef(null)
   const recompense = useRef(false)
+  // L'écriture d'affichage : celle du cours par défaut, et le choix du
+  // joueur est retenu par langue. Seul l'AFFICHAGE change — la grille,
+  // la roue et la validation vivent dans la graphie d'origine du cours.
+  const [script, setScript] = useState(
+    () => lire(cleScript(course.id)) || (estTifinagh(lettres.join('')) ? 'tif' : 'lat'),
+  )
+  const changerScript = (s) => {
+    setScript(s)
+    ecrire(cleScript(course.id), s)
+    sfx.click()
+  }
+  /** Une lettre, dans l'écriture d'affichage choisie. */
+  const afficher = (l) => (script === 'tif' ? enTifinagh(l) : maj(enLatin(l)))
+  /** Un mot entier en latin — la graphie du cours reste la référence. */
+  const motLatin = (mot) => (estTifinagh(mot) ? enLatin(mot) : mot)
+  /**
+   * Un mot trouvé se montre TOUJOURS en entier : tifinagh, latin, et la
+   * traduction vient à côté — c'est le moment d'apprentissage, on ne le
+   * tronque pas selon l'écriture choisie.
+   */
+  const motComplet = (mot) => (
+    <>
+      <span className="tifinagh">{enTifinagh(mot)}</span> · {motLatin(mot)}
+    </>
+  )
 
   const gagne = trouves.size === grille.mots.length
+
+  useEffect(() => {
+    if (!duel || gagne) return undefined
+    const t = setInterval(() => setSecondes((s) => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [duel, gagne])
 
   // Les cases de la grille, chacune avec la liste des mots qui la portent.
   const cellules = useMemo(() => {
@@ -281,12 +348,42 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
           ←
         </button>
         <h2 className="min-w-0 flex-1 truncate text-lg font-extrabold">{niveau.titre}</h2>
-        <span className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-ink-soft">
-          <GemIcon size={13} /> {gems}
-        </span>
+        {/* La bascule d'écriture : latin ⇄ tifinagh, les deux se valent. */}
+        <div className="flex flex-none overflow-hidden rounded-lg border border-line" role="group" aria-label="Écriture d'affichage">
+          <button
+            type="button"
+            onClick={() => changerScript('lat')}
+            aria-pressed={script === 'lat'}
+            className={`px-2 py-1 text-[10px] font-extrabold ${script === 'lat' ? 'bg-turquoise text-white' : 'bg-cream text-ink-soft'}`}
+          >
+            Abc
+          </button>
+          <button
+            type="button"
+            onClick={() => changerScript('tif')}
+            aria-pressed={script === 'tif'}
+            className={`tifinagh px-2 py-1 text-[10px] font-extrabold ${script === 'tif' ? 'bg-turquoise text-white' : 'bg-cream text-ink-soft'}`}
+          >
+            ⵣⴰ
+          </button>
+        </div>
+        {duel ? (
+          <span className="rounded-lg bg-coral/10 px-2 py-1 text-[12px] font-extrabold tabular-nums text-coral-dark">
+            ⏱ {chrono(secondes)}
+          </span>
+        ) : (
+          <span className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-ink-soft">
+            <GemIcon size={13} /> {gems}
+          </span>
+        )}
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 pb-5">
+        {duel && !gagne && (
+          <p className="text-center text-[10px] font-bold text-ink-soft">
+            La même grille que {duel.from || 'ton ami'} — sans indices, la plus rapide gagne.
+          </p>
+        )}
         {/* La grille */}
         <div className="mt-1 flex justify-center">
           <div
@@ -313,7 +410,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                       : 'border-line bg-white'
                   }`}
                 >
-                  <span style={{ fontSize: Math.max(12, caseW * 0.48) }}>{visible ? maj(c.lettre) : ''}</span>
+                  <span style={{ fontSize: Math.max(12, caseW * 0.48) }}>{visible ? afficher(c.lettre) : ''}</span>
                 </div>
               )
             })}
@@ -335,7 +432,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
               >
                 {fait ? (
                   <>
-                    <span className="tifinagh">{m.mot}</span> — {m.sens}
+                    {motComplet(m.mot)} — {m.sens}
                   </>
                 ) : (
                   <>
@@ -352,7 +449,11 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
           <div className="animate-pop-in mx-auto mt-3 w-full max-w-[280px] rounded-2xl border-2 border-turquoise bg-turquoise/10 px-3 py-3.5 text-center">
             <div className="text-[15px] font-extrabold text-turquoise-deep">Grille remplie — Igerrez !</div>
             <div className="mt-0.5 flex items-center justify-center gap-1 text-[11px] font-bold text-ink-soft">
-              {dejaFait ? (
+              {duel ? (
+                <>
+                  {grille.mots.length} mots en {chrono(secondes)}
+                </>
+              ) : dejaFait ? (
                 <>+{JEUX.mots.xpRejoue} XP (niveau rejoué)</>
               ) : (
                 <>
@@ -362,10 +463,12 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
             </div>
             <button
               type="button"
-              onClick={onQuitter}
+              onClick={() =>
+                duel ? onFinishDuel?.({ secondes, mots: grille.mots.length }) : onQuitter()
+              }
               className="mt-2.5 w-full rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
             >
-              Autres niveaux
+              {duel ? 'Voir le résultat' : 'Autres niveaux'}
             </button>
           </div>
         ) : (
@@ -376,7 +479,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                 <span className="text-[10.5px] text-ink-soft">
                   {toast?.info || (toast ? (
                     <b className="text-turquoise-deep">
-                      <span className="tifinagh">{toast.mot}</span> — {toast.sens}
+                      {motComplet(toast.mot)} — {toast.sens}
                     </b>
                   ) : 'relie les lettres pour former un mot')}
                 </span>
@@ -386,7 +489,7 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                     key={j}
                     className="tifinagh grid h-8 w-7 place-items-center rounded-md bg-turquoise text-[15px] font-extrabold text-white"
                   >
-                    {maj(lettres[i])}
+                    {afficher(lettres[i])}
                   </span>
                 ))
               )}
@@ -437,9 +540,9 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                         top: p.y - tailleLettre / 2,
                         fontSize: tailleLettre * 0.42,
                       }}
-                      aria-label={`Lettre ${maj(l)}`}
+                      aria-label={`Lettre ${afficher(l)}`}
                     >
-                      {maj(l)}
+                      {afficher(l)}
                     </button>
                   )
                 })}
@@ -466,6 +569,12 @@ function NiveauMots({ course, niveau, dejaFait, gems, onIndice, onFini, onQuitte
                     Valider
                   </button>
                 </>
+              ) : duel ? (
+                // Pas d'indice en duel : les deux joueurs affrontent la même
+                // grille avec les mêmes armes.
+                <p className="flex-1 py-2 text-center text-[10.5px] font-bold text-ink-soft">
+                  Pas d'indice en duel — que le meilleur gagne !
+                </p>
               ) : (
                 <button
                   type="button"

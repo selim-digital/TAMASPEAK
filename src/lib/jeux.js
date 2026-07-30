@@ -6,10 +6,10 @@
  * sont servies d'office. Le jour où un locuteur corrige un mot du cours,
  * les jeux suivent sans changement de code.
  *
- * Contrainte assumée pour le Mémory : pas de visages ni d'êtres vivants —
- * les cartes portent du TEXTE (mot amazigh ↔ sens français) et le dos des
- * cartes un motif géométrique de losanges, comme le filigrane du chemin.
+ * Contrainte assumée pour le Mémory : pas de visages ni d'yeux — texte,
+ * silhouettes et losanges seulement.
  */
+import { seededPick } from './challenge.js'
 
 /** Normalise un mot (NFC : « ḍ » composé et décomposé doivent se confondre). */
 const propre = (mot) => (mot || '').normalize('NFC').trim()
@@ -57,6 +57,18 @@ const LATIN_VERS_TIFINAGH = {
   v: 'ⵠ', w: 'ⵡ', x: 'ⵅ', y: 'ⵢ', z: 'ⵣ', ẓ: 'ⵥ',
 }
 
+/**
+ * L'inverse, pour afficher en latin un cours écrit en tifinagh. La table
+ * directe n'est pas inversible telle quelle : o/u, c/š et r/ř partagent
+ * une même lettre tifinagh — on écarte les graphies secondaires et la
+ * lettre canonique gagne (ⵓ→u, ⵛ→c, ⵔ→r).
+ */
+const TIFINAGH_VERS_LATIN = Object.fromEntries(
+  Object.entries(LATIN_VERS_TIFINAGH)
+    .filter(([lat]) => !['o', 'ř', 'š'].includes(lat))
+    .map(([lat, tif]) => [tif, lat]),
+)
+
 /** Le mot contient-il déjà du tifinagh (cours d'amazighe standard) ? */
 export const estTifinagh = (mot) => /[ⴰ-⵿]/.test(mot || '')
 
@@ -67,6 +79,13 @@ export const estTifinagh = (mot) => /[ⴰ-⵿]/.test(mot || '')
 export function enTifinagh(mot) {
   return Array.from(propre(mot).toLowerCase())
     .map((l) => (l >= 'ⴰ' && l <= '⵿' ? l : LATIN_VERS_TIFINAGH[l] ?? l))
+    .join('')
+}
+
+/** Écrit en latin un mot du cours, quelle que soit sa graphie d'origine. */
+export function enLatin(mot) {
+  return Array.from(propre(mot).toLowerCase())
+    .map((l) => TIFINAGH_VERS_LATIN[l] ?? l)
     .join('')
 }
 
@@ -96,8 +115,11 @@ function scenesParMot(course) {
  * une même partie : deux paires au sens identique rendraient l'association
  * ambiguë, donc injuste. Les phrases longues sont écartées — une carte
  * doit se lire d'un coup d'œil.
+ *
+ * `graine` (facultative) rend le tirage déterministe — c'est elle qui
+ * permet le duel entre téléphones distants.
  */
-export function pairesMemoire(course, n = 6) {
+export function pairesMemoire(course, n = 6, graine = null) {
   const scenes = scenesParMot(course)
   const vusMots = new Set()
   const vusSens = new Set()
@@ -127,9 +149,14 @@ export function pairesMemoire(course, n = 6) {
       candidats.push({ mot: m, sens: s, scene: scenes.get(km) || null })
     }
   }
-  const illustres = melanger(candidats.filter((c) => c.scene))
-  const autres = melanger(candidats.filter((c) => !c.scene))
-  return [...illustres, ...autres].slice(0, n)
+  // Avec une graine (duel), le tirage est DÉTERMINISTE : deux téléphones
+  // distants reconstruisent exactement le même tapis à partir du lien.
+  const illustres = candidats.filter((c) => c.scene)
+  const autres = candidats.filter((c) => !c.scene)
+  const tirage = graine
+    ? [...seededPick(illustres, illustres.length, `${graine}:i`), ...seededPick(autres, autres.length, `${graine}:a`)]
+    : [...melanger(illustres), ...melanger(autres)]
+  return tirage.slice(0, n)
 }
 
 /**
@@ -137,15 +164,16 @@ export function pairesMemoire(course, n = 6) {
  * « mot » (tifinagh + latin) et sa jumelle « scene » (illustration) ou
  * « sens » (texte français) — mélangées. `paire` relie les deux.
  */
-export function cartesMemoire(paires) {
-  return melanger(
-    paires.flatMap((p, i) => [
-      { id: `m${i}`, paire: i, face: 'mot', texte: p.mot, mot: p.mot },
-      p.scene
-        ? { id: `s${i}`, paire: i, face: 'scene', scene: p.scene, texte: p.sens, mot: p.mot }
-        : { id: `s${i}`, paire: i, face: 'sens', texte: p.sens, mot: p.mot },
-    ]),
-  )
+export function cartesMemoire(paires, graine = null) {
+  const cartes = paires.flatMap((p, i) => [
+    // La carte « mot » emporte sens et scène : l'écran sait ainsi s'il
+    // peut afficher le français sans trahir la paire (jumelle illustrée).
+    { id: `m${i}`, paire: i, face: 'mot', texte: p.mot, mot: p.mot, sens: p.sens, scene: p.scene || null },
+    p.scene
+      ? { id: `s${i}`, paire: i, face: 'scene', scene: p.scene, texte: p.sens, mot: p.mot }
+      : { id: `s${i}`, paire: i, face: 'sens', texte: p.sens, mot: p.mot },
+  ])
+  return graine ? seededPick(cartes, cartes.length, `${graine}:c`) : melanger(cartes)
 }
 
 /* ------------------------------------------------------------------ */
@@ -322,6 +350,39 @@ export function niveauxMots(course) {
     })
   }
   return niveaux
+}
+
+/**
+ * Grille de DUEL : générée depuis la graine du lien, avec des mots piochés
+ * dans TOUT le cours — les deux téléphones distants reconstruisent la même.
+ * On ne donne à l'algorithme glouton qu'une poignée de candidats tirés par
+ * la graine : sans cela, il choisirait presque toujours les mêmes mots
+ * courts, et tous les duels se ressembleraient.
+ */
+export function grilleDuel(course, graine, { maxMots = 5 } = {}) {
+  const vus = new Set()
+  const candidats = []
+  for (const unite of course.vocabulary()) {
+    for (const { mot, sens } of unite.mots) {
+      const m = propre(mot)
+      if (!jouable(m) || !sens) continue
+      const k = m.toLowerCase()
+      if (vus.has(k)) continue
+      vus.add(k)
+      candidats.push({ mot: m, sens: sens.trim() })
+    }
+  }
+  const ordre = seededPick(candidats, candidats.length, `${graine}:mots`)
+  let choix = choisirMots(ordre.slice(0, 15), { maxRoue: 9, maxMots })
+  if (choix.mots.length < 3) choix = choisirMots(ordre, { maxRoue: 10, maxMots })
+  if (choix.mots.length < 2) return null
+  const graineNum = Array.from(String(graine)).reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
+  return {
+    id: `duel-${graine}`,
+    titre: 'Duel de mots croisés',
+    lettres: melangerStable(choix.lettres, graineNum),
+    grille: poserGrille(choix.mots),
+  }
 }
 
 /**

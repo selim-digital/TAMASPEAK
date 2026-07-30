@@ -13,20 +13,108 @@ import {
   demanderMot,
   audioDemande,
   mesDefis,
+  classementCercle,
 } from '../lib/distance.js'
 
 /**
  * Mon cercle — la famille et les amis, chacun sur SON téléphone.
  *
- * Trois choses s'y font :
+ * Quatre choses s'y font :
  *   • relier deux comptes par un code d'invitation (partagé par WhatsApp) ;
  *   • demander un mot à un proche — il reçoit une notification, enregistre
  *     sa voix, et elle revient ici, installable dans les leçons ;
- *   • défier un proche — même graine, mêmes questions, chacun chez soi.
+ *   • défier un proche — même graine, mêmes questions, chacun chez soi ;
+ *   • se mesurer gentiment : classement de la semaine, du mois et de
+ *     l'année, où le barème VALORISE L'EFFORT (chaque XP compte, chaque
+ *     duel joué compte, la victoire compte en plus) — et le palmarès de
+ *     chaque période close arrive PAR EMAIL aux membres (lundi, le 1ᵉʳ,
+ *     le 1ᵉʳ janvier). C'est dit ici même : c'est là que vit le
+ *     consentement, révocable d'un clic dans chaque email.
  *
  * L'écran suppose l'utilisateur connecté (le compte est obligatoire) ; si
  * le serveur est muet, il le dit avec calme et n'affiche rien de cassé.
  */
+
+const PERIODES = [
+  { id: 'semaine', label: 'Semaine' },
+  { id: 'mois', label: 'Mois' },
+  { id: 'annee', label: 'Année' },
+]
+
+const MEDAILLES = ['🥇', '🥈', '🥉']
+
+/** Le classement du cercle — trois périodes, l'effort à l'honneur. */
+function Classement({ donnees }) {
+  const [periode, setPeriode] = useState('semaine')
+  if (!donnees) return null
+  const lignes = donnees.classements?.[periode] || []
+  if (lignes.length < 2) return null
+  const assidu = [...lignes].sort((a, b) => b.jours - a.jours || b.xp - a.xp)[0]
+
+  return (
+    <>
+      <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+        Classement 🏆
+      </div>
+      <div className="flex gap-1.5">
+        {PERIODES.map((pp) => (
+          <button
+            key={pp.id}
+            type="button"
+            onClick={() => {
+              setPeriode(pp.id)
+              sfx.click()
+            }}
+            className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11.5px] font-extrabold transition ${
+              periode === pp.id ? 'border-turquoise bg-turquoise/10 text-turquoise-deep' : 'border-line bg-cream text-ink-soft'
+            }`}
+          >
+            {pp.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex flex-col gap-1.5">
+        {lignes.map((l, i) => {
+          const moi = l.id === donnees.moi
+          return (
+            <div
+              key={l.id}
+              className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 ${
+                moi ? 'border-turquoise/50 bg-turquoise/5' : 'border-line bg-white'
+              }`}
+            >
+              <span className="w-7 flex-none text-center text-[15px] font-extrabold">
+                {MEDAILLES[i] || <span className="text-[11px] text-ink-soft">{i + 1}.</span>}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[12.5px] font-extrabold">
+                  {l.nom}
+                  {moi && <span className="ml-1 text-[9.5px] font-bold text-turquoise-deep">(toi)</span>}
+                  {assidu && assidu.id === l.id && assidu.jours > 0 && (
+                    <span className="ml-1" title="La personne la plus assidue">
+                      🔥
+                    </span>
+                  )}
+                </span>
+                <span className="block text-[9.5px] font-bold text-ink-soft">
+                  {l.xp} XP · {l.duelsJoues} duel{l.duelsJoues > 1 ? 's' : ''}
+                  {l.duelsGagnes > 0 && ` (${l.duelsGagnes} gagné${l.duelsGagnes > 1 ? 's' : ''})`} · {l.jours} jour
+                  {l.jours > 1 ? 's' : ''} actif{l.jours > 1 ? 's' : ''}
+                </span>
+              </span>
+              <span className="flex-none text-[14px] font-extrabold tabular-nums text-turquoise-deep">{l.points} pts</span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="mt-2 rounded-xl border border-line bg-sand px-3 py-2 text-[10px] leading-snug text-ink-soft">
+        Points = <b className="text-ink">XP + {donnees.bareme?.duelJoue ?? 5} par duel joué + {donnees.bareme?.duelGagne ?? 20} par duel gagné</b> —
+        jouer compte toujours. 🔥 marque la personne la plus assidue. Le <b className="text-ink">palmarès part par email</b>{' '}
+        chaque lundi, le 1ᵉʳ du mois et le 1ᵉʳ janvier.
+      </p>
+    </>
+  )
+}
 
 /** Pastille-initiale d'un proche (jamais de photo : sobriété voulue). */
 function Initiale({ name, size = 38 }) {
@@ -98,6 +186,7 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
   const [cercle, setCercle] = useState(null)
   const [demandes, setDemandes] = useState({ recues: [], envoyees: [] })
   const [defis, setDefis] = useState([])
+  const [classement, setClassement] = useState(null)
   const [formPour, setFormPour] = useState(null) // membre auquel on demande un mot
   const [mot, setMot] = useState('')
   const [sens, setSens] = useState('')
@@ -105,10 +194,11 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
   const [retraitEnCours, setRetraitEnCours] = useState(null)
 
   async function recharger() {
-    const [c, d, f] = await Promise.all([monCercle(), mesDemandes(), mesDefis()])
+    const [c, d, f, cl] = await Promise.all([monCercle(), mesDemandes(), mesDefis(), classementCercle()])
     setCercle(c || false)
     if (d) setDemandes(d)
     if (f) setDefis(f.defis || [])
+    setClassement(cl)
   }
 
   useEffect(() => {
@@ -288,6 +378,9 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
             </Button>
           </div>
         )}
+
+        {/* ------------- classement (semaine · mois · année) ------------- */}
+        <Classement donnees={classement} />
 
         {/* ------------- demandes reçues (à enregistrer) ------------- */}
         {demandes.recues.length > 0 && (

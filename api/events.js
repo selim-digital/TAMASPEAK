@@ -18,6 +18,14 @@ const TYPES = new Set([
   'challenge_done',
   'duo_played',
   'mission_done',
+  // Le coin jeux — l'app les envoyait déjà, la liste blanche les jetait
+  // en silence : sans eux, le classement du cercle ignorerait les jeux.
+  'memory_won',
+  'mots_level_done',
+  // Duels à distance : chaque duel JOUÉ compte (l'effort d'abord), la
+  // victoire compte en plus.
+  'duel_played',
+  'duel_won',
 ])
 const LANGS = new Set(['kab', 'rif', 'shi', 'tzm', 'zgh'])
 const MAX_BATCH = 100

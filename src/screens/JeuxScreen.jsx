@@ -6,10 +6,21 @@ import { NB_FAITS } from '../data/faits.js'
  * Le coin jeux — deux façons de réviser sans en avoir l'air.
  *
  * Le Mémory et les Mots croisés ne remplacent pas les leçons : ils font
- * revenir les mêmes mots par un autre chemin. Volontairement sans visage
- * ni être vivant dessiné : des lettres, des losanges, c'est tout.
+ * revenir les mêmes mots par un autre chemin. Règle de dessin : jamais de
+ * visage ni d'yeux — lettres, losanges et silhouettes des leçons.
  */
-export function JeuxScreen({ course, progress, faitIndex = 0, onMemory, onMots, onQuiz, onBack }) {
+export function JeuxScreen({
+  course,
+  progress,
+  faitIndex = 0,
+  onMemory,
+  onMemoryDuel,
+  onMots,
+  onMotsDuel,
+  onQuiz,
+  onCercle,
+  onBack,
+}) {
   const niveaux = niveauxMots(course)
   const faits = (progress.jeux?.motsFaits || []).filter((id) => niveaux.some((n) => n.id === id)).length
   const victoires = progress.jeux?.memoryVictoires || 0
@@ -57,6 +68,24 @@ export function JeuxScreen({ course, progress, faitIndex = 0, onMemory, onMots, 
           </span>
         </button>
 
+        {/* Défi Mémory à distance : même tapis sur les deux téléphones,
+            le lien transporte la graine — aucun serveur, comme le Défi. */}
+        <button
+          type="button"
+          onClick={onMemoryDuel}
+          className="mt-1.5 flex w-full items-center gap-2.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-left transition active:scale-[0.99]"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-turquoise-deep)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M13 19l6-6M16 22l3-3M19 16l3 3M5 2l6 6M2 5l3-3M8 5L5 8M14 8L8 14M21 3l-4.5 4.5M10.5 13.5L3 21" />
+          </svg>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-extrabold">Défier un ami au Mémory</span>
+            <span className="block text-[10px] leading-snug text-ink-soft">
+              Le même tapis sur vos deux téléphones — le moins de coups gagne.
+            </span>
+          </span>
+        </button>
+
         {/* Mots croisés */}
         <button
           type="button"
@@ -87,6 +116,50 @@ export function JeuxScreen({ course, progress, faitIndex = 0, onMemory, onMots, 
           </span>
         </button>
 
+        {/* Duel de grille à distance : même principe que le Mémory —
+            la graine voyage dans le lien, le chrono départage. */}
+        <button
+          type="button"
+          onClick={onMotsDuel}
+          className="mt-1.5 flex w-full items-center gap-2.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-left transition active:scale-[0.99]"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-coral-dark)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="13" r="8" />
+            <path d="M12 9v4l3 2M9 2h6" />
+          </svg>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-extrabold">Défier un ami aux mots croisés</span>
+            <span className="block text-[10px] leading-snug text-ink-soft">
+              La même grille sur vos deux téléphones — la plus vite remplie gagne.
+            </span>
+          </span>
+        </button>
+
+        {/* Le cercle : classement entre proches, palmarès par email. */}
+        <button
+          type="button"
+          onClick={onCercle}
+          className="mt-2.5 flex w-full items-center gap-3 rounded-2xl border-2 border-gold/50 bg-yellow-vif/10 px-3.5 py-3.5 text-left transition active:scale-[0.99]"
+        >
+          <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-gold text-white" aria-hidden="true">
+            {/* Trois anneaux entrelacés : le cercle */}
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="1.9">
+              <circle cx="13" cy="9" r="4.4" />
+              <circle cx="8" cy="16.5" r="4.4" />
+              <circle cx="18" cy="16.5" r="4.4" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-extrabold">Le cercle</span>
+            <span className="block text-[10.5px] leading-snug text-ink-soft">
+              Classement semaine · mois · année entre proches — le palmarès arrive par email.
+            </span>
+          </span>
+          <span className="flex-none text-[15px]" aria-hidden="true">
+            🏆
+          </span>
+        </button>
+
         {/* Quiz Tamazgha — les cartes « Le savais-tu ? » deviennent un jeu. */}
         <button
           type="button"
@@ -113,7 +186,8 @@ export function JeuxScreen({ course, progress, faitIndex = 0, onMemory, onMots, 
         <div className="mt-4 rounded-2xl border border-line bg-sand px-3 py-3 text-[10.5px] leading-snug text-ink-soft">
           Chaque partie de Mémory rapporte <b>{JEUX.memory.xpGain} XP</b>. Un niveau de mots croisés terminé
           rapporte <b>{JEUX.mots.xpGain} XP</b> et <b>{JEUX.mots.gems} gemmes</b> la première fois — et les
-          gemmes servent aux indices.
+          gemmes servent aux indices. Au cercle, <b>chaque effort compte</b> : XP, parties et duels
+          nourrissent le classement.
         </div>
       </div>
     </div>

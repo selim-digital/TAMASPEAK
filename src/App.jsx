@@ -397,8 +397,29 @@ export default function App() {
     setScreen(ECRANS.DUEL_INTRO)
   }
 
+  /** Duel de Mémory : même tapis de cartes sur les deux téléphones. */
+  function startMemoryDuel() {
+    setDuel({ jeu: 'memory', lang: course.id, seed: makeSeed(), size: 8, correct: null, total: null, from: '' })
+    setScreen(ECRANS.DUEL_INTRO)
+  }
+
+  /** Duel de mots croisés : même grille, chrono — la plus rapide gagne. */
+  function startMotsDuel() {
+    setDuel({ jeu: 'mots', lang: course.id, seed: makeSeed(), size: 5, correct: null, total: null, from: '' })
+    setScreen(ECRANS.DUEL_INTRO)
+  }
+
   function finishDuel(result) {
     setLastResult(result)
+    // L'effort compte pour le classement du cercle : chaque duel joué est
+    // tracé, une victoire (en RELEVANT un défi — au lancement il n'y a
+    // encore personne en face) l'est en plus.
+    const memory = duel?.jeu === 'memory'
+    const mots = duel?.jeu === 'mots'
+    const mine = memory ? result.coups : mots ? result.secondes : result.correct
+    const releve = duel?.correct != null
+    const gagne = releve && (memory || mots ? mine < duel.correct : mine > duel.correct)
+    track(gagne ? 'duel_won' : 'duel_played', { lang: duel?.lang })
     // Défi de cercle : le score part au serveur, qui prévient l'autre
     // téléphone. En arrière-plan — l'écran de résultat n'attend pas.
     const d = duel?.distant
@@ -614,7 +635,25 @@ export default function App() {
             />
           )}
 
-          {screen === ECRANS.DUEL && duelCourse && (
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu === 'memory' && (
+            <MemoryScreen
+              course={duelCourse}
+              duel={duel}
+              onFinishDuel={finishDuel}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu === 'mots' && (
+            <MotsCroisesScreen
+              course={duelCourse}
+              duel={duel}
+              onFinishDuel={finishDuel}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.DUEL && duelCourse && duel.jeu !== 'memory' && duel.jeu !== 'mots' && (
             <LessonScreen
               exercises={seededPick(duelCourse.challengePool(), duel.size, duel.seed)}
               lang={duelCourse.id}
@@ -686,7 +725,10 @@ export default function App() {
               course={course}
               progress={progress}
               onMemory={() => setScreen(ECRANS.MEMORY)}
+              onMemoryDuel={startMemoryDuel}
               onMots={() => setScreen(ECRANS.MOTS)}
+              onMotsDuel={startMotsDuel}
+              onCercle={() => setScreen(ECRANS.CERCLE)}
               onQuiz={() => setScreen(ECRANS.QUIZ)}
               faitIndex={store.faitIndex || 0}
               onBack={() => setScreen(ECRANS.CHEMIN)}

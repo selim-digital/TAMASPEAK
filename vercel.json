@@ -12,7 +12,9 @@
     { "source": "/api/auth/:path*", "destination": "/api/auth-routes" }
   ],
   "functions": {
-    "api/setup.js": { "includeFiles": "db/schema.sql" }
+    "api/setup.js": { "includeFiles": "db/schema.sql" },
+    "api/distance.js": { "includeFiles": "db/schema.sql" },
+    "api/cron/relances.js": { "includeFiles": "db/schema.sql" }
   },
   "crons": [
     { "path": "/api/cron/relances", "schedule": "0 9 * * *" }

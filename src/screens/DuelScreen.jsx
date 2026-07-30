@@ -3,7 +3,7 @@ import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { Avatar } from '../components/Avatar.jsx'
 import { Confetti } from '../components/Confetti.jsx'
-import { scoreBar, shareText, duelInvite, duelReply } from '../lib/share.js'
+import { scoreBar, shareText, duelInvite, duelReply, memoryInvite, memoryReply, motsInvite, motsReply, fmtTemps } from '../lib/share.js'
 import { duelUrl, contentDigest, memeContenu } from '../lib/challenge.js'
 import { sfx } from '../lib/sfx.js'
 
@@ -34,6 +34,8 @@ function Reserve({ children }) {
  */
 export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
   const incoming = duel?.correct != null
+  const memory = duel?.jeu === 'memory'
+  const mots = duel?.jeu === 'mots'
   const distant = duel?.distant
   const contenuIdentique = memeContenu(duel, course.challengePool())
   // Un score serveur n'est pas falsifiable dans une URL : le doute ne
@@ -47,18 +49,39 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
       {incoming ? (
         <>
           <h2 className="mt-3 text-[21px] font-extrabold leading-tight">
-            {duel.from ? `${duel.from} te défie !` : 'Tu as reçu un défi !'}
+            {duel.from
+              ? `${duel.from} te défie${memory ? ' au Mémory' : mots ? ' aux mots croisés' : ''} !`
+              : `Tu as reçu un défi${memory ? ' de Mémory' : mots ? ' de mots croisés' : ''} !`}
           </h2>
           <p className="mt-1.5 text-[13px] leading-snug text-ink-soft">
-            {duel.size} questions en <b className="text-ink">{course.name}</b> — exactement les mêmes que
-            {duel.from ? ` ${duel.from}` : ' ton ami'}.
+            {memory ? (
+              <>
+                {duel.total} paires en <b className="text-ink">{course.name}</b> — exactement le même
+                tapis de cartes que {duel.from ? ` ${duel.from}` : ' ton ami'}, et le moins de coups gagne.
+              </>
+            ) : mots ? (
+              <>
+                {duel.total} mots en <b className="text-ink">{course.name}</b> — exactement la même
+                grille que {duel.from ? ` ${duel.from}` : ' ton ami'}, sans indices : la plus vite
+                remplie gagne.
+              </>
+            ) : (
+              <>
+                {duel.size} questions en <b className="text-ink">{course.name}</b> — exactement les mêmes que
+                {duel.from ? ` ${duel.from}` : ' ton ami'}.
+              </>
+            )}
           </p>
           <div className="mt-4 w-full rounded-2xl border border-line bg-cream px-4 py-3">
             <div className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
-              Score {scoreDouteux ? 'annoncé' : 'à battre'}
+              {mots ? 'Temps' : 'Score'} {scoreDouteux ? 'annoncé' : 'à battre'}
             </div>
             <div className="mt-1 text-[15px] font-extrabold tabular-nums">
-              {scoreBar(duel.correct, duel.total)} {duel.correct}/{duel.total}
+              {memory ? `${duel.correct} coups pour ${duel.total} paires` : mots ? `${fmtTemps(duel.correct)} pour ${duel.total} mots` : (
+                <>
+                  {scoreBar(duel.correct, duel.total)} {duel.correct}/{duel.total}
+                </>
+              )}
             </div>
           </div>
           {scoreDouteux && (
@@ -71,18 +94,40 @@ export function DuelIntroScreen({ duel, course, avatar, onStart, onCancel }) {
       ) : (
         <>
           <h2 className="mt-3 text-[21px] font-extrabold leading-tight">
-            {distant ? `Défier ${distant.avec}` : 'Défier un ami'}
+            {memory
+              ? 'Défier un ami au Mémory'
+              : mots
+                ? 'Défier un ami aux mots croisés'
+                : distant
+                  ? `Défier ${distant.avec}`
+                  : 'Défier un ami'}
           </h2>
           <p className="mt-1.5 max-w-[290px] text-[13px] leading-snug text-ink-soft">
-            Tu réponds d’abord à <b className="text-ink">5 questions</b> en{' '}
-            <b className="text-ink">{course.name}</b>
-            {distant ? (
+            {memory ? (
               <>
-                , puis {distant.avec} reçoit le défi <b className="text-ink">sur son téléphone</b> —
-                exactement les mêmes questions.
+                Tu joues d’abord un tapis de <b className="text-ink">{duel.size} paires</b> en{' '}
+                <b className="text-ink">{course.name}</b>, puis tu envoies le lien. Ton ami aura
+                exactement les mêmes cartes — le moins de coups gagne.
+              </>
+            ) : mots ? (
+              <>
+                Tu remplis d’abord une petite grille en <b className="text-ink">{course.name}</b>,
+                chrono en marche et sans indices, puis tu envoies le lien. Ton ami aura exactement
+                la même — la plus vite remplie gagne.
               </>
             ) : (
-              <>, puis tu envoies le lien. Ton ami aura exactement les mêmes.</>
+              <>
+                Tu réponds d’abord à <b className="text-ink">5 questions</b> en{' '}
+                <b className="text-ink">{course.name}</b>
+                {distant ? (
+                  <>
+                    , puis {distant.avec} reçoit le défi <b className="text-ink">sur son téléphone</b> —
+                    exactement les mêmes questions.
+                  </>
+                ) : (
+                  <>, puis tu envoies le lien. Ton ami aura exactement les mêmes.</>
+                )}
+              </>
             )}
           </p>
         </>
@@ -120,10 +165,18 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
   const [flash, setFlash] = useState(null)
   const distant = duel?.distant
   const replying = duel?.correct != null
+  const memory = duel?.jeu === 'memory'
+  const mots = duel?.jeu === 'mots'
   const theirs = duel?.correct ?? 0
-  const mine = result.correct
-  const won = replying && mine > theirs
+  // Au Mémory le « score » est un nombre de COUPS, aux mots croisés un
+  // TEMPS : c'est le plus petit qui gagne — l'inverse du défi de questions.
+  const mine = memory ? result.coups : mots ? result.secondes : result.correct
+  const total = memory ? result.paires : mots ? result.mots : result.total
+  const won = replying && (memory || mots ? mine < theirs : mine > theirs)
   const tie = replying && mine === theirs
+  /** Le score d'un joueur, dans l'unité du jeu. */
+  const fmtScore = (val, tot) =>
+    memory ? `${val} coups` : mots ? fmtTemps(val) : `${scoreBar(val, tot)} ${val}/${tot}`
 
   async function send() {
     sfx.click()
@@ -134,13 +187,22 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
       seed: duel.seed,
       size: duel.size,
       correct: mine,
-      total: result.total,
+      total,
       from: name,
       version: contentDigest(course.challengePool()),
+      jeu: duel.jeu,
     })
-    const texte = replying
-      ? duelReply({ name: duel.from, courseName: course.name, mine, theirs, total: result.total })
-      : duelInvite({ name, courseName: course.name, correct: mine, total: result.total })
+    const texte = memory
+      ? replying
+        ? memoryReply({ name: duel.from, courseName: course.name, mine, theirs, paires: total })
+        : memoryInvite({ name, courseName: course.name, coups: mine, paires: total })
+      : mots
+        ? replying
+          ? motsReply({ name: duel.from, courseName: course.name, mine, theirs, mots: total })
+          : motsInvite({ name, courseName: course.name, temps: mine, mots: total })
+        : replying
+          ? duelReply({ name: duel.from, courseName: course.name, mine, theirs, total: result.total })
+          : duelInvite({ name, courseName: course.name, correct: mine, total: result.total })
     const res = await shareText(texte, lien)
     setFlash(
       res === 'copied'
@@ -183,9 +245,7 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
         <div className="flex items-center gap-2.5">
           <Avatar id={avatar} size={34} />
           <span className="flex-1 text-left text-[12.5px] font-extrabold">{name || 'Toi'}</span>
-          <span className="text-[13px] font-extrabold tabular-nums">
-            {scoreBar(mine, result.total)} {mine}/{result.total}
-          </span>
+          <span className="text-[13px] font-extrabold tabular-nums">{fmtScore(mine, total)}</span>
         </div>
         {replying && (
           <div className="mt-2 flex items-center gap-2.5 border-t border-line pt-2">
@@ -198,9 +258,7 @@ export function DuelResultScreen({ duel, course, result, name, avatar, onDone })
                 <span className="ml-1 text-[10px] font-bold text-coral-dark">score annoncé</span>
               )}
             </span>
-            <span className="text-[13px] font-extrabold tabular-nums text-ink-soft">
-              {scoreBar(theirs, duel.total)} {theirs}/{duel.total}
-            </span>
+            <span className="text-[13px] font-extrabold tabular-nums text-ink-soft">{fmtScore(theirs, duel.total)}</span>
           </div>
         )}
       </div>

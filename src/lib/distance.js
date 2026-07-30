@@ -61,6 +61,13 @@ export async function rejoindreCercle(code) {
 
 export const retirerDuCercle = (lienId) => post('cercle', { action: 'retirer', lienId })
 
+/**
+ * Classement du cercle — semaine, mois et année EN COURS, l'effort à
+ * l'honneur (points = XP + duels joués + duels gagnés, barème inclus).
+ * @returns {{moi, bareme, classements:{semaine,mois,annee}} | null}
+ */
+export const classementCercle = () => get({ r: 'classement' })
+
 /* ---------------- demandes d'enregistrement ---------------- */
 
 /** @returns {{recues:[...], envoyees:[...]} | null} */
