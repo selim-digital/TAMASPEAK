@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
-import { RECITS } from '../data/history.js'
+import { RECITS, recitParId } from '../data/history.js'
+import { PERSONNAGES } from '../data/personnages.js'
 import { XP_RECIT } from '../data/economy.js'
 import { LAND_BY_ID } from '../data/journey.js'
 import { recordRecit, recitLu, recitsLus } from '../lib/progress.js'
@@ -127,6 +128,10 @@ function Recit({ recit, deja, onFini, onFermer }) {
  */
 export function HistoryScreen({ progress, onSave, onBack }) {
   const [ouvert, setOuvert] = useState(null)
+  // Deux onglets : la frise des récits, et la galerie des personnages —
+  // qui renvoie aux récits (une porte d'entrée, pas un doublon).
+  const [onglet, setOnglet] = useState('recits')
+  const [deplie, setDeplie] = useState(null)
   const lus = recitsLus(progress)
 
   if (ouvert) {
@@ -152,12 +157,113 @@ export function HistoryScreen({ progress, onSave, onBack }) {
         <h2 className="text-lg font-extrabold">L’histoire des Amazighs</h2>
       </div>
 
+      {/* Les onglets : Récits | Personnages. */}
+      <div className="flex gap-2 px-4 pt-2">
+        {[
+          { id: 'recits', label: `Récits (${RECITS.length})` },
+          { id: 'personnages', label: `Personnages (${PERSONNAGES.length})` },
+        ].map((o) => (
+          <button
+            key={o.id}
+            type="button"
+            onClick={() => {
+              sfx.click()
+              setOnglet(o.id)
+            }}
+            className={`flex-1 rounded-xl border-2 py-2 text-[12px] font-extrabold transition ${
+              onglet === o.id
+                ? 'border-turquoise bg-turquoise/10 text-turquoise-deep'
+                : 'border-line bg-cream text-ink-soft'
+            }`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
+        {onglet === 'personnages' ? (
+          <>
+            <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
+              <Akermus height={60} state="curious" className="flex-none" />
+              <p className="text-[11.5px] leading-snug text-ink">
+                De Chachnaq le pharaon à Idir — les grandes figures, du plus ancien au plus récent.
+                <span className="mt-1 block text-ink-soft">
+                  Touche une figure pour la découvrir, puis lis son récit complet.
+                </span>
+              </p>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-2">
+              {PERSONNAGES.map((p) => {
+                const ouvert2 = deplie === p.id
+                const recit = p.recit ? recitParId(p.recit) : null
+                return (
+                  <div
+                    key={p.id}
+                    className={`overflow-hidden rounded-2xl border-2 transition ${
+                      ouvert2 ? 'border-turquoise bg-white' : 'border-line bg-cream'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sfx.click()
+                        setDeplie(ouvert2 ? null : p.id)
+                      }}
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left"
+                    >
+                      {/* L'emblème, jamais un portrait (règle maison). */}
+                      <span className="relative flex-none">
+                        <span className="grid h-10 w-10 place-items-center rounded-full border-2 border-line bg-sand text-[16px]">
+                          {p.embleme}
+                        </span>
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-baseline gap-1.5">
+                          <span className="truncate text-[13px] font-extrabold">{p.nom}</span>
+                          <span className="flex-none text-[9.5px] font-bold tabular-nums text-ink-soft">
+                            {p.dates}
+                          </span>
+                        </span>
+                        <span className="block truncate text-[10.5px] text-ink-soft">{p.role}</span>
+                      </span>
+                      <span className="flex-none text-ink-soft">{ouvert2 ? '▾' : '▸'}</span>
+                    </button>
+
+                    {ouvert2 && (
+                      <div className="animate-rise px-3 pb-3">
+                        <p className="text-[12px] leading-snug text-ink">{p.bio}</p>
+                        {recit && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              sfx.click()
+                              setOuvert({ recit, deja: recitLu(progress, recit.id) })
+                            }}
+                            className="mt-2 w-full rounded-xl bg-turquoise py-2 text-[12px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
+                          >
+                            Lire son récit → {recit.titre}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
+            <p className="mt-6 text-center text-[10px] leading-snug text-ink-soft">
+              Pas de portraits — les figures se racontent, elles ne se dessinent pas.
+            </p>
+          </>
+        ) : (
+          <>
         <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
           <Akermus height={60} state="curious" className="flex-none" />
           <p className="text-[11.5px] leading-snug text-ink">
-            De l’art rupestre du Sahara à Yennayer jour férié. Dix récits courts, à lire dans
-            l’ordre ou pas.
+            De l’art rupestre du Sahara aux Berbères d’aujourd’hui. {RECITS.length} récits courts,
+            à lire dans l’ordre ou pas.
             <span className="mt-1 block text-ink-soft">
               Là où les historiens ne sont pas d’accord, c’est dit — on ne tranche pas à leur place.
             </span>
@@ -231,6 +337,8 @@ export function HistoryScreen({ progress, onSave, onBack }) {
           Chaque date a été vérifiée avant d’être écrite. Une seule a été volontairement omise :
           le bilan humain de 1980, sur lequel les sources se contredisent.
         </p>
+          </>
+        )}
       </div>
     </div>
   )
