@@ -198,6 +198,13 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
           />
         </div>
 
+        {/* Le quiz de fin de leçon : 3 questions de révision, signalées pour
+            ce qu'elles sont — on revoit, on ne découvre pas. */}
+        {ex.quizFin && (
+          <span className="animate-rise mb-1.5 self-start rounded-full bg-coral/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-coral-dark">
+            Quiz de fin de leçon — on révise !
+          </span>
+        )}
         <h2 className="pr-16 text-[18px] font-extrabold tracking-tight">{ex.prompt}</h2>
 
         {isMatch ? (

@@ -348,7 +348,277 @@ export const FAITS = [
     },
   },
 
+  {
+    id: 'bougafer',
+    cat: 'histoire',
+    texte:
+      'En 1933, à Bougafer, un millier de combattants Aït Atta menés par Assou Oubasslam tinrent plus d’un mois face à des dizaines de milliers de soldats et à l’aviation — avant une reddition négociée, tête haute.',
+    question: {
+      prompt: 'Que s’est-il passé à Bougafer en 1933 ?',
+      answer: 'La grande résistance des Aït Atta menée par Assou Oubasslam',
+      choices: [
+        'La grande résistance des Aït Atta menée par Assou Oubasslam',
+        'La fondation d’une ville nouvelle',
+        'Un tremblement de terre',
+        'La signature de l’indépendance',
+      ],
+    },
+  },
+  {
+    id: 'kaocen-fait',
+    cat: 'histoire',
+    texte:
+      'En 1916, le Touareg Kaocen ag Mohammed souleva l’Aïr contre la France et assiégea Agadez pendant trois mois — le grand soulèvement touareg contre la colonisation.',
+    question: {
+      prompt: 'Qui mena la grande révolte touarègue de 1916-1917 ?',
+      answer: 'Kaocen ag Mohammed',
+      choices: ['Kaocen ag Mohammed', 'Tin Hinan', 'Abd el-Krim', 'Firhoun de Tombouctou'],
+    },
+  },
+  {
+    id: 'matanza',
+    cat: 'histoire',
+    texte:
+      'Les Guanches des Canaries — un peuple berbère — ont résisté 94 ans à la conquête castillane (1402-1496). En 1494 à Acentejo, ils infligèrent à l’Espagne l’une de ses pires défaites du siècle.',
+    question: {
+      prompt: 'Combien de temps les Canaries ont-elles résisté à la conquête castillane ?',
+      answer: 'Près d’un siècle — de 1402 à 1496',
+      choices: ['Près d’un siècle — de 1402 à 1496', 'Deux ans', 'Dix ans', 'Elles n’ont pas résisté'],
+    },
+  },
+  {
+    id: 'papes-africains',
+    cat: 'histoire',
+    texte:
+      'Trois papes de Rome sont venus d’Afrique du Nord : Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ. L’Afrique romaine fut l’un des cœurs du christianisme ancien — Tertullien et Augustin en sont aussi les enfants.',
+    question: {
+      prompt: 'Lequel de ces papes venait d’Afrique du Nord ?',
+      answer: 'Gélase Iᵉʳ',
+      choices: ['Gélase Iᵉʳ', 'Grégoire Iᵉʳ', 'Léon Iᵉʳ', 'Innocent III'],
+    },
+  },
+  {
+    id: 'kairouan-fait',
+    cat: 'histoire',
+    texte:
+      'Kairouan, fondée en 670 par Uqba ibn Nafi dans l’actuelle Tunisie, devint l’une des grandes villes du monde musulman — le point de départ de l’islamisation de l’Afrique du Nord.',
+    question: {
+      prompt: 'En quelle année Kairouan fut-elle fondée ?',
+      answer: 'En 670',
+      choices: ['En 670', 'En 711', 'En 943', 'En 1070'],
+    },
+  },
+  {
+    id: 'tahert',
+    cat: 'histoire',
+    texte:
+      'Dès 761, l’imamat ibadite de Tahert rayonna sur le Maghreb central pendant un siècle et demi. Son héritage vit toujours : le Mzab, Djerba et le djebel Nefoussa sont ibadites — et berbérophones.',
+    question: {
+      prompt: 'Quel héritage religieux relie le Mzab, Djerba et le Nefoussa ?',
+      answer: 'L’ibadisme, hérité de l’imamat de Tahert',
+      choices: [
+        'L’ibadisme, hérité de l’imamat de Tahert',
+        'Le donatisme',
+        'Le malikisme uniquement',
+        'Aucun lien entre eux',
+      ],
+    },
+  },
+  {
+    id: 'ghriba',
+    cat: 'histoire',
+    texte:
+      'La présence juive en Afrique du Nord a plus de deux mille ans. À Djerba, la synagogue de la Ghriba passe pour l’une des plus anciennes traditions juives du continent africain.',
+    question: {
+      prompt: 'Que trouve-t-on à Djerba depuis l’Antiquité ?',
+      answer: 'Une des plus anciennes communautés juives d’Afrique',
+      choices: [
+        'Une des plus anciennes communautés juives d’Afrique',
+        'Le plus vieux monastère chrétien',
+        'La première mosquée du Maghreb',
+        'Un temple romain intact',
+      ],
+    },
+  },
+  {
+    id: 'madghacen',
+    cat: 'histoire',
+    texte:
+      'Le Madghacen, immense mausolée royal numide élevé il y a plus de 2 200 ans près de l’actuelle Batna, est l’un des plus anciens monuments d’Afrique du Nord — les rois amazighs bâtissaient pour l’éternité.',
+    question: {
+      prompt: 'Qu’est-ce que le Madghacen ?',
+      answer: 'Un mausolée royal numide vieux de plus de 2 200 ans',
+      choices: [
+        'Un mausolée royal numide vieux de plus de 2 200 ans',
+        'Une forteresse ottomane',
+        'Un théâtre romain',
+        'Une mosquée almohade',
+      ],
+    },
+  },
+  {
+    id: 'tertullien',
+    cat: 'histoire',
+    texte:
+      'Le premier grand auteur chrétien de langue latine n’était ni romain ni grec : Tertullien écrivait à Carthage, en Afrique du Nord, vers l’an 200.',
+    question: {
+      prompt: 'D’où écrivait Tertullien, premier grand auteur chrétien latin ?',
+      answer: 'De Carthage, en Afrique du Nord',
+      choices: ['De Carthage, en Afrique du Nord', 'De Rome', 'D’Athènes', 'De Jérusalem'],
+    },
+  },
+
+  /* ---------------- langue (suite) ---------------- */
+  {
+    id: 'tifinagh-unicode',
+    cat: 'langue',
+    texte:
+      'Le tifinagh est entré dans le standard Unicode en 2005 : depuis, ⵜⵉⴼⵉⵏⴰⵖ s’écrit sur n’importe quel téléphone ou ordinateur du monde — un alphabet antique devenu numérique.',
+    question: {
+      prompt: 'Que s’est-il passé pour le tifinagh en 2005 ?',
+      answer: 'Il est entré dans le standard Unicode',
+      choices: [
+        'Il est entré dans le standard Unicode',
+        'Il a été interdit',
+        'Il a été inventé',
+        'Il est devenu obligatoire en France',
+      ],
+    },
+  },
+  {
+    id: 'langues-soeurs',
+    cat: 'langue',
+    texte:
+      'Kabyle, tachelhit, tarifit, tamasheq… sont des langues SŒURS : un Kabyle et un Chleuh ne se comprennent pas spontanément, comme un Français et un Italien. Un tronc commun, des branches bien distinctes.',
+    question: {
+      prompt: 'Un Kabyle et un Chleuh se comprennent-ils spontanément ?',
+      answer: 'Pas toujours — ce sont des langues sœurs, comme français et italien',
+      choices: [
+        'Pas toujours — ce sont des langues sœurs, comme français et italien',
+        'Oui, parfaitement : c’est la même langue',
+        'Non, aucun mot commun',
+        'Seulement à l’écrit',
+      ],
+    },
+  },
+  {
+    id: 'aman-commun',
+    cat: 'langue',
+    texte:
+      'Certains mots traversent tout Tamazgha : aman (l’eau) se dit pareil — ou presque — de l’Atlantique à Siwa. Le fonds commun des langues amazighes affleure dans les mots de la vie.',
+    question: {
+      prompt: 'Quel mot se dit presque pareil dans toutes les langues amazighes ?',
+      answer: 'Aman — l’eau',
+      choices: ['Aman — l’eau', 'Bonjour', 'Merci', 'Le pain'],
+    },
+  },
+  {
+    id: 'si-mohand',
+    cat: 'langue',
+    texte:
+      'Si Mohand ou-Mhand, poète errant du XIXᵉ siècle, a laissé des centaines d’isefra — courts poèmes kabyles — transmis de bouche en bouche avant d’être écrits. Le plus cité des poètes kabyles.',
+    question: {
+      prompt: 'Qui est Si Mohand ou-Mhand ?',
+      answer: 'Le grand poète errant kabyle du XIXᵉ siècle',
+      choices: [
+        'Le grand poète errant kabyle du XIXᵉ siècle',
+        'Un roi numide',
+        'Un chanteur des années 1970',
+        'Un général de la conquête',
+      ],
+    },
+  },
+  {
+    id: 'feraoun',
+    cat: 'langue',
+    texte:
+      'En 1950, l’instituteur kabyle Mouloud Feraoun publie Le Fils du pauvre — un classique lu depuis par des générations d’écoliers, où la Kabylie entre en littérature de l’intérieur.',
+    question: {
+      prompt: 'Qui a écrit Le Fils du pauvre (1950) ?',
+      answer: 'Mouloud Feraoun',
+      choices: ['Mouloud Feraoun', 'Mouloud Mammeri', 'Kateb Yacine', 'Assia Djebar'],
+    },
+  },
+  {
+    id: 'radio-kabyle',
+    cat: 'langue',
+    texte:
+      'La radio parle kabyle depuis 1948 : les émissions en kabyle de Radio Alger — devenues la Chaîne 2 — ont porté la langue, ses chanteurs et ses poètes dans les foyers bien avant l’école.',
+    question: {
+      prompt: 'Depuis quand la radio émet-elle en kabyle ?',
+      answer: 'Depuis 1948',
+      choices: ['Depuis 1948', 'Depuis 2002', 'Depuis 1980', 'Depuis 1962'],
+    },
+  },
+
   /* ---------------- culture ---------------- */
+  {
+    id: 'imzad',
+    cat: 'culture',
+    texte:
+      'Chez les Touaregs, c’est aux femmes que revient l’imzad, la vièle monocorde qui accompagne les poèmes. Ses pratiques musicales sont inscrites à l’UNESCO depuis 2013.',
+    question: {
+      prompt: 'Qui joue traditionnellement de l’imzad chez les Touaregs ?',
+      answer: 'Les femmes',
+      choices: ['Les femmes', 'Les hommes', 'Les enfants', 'Les forgerons uniquement'],
+    },
+  },
+  {
+    id: 'ahidus-ahwash',
+    cat: 'culture',
+    texte:
+      'L’ahidus du Moyen Atlas et l’ahwash du Souss sont des danses collectives : tout le village en cercle ou en rangs, chants alternés et tambours — la fête comme œuvre commune.',
+    question: {
+      prompt: 'Que sont l’ahidus et l’ahwash ?',
+      answer: 'Des danses collectives de l’Atlas et du Souss',
+      choices: [
+        'Des danses collectives de l’Atlas et du Souss',
+        'Des plats de fête',
+        'Des bijoux d’argent',
+        'Des contes pour enfants',
+      ],
+    },
+  },
+  {
+    id: 'taguella',
+    cat: 'culture',
+    texte:
+      'Au Sahara, la taguella — galette touarègue — cuit sous le sable chauffé par les braises. On la rompt et on la partage dans un même plat : le pain du désert est un pain d’hospitalité.',
+    question: {
+      prompt: 'Comment cuit la taguella, le pain touareg ?',
+      answer: 'Sous le sable chauffé par les braises',
+      choices: ['Sous le sable chauffé par les braises', 'Dans un four à bois', 'À la vapeur', 'Sur une pierre plate'],
+    },
+  },
+  {
+    id: 'burnous',
+    cat: 'culture',
+    texte:
+      'Le burnous — grand manteau de laine à capuche, souvent blanc — est l’un des vêtements emblématiques d’Afrique du Nord ; on le pose sur les épaules des invités d’honneur.',
+    question: {
+      prompt: 'Qu’est-ce qu’un burnous ?',
+      answer: 'Un manteau de laine à capuche',
+      choices: ['Un manteau de laine à capuche', 'Un turban', 'Une ceinture brodée', 'Un tapis de selle'],
+    },
+  },
+  {
+    id: 'imensi-yennayer',
+    cat: 'culture',
+    texte:
+      'Le soir de Yennayer, on prépare un repas d’abondance — imensi n Yennayer — souvent un couscous généreux : bien commencer l’année, c’est d’abord bien nourrir les siens.',
+    question: {
+      prompt: 'Qu’est-ce que l’imensi n Yennayer ?',
+      answer: 'Le repas d’abondance du nouvel an amazigh',
+      choices: [
+        'Le repas d’abondance du nouvel an amazigh',
+        'Un chant de mariage',
+        'Le premier labour',
+        'Une course de chevaux',
+      ],
+    },
+  },
+
+  /* ---------------- culture (déjà en place) ---------------- */
   {
     id: 'couscous',
     cat: 'culture',

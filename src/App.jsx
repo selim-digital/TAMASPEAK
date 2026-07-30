@@ -354,8 +354,28 @@ export default function App() {
     setScreen(ECRANS.CHEMIN)
   }
 
+  /**
+   * Le quiz de fin de leçon (demande de Selim : 3 questions) — de la
+   * RÉVISION, tirée des leçons déjà terminées : la répétition espacée est
+   * ce qui ancre. Première leçon d'une langue : rien à réviser, pas de quiz.
+   */
+  function avecQuizFin(c, p, lessonId) {
+    const base = c.getExercises(lessonId)
+    const pool = c.orderedNodes
+      .filter((n) => n.type !== 'chest' && n.id !== lessonId && p.statuses[n.id] === 'done')
+      .flatMap((n) => c.getExercises(n.id))
+      .filter((ex) => ['qcm', 'listen', 'image', 'culture', 'sentence'].includes(ex.type))
+    if (!pool.length) return base
+    return [...base, ...pickRandom(pool, 3).map((ex) => ({ ...ex, quizFin: true }))]
+  }
+
+  // Figés au lancement : recalculer à chaque rendu retirerait le hasard du
+  // quiz de fin sous les pieds de l'élève.
+  const [lessonExercises, setLessonExercises] = useState([])
+
   function startLesson(node) {
     setActiveLesson(node)
+    setLessonExercises(avecQuizFin(course, progress, node.id))
     setScreen(ECRANS.LECON)
   }
 
@@ -738,6 +758,7 @@ export default function App() {
           {screen === ECRANS.QUIZ && (
             <QuizScreen
               faitIndex={store.faitIndex || 0}
+              recitsLus={progress.recitsLus || []}
               onRecompense={(xp) => {
                 setProgress((p) => recordQuiz(p, xp))
                 track('quiz_done', { lang: course.id, xp })
@@ -830,7 +851,7 @@ export default function App() {
 
           {screen === ECRANS.LECON && (
             <LessonScreen
-              exercises={course.getExercises(activeLesson?.id)}
+              exercises={lessonExercises.length ? lessonExercises : course.getExercises(activeLesson?.id)}
               lang={course.id}
               onExit={() => setScreen(ECRANS.CHEMIN)}
               onFinish={finishLesson}

@@ -36,6 +36,20 @@
  *     morte en 1863)
  *   • Abd el-Krim / Rif War (Anoual juillet 1921, république du Rif,
  *     reddition 1926)
+ *   • Battle of Bougafer (Aït Atta, Assou Oubasslam, févr.–mars 1933,
+ *     reddition négociée — condition : jamais sous le Glaoui)
+ *   • Kaocen revolt (Aïr, siège d'Agadez déc. 1916 – mars 1917, Kaocen
+ *     tué à Mourzouk en 1919)
+ *   • Conquest of the Canary Islands (1402–1496 ; First Battle of
+ *     Acentejo « La Matanza », mai 1494, mencey Bencomo)
+ *   • Madghacen (mausolée royal numide, ~IIIᵉ s. av. J.-C.) ; oracle
+ *     d'Amon à Siwa consulté par Alexandre en 331 av. J.-C.
+ *   • Christianity in Africa : Tertullien (~155–220), Cyprien (†258),
+ *     papes Victor Iᵉʳ / Miltiade / Gélase Iᵉʳ ; donatisme (IVᵉ s.)
+ *   • El Ghriba (Djerba) ; tribus judaïsées d'Ibn Khaldoun présentées
+ *     comme DÉBATTUES ; départs massifs années 1950–60
+ *   • Kairouan 670 (Uqba) ; imamat rustamide de Tahert 761–909, héritage
+ *     ibadite au Mzab / Djerba / Nefoussa
  *
  * ⚠️ UN CHIFFRE ÉCARTÉ VOLONTAIREMENT. Les articles du « Printemps berbère »
  * (1980) et du « Printemps noir » (2001) annoncent tous deux 128 morts : c'est
@@ -134,6 +148,22 @@ export const RECITS = [
     },
   },
   {
+    id: 'croyances',
+    epoque: 'Antiquité',
+    titre: 'Les croyances d’avant',
+    land: 'oasis',
+    texte: [
+      'Avant les religions du Livre, les Amazighs honoraient leurs morts et leurs ancêtres : les rois numides dorment sous d’immenses tombeaux de pierre, comme le Madghacen, élevé il y a plus de deux mille deux cents ans.',
+      'Sources, montagnes et grottes étaient tenues pour sacrées. À l’oasis de Siwa, le sanctuaire d’Amon était si renommé qu’Alexandre le Grand lui-même vint consulter son oracle, en 331 avant notre ère.',
+      'De ce vieux fonds, il reste des traces dans les coutumes — les rites de l’eau, les fêtes agraires comme Yennayer — passées depuis dans d’autres cadres. Les peuples gardent longtemps la mémoire de leurs gestes.',
+    ],
+    question: {
+      prompt: 'Qui vint consulter l’oracle d’Amon à Siwa en 331 av. J.-C. ?',
+      answer: 'Alexandre le Grand',
+      choices: ['Alexandre le Grand', 'Jules César', 'Hannibal', 'Massinissa'],
+    },
+  },
+  {
     id: 'juba',
     epoque: 'Ier siècle av.–ap. J.-C.',
     titre: 'Juba II, le roi savant',
@@ -152,6 +182,22 @@ export const RECITS = [
         'La fille de Massinissa',
         'Une reine de Carthage',
       ],
+    },
+  },
+  {
+    id: 'christianisme',
+    epoque: 'IIᵉ–Vᵉ siècle',
+    titre: 'L’Afrique chrétienne',
+    land: 'kcote',
+    texte: [
+      'Dès le IIᵉ siècle, le christianisme s’enracine en Afrique du Nord — au point d’en faire l’un des cœurs du monde chrétien ancien. Tertullien, de Carthage, est le premier grand auteur chrétien de langue latine.',
+      'Cyprien, évêque de Carthage, y meurt martyr en 258. Et trois papes de Rome sont venus de cette terre : Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ — des Africains à la tête de l’Église.',
+      'Au IVᵉ siècle, la Numidie s’enflamme même pour sa propre église dissidente, le donatisme, majoritaire dans les campagnes — contre laquelle Augustin, un autre enfant du pays, bataillera toute sa vie.',
+    ],
+    question: {
+      prompt: 'Combien de papes sont venus d’Afrique du Nord ?',
+      answer: 'Trois — Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ',
+      choices: ['Trois — Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ', 'Aucun', 'Un seul', 'Sept'],
     },
   },
   {
@@ -184,6 +230,22 @@ export const RECITS = [
       prompt: 'Où se trouve le tombeau attribué à Tin Hinan ?',
       answer: 'À Abalessa, dans le Hoggar',
       choices: ['À Abalessa, dans le Hoggar', 'À Tombouctou', 'Dans les Aurès', 'À Ghadamès'],
+    },
+  },
+  {
+    id: 'juifs',
+    epoque: 'Antiquité – XXᵉ siècle',
+    titre: 'Les Juifs d’Afrique du Nord',
+    land: 'mzab',
+    texte: [
+      'La présence juive en Afrique du Nord a plus de deux mille ans : des communautés y vivaient déjà à l’époque romaine, et la synagogue de la Ghriba, à Djerba, passe pour l’une des plus anciennes traditions juives d’Afrique.',
+      'Pendant des siècles, des communautés juives ont vécu au milieu des Amazighs — dans l’Atlas, le Souss, le Mzab — parlant les mêmes langues, au point qu’on a parlé de judéo-berbère. Ibn Khaldoun évoque même des tribus berbères judaïsées, ce que les historiens discutent encore.',
+      'Aux XIXᵉ et XXᵉ siècles, ces communautés comptaient des centaines de milliers de personnes. Presque toutes sont parties dans les années 1950 et 1960 — une page de deux millénaires qui s’est tournée en une génération.',
+    ],
+    question: {
+      prompt: 'Où se trouve la synagogue de la Ghriba ?',
+      answer: 'À Djerba, en Tunisie',
+      choices: ['À Djerba, en Tunisie', 'À Fès', 'À Alger', 'À Marrakech'],
     },
   },
   {
@@ -221,6 +283,22 @@ export const RECITS = [
       prompt: 'Sur quelle région Dihya régnait-elle ?',
       answer: 'Les Aurès',
       choices: ['Les Aurès', 'Le Rif', 'Le Hoggar', 'La vallée du M’zab'],
+    },
+  },
+  {
+    id: 'islamisation',
+    epoque: 'VIIᵉ–IXᵉ siècle',
+    titre: 'L’islam s’enracine',
+    land: 'ksar',
+    texte: [
+      'L’islam arrive au VIIᵉ siècle : en 670, Uqba ibn Nafi fonde Kairouan, qui deviendra l’une des grandes villes du monde musulman. Les débuts sont une histoire de batailles — Kusayla, Dihya — mais la suite est tout autre.',
+      'Car les Amazighs ne se contentent pas d’embrasser l’islam : ils en deviennent des porteurs majeurs. Tariq ouvre al-Andalus, et plus tard deux empires amazighs — Almoravides et Almohades — porteront l’islam de la Mauritanie à l’Espagne.',
+      'Certains choisissent des voies propres : dès 761, l’imamat ibadite de Tahert rayonne sur le Maghreb central ; son héritage vit encore au Mzab, à Djerba et au djebel Nefoussa. Aujourd’hui, l’islam est la religion de l’immense majorité des Imazighen.',
+    ],
+    question: {
+      prompt: 'Quelle ville Uqba ibn Nafi fonde-t-il en 670 ?',
+      answer: 'Kairouan',
+      choices: ['Kairouan', 'Fès', 'Tlemcen', 'Marrakech'],
     },
   },
   {
@@ -303,6 +381,27 @@ export const RECITS = [
     },
   },
   {
+    id: 'canaries',
+    epoque: '1402–1496',
+    titre: 'Les Guanches face à la Castille',
+    land: 'kcote',
+    texte: [
+      'Aux îles Canaries vivaient les Guanches, un peuple de langue berbère. Quand la conquête castillane commence, en 1402, ils n’ont ni fer, ni chevaux, ni navires — et ils vont pourtant tenir près d’un siècle.',
+      'En mai 1494, dans le ravin d’Acentejo, à Tenerife, les hommes du mencey Bencomo écrasent le corps expéditionnaire espagnol : « La Matanza », le massacre — l’une des pires défaites de la Castille de tout le siècle.',
+      'Tenerife ne tombe qu’en 1496, à bout de forces et décimée par les épidémies. Quatre-vingt-quatorze ans pour conquérir sept îles : la résistance guanche est l’une des plus longues opposées à une conquête européenne.',
+    ],
+    question: {
+      prompt: 'Que se passe-t-il à Acentejo en 1494 ?',
+      answer: 'Les Guanches écrasent les Espagnols — « La Matanza »',
+      choices: [
+        'Les Guanches écrasent les Espagnols — « La Matanza »',
+        'Les Espagnols achèvent la conquête',
+        'Un traité de paix est signé',
+        'Une épidémie frappe les deux camps',
+      ],
+    },
+  },
+  {
     id: 'fatma',
     epoque: '1850–1863',
     titre: 'Lalla Fatma n’Soumer',
@@ -324,6 +423,22 @@ export const RECITS = [
     },
   },
   {
+    id: 'kaocen',
+    epoque: '1916–1917',
+    titre: 'Kaocen, la révolte du désert',
+    land: 'hoggar',
+    texte: [
+      'En décembre 1916, en pleine guerre mondiale, le Touareg Kaocen ag Mohammed soulève l’Aïr contre la France. Ses cavaliers prennent le contrôle du massif et assiègent Agadez, dans l’actuel Niger.',
+      'Le siège tient trois mois : la garnison n’est dégagée qu’en mars 1917 par une colonne venue de loin. La répression qui suit est terrible, et pousse des communautés touarègues entières à l’exil.',
+      'Kaocen poursuit la lutte vers le nord ; il est tué en 1919 à Mourzouk. Sa révolte reste, pour les Touaregs, le grand soulèvement contre la colonisation.',
+    ],
+    question: {
+      prompt: 'Quelle ville Kaocen assiège-t-il trois mois durant en 1916-1917 ?',
+      answer: 'Agadez',
+      choices: ['Agadez', 'Tombouctou', 'Tamanrasset', 'Ghadamès'],
+    },
+  },
+  {
     id: 'abdelkrim',
     epoque: '1921–1926',
     titre: 'Abd el-Krim et la république du Rif',
@@ -342,6 +457,22 @@ export const RECITS = [
         'La république du Rif capitule',
         'Un traité de paix est signé',
       ],
+    },
+  },
+  {
+    id: 'aitatta',
+    epoque: '1933',
+    titre: 'Bougafer — les Aït Atta',
+    land: 'atlas',
+    texte: [
+      'Dernier grand bastion libre du Maroc : le djebel Saghro, terre de la confédération des Aït Atta. En février 1933, menés par Assou Oubasslam, un millier de combattants s’y retranchent avec leurs familles.',
+      'Face à eux, des dizaines de milliers de soldats, l’artillerie et l’aviation. Sur les crêtes de Bougafer, les assauts se brisent pendant plus d’un mois, au prix de pertes très lourdes des deux côtés.',
+      'À bout de vivres et d’eau, Assou Oubasslam négocie fin mars une reddition honorable — dont cette condition restée célèbre : les Aït Atta ne seraient jamais gouvernés par le Glaoui, le pacha honni. Vaincus, mais debout.',
+    ],
+    question: {
+      prompt: 'Qui mena la résistance des Aït Atta à Bougafer en 1933 ?',
+      answer: 'Assou Oubasslam',
+      choices: ['Assou Oubasslam', 'Abd el-Krim', 'Kaocen', 'Moha ou Hammou'],
     },
   },
   {
