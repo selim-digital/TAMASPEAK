@@ -1,22 +1,38 @@
-import { useEffect, useState } from 'react'
-import { getCercle, actionCercle } from '../lib/api.js'
-import { shareText, APP_URL } from '../lib/share.js'
+import { useEffect, useRef, useState } from 'react'
+import { Button } from '../components/Button.jsx'
+import { Akermus } from '../components/mascots/Akermus.jsx'
+import { shareText } from '../lib/share.js'
+import { saveVoice } from '../lib/speakerVoice.js'
 import { sfx } from '../lib/sfx.js'
+import {
+  monCercle,
+  creerInvitation,
+  invitationUrl,
+  retirerDuCercle,
+  mesDemandes,
+  demanderMot,
+  audioDemande,
+  mesDefis,
+  classementCercle,
+} from '../lib/distance.js'
 
 /**
- * Le cercle — famille et amis qui apprennent ensemble.
+ * Mon cercle — la famille et les amis, chacun sur SON téléphone.
  *
- * Trois classements (semaine, mois, année en cours) calculés par le
- * serveur depuis les événements d'usage. Le barème VALORISE L'EFFORT :
- * chaque XP compte, chaque duel joué compte, la victoire compte en plus —
- * et le « plus assidu » (jours de pratique) a son trophée à lui.
+ * Quatre choses s'y font :
+ *   • relier deux comptes par un code d'invitation (partagé par WhatsApp) ;
+ *   • demander un mot à un proche — il reçoit une notification, enregistre
+ *     sa voix, et elle revient ici, installable dans les leçons ;
+ *   • défier un proche — même graine, mêmes questions, chacun chez soi ;
+ *   • se mesurer gentiment : classement de la semaine, du mois et de
+ *     l'année, où le barème VALORISE L'EFFORT (chaque XP compte, chaque
+ *     duel joué compte, la victoire compte en plus) — et le palmarès de
+ *     chaque période close arrive PAR EMAIL aux membres (lundi, le 1ᵉʳ,
+ *     le 1ᵉʳ janvier). C'est dit ici même : c'est là que vit le
+ *     consentement, révocable d'un clic dans chaque email.
  *
- * Le palmarès de chaque période close part par email aux membres
- * (lundi / le 1ᵉʳ / le 1ᵉʳ janvier) — c'est dit en clair ici même, au
- * moment de créer ou rejoindre : c'est là que vit le consentement.
- *
- * C'est la SEULE brique du coin jeux qui exige un compte et du réseau :
- * un classement entre téléphones ne peut pas vivre dans un lien.
+ * L'écran suppose l'utilisateur connecté (le compte est obligatoire) ; si
+ * le serveur est muet, il le dit avec calme et n'affiche rien de cassé.
  */
 
 const PERIODES = [
@@ -27,292 +43,449 @@ const PERIODES = [
 
 const MEDAILLES = ['🥇', '🥈', '🥉']
 
-function Carte({ children }) {
-  return <div className="mt-3 rounded-2xl border border-line bg-sand px-3.5 py-3.5 text-[11.5px] leading-snug text-ink-soft">{children}</div>
+/** Le classement du cercle — trois périodes, l'effort à l'honneur. */
+function Classement({ donnees }) {
+  const [periode, setPeriode] = useState('semaine')
+  if (!donnees) return null
+  const lignes = donnees.classements?.[periode] || []
+  if (lignes.length < 2) return null
+  const assidu = [...lignes].sort((a, b) => b.jours - a.jours || b.xp - a.xp)[0]
+
+  return (
+    <>
+      <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+        Classement 🏆
+      </div>
+      <div className="flex gap-1.5">
+        {PERIODES.map((pp) => (
+          <button
+            key={pp.id}
+            type="button"
+            onClick={() => {
+              setPeriode(pp.id)
+              sfx.click()
+            }}
+            className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11.5px] font-extrabold transition ${
+              periode === pp.id ? 'border-turquoise bg-turquoise/10 text-turquoise-deep' : 'border-line bg-cream text-ink-soft'
+            }`}
+          >
+            {pp.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex flex-col gap-1.5">
+        {lignes.map((l, i) => {
+          const moi = l.id === donnees.moi
+          return (
+            <div
+              key={l.id}
+              className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 ${
+                moi ? 'border-turquoise/50 bg-turquoise/5' : 'border-line bg-white'
+              }`}
+            >
+              <span className="w-7 flex-none text-center text-[15px] font-extrabold">
+                {MEDAILLES[i] || <span className="text-[11px] text-ink-soft">{i + 1}.</span>}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[12.5px] font-extrabold">
+                  {l.nom}
+                  {moi && <span className="ml-1 text-[9.5px] font-bold text-turquoise-deep">(toi)</span>}
+                  {assidu && assidu.id === l.id && assidu.jours > 0 && (
+                    <span className="ml-1" title="La personne la plus assidue">
+                      🔥
+                    </span>
+                  )}
+                </span>
+                <span className="block text-[9.5px] font-bold text-ink-soft">
+                  {l.xp} XP · {l.duelsJoues} duel{l.duelsJoues > 1 ? 's' : ''}
+                  {l.duelsGagnes > 0 && ` (${l.duelsGagnes} gagné${l.duelsGagnes > 1 ? 's' : ''})`} · {l.jours} jour
+                  {l.jours > 1 ? 's' : ''} actif{l.jours > 1 ? 's' : ''}
+                </span>
+              </span>
+              <span className="flex-none text-[14px] font-extrabold tabular-nums text-turquoise-deep">{l.points} pts</span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="mt-2 rounded-xl border border-line bg-sand px-3 py-2 text-[10px] leading-snug text-ink-soft">
+        Points = <b className="text-ink">XP + {donnees.bareme?.duelJoue ?? 5} par duel joué + {donnees.bareme?.duelGagne ?? 20} par duel gagné</b> —
+        jouer compte toujours. 🔥 marque la personne la plus assidue. Le <b className="text-ink">palmarès part par email</b>{' '}
+        chaque lundi, le 1ᵉʳ du mois et le 1ᵉʳ janvier.
+      </p>
+    </>
+  )
 }
 
-export function CercleScreen({ user, onCompte, onBack }) {
-  // null = chargement ; sinon la réponse de getCercle (etat + données).
-  const [donnees, setDonnees] = useState(null)
-  const [periode, setPeriode] = useState('semaine')
-  const [nom, setNom] = useState('')
-  const [code, setCode] = useState('')
-  const [occupe, setOccupe] = useState(false)
-  const [message, setMessage] = useState(null)
-  const [confirmeDepart, setConfirmeDepart] = useState(false)
+/** Pastille-initiale d'un proche (jamais de photo : sobriété voulue). */
+function Initiale({ name, size = 38 }) {
+  return (
+    <span
+      className="grid flex-none place-items-center rounded-full border border-line bg-sand font-extrabold text-ink-soft"
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
+    >
+      {(name || '?').slice(0, 1).toUpperCase()}
+    </span>
+  )
+}
 
-  const charger = () => getCercle().then(setDonnees)
+/** Une demande envoyée et exaucée : écouter, puis garder dans ses leçons. */
+function AudioRecu({ demande, onGarde }) {
+  const [etat, setEtat] = useState('idle') // idle | charge | joue | garde
+  const audioRef = useRef(null)
+  const blobRef = useRef(null)
+
+  async function charger() {
+    if (blobRef.current) return blobRef.current
+    setEtat('charge')
+    const blob = await audioDemande(demande.id)
+    blobRef.current = blob
+    return blob
+  }
+
+  async function ecouter() {
+    sfx.click()
+    const blob = await charger()
+    if (!blob) return setEtat('idle')
+    if (!audioRef.current) audioRef.current = new Audio(URL.createObjectURL(blob))
+    setEtat('joue')
+    audioRef.current.onended = () => setEtat('idle')
+    audioRef.current.play().catch(() => setEtat('idle'))
+  }
+
+  async function garder() {
+    const blob = await charger()
+    if (!blob) return setEtat('idle')
+    await saveVoice({ lang: demande.lang || 'kab', word: demande.texte, blob, speaker: demande.pour })
+    sfx.correct()
+    setEtat('garde')
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={ecouter}
+        aria-label={`Écouter ${demande.texte}`}
+        className="grid h-8 w-8 flex-none place-items-center rounded-full bg-turquoise text-[12px] text-white transition-transform active:scale-90"
+      >
+        {etat === 'charge' ? '…' : etat === 'joue' ? '◼' : '▶'}
+      </button>
+      {etat === 'garde' ? (
+        <span className="text-[10px] font-extrabold text-turquoise-deep">Dans tes leçons ✓</span>
+      ) : (
+        <button type="button" onClick={garder} className="text-[10px] font-bold text-ink-soft underline">
+          Garder dans mes leçons
+        </button>
+      )}
+    </div>
+  )
+}
+
+export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onBack }) {
+  // null = chargement ; false = serveur muet ; objet = données.
+  const [cercle, setCercle] = useState(null)
+  const [demandes, setDemandes] = useState({ recues: [], envoyees: [] })
+  const [defis, setDefis] = useState([])
+  const [classement, setClassement] = useState(null)
+  const [formPour, setFormPour] = useState(null) // membre auquel on demande un mot
+  const [mot, setMot] = useState('')
+  const [sens, setSens] = useState('')
+  const [flash, setFlash] = useState(null)
+  const [retraitEnCours, setRetraitEnCours] = useState(null)
+
+  async function recharger() {
+    const [c, d, f, cl] = await Promise.all([monCercle(), mesDemandes(), mesDefis(), classementCercle()])
+    setCercle(c || false)
+    if (d) setDemandes(d)
+    if (f) setDefis(f.defis || [])
+    setClassement(cl)
+  }
+
   useEffect(() => {
-    if (user) charger()
-  }, [user])
+    recharger()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  async function faire(action, params) {
-    setOccupe(true)
-    setMessage(null)
-    const r = await actionCercle(action, params)
-    setOccupe(false)
-    if (r.etat === 'ok') {
-      sfx.correct()
-      setNom('')
-      setCode('')
-      setConfirmeDepart(false)
-      setDonnees(null)
-      charger()
+  const dire = (msg) => {
+    setFlash(msg)
+    setTimeout(() => setFlash(null), 2600)
+  }
+
+  async function inviter() {
+    sfx.click()
+    const code = await creerInvitation()
+    if (!code) return dire('Le serveur ne répond pas — réessaie un peu plus tard.')
+    const res = await shareText(
+      `Azul ! Rejoins mon cercle sur Tama Speak — on apprend la langue ensemble, chacun sur son téléphone : ${invitationUrl(code)}`,
+    )
+    dire(res === 'copied' ? 'Lien copié — envoie-le à ton proche.' : 'Invitation prête à partager.')
+  }
+
+  async function envoyerDemande() {
+    if (!mot.trim() || !formPour) return
+    sfx.click()
+    const ok = await demanderMot({ pour: formPour.userId, texte: mot.trim(), sens: sens.trim(), lang: course.id })
+    if (ok) {
+      dire(`Demande envoyée à ${formPour.name} — tu seras prévenu·e dès que sa voix arrive.`)
+      setFormPour(null)
+      setMot('')
+      setSens('')
+      recharger()
     } else {
-      sfx.wrong()
-      setMessage(
-        r.message ||
-          (r.etat === 'indisponible'
-            ? 'Le serveur n’est pas joignable pour le moment.'
-            : r.etat === 'anonyme'
-              ? 'Connecte-toi d’abord.'
-              : 'Impossible pour le moment — réessaie.'),
-      )
+      dire('L’envoi n’a pas abouti — réessaie.')
     }
   }
 
-  function inviter() {
-    sfx.click()
-    shareText(
-      [
-        'ⵣ Tama Speak — rejoins notre cercle !',
-        `Code d’invitation : ${donnees.cercle.code}`,
-        'Dans l’app : Jeux → Le cercle → Rejoindre.',
-      ].join('\n'),
-      APP_URL,
-    )
+  async function retirer(m) {
+    await retirerDuCercle(m.lienId)
+    setRetraitEnCours(null)
+    recharger()
   }
 
-  const entete = (
-    <div className="flex items-center gap-3 px-4 pt-8 pb-1">
-      <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
-        ←
-      </button>
-      <h2 className="text-lg font-extrabold">Le cercle</h2>
-    </div>
-  )
-
-  /* ---- Pas de compte : le cercle vit sur le serveur, il en faut un. ---- */
-  if (!user) {
-    return (
-      <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
-        {entete}
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
-          <Carte>
-            Le cercle relie plusieurs téléphones : classement de la semaine, du mois et de l’année
-            entre famille et amis, et le palmarès envoyé par email. Il lui faut donc un{' '}
-            <b className="text-ink">compte</b> — le reste de l’app n’en a pas besoin.
-          </Carte>
-          <button
-            type="button"
-            onClick={onCompte}
-            className="mt-3 w-full rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
-          >
-            Me connecter
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  /* ---- Chargement / serveur absent ---- */
-  if (!donnees) {
-    return (
-      <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
-        {entete}
-        <p className="mt-8 text-center text-[11.5px] text-ink-soft">chargement…</p>
-      </div>
-    )
-  }
-  if (donnees.etat !== 'ok') {
-    return (
-      <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
-        {entete}
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
-          <Carte>
-            {donnees.etat === 'anonyme'
-              ? 'Ta session a expiré — reconnecte-toi pour retrouver ton cercle.'
-              : 'Le cercle a besoin du serveur, qui n’est pas joignable pour le moment. Tout le reste de l’app fonctionne sans lui.'}
-          </Carte>
-        </div>
-      </div>
-    )
-  }
-
-  /* ---- Pas encore de cercle : créer ou rejoindre ---- */
-  if (!donnees.cercle) {
-    return (
-      <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
-        {entete}
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
-          <p className="mt-1 text-[11px] leading-snug text-ink-soft">
-            Famille et amis dans un même cercle : classement de la <b className="text-ink">semaine</b>, du{' '}
-            <b className="text-ink">mois</b> et de l’<b className="text-ink">année</b>, où chaque effort compte —
-            XP, parties, duels. Le <b className="text-ink">palmarès part par email</b> aux membres à chaque fin de
-            période (c’est l’engagement pris en rejoignant ; on peut s’en désabonner à tout moment).
-          </p>
-
-          <div className="mt-4 rounded-2xl border-2 border-turquoise/40 bg-turquoise/5 px-3.5 py-3.5">
-            <div className="text-[13px] font-extrabold">Créer un cercle</div>
-            <input
-              type="text"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-              maxLength={40}
-              placeholder="Le nom du cercle (« Ath Yenni », « La famille »…)"
-              className="mt-2 w-full rounded-xl border-2 border-line bg-white px-3 py-2 text-[13px] font-bold outline-none focus:border-turquoise"
-            />
-            <button
-              type="button"
-              disabled={occupe || !nom.trim()}
-              onClick={() => faire('creer', { nom: nom.trim() })}
-              className="mt-2 w-full rounded-xl bg-turquoise py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] disabled:opacity-50"
-            >
-              Créer et recevoir le code
-            </button>
-          </div>
-
-          <div className="mt-3 rounded-2xl border-2 border-coral/40 bg-coral/5 px-3.5 py-3.5">
-            <div className="text-[13px] font-extrabold">Rejoindre un cercle</div>
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              maxLength={6}
-              placeholder="Le code reçu (6 lettres)"
-              className="mt-2 w-full rounded-xl border-2 border-line bg-white px-3 py-2 text-center text-[15px] font-extrabold tracking-[0.3em] outline-none focus:border-coral"
-            />
-            <button
-              type="button"
-              disabled={occupe || code.trim().length < 6}
-              onClick={() => faire('rejoindre', { code: code.trim() })}
-              className="mt-2 w-full rounded-xl bg-coral py-2.5 text-[13px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)] disabled:opacity-50"
-            >
-              Rejoindre
-            </button>
-          </div>
-
-          {message && <p className="animate-rise mt-3 text-center text-[11.5px] font-bold text-coral-dark">{message}</p>}
-        </div>
-      </div>
-    )
-  }
-
-  /* ---- Le cercle et ses classements ---- */
-  const classement = donnees.classements?.[periode] || []
-  const assidu = [...classement].sort((a, b) => b.jours - a.jours || b.xp - a.xp)[0]
+  const membres = cercle && cercle !== false ? cercle.membres : []
 
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
-      {entete}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6">
-        {/* Le cercle et son code d'invitation */}
-        <div className="mt-1 flex items-center gap-2.5 rounded-2xl border border-line bg-sand px-3.5 py-3">
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-[14px] font-extrabold">{donnees.cercle.nom}</div>
-            <div className="text-[10.5px] font-bold text-ink-soft">
-              {donnees.cercle.membres} membre{donnees.cercle.membres > 1 ? 's' : ''} · code{' '}
-              <b className="tracking-widest text-turquoise-deep">{donnees.cercle.code}</b>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={inviter}
-            className="flex-none rounded-xl bg-turquoise px-3 py-2 text-[11.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)]"
-          >
-            Inviter
-          </button>
+      <div className="flex items-center gap-3 px-4 pt-8 pb-1">
+        <button type="button" onClick={onBack} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
+          ←
+        </button>
+        <h2 className="text-lg font-extrabold">Mon cercle</h2>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
+        <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
+          <Akermus height={64} state="curious" className="flex-none" />
+          <p className="text-[11.5px] leading-snug text-ink">
+            Ta famille et tes amis, <strong>chacun sur son téléphone</strong>. Défie-les, ou
+            demande-leur d’enregistrer un mot avec leur voix — elle arrivera dans tes leçons.
+          </p>
         </div>
 
-        {/* Les trois périodes */}
-        <div className="mt-3 flex gap-1.5">
-          {PERIODES.map((pp) => (
-            <button
-              key={pp.id}
-              type="button"
-              onClick={() => {
-                setPeriode(pp.id)
-                sfx.click()
-              }}
-              className={`flex-1 rounded-xl border-2 px-2 py-1.5 text-[11.5px] font-extrabold transition ${
-                periode === pp.id ? 'border-turquoise bg-turquoise/10 text-turquoise-deep' : 'border-line bg-cream text-ink-soft'
-              }`}
-            >
-              {pp.label}
-            </button>
+        {flash && (
+          <p className="animate-rise mt-3 rounded-xl border border-turquoise/40 bg-turquoise/10 px-3 py-2 text-center text-[11.5px] font-bold text-turquoise-deep">
+            {flash}
+          </p>
+        )}
+
+        {cercle === false && (
+          <p className="mt-3 rounded-xl border border-line bg-sand px-3 py-2 text-[11px] leading-snug text-ink-soft">
+            Le cercle a besoin d’internet — reviens quand tu seras en ligne, rien n’est perdu.
+          </p>
+        )}
+
+        {/* ------------- les proches ------------- */}
+        <div className="mt-5 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+          Mes proches {membres.length > 0 && <span className="tabular-nums">({membres.length})</span>}
+        </div>
+
+        {cercle !== false && membres.length === 0 && (
+          <p className="text-[12px] leading-snug text-ink-soft">
+            Personne pour l’instant. Invite un proche : dès qu’il aura ouvert ton lien et créé son
+            compte, vous serez reliés.
+          </p>
+        )}
+
+        <div className="flex flex-col gap-2">
+          {membres.map((m) => (
+            <div key={m.lienId} className="rounded-2xl border border-line bg-white px-3 py-2.5">
+              <div className="flex items-center gap-2.5">
+                <Initiale name={m.name} />
+                <span className="min-w-0 flex-1 truncate text-[13px] font-extrabold">{m.name}</span>
+                {retraitEnCours === m.lienId ? (
+                  <span className="flex flex-none gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setRetraitEnCours(null)}
+                      className="rounded-lg border border-line bg-cream px-1.5 py-1 text-[9.5px] font-extrabold text-ink-soft"
+                    >
+                      Garder
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => retirer(m)}
+                      className="rounded-lg bg-coral px-1.5 py-1 text-[9.5px] font-extrabold text-white"
+                    >
+                      Retirer
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setRetraitEnCours(m.lienId)}
+                    aria-label={`Retirer ${m.name} du cercle`}
+                    className="flex-none text-[15px] text-ink-soft"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    sfx.click()
+                    setFormPour(formPour?.userId === m.userId ? null : m)
+                  }}
+                  className="flex-1 rounded-xl border border-line bg-cream py-2 text-[11.5px] font-extrabold text-ink transition-transform active:scale-95"
+                >
+                  🎙 Demander un mot
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    sfx.click()
+                    onDefier(m)
+                  }}
+                  className="flex-1 rounded-xl border border-coral/40 bg-coral/10 py-2 text-[11.5px] font-extrabold text-coral-dark transition-transform active:scale-95"
+                >
+                  ⚔ Défier
+                </button>
+              </div>
+
+              {formPour?.userId === m.userId && (
+                <div className="animate-rise mt-2 flex flex-col gap-2 rounded-xl bg-sand p-2.5">
+                  <input
+                    value={mot}
+                    onChange={(e) => setMot(e.target.value.slice(0, 120))}
+                    placeholder={`Le mot à demander à ${m.name}`}
+                    className="rounded-xl border-2 border-line bg-white px-3 py-2 text-[13.5px] font-bold outline-none focus:border-turquoise"
+                  />
+                  <input
+                    value={sens}
+                    onChange={(e) => setSens(e.target.value.slice(0, 120))}
+                    placeholder="Ce que ça veut dire (facultatif)"
+                    className="rounded-xl border-2 border-line bg-white px-3 py-2 text-[12.5px] outline-none focus:border-turquoise"
+                  />
+                  <button
+                    type="button"
+                    onClick={envoyerDemande}
+                    disabled={!mot.trim()}
+                    className="rounded-xl bg-turquoise py-2 text-[12.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-turquoise-dark)] disabled:opacity-40 disabled:shadow-none"
+                  >
+                    Envoyer la demande
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
-        {/* Le classement */}
-        <div className="mt-2.5 flex flex-col gap-1.5">
-          {classement.map((l, i) => {
-            const moi = l.id === donnees.moi
-            return (
-              <div
-                key={l.id}
-                className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 ${
-                  moi ? 'border-turquoise/50 bg-turquoise/5' : 'border-line bg-cream'
-                }`}
-              >
-                <span className="w-7 flex-none text-center text-[15px] font-extrabold">
-                  {MEDAILLES[i] || <span className="text-[11px] text-ink-soft">{i + 1}.</span>}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[12.5px] font-extrabold">
-                    {l.nom}
-                    {moi && <span className="ml-1 text-[9.5px] font-bold text-turquoise-deep">(toi)</span>}
-                    {assidu && assidu.id === l.id && assidu.jours > 0 && (
-                      <span className="ml-1" title="La personne la plus assidue">
-                        🔥
-                      </span>
-                    )}
-                  </span>
-                  <span className="block text-[9.5px] font-bold text-ink-soft">
-                    {l.xp} XP · {l.duelsJoues} duel{l.duelsJoues > 1 ? 's' : ''}
-                    {l.duelsGagnes > 0 && ` (${l.duelsGagnes} gagné${l.duelsGagnes > 1 ? 's' : ''})`} · {l.jours} jour
-                    {l.jours > 1 ? 's' : ''} actif{l.jours > 1 ? 's' : ''}
-                  </span>
-                </span>
-                <span className="flex-none text-[14px] font-extrabold tabular-nums text-turquoise-deep">{l.points} pts</span>
-              </div>
-            )
-          })}
-        </div>
-
-        <Carte>
-          Points = <b className="text-ink">XP + {donnees.bareme?.duelJoue ?? 5} par duel joué + {donnees.bareme?.duelGagne ?? 20} par duel
-          gagné</b> — jouer compte toujours, gagner compte plus. 🔥 marque la personne la plus assidue. Le{' '}
-          <b className="text-ink">palmarès part par email</b> chaque lundi (semaine), le 1ᵉʳ (mois) et le 1ᵉʳ janvier (année).
-        </Carte>
-
-        {confirmeDepart ? (
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={() => setConfirmeDepart(false)}
-              className="flex-1 rounded-xl border-2 border-line bg-cream py-2 text-[12px] font-extrabold text-ink-soft"
-            >
-              Rester
-            </button>
-            <button
-              type="button"
-              disabled={occupe}
-              onClick={() => faire('quitter')}
-              className="flex-1 rounded-xl bg-coral py-2 text-[12px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)]"
-            >
-              Oui, quitter
-            </button>
+        {cercle !== false && (
+          <div className="mt-3">
+            <Button variant="primary" onClick={inviter}>
+              Inviter un proche
+            </Button>
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmeDepart(true)}
-            className="mx-auto mt-3 block text-[11px] font-bold text-ink-soft underline"
-          >
-            Quitter le cercle
-          </button>
         )}
-        {message && <p className="animate-rise mt-3 text-center text-[11.5px] font-bold text-coral-dark">{message}</p>}
+
+        {/* ------------- classement (semaine · mois · année) ------------- */}
+        <Classement donnees={classement} />
+
+        {/* ------------- demandes reçues (à enregistrer) ------------- */}
+        {demandes.recues.length > 0 && (
+          <>
+            <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+              On attend ta voix 🎙
+            </div>
+            <div className="flex flex-col gap-2">
+              {demandes.recues.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => onEnregistrer(d)}
+                  className="flex items-center gap-2.5 rounded-2xl border-2 border-turquoise/40 bg-turquoise/5 px-3 py-2.5 text-left transition-transform active:scale-[0.98]"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[13px] font-extrabold">« {d.texte} »</div>
+                    <div className="truncate text-[10.5px] text-ink-soft">
+                      {d.de} aimerait l’entendre avec ta voix
+                    </div>
+                  </div>
+                  <span className="flex-none text-[13px] font-extrabold text-turquoise-deep">Enregistrer →</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ------------- demandes envoyées ------------- */}
+        {demandes.envoyees.length > 0 && (
+          <>
+            <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+              Mes demandes
+            </div>
+            <div className="flex flex-col gap-2">
+              {demandes.envoyees.map((d) => (
+                <div key={d.id} className="rounded-2xl border border-line bg-white px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[13px] font-extrabold">« {d.texte} »</div>
+                      <div className="truncate text-[10.5px] text-ink-soft">
+                        demandé à {d.pour}
+                        {d.status === 'attente' && ' · en attente'}
+                        {d.status === 'decline' && ' · pas pu cette fois'}
+                      </div>
+                    </div>
+                    {d.status === 'fait' && <AudioRecu demande={d} />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ------------- défis ------------- */}
+        {defis.length > 0 && (
+          <>
+            <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+              Défis
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {defis.map((d) => {
+                const moi = d.jeDefie ? d.scoreCreateur : d.scoreAdversaire
+                const lui = d.jeDefie ? d.scoreAdversaire : d.scoreCreateur
+                const aJouer = !d.jeDefie && d.status === 'ouvert'
+                const Ligne = aJouer ? 'button' : 'div'
+                return (
+                  <Ligne
+                    key={d.code}
+                    {...(aJouer ? { type: 'button', onClick: () => onJouerDefi?.(d.code) } : {})}
+                    className={`flex w-full items-center gap-2.5 rounded-2xl border px-3 py-2 text-left ${
+                      aJouer
+                        ? 'border-coral/40 bg-coral/5 transition-transform active:scale-[0.98]'
+                        : 'border-line bg-white'
+                    }`}
+                  >
+                    <Initiale name={d.avec} size={30} />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[12px] font-extrabold">{d.avec || 'En attente'}</div>
+                      <div className="text-[10px] text-ink-soft">
+                        {d.status === 'fini'
+                          ? moi > lui
+                            ? `Gagné ${moi}–${lui} 🎉`
+                            : moi < lui
+                              ? `Perdu ${moi}–${lui} — la revanche t’attend`
+                              : `Égalité ${moi}–${lui} 🤝`
+                          : d.jeDefie
+                            ? 'Pas encore joué en face'
+                            : 'À toi de jouer !'}
+                      </div>
+                    </div>
+                    <span className={`flex-none text-[11px] font-extrabold tabular-nums ${aJouer ? 'text-coral-dark' : 'text-ink-soft'}`}>
+                      {aJouer ? 'Jouer →' : `${d.size} q.`}
+                    </span>
+                  </Ligne>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        <p className="mt-6 text-center text-[10px] leading-snug text-ink-soft">
+          Les voix enregistrées sont partagées uniquement entre vous deux, jamais corrigées,
+          et supprimables à tout moment.
+        </p>
       </div>
     </div>
   )

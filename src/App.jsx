@@ -20,14 +20,16 @@ import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
 import { MotsCroisesScreen } from './screens/MotsCroisesScreen.jsx'
-import { CercleScreen } from './screens/CercleScreen.jsx'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, syncStore, sessionState, sessionHint } from './lib/api.js'
+import { track, flushEvents, syncStore, pushStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
+import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDemandes } from './lib/distance.js'
+import { CercleScreen } from './screens/CercleScreen.jsx'
+import { EnregistrerScreen } from './screens/EnregistrerScreen.jsx'
 import { AccountScreen } from './screens/AccountScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
-import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl } from './lib/challenge.js'
+import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl, contentDigest } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
 import { JewelDefs } from './components/jewels/JewelDefs.jsx'
@@ -67,11 +69,22 @@ import {
 const PARAMS_RETOUR = new URLSearchParams(window.location.search)
 const AUTH_ERREUR = PARAMS_RETOUR.get('error')
 const COMPTE_SUPPRIME = PARAMS_RETOUR.has('compte-supprime')
+// Un lien d'invitation au cercle (…/?cercle=CODE) : mémorisé ici, honoré
+// une fois la session confirmée (il faut être connecté pour rejoindre).
+const CERCLE_CODE = PARAMS_RETOUR.get('cercle')
+if (CERCLE_CODE) window.history.replaceState(null, '', window.location.pathname)
 if (AUTH_ERREUR || COMPTE_SUPPRIME) {
   window.history.replaceState(null, '', window.location.pathname)
   if (COMPTE_SUPPRIME) {
+    // Supprimer son compte, c'est demander une VRAIE table rase : garder la
+    // progression locale (l'ancien choix) faisait revenir l'utilisateur
+    // « déjà connu » — sans onboarding, avec « Reprendre » au lieu de
+    // « Commencer ». Vécu et corrigé : tout part.
     try {
       localStorage.removeItem('tama-speak:session-hint')
+      localStorage.removeItem('tama-speak:v3')
+      localStorage.removeItem('tama-speak:events-queue')
+      localStorage.removeItem('tama-speak:feedback-queue')
     } catch {
       /* stockage indisponible */
     }
@@ -124,6 +137,12 @@ export default function App() {
   // plus, l'accueil le dit clairement — et l'indice de session est tombé
   // (voir la lecture au chargement du module, au-dessus du composant).
   const compteSupprime = COMPTE_SUPPRIME
+  // Notifications venues du serveur (cercle : défis, demandes de voix).
+  const [notifsServ, setNotifsServ] = useState([])
+  // La demande d'enregistrement en cours de réponse (écran micro).
+  const [demandeActive, setDemandeActive] = useState(null)
+  // Résultat du lien d'invitation au cercle, affiché sur l'accueil.
+  const [cercleInfo, setCercleInfo] = useState(null)
   // L'écran compte a deux visages : porte d'entrée obligatoire (verrou de
   // l'accueil) ou gestion volontaire (depuis le profil).
   const [compteObligatoire, setCompteObligatoire] = useState(false)
@@ -181,6 +200,38 @@ export default function App() {
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Les notifications du cercle : au moment où la session se confirme, puis
+  // toutes les deux minutes — un rythme de facteur, pas de télégraphe. Le
+  // serverless n'offre pas de temps réel ; il n'en faut pas : tout ici est
+  // asynchrone par nature (un défi se joue quand on peut).
+  useEffect(() => {
+    if (sessionEtat !== 'connecte') return
+    let vivant = true
+    const relever = () => notifsServeur().then((n) => vivant && setNotifsServ(n))
+    relever()
+    const intervalle = setInterval(relever, 120000)
+    return () => {
+      vivant = false
+      clearInterval(intervalle)
+    }
+  }, [sessionEtat])
+
+  // Le lien d'invitation s'honore dès que la session est confirmée.
+  useEffect(() => {
+    if (sessionEtat !== 'connecte' || !CERCLE_CODE) return
+    rejoindreCercle(CERCLE_CODE).then(({ statut, avec }) => {
+      setCercleInfo(
+        statut === 'ok'
+          ? `Te voilà dans le cercle${avec ? ` de ${avec}` : ''} ! Vous pouvez vous défier et vous demander des mots.`
+          : statut === 'deja'
+            ? 'Ce lien a déjà servi — vous êtes peut-être déjà reliés. Regarde dans Mon cercle.'
+            : statut === 'introuvable'
+              ? 'Ce lien d’invitation ne mène nulle part — demande à ton proche d’en renvoyer un.'
+              : null,
+      )
+    })
+  }, [sessionEtat])
 
   // Un lien de défi ouvre directement l'écran d'annonce — au chargement, mais
   // aussi si l'app est DÉJÀ ouverte (cas de la PWA : le clic sur le lien ne
@@ -251,7 +302,7 @@ export default function App() {
     }
   }
 
-  function finishOnboarding({ lang, level, reason, dailyGoalXp }) {
+  function finishOnboarding({ lang, level, reason, dailyGoalXp, contact }) {
     const langId = lang || store.lang
     setStore((s) => {
       const next = {
@@ -262,6 +313,12 @@ export default function App() {
       const langProgress = progressOf(next, getCourse(langId))
       return withProgress(next, langId, { ...langProgress, level })
     })
+    // L'opt-in email choisi à l'étape « reste en contact » part au serveur —
+    // c'est l'interrupteur que le cron des relances consulte. Envoi en
+    // arrière-plan : un échec réseau ne bloque pas l'entrée dans l'app.
+    if (contact && contact !== 'non') {
+      setEmailPrefs({ relances: true, resumeHebdo: contact === 'tout' })
+    }
     setPendingLang(null)
     setScreen(ECRANS.CHEMIN)
   }
@@ -332,7 +389,71 @@ export default function App() {
     const releve = duel?.correct != null
     const gagne = releve && (memory || mots ? mine < duel.correct : mine > duel.correct)
     track(gagne ? 'duel_won' : 'duel_played', { lang: duel?.lang })
+    // Défi de cercle : le score part au serveur, qui prévient l'autre
+    // téléphone. En arrière-plan — l'écran de résultat n'attend pas.
+    const d = duel?.distant
+    if (d?.role === 'createur') {
+      creerDefi({
+        pour: d.pour,
+        lang: duel.lang,
+        seed: duel.seed,
+        size: duel.size,
+        version: contentDigest(getCourse(duel.lang).challengePool()),
+        correct: result.correct,
+        total: result.total,
+      })
+    } else if (d?.role === 'adversaire') {
+      scorerDefi({ code: d.code, correct: result.correct, total: result.total })
+    }
     setScreen(ECRANS.DUEL_RESULTAT)
+  }
+
+  /** Défi de cercle : on joue d'abord, le défi part avec le score. */
+  function defierMembre(membre) {
+    setDuel({
+      lang: course.id,
+      seed: makeSeed(),
+      size: CHALLENGE.size,
+      correct: null,
+      total: null,
+      from: '',
+      distant: { role: 'createur', pour: membre.userId, avec: membre.name },
+    })
+    setScreen(ECRANS.DUEL_INTRO)
+  }
+
+  /** Toucher une notification du cercle : on mène directement à l'action. */
+  async function ouvrirNotifServeur(n) {
+    if (n.kind === 'demande-audio' && n.data?.demandeId) {
+      const d = await mesDemandes()
+      const demande = d?.recues?.find((x) => x.id === n.data.demandeId)
+      if (demande) {
+        setDemandeActive(demande)
+        setScreen(ECRANS.ENREGISTRER)
+        return
+      }
+      setScreen(ECRANS.CERCLE) // déjà répondue (autre appareil ?) : le cercle le montre
+      return
+    }
+    if (n.kind === 'defi' && n.data?.code) {
+      const defi = await lireDefi(n.data.code)
+      if (defi && defi.status === 'ouvert' && defi.role === 'adversaire') {
+        setDuel({
+          lang: defi.lang,
+          seed: defi.seed,
+          size: defi.size,
+          version: defi.version || '',
+          correct: defi.scoreCreateur,
+          total: defi.totalCreateur,
+          from: defi.de,
+          distant: { role: 'adversaire', code: defi.code, avec: defi.de },
+        })
+        setScreen(ECRANS.DUEL_INTRO)
+        return
+      }
+    }
+    // audio-recu, cercle, defi-fini, défi déjà clos… : tout se voit là-bas.
+    setScreen(ECRANS.CERCLE)
   }
 
   function handleReset() {
@@ -360,10 +481,15 @@ export default function App() {
           {screen === ECRANS.ACCUEIL && (
             <WelcomeScreen
               etat={sessionEtat}
+              dejaCommence={hasProfile(store)}
               name={user?.name || store.profile?.name}
               attente={departEnAttente}
               erreur={authErreur}
-              info={compteSupprime ? 'Ton compte a été supprimé — tout ce que le serveur savait de toi est effacé. Ta progression locale reste sur cet appareil.' : null}
+              info={
+                compteSupprime
+                  ? 'Ton compte et tes données ont été supprimés — tu repars de zéro. Ansuf, quand tu veux !'
+                  : cercleInfo
+              }
               onStart={demarrer}
               onLogin={() => {
                 setCompteIntention('connexion')
@@ -408,7 +534,8 @@ export default function App() {
               onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
               onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
-              notifCount={nonLues(store, course, progress).length}
+              onCercle={() => setScreen(ECRANS.CERCLE)}
+              notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
               lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
@@ -575,18 +702,6 @@ export default function App() {
             />
           )}
 
-          {screen === ECRANS.CERCLE && (
-            <CercleScreen
-              user={user}
-              onCompte={() => {
-                setCompteObligatoire(false)
-                setCompteIntention('connexion')
-                setScreen(ECRANS.COMPTE)
-              }}
-              onBack={() => setScreen(ECRANS.JEUX)}
-            />
-          )}
-
           {screen === ECRANS.MEMORY && (
             <MemoryScreen
               course={course}
@@ -617,8 +732,41 @@ export default function App() {
               store={store}
               course={course}
               progress={progress}
+              serveur={notifsServ}
+              onAction={ouvrirNotifServeur}
               onSave={setStore}
+              onBack={() => {
+                // Le badge serveur tombe localement aussi (le POST est parti).
+                setNotifsServ((ns) => ns.map((n) => ({ ...n, lue: true })))
+                setScreen(ECRANS.CHEMIN)
+              }}
+            />
+          )}
+
+          {screen === ECRANS.CERCLE && (
+            <CercleScreen
+              course={course}
+              onDefier={defierMembre}
+              onJouerDefi={(code) => ouvrirNotifServeur({ kind: 'defi', data: { code } })}
+              onEnregistrer={(d) => {
+                setDemandeActive(d)
+                setScreen(ECRANS.ENREGISTRER)
+              }}
               onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
+
+          {screen === ECRANS.ENREGISTRER && demandeActive && (
+            <EnregistrerScreen
+              demande={demandeActive}
+              onDone={() => {
+                setDemandeActive(null)
+                setScreen(ECRANS.CERCLE)
+              }}
+              onBack={() => {
+                setDemandeActive(null)
+                setScreen(ECRANS.CERCLE)
+              }}
             />
           )}
 

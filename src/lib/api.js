@@ -24,7 +24,7 @@ let _configured = null // null = on ne sait pas encore
  * /api inexistant renvoie la PAGE HTML avec un statut 200. S'y fier ferait
  * vider la file d'événements dans le vide.
  */
-const isApi = (r) => (r.headers.get('content-type') || '').includes('application/json')
+export const isApi = (r) => (r.headers.get('content-type') || '').includes('application/json')
 
 export const isLoggedIn = async () => !!(await me())
 
@@ -274,6 +274,36 @@ export async function pushStore(store) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Préférences email — l'interrupteur des relances                      */
+/* ------------------------------------------------------------------ */
+
+/** Lit les préférences ; null si pas connecté ou serveur absent. */
+export async function getEmailPrefs() {
+  try {
+    const r = await fetch('/api/email-prefs', { credentials: 'include' })
+    if (!r.ok || !isApi(r)) return null
+    return await r.json()
+  } catch {
+    return null
+  }
+}
+
+/** Écrit les préférences (recocher efface un désabonnement passé). */
+export async function setEmailPrefs({ relances = false, resumeHebdo = false }) {
+  try {
+    const r = await fetch('/api/email-prefs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ relances, resumeHebdo }),
+    })
+    return r.ok && isApi(r)
+  } catch {
+    return false
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Événements — file d'attente hors-ligne                               */
 /* ------------------------------------------------------------------ */
 
@@ -334,51 +364,6 @@ export async function flushEvents() {
     if (r.ok) writeQueue(q.slice(100))
   } catch {
     /* hors-ligne : la file attend le retour du réseau */
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/* Le cercle — classements et palmarès                                  */
-/* ------------------------------------------------------------------ */
-
-/**
- * Le cercle de l'utilisateur et ses classements (semaine/mois/année en
- * cours). États possibles, jamais d'exception :
- *   'ok' | 'anonyme' (pas connecté) | 'indisponible' (pas de serveur)
- *   | 'horsligne' | 'erreur'
- */
-export async function getCercle() {
-  try {
-    const r = await fetch('/api/cercle', { credentials: 'include' })
-    if (r.status === 503 || !isApi(r)) return { etat: 'indisponible' }
-    if (r.status === 401) return { etat: 'anonyme' }
-    if (!r.ok) return { etat: 'erreur' }
-    return { etat: 'ok', ...(await r.json()) }
-  } catch {
-    return { etat: 'horsligne' }
-  }
-}
-
-/**
- * Créer / rejoindre / quitter. Renvoie { etat, cercle?, message? } — le
- * message est celui du serveur (« ce cercle est complet », etc.), fait
- * pour être affiché tel quel.
- */
-export async function actionCercle(action, params = {}) {
-  try {
-    const r = await fetch('/api/cercle', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ action, ...params }),
-    })
-    if (r.status === 503 || !isApi(r)) return { etat: 'indisponible' }
-    if (r.status === 401) return { etat: 'anonyme' }
-    const d = await r.json().catch(() => ({}))
-    if (!r.ok) return { etat: 'refus', message: d?.error || 'refusé' }
-    return { etat: 'ok', cercle: d?.cercle }
-  } catch {
-    return { etat: 'horsligne' }
   }
 }
 

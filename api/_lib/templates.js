@@ -101,7 +101,7 @@ const TEMPLATES = {
         h1(`On se quitte${name ? `, ${esc(name)}` : ''} ?`) +
         p('Tu as demandé la <b>suppression définitive</b> de ton compte Tama Speak. Un appui sur le bouton, et tout ce que le serveur sait de toi est effacé.') +
         bouton(url, 'Oui, supprimer mon compte') +
-        petit('Si tu n’as rien demandé, ignore simplement cet email — ton compte reste intact. Et la progression sur ton téléphone t’appartient dans tous les cas.'),
+        petit('Si tu n’as rien demandé, ignore simplement cet email — ton compte reste intact.'),
     }),
 
   /** Transactionnel — le lien magique de connexion. */
@@ -184,7 +184,7 @@ const TEMPLATES = {
     return shell({
       unsubscribe,
       body:
-        h1(`Le palmarès ${esc(periode)} de « ${esc(cercle)} » 🏆`) +
+        h1(`Le palmarès ${esc(periode)} de ${esc(cercle)} 🏆`) +
         p(
           `${vainqueur ? `<b>${esc(vainqueur)}</b> remporte la période` : 'Personne n’a pris la tête cette fois'}` +
             `${assidu && assidu !== vainqueur ? ` — et <b>${esc(assidu)}</b> est la personne la plus assidue` : assidu ? ', et c’est aussi la personne la plus assidue' : ''}. ` +

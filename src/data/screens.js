@@ -31,11 +31,12 @@ export const ECRANS = Object.freeze({
   JEUX: 'jeux',
   MEMORY: 'memory',
   MOTS: 'motscroises',
-  CERCLE: 'cercle',
   DUEL_INTRO: 'duelintro',
   DUEL: 'duel',
   DUEL_RESULTAT: 'duelresult',
   COMPTE: 'compte',
   NOTIFS: 'notifs',
   FEEDBACK: 'feedback',
+  CERCLE: 'cercle',
+  ENREGISTRER: 'enregistrer',
 })

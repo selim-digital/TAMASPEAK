@@ -36,9 +36,25 @@ const levelStep = (langName) => ({
   ],
 })
 
+/**
+ * Opt-in email — RGPD et délivrabilité : rien n'est précoché, et « non »
+ * est une réponse aussi légitime que les autres. Le ton annonce ce que
+ * seront les emails : une raison de revenir, jamais un reproche.
+ */
+const CONTACT_STEP = {
+  id: 'contact',
+  bubble:
+    'Veux-tu que je t’écrive parfois par email ? Jamais de reproche — juste un rappel doux, ou le bilan de ta semaine.',
+  options: [
+    { value: 'rappels', label: '🔔 Oui, un rappel de temps en temps' },
+    { value: 'tout', label: '📬 Oui, rappels + résumé de ma semaine' },
+    { value: 'non', label: '🌿 Non merci, je viendrai de moi-même' },
+  ],
+}
+
 const DAILY_STEP = {
   id: 'daily',
-  bubble: 'Dernier détail : quel objectif chaque jour ? Je te le rappellerai sur le chemin.',
+  bubble: 'Et quel objectif chaque jour ? Je te le rappellerai sur le chemin.',
   options: [
     { value: 20, label: 'Tranquille — 5 min / jour (20 XP)' },
     { value: 40, label: 'Régulier — 10 min / jour (40 XP)' },
@@ -85,6 +101,83 @@ function LangStep({ selected, onSelect }) {
   )
 }
 
+/**
+ * La présentation de l'app — trois diapos AVANT les questions (demande de
+ * Selim : « un onboarding plus complet »). On montre ce qui rend Tama Speak
+ * différent avant de demander quoi que ce soit : c'est l'app qui se
+ * présente d'abord, pas l'élève qu'on interroge.
+ */
+const DIAPOS = [
+  {
+    id: 'mission',
+    etat: 'celebrate',
+    titre: 'Azul, ansuf ! ⵣ',
+    texte:
+      'Tama Speak t’aide à retrouver la langue de ta famille — kabyle, tachelhit, tarifit, tamazight… Un mot après l’autre, et personne n’est jamais noté.',
+  },
+  {
+    id: 'ensemble',
+    etat: 'curious',
+    titre: 'On apprend ensemble',
+    texte:
+      'Joue à deux sur un seul téléphone, pars en mission poser une question à un proche, et rapporte ses mots dans ton lexique — chaque famille a son parler, et le tien compte.',
+  },
+  {
+    id: 'tresors',
+    etat: 'idle',
+    titre: 'Écris, découvre, collectionne',
+    texte:
+      'Trace le tifinagh au doigt, traverse l’histoire amazighe, et ouvre des coffres : couscous, bijoux, monuments… Toute une culture t’attend sur le chemin.',
+  },
+]
+
+function Presentation({ onDone }) {
+  const [i, setI] = useState(0)
+  const d = DIAPOS[i]
+  const derniere = i === DIAPOS.length - 1
+  return (
+    <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-10 pb-5 text-center bg-[radial-gradient(130%_80%_at_50%_6%,rgba(16,196,168,0.15),var(--color-cream)_60%)]">
+      <div key={d.id} className="animate-pop-in mx-auto">
+        <Akermus height={150} state={d.etat} float={d.etat === 'idle'} />
+      </div>
+      <h2 key={`t-${d.id}`} className="animate-rise mt-4 text-[21px] font-extrabold leading-tight">{d.titre}</h2>
+      <p key={`p-${d.id}`} className="animate-rise mx-auto mt-2 max-w-[300px] text-[13px] leading-snug text-ink-soft">
+        {d.texte}
+      </p>
+
+      <div className="min-h-4 flex-1" />
+
+      {/* Les points de position, tapables pour naviguer librement. */}
+      <div className="mb-3 flex justify-center gap-1.5">
+        {DIAPOS.map((x, k) => (
+          <button
+            key={x.id}
+            type="button"
+            aria-label={`Diapo ${k + 1}`}
+            onClick={() => setI(k)}
+            className={`h-2 rounded-full transition-all ${k === i ? 'w-5 bg-turquoise' : 'w-2 bg-sand-2'}`}
+          />
+        ))}
+      </div>
+
+      <Button
+        variant="primary"
+        onClick={() => {
+          sfx.click()
+          derniere ? onDone() : setI(i + 1)
+        }}
+      >
+        {derniere ? 'C’est parti !' : 'Suivant'}
+      </Button>
+      {!derniere && (
+        <button type="button" onClick={onDone} className="mt-2 text-[11px] font-bold text-ink-soft underline">
+          Passer la présentation
+        </button>
+      )}
+    </div>
+  )
+}
+
 function FamilyIntro({ onDone }) {
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-5 text-center">
@@ -110,6 +203,10 @@ export function OnboardingScreen({ hasProfile = false, presetLang = null, onFini
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({ lang: presetLang })
   const [selected, setSelected] = useState(null)
+  // Première fois : l'app se présente AVANT de poser des questions.
+  const [presentationVue, setPresentationVue] = useState(hasProfile)
+
+  if (!presentationVue) return <Presentation onDone={() => setPresentationVue(true)} />
 
   // Le parcours est composé à la volée selon ce qu'on sait déjà de l'élève.
   const chosenLang = answers.lang || presetLang
@@ -117,7 +214,7 @@ export function OnboardingScreen({ hasProfile = false, presetLang = null, onFini
     ...(presetLang ? [] : [{ id: 'lang', bubble: 'Azul ! Moi c’est Akermus. Quelle langue amazighe veux-tu apprendre ?' }]),
     ...(hasProfile ? [] : [REASON_STEP]),
     levelStep(chosenLang ? findLanguage(chosenLang).name : 'cette langue'),
-    ...(hasProfile ? [] : [DAILY_STEP]),
+    ...(hasProfile ? [] : [DAILY_STEP, CONTACT_STEP]),
   ]
 
   const done = (extra = {}) => {
@@ -127,6 +224,7 @@ export function OnboardingScreen({ hasProfile = false, presetLang = null, onFini
       level: a.level,
       reason: a.reason,
       dailyGoalXp: a.daily,
+      contact: a.contact, // 'rappels' | 'tout' | 'non' — l'opt-in email
     })
   }
 

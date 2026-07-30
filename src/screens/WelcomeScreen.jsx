@@ -25,7 +25,17 @@ const ERREURS = {
   access_denied: 'Tu as annulé la connexion Google — aucun souci.',
 }
 
-export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur, info, onStart, onLogin, onChangeAccount }) {
+export function WelcomeScreen({
+  etat = 'inconnu',
+  name,
+  attente = false,
+  erreur,
+  info,
+  dejaCommence = false, // un parcours existe-t-il ? « Reprendre » ne se dit qu'à qui a commencé
+  onStart,
+  onLogin,
+  onChangeAccount,
+}) {
   const connecte = etat === 'connecte'
   const anonyme = etat === 'anonyme'
   const horsLigne = etat === 'horsligne'
@@ -77,7 +87,15 @@ export function WelcomeScreen({ etat = 'inconnu', name, attente = false, erreur,
         {/* Demande de Selim : deux mots sans ambiguïté — « M'inscrire » et
             « Connexion » — et plus aucun badge de niveau prédéfini. */}
         <Button variant="primary" onClick={onStart} disabled={attente}>
-          {attente ? '· · ·' : connecte ? 'Reprendre ma leçon' : anonyme ? 'M’inscrire' : 'Commencer'}
+          {attente
+            ? '· · ·'
+            : connecte
+              ? dejaCommence
+                ? 'Reprendre ma leçon'
+                : 'Commencer'
+              : anonyme
+                ? 'M’inscrire'
+                : 'Commencer'}
         </Button>
 
         {connecte ? (

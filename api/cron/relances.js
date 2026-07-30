@@ -17,8 +17,9 @@
  * Protection : Vercel appelle avec `Authorization: Bearer CRON_SECRET`.
  * Sans la variable, l'endpoint refuse tout — il ne doit jamais être public.
  */
-import { serverReady, notConfigured, sql } from '../_lib/db.js'
+import { serverReady, notConfigured, sql, assurerSchema } from '../_lib/db.js'
 import { sendEmail } from '../_lib/email.js'
+import { envoyerPalmares } from '../_lib/palmares.js'
 
 const MAX_PAR_PASSAGE = 40
 
@@ -28,10 +29,22 @@ export default async function handler(req, res) {
   if (!secret || req.headers.authorization !== `Bearer ${secret}`) {
     return res.status(401).json({ error: 'réservé au cron' })
   }
+  // Zéro manip au déploiement : les tables récentes s'installent seules.
+  await assurerSchema()
 
   const q = sql()
-  const envoyes = { bienvenue: 0, j2: 0, j7: 0, hebdo: 0, refuses: 0 }
+  const envoyes = { palmares: 0, bienvenue: 0, j2: 0, j7: 0, hebdo: 0, refuses: 0 }
   let budget = MAX_PAR_PASSAGE
+
+  // ---- Palmarès du cercle (lundi / le 1ᵉʳ / le 1ᵉʳ janvier) ------------
+  // En PREMIER : ses jours d'envoi sont rares, il ne doit pas trouver un
+  // budget déjà mangé par les relances quotidiennes.
+  {
+    const r = await envoyerPalmares(budget)
+    envoyes.palmares = r.envoyes
+    envoyes.refuses += r.refuses
+    budget = r.budget
+  }
 
   const dejaEnvoye = async (userId, kind) => {
     const [r] = await q`
