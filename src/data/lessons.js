@@ -322,9 +322,124 @@ const l35 = [
   culture('Que signifie « Amazigh » ?', 'Homme libre', ['Homme libre', 'Montagnard', 'Berger', 'Voyageur'], 'flag'),
 ]
 
+// -------- NIVEAU CONFIRMÉ --------
+// -------- Unité 11 — Le corps & les gens --------
+const l36 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Aqerruy', 'Tête', ['Tête', 'Main', 'Pied', 'Cœur']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Afus', 'Main', ['Main', 'Tête', 'Cœur', 'Pied']),
+  qcm('fr-to-kab', 'Comment dit-on « Pied » ?', 'Pied', 'Aḍar', ['Aḍar', 'Afus', 'Aqerruy', 'Ul']),
+  match([
+    { kab: 'Aqerruy', fr: 'Tête' },
+    { kab: 'Afus', fr: 'Main' },
+    { kab: 'Ul', fr: 'Cœur' },
+  ]),
+  listen('Ul', 'Cœur', ['Cœur', 'Main', 'Pied', 'Tête']),
+]
+const l37 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Argaz', 'Homme', ['Homme', 'Femme', 'Garçon', 'Fille']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Tameṭṭut', 'Femme', ['Femme', 'Homme', 'Fille', 'Mère']),
+  qcm('fr-to-kab', 'Comment dit-on « Garçon » ?', 'Garçon', 'Aqcic', ['Aqcic', 'Taqcict', 'Argaz', 'Gma']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Taqcict', 'Fille', ['Fille', 'Garçon', 'Sœur', 'Femme']),
+  match([
+    { kab: 'Argaz', fr: 'Homme' },
+    { kab: 'Tameṭṭut', fr: 'Femme' },
+    { kab: 'Aqcic', fr: 'Garçon' },
+    { kab: 'Taqcict', fr: 'Fille' },
+  ]),
+]
+const l38 = [
+  listen('Afus', 'Main', ['Main', 'Pied', 'Tête', 'Cœur']),
+  qcm('fr-to-kab', 'Comment dit-on « Tête » ?', 'Tête', 'Aqerruy', ['Aqerruy', 'Aḍar', 'Ul', 'Afus']),
+  match([
+    { kab: 'Aḍar', fr: 'Pied' },
+    { kab: 'Argaz', fr: 'Homme' },
+    { kab: 'Taqcict', fr: 'Fille' },
+  ]),
+  qcm('kab-to-fr', 'Que signifie ?', 'Aqcic', 'Garçon', ['Garçon', 'Homme', 'Frère', 'Fille']),
+  // Remarque de langue : le féminin en t…t, déjà croisé dans les faits.
+  culture('Tameṭṭut, Taqcict, Taddart… que signale le t…t autour du mot ?', 'Le féminin', ['Le féminin', 'Le pluriel', 'Le passé', 'La négation']),
+]
+
+// -------- Unité 12 — Le temps qui passe --------
+const l39 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Ass', 'Jour', ['Jour', 'Nuit', 'Matin', 'Soir']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Iḍ', 'Nuit', ['Nuit', 'Jour', 'Soir', 'Demain']),
+  qcm('fr-to-kab', 'Comment dit-on « Aujourd’hui » ?', 'Aujourd’hui', 'Ass-a', ['Ass-a', 'Azekka', 'Iḍelli', 'Tura']),
+  match([
+    { kab: 'Ass', fr: 'Jour' },
+    { kab: 'Iḍ', fr: 'Nuit' },
+    { kab: 'Ass-a', fr: 'Aujourd’hui' },
+  ]),
+]
+const l40 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Tanezzayt', 'Le matin', ['Le matin', 'Le soir', 'La nuit', 'Demain']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Tameddit', 'Le soir', ['Le soir', 'Le matin', 'Le jour', 'Hier']),
+  listen('Tameddit', 'Le soir', ['Le soir', 'Le matin', 'La nuit', 'Aujourd’hui']),
+  match([
+    { kab: 'Tanezzayt', fr: 'Le matin' },
+    { kab: 'Tameddit', fr: 'Le soir' },
+    { kab: 'Iḍ', fr: 'Nuit' },
+  ]),
+]
+const l41 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Iḍelli', 'Hier', ['Hier', 'Demain', 'Aujourd’hui', 'Maintenant']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Azekka', 'Demain', ['Demain', 'Hier', 'Le soir', 'Le matin']),
+  qcm('fr-to-kab', 'Comment dit-on « Maintenant » ?', 'Maintenant', 'Tura', ['Tura', 'Melmi', 'Ass-a', 'Azekka']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Melmi ?', 'Quand ?', ['Quand ?', 'Où ?', 'Comment ?', 'Pourquoi ?']),
+  match([
+    { kab: 'Iḍelli', fr: 'Hier' },
+    { kab: 'Azekka', fr: 'Demain' },
+    { kab: 'Tura', fr: 'Maintenant' },
+  ]),
+]
+
+// -------- Unité 13 — Parler & agir --------
+const l42 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Nekk', 'Moi', ['Moi', 'Toi', 'Lui', 'Elle']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Kečč', 'Toi (à un homme)', ['Toi (à un homme)', 'Toi (à une femme)', 'Lui', 'Moi']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Kemm', 'Toi (à une femme)', ['Toi (à une femme)', 'Toi (à un homme)', 'Elle', 'Moi']),
+  match([
+    { kab: 'Nekk', fr: 'Moi' },
+    { kab: 'Netta', fr: 'Lui' },
+    { kab: 'Nettat', fr: 'Elle' },
+  ]),
+]
+const l43 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Ečč !', 'Mange !', ['Mange !', 'Bois !', 'Viens !', 'Va !']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Sew !', 'Bois !', ['Bois !', 'Mange !', 'Sors !', 'Entre !']),
+  sentence('Sew atay', 'Bois du thé', ['Bois du thé', 'Mange du pain', 'Bois de l’eau', 'Le thé est chaud']),
+  qcm('fr-to-kab', 'Comment dit-on « Viens ! » ?', 'Viens !', 'As-d !', ['As-d !', 'Ṛuḥ !', 'Ečč !', 'Sew !']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Ṛuḥ !', 'Va ! / Pars !', ['Va ! / Pars !', 'Viens !', 'Reste !', 'Attends !']),
+]
+const l44 = [
+  sentence('D acu-yagi ?', 'Qu’est-ce que c’est ?', ['Qu’est-ce que c’est ?', 'Où es-tu ?', 'Comment vas-tu ?', 'Qui est-ce ?']),
+  sentence('Anda telliḍ ?', 'Où es-tu ?', ['Où es-tu ?', 'Quand viens-tu ?', 'Que fais-tu ?', 'Comment vas-tu ?']),
+  sentence('Ur fhimeɣ ara', 'Je ne comprends pas', ['Je ne comprends pas', 'Je ne sais pas', 'Je n’entends pas', 'Je ne veux pas']),
+  qcm('fr-to-kab', 'Comment dit-on « S’il te plaît » (à un homme) ?', 'S’il te plaît', 'Ttxil-k', ['Ttxil-k', 'Tanemmirt', 'Semmeḥ-iyi', 'Ansuf']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Semmeḥ-iyi', 'Excuse-moi', ['Excuse-moi', 'S’il te plaît', 'Merci', 'De rien']),
+]
+const l45 = [
+  match([
+    { kab: 'Nekk', fr: 'Moi' },
+    { kab: 'Ass-a', fr: 'Aujourd’hui' },
+    { kab: 'Afus', fr: 'Main' },
+    { kab: 'Tameṭṭut', fr: 'Femme' },
+  ]),
+  sentence('Ur fhimeɣ ara', 'Je ne comprends pas', ['Je ne comprends pas', 'Je vais bien', 'À demain', 'Excuse-moi']),
+  qcm('fr-to-kab', 'Comment dit-on « Demain » ?', 'Demain', 'Azekka', ['Azekka', 'Iḍelli', 'Tura', 'Melmi']),
+  match([
+    { kab: 'Ečč !', fr: 'Mange !' },
+    { kab: 'Sew !', fr: 'Bois !' },
+    { kab: 'As-d !', fr: 'Viens !' },
+    { kab: 'Ṛuḥ !', fr: 'Va !' },
+  ]),
+  culture('« Azul, amek telliḍ ? » — que demande-t-on ?', 'Comment tu vas', ['Comment tu vas', 'Où tu habites', 'Ton prénom', 'L’heure qu’il est']),
+]
+
 export const byLesson = {
   l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17,
   l18, l19, l20, l21, l22, l23, l24, l25, l26, l27, l28, l29, l30, l31, l32, l33, l34, l35,
+  l36, l37, l38, l39, l40, l41, l42, l43, l44, l45,
 }
 
 export function getExercises(lessonId) {

@@ -145,6 +145,16 @@ export function recordMotsNiveau(progress, niveauId, { xpGain = 15, gems = 10, x
   }
 }
 
+/** Partie de Quiz Tamazgha finie : l'XP gagné, le compteur de parties. */
+export function recordQuiz(progress, xpGain) {
+  const jeux = progress.jeux || {}
+  return {
+    ...progress,
+    ...(xpGain > 0 ? addXp(progress, xpGain) : {}),
+    jeux: { ...jeux, quizParties: (jeux.quizParties || 0) + 1 },
+  }
+}
+
 /** Dépense de gemmes (indice) — refuse net plutôt que de passer en négatif. */
 export function depenserGemmes(progress, cout) {
   if ((progress.gems || 0) < cout) return progress

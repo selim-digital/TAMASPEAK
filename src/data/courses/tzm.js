@@ -208,7 +208,7 @@ export const tzmUnits = [
     title: 'Les premiers mots',
     trophy: '🏠',
     lessons: [
-      { id: 'tzm6', title: 'La famille', icon: '👪', status: 'locked' },
+      { id: 'tzm6', title: 'La famille', icon: '🪢', status: 'locked' },
       { id: 'tzm7', title: 'À la maison', icon: '🏠', status: 'locked' },
       { id: 'tzm-c2', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'tzm8', title: 'Compter', icon: '🔢', status: 'locked' },
