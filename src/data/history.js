@@ -50,6 +50,16 @@
  *     comme DÉBATTUES ; départs massifs années 1950–60
  *   • Kairouan 670 (Uqba) ; imamat rustamide de Tahert 761–909, héritage
  *     ibadite au Mzab / Djerba / Nefoussa
+ *   • Origines : continuité génétique nord-africaine depuis le Paléolithique
+ *     (études de Taforalt, ~15 000 ans) ; généalogies orientales médiévales
+ *     présentées comme LÉGENDES ; Libu/Meshwesh/Tehenu dans les sources
+ *     égyptiennes dès le XIIIᵉ s. av. J.-C. ; « Libye » < Libu
+ *   • Langues : branche berbère de l'afro-asiatique ; proto-berbère commun
+ *     jugé relativement récent par les linguistes ; inscriptions
+ *     libyco-berbères > 2 500 ans ; répartition kabyle/tachelhit/tarifit/
+ *     tamazight/chaoui + tamasheq + zenaga (Mauritanie) + siwi (Égypte)
+ *   • Aujourd'hui : diaspora (Europe, Amérique du Nord) ; chaînes TV
+ *     tamazight (Algérie 2009, Maroc 2010) ; tifinagh dans Unicode (2005)
  *
  * ⚠️ UN CHIFFRE ÉCARTÉ VOLONTAIREMENT. Les articles du « Printemps berbère »
  * (1980) et du « Printemps noir » (2001) annoncent tous deux 128 morts : c'est
@@ -69,6 +79,27 @@
  */
 export const RECITS = [
   {
+    id: 'origines',
+    epoque: 'Aux origines',
+    titre: 'D’où viennent les Amazighs ?',
+    land: 'tassili',
+    texte: [
+      'La réponse de la science est simple et belle : de nulle part ailleurs. Les Amazighs descendent pour l’essentiel des populations qui peuplent l’Afrique du Nord depuis la préhistoire — les squelettes de Taforalt, au Maroc, en témoignent sur plus de quinze mille ans.',
+      'Les chroniqueurs du Moyen Âge leur cherchaient des ancêtres au Yémen ou en Palestine : de belles légendes de généalogistes, que rien n’appuie. Ce peuple n’est pas arrivé en Afrique du Nord — il en est.',
+      'Les plus vieux témoins écrits viennent d’Égypte : dès le XIIIᵉ siècle avant notre ère, les pharaons nomment leurs voisins de l’ouest — Libu, Meshwesh, Tehenu. C’est du nom des Libu que les Grecs feront la « Libye » : la terre des ancêtres des Amazighs.',
+    ],
+    question: {
+      prompt: 'Que dit la science sur l’origine des Amazighs ?',
+      answer: 'Ils descendent des populations d’Afrique du Nord depuis la préhistoire',
+      choices: [
+        'Ils descendent des populations d’Afrique du Nord depuis la préhistoire',
+        'Ils sont arrivés du Yémen au Moyen Âge',
+        'Ils descendent des Romains',
+        'On n’en sait rien du tout',
+      ],
+    },
+  },
+  {
     id: 'tassili',
     epoque: 'Il y a 12 000 ans',
     titre: 'Les images du Sahara',
@@ -86,6 +117,27 @@ export const RECITS = [
         'Des scènes de guerre entre royaumes',
         'Des cartes du désert actuel',
         'Des textes en tifinagh',
+      ],
+    },
+  },
+  {
+    id: 'langues-origines',
+    epoque: 'Des millénaires',
+    titre: 'La famille des langues berbères',
+    land: 'hoggar',
+    texte: [
+      'Le berbère forme sa propre branche de la grande famille afro-asiatique — aux côtés de l’égyptien ancien et des langues sémitiques, mais distinct de toutes. Ses racines en Afrique du Nord se comptent en millénaires.',
+      'D’une langue mère — le proto-berbère — sont sorties les sœurs d’aujourd’hui : kabyle, tachelhit, tarifit, tamazight de l’Atlas, chaoui au nord ; tamasheq des Touaregs au Sahara ; zenaga en Mauritanie ; et jusqu’au siwi d’Égypte. Leur parenté est si nette que les linguistes jugent leur ancêtre commun relativement récent.',
+      'Leur écriture aussi vient de loin : les inscriptions libyco-berbères gravées sur les pierres d’Afrique du Nord ont plus de deux mille cinq cents ans — et le tifinagh que tu traces dans l’app en descend en droite ligne.',
+    ],
+    question: {
+      prompt: 'D’où viennent les langues berbères actuelles ?',
+      answer: 'D’une langue mère commune, le proto-berbère',
+      choices: [
+        'D’une langue mère commune, le proto-berbère',
+        'De l’arabe ancien',
+        'Du latin d’Afrique',
+        'Chacune a une origine sans lien avec les autres',
       ],
     },
   },
@@ -526,6 +578,27 @@ export const RECITS = [
       prompt: 'À quelle date se fête Yennayer ?',
       answer: 'Le 12 janvier',
       choices: ['Le 12 janvier', 'Le 1ᵉʳ janvier', 'Le 20 avril', 'Le 21 mars'],
+    },
+  },
+  {
+    id: 'aujourdhui',
+    epoque: 'Ass-a — aujourd’hui',
+    titre: 'Les Berbères d’aujourd’hui',
+    land: 'kmont',
+    texte: [
+      'Des dizaines de millions de personnes parlent aujourd’hui une langue amazighe — du Maroc à l’Égypte, du Rif au Sahel. Et une diaspora immense vit en Europe et en Amérique du Nord : à Paris, Bruxelles, Amsterdam ou Montréal, on entend le kabyle et le tachelhit dans la rue.',
+      'La langue est entrée là où on ne l’attendait plus : dans les constitutions, à l’école, à la télévision — des chaînes émettent en tamazight en Algérie comme au Maroc — et sur les téléphones, où le tifinagh s’écrit comme n’importe quel alphabet.',
+      'Surtout, une génération entière fait le chemin du retour : des petits-enfants réapprennent la langue que leurs grands-parents n’ont pas pu transmettre. Toi qui apprends sur cette app, tu es exactement cette histoire-là — et c’est elle qui continue.',
+    ],
+    question: {
+      prompt: 'Où vit aujourd’hui une importante diaspora amazighe ?',
+      answer: 'En Europe et en Amérique du Nord',
+      choices: [
+        'En Europe et en Amérique du Nord',
+        'Uniquement au Maghreb',
+        'En Asie de l’Est',
+        'Il n’y a pas de diaspora',
+      ],
     },
   },
 ]
