@@ -71,8 +71,8 @@ const tzm2 = [
 ]
 
 const tzm3 = [
-  qk('Que veut dire « Šukran » ?', 'Šukran', 'Merci', ['Merci', 'Pardon', 'Bonjour', 'De rien']),
-  qk('Que répond-on à « Šukran » ?', 'Bla jmil', 'De rien', ['De rien', 'Merci à toi', 'Bienvenue', 'Au revoir']),
+  qk('Que veut dire « Cukran » ?', 'Cukran', 'Merci', ['Merci', 'Pardon', 'Bonjour', 'De rien']),
+  qk('Que répond-on à « Cukran » ?', 'Bla jmil', 'De rien', ['De rien', 'Merci à toi', 'Bienvenue', 'Au revoir']),
   qk('Que veut dire « Ɛafak » ?', 'Ɛafak', 'S’il te plaît', ['S’il te plaît', 'Merci', 'Pardon', 'Voilà']),
   culture(
     '« Tanmmirt » (merci) s’emploie au Maroc central surtout…',

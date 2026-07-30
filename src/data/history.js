@@ -18,8 +18,12 @@
  *   • Berber Spring (conférence de Mammeri interdite le 10 mars 1980)
  *   • Tamazight (Maroc officielle le 29 juillet 2011 ; Algérie nationale en
  *     2002, officielle le 7 février 2016)
- *   • Yennayer (12 janvier ; calendrier fixé par Ammar Negadi en 1980, an 1 =
- *     943 av. J.-C. ; férié en Algérie depuis 2018, au Maroc depuis 2023)
+ *   • Yennayer (12 janvier en Algérie ; calendrier fixé par Ammar Negadi en
+ *     1980, an 1 = 950 av. J.-C. — la datation ANCIENNE de l'avènement de
+ *     Chachnaq ; l'égyptologie moderne le place vers 943, d'où l'écart entre
+ *     le récit chachnaq (943) et le comput (2026+950=2976, cohérent avec le
+ *     fait an-amazigh) ; férié en Algérie depuis 2018, décidé au Maroc en
+ *     2023 pour un premier férié en janvier 2024)
  *   • Shoshenq I (Meshwesh, XXIIᵉ dynastie, v. 943 av. J.-C., « Shishak »)
  *   • Juba II (roi de Maurétanie, Caesarea/Cherchell, Cléopâtre Séléné ;
  *     fils Ptolémée tué en 40, annexion romaine)
@@ -210,8 +214,8 @@ export const RECITS = [
     land: 'aures',
     texte: [
       'Après Kusayla, la résistance se rassemble autour d’une femme : Dihya, que les chroniques arabes appellent al-Kahina, « la devineresse ».',
-      'Elle règne sur les Aurès, et son autorité porte jusqu’à l’oasis de Ghadamès. En 698, à Meskiana, elle bat le général Hassan ibn al-Nu‘man, qui doit se replier cinq ans durant.',
-      'Elle meurt en 703 dans les Aurès. Presque tout le reste est discuté : sa tribu — les Lūwāta pour l’un, les Jarawa pour Ibn Khaldoun —, sa religion, son âge. Ce qui est certain, c’est qu’elle a commandé, gagné, et qu’on s’en souvient encore.',
+      'Elle règne sur les Aurès, et son autorité porte jusqu’à l’oasis de Ghadamès. Vers 698, à Meskiana, elle bat le général Hassan ibn al-Nu‘man, qui doit se replier plusieurs années durant.',
+      'Elle meurt vers 703 dans les Aurès. Presque tout le reste est discuté : sa tribu — les Lūwāta pour l’un, les Jarawa pour Ibn Khaldoun —, sa religion, son âge. Ce qui est certain, c’est qu’elle a commandé, gagné, et qu’on s’en souvient encore.',
     ],
     question: {
       prompt: 'Sur quelle région Dihya régnait-elle ?',
@@ -383,9 +387,9 @@ export const RECITS = [
     titre: 'Yennayer, le nouvel an',
     land: 'oasis',
     texte: [
-      'Yennayer se fête le 12 janvier. C’est le premier jour de l’année amazighe, héritée du calendrier agraire — le 1ᵉʳ janvier julien, décalé de treize jours sur notre calendrier.',
-      'Le comput des années est récent : c’est Ammar Negadi qui le fixe en 1980, en prenant pour an 1 l’année 943 avant notre ère, celle où le Meshwesh Chachnaq monte sur le trône d’Égypte.',
-      'L’Algérie en fait un jour férié à partir de 2018, le Maroc à partir de 2023. Une fête de village est devenue une fête d’État — en deux générations.',
+      'Yennayer est le premier jour de l’année amazighe, héritée du calendrier agraire julien. On le fête le 12 janvier en Algérie — le 13 ou le 14 selon les régions et le strict décalage du vieux calendrier.',
+      'Le comput des années est récent : c’est Ammar Negadi qui le fixe en 1980, en prenant pour an 1 l’année 950 avant notre ère — celle que l’on donnait alors à l’avènement du Meshwesh Chachnaq sur le trône d’Égypte.',
+      'L’Algérie en fait un jour férié à partir de 2018 ; le Maroc le décide en 2023, pour un premier Yennayer férié en janvier 2024. Une fête de village est devenue une fête d’État — en deux générations.',
     ],
     question: {
       prompt: 'À quelle date se fête Yennayer ?',

@@ -104,7 +104,7 @@ export const FAITS = [
     id: 'racines',
     cat: 'langue',
     texte:
-      'Les mots berbères se construisent sur des racines de consonnes. De la racine ZR (« voir ») viennent des mots comme yezra (« il a vu ») — une même racine, toute une famille de mots.',
+      'Les mots berbères se construisent sur des racines de consonnes. De la racine ẒR (« voir ») viennent des mots comme yeẓra (« il a vu ») — une même racine, toute une famille de mots.',
     question: {
       prompt: 'Sur quoi se construisent les mots berbères ?',
       answer: 'Sur des racines de consonnes',
@@ -435,12 +435,12 @@ export const FAITS = [
     id: 'ahellil',
     cat: 'culture',
     texte:
-      'L’ahellil du Gourara — chants collectifs en berbère zénète des oasis algériennes — est inscrit par l’UNESCO au patrimoine immatériel de l’humanité depuis 2008.',
+      'L’ahellil du Gourara — chants collectifs en berbère zénète des oasis algériennes — a été proclamé chef-d’œuvre du patrimoine immatériel de l’humanité par l’UNESCO en 2005.',
     question: {
       prompt: 'Qu’est-ce que l’ahellil du Gourara ?',
-      answer: 'Un chant collectif berbère des oasis, classé à l’UNESCO',
+      answer: 'Un chant collectif berbère des oasis, distingué par l’UNESCO',
       choices: [
-        'Un chant collectif berbère des oasis, classé à l’UNESCO',
+        'Un chant collectif berbère des oasis, distingué par l’UNESCO',
         'Une danse guerrière du Rif',
         'Un plat de fête',
         'Un tissage saharien',
