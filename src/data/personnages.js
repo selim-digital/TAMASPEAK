@@ -7,9 +7,11 @@
  * dates suivent les mêmes règles que data/history.js : vérifiées, et
  * « v. » (vers) quand les sources hésitent.
  *
- * Règle maison : AUCUN portrait, aucun visage — chaque figure porte un
- * emblème (couronne, épée, plume…) et son initiale. La personne se
- * raconte, elle ne se dessine pas.
+ * Règles maison : AUCUN portrait, aucun visage — chaque figure porte un
+ * emblème (couronne, épée, plume…). La personne se raconte, elle ne se
+ * dessine pas. Et PAS DE MUSIQUE, PAS D'ARTISTES (décision de Selim) :
+ * rois, résistants, penseurs et plumes — la littérature reste, la
+ * scène non.
  */
 
 export const PERSONNAGES = [
@@ -146,7 +148,7 @@ export const PERSONNAGES = [
     role: 'Le poète errant',
     bio: 'Des centaines d’isefra — courts poèmes kabyles — composés sur les routes et transmis de bouche en bouche. Le plus cité des poètes kabyles.',
     recit: null,
-    embleme: '🪕',
+    embleme: '🖋️',
   },
   {
     id: 'kaocen',
@@ -192,15 +194,6 @@ export const PERSONNAGES = [
     bio: 'Écrivain et anthropologue, auteur en 1976 d’une grammaire du kabyle écrite en kabyle. C’est l’interdiction d’une de ses conférences qui déclencha le Printemps berbère de 1980.',
     recit: 'printemps',
     embleme: '📜',
-  },
-  {
-    id: 'idir',
-    nom: 'Idir',
-    dates: '1949 – 2020',
-    role: 'La voix kabyle du monde',
-    bio: 'Avec A Vava Inouva, berceuse inspirée des veillées kabyles, il fait dans les années 1970 le tour du monde — la chanson amazighe entre sur la scène internationale.',
-    recit: null,
-    embleme: '🎙️',
   },
 ]
 

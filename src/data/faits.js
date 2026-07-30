@@ -523,7 +523,7 @@ export const FAITS = [
       choices: [
         'Le grand poète errant kabyle du XIXᵉ siècle',
         'Un roi numide',
-        'Un chanteur des années 1970',
+        'Un romancier des années 1970',
         'Un général de la conquête',
       ],
     },
@@ -543,7 +543,7 @@ export const FAITS = [
     id: 'radio-kabyle',
     cat: 'langue',
     texte:
-      'La radio parle kabyle depuis 1948 : les émissions en kabyle de Radio Alger — devenues la Chaîne 2 — ont porté la langue, ses chanteurs et ses poètes dans les foyers bien avant l’école.',
+      'La radio parle kabyle depuis 1948 : les émissions en kabyle de Radio Alger — devenues la Chaîne 2 — ont porté la langue, ses poètes et ses contes dans les foyers bien avant l’école.',
     question: {
       prompt: 'Depuis quand la radio émet-elle en kabyle ?',
       answer: 'Depuis 1948',
@@ -552,33 +552,6 @@ export const FAITS = [
   },
 
   /* ---------------- culture ---------------- */
-  {
-    id: 'imzad',
-    cat: 'culture',
-    texte:
-      'Chez les Touaregs, c’est aux femmes que revient l’imzad, la vièle monocorde qui accompagne les poèmes. Ses pratiques musicales sont inscrites à l’UNESCO depuis 2013.',
-    question: {
-      prompt: 'Qui joue traditionnellement de l’imzad chez les Touaregs ?',
-      answer: 'Les femmes',
-      choices: ['Les femmes', 'Les hommes', 'Les enfants', 'Les forgerons uniquement'],
-    },
-  },
-  {
-    id: 'ahidus-ahwash',
-    cat: 'culture',
-    texte:
-      'L’ahidus du Moyen Atlas et l’ahwash du Souss sont des danses collectives : tout le village en cercle ou en rangs, chants alternés et tambours — la fête comme œuvre commune.',
-    question: {
-      prompt: 'Que sont l’ahidus et l’ahwash ?',
-      answer: 'Des danses collectives de l’Atlas et du Souss',
-      choices: [
-        'Des danses collectives de l’Atlas et du Souss',
-        'Des plats de fête',
-        'Des bijoux d’argent',
-        'Des contes pour enfants',
-      ],
-    },
-  },
   {
     id: 'taguella',
     cat: 'culture',
@@ -669,17 +642,6 @@ export const FAITS = [
     },
   },
   {
-    id: 'idir-vava',
-    cat: 'culture',
-    texte:
-      'Dans les années 1970, la chanson A Vava Inouva d’Idir — une berceuse kabyle inspirée des veillées — fait le tour du monde et est traduite dans de nombreuses langues.',
-    question: {
-      prompt: 'Quelle chanson kabyle d’Idir a fait le tour du monde ?',
-      answer: 'A Vava Inouva',
-      choices: ['A Vava Inouva', 'Ya Rayah', 'Aïcha', 'Abdel Kader'],
-    },
-  },
-  {
     id: 'an-amazigh',
     cat: 'culture',
     texte:
@@ -699,22 +661,6 @@ export const FAITS = [
       prompt: 'Comment s’appelle l’assemblée traditionnelle du village kabyle ?',
       answer: 'La tajmaɛt',
       choices: ['La tajmaɛt', 'La zaouïa', 'Le souk', 'La kasbah'],
-    },
-  },
-  {
-    id: 'ahellil',
-    cat: 'culture',
-    texte:
-      'L’ahellil du Gourara — chants collectifs en berbère zénète des oasis algériennes — a été proclamé chef-d’œuvre du patrimoine immatériel de l’humanité par l’UNESCO en 2005.',
-    question: {
-      prompt: 'Qu’est-ce que l’ahellil du Gourara ?',
-      answer: 'Un chant collectif berbère des oasis, distingué par l’UNESCO',
-      choices: [
-        'Un chant collectif berbère des oasis, distingué par l’UNESCO',
-        'Une danse guerrière du Rif',
-        'Un plat de fête',
-        'Un tissage saharien',
-      ],
     },
   },
 ]

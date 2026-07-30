@@ -543,7 +543,7 @@ export const RECITS = [
       choices: [
         'L’interdiction d’une conférence de Mouloud Mammeri',
         'La fermeture d’une école kabyle',
-        'L’arrestation d’un chanteur',
+        'L’interdiction d’un journal',
         'Une réforme de l’alphabet',
       ],
     },

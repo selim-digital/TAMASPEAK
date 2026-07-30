@@ -89,7 +89,7 @@ export const MISSIONS = [
     titre: 'La phrase de tous les jours',
     consigne:
       'Demande une phrase que ta mère ou ton père répétait souvent. Note-la entière, telle quelle.',
-    aide: 'Une phrase entière vaut mieux que dix mots isolés : c’est la musique qui manque le plus.',
+    aide: 'Une phrase entière vaut mieux que dix mots isolés : c’est le rythme de la phrase qui manque le plus.',
     pour: 'proches',
   },
   {

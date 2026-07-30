@@ -187,7 +187,8 @@ export function HistoryScreen({ progress, onSave, onBack }) {
             <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
               <Akermus height={60} state="curious" className="flex-none" />
               <p className="text-[11.5px] leading-snug text-ink">
-                De Chachnaq le pharaon à Idir — les grandes figures, du plus ancien au plus récent.
+                De Chachnaq le pharaon à Mouloud Mammeri — les grandes figures, du plus ancien au
+                plus récent.
                 <span className="mt-1 block text-ink-soft">
                   Touche une figure pour la découvrir, puis lis son récit complet.
                 </span>
