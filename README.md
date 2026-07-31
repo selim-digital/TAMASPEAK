@@ -57,6 +57,87 @@ d'où cette explication ici) :
 Une fois en ligne, les **liens de défi entre amis** deviennent réellement
 utilisables (ils ne fonctionnent pas depuis un fichier local).
 
+## Abonnements
+
+Deux zones tarifaires, deux formules — décision produit inscrite dans
+`src/data/tarifs.js` (source de vérité **unique**, lue par l'app *et* par le
+serveur) :
+
+| Zone | Une personne | Famille (4 personnes) |
+| --- | --- | --- |
+| Europe & Amériques | 4,99 €/mois | 14,99 €/mois |
+| Afrique & Asie | 1,99 €/mois | 5,99 €/mois |
+
+Le prix plus bas au Sud n'est pas une promotion : une app qui enseigne les
+langues amazighes et resterait hors de portée en Afrique du Nord aurait manqué
+son sujet.
+
+**La première unité de chaque cours est gratuite pour toujours**, sans compte
+ni carte, et les jeux, le tifinagh, l'histoire, le cercle et les défis restent
+libres — ce sont eux qui font venir la famille. L'abonnement ouvre la suite des
+cours, après **7 jours d'essai gratuit**.
+
+### Ce qui décide du prix
+
+La zone est choisie **par le serveur**, d'après l'en-tête géographique de
+Vercel (`x-vercel-ip-country`), jamais d'après le navigateur — sinon chacun
+choisirait son tarif depuis la console. Elle est ensuite **gravée** sur
+l'abonnement : un abonné en voyage garde son tarif. Le tableau des pays
+(Afrique + Asie → zone sud, tout le reste → zone nord) est un simple tableau
+en tête de `src/data/tarifs.js`, fait pour être relu et corrigé.
+
+### Moyens de paiement
+
+Tout passe par **Stripe Checkout**, en page hébergée : carte, **Apple Pay**,
+**Google Pay**, Link, et les moyens locaux (SEPA, iDEAL, Bancontact…). Le code
+ne fixe volontairement **aucune** liste de moyens de paiement : ils se cochent
+dans le tableau de bord Stripe, et le nouveau apparaît sans redéploiement.
+
+Aucune donnée bancaire ne transite ni ne dort dans l'app ou dans Neon — nous
+ne voyons jamais un numéro de carte, donc nous ne pouvons pas le perdre. La
+résiliation, le changement de carte et les factures passent par le **portail
+client Stripe**, en un clic.
+
+> Apple Pay et Google Pay n'apparaissent qu'une fois le domaine **vérifié**
+> chez Stripe (Settings → Payments → Payment method domains).
+
+### Mise en service
+
+1. Créer les **quatre Prices** chez Stripe (EUR, mensuel, **taxe incluse** —
+   « prix TTC », pour que le montant affiché soit exactement celui débité) et
+   renseigner `STRIPE_PRICE_*` (voir `.env.example`).
+2. Déclarer le webhook sur `https://tamaspeak.com/api/billing?r=webhook`, avec
+   les événements `checkout.session.completed`,
+   `customer.subscription.created|updated|deleted`, `invoice.paid`,
+   `invoice.payment_failed` — puis copier le secret dans
+   `STRIPE_WEBHOOK_SECRET`.
+3. Renseigner `STRIPE_SECRET_KEY`. Les tables (`abonnements`,
+   `famille_membres`, `stripe_events`) s'appliquent toutes seules au premier
+   appel (`assurerSchema()`).
+
+**Sans ces variables, l'app ne verrouille rien** : tous les cours restent
+ouverts. Une boutique fermée ne peut pas exiger de ticket — même règle que
+`DATABASE_URL`.
+
+### Le verrou, sans se raconter d'histoires
+
+Le contenu des cours est dans le bundle de la PWA : c'est ce qui la rend
+utilisable hors-ligne, et c'est aussi ce qui empêche un verrou étanche. La
+porte tient devant l'usage normal, pas devant les outils de développement.
+La déplacer côté serveur coûterait le hors-ligne, c'est-à-dire l'app
+elle-même : le compromis est assumé. Corollaire assumé lui aussi — on ne
+verrouille **que sur un refus explicite du serveur** : hors-ligne, panne ou
+serveur muet laissent tout ouvert (même règle anti-boucle que la session).
+
+### Le pack famille
+
+Quatre personnes : le titulaire et trois proches. Même mécanique que le cercle
+— une invitation est un **code à partager** (WhatsApp), et la place n'est prise
+que lorsque quelqu'un de connecté ouvre le lien `…/?famille=CODE`. Chacun garde
+son compte et sa progression ; seul l'accès est partagé. Le titulaire peut
+retirer quelqu'un, un membre peut partir de lui-même, et une résiliation libère
+les places.
+
 ## Architecture
 
 ```
@@ -82,6 +163,26 @@ scripts/
   gen-icons.mjs      icônes PWA générées (rasterizer maison, sans dépendance)
   gen-audio-manifest.mjs
 ```
+
+```
+api/
+  billing.js         abonnements — caisse, portail, pack famille, webhook Stripe
+  admin.js           tableau de bord (?r=stats|feedbacks|revenus)
+  distance.js        cercle, défis, demandes de voix (?r=…)
+  _lib/stripe.js     client REST Stripe + vérification de signature, sans SDK
+src/
+  data/tarifs.js     zones, prix, pays — source de vérité partagée app/serveur
+  lib/abonnement.js  client de la caisse + le verrou (`uniteOuverte`)
+  screens/AbonnementScreen.jsx
+```
+
+> **Le plafond de douze fonctions.** Le plan Vercel Hobby n'accepte que douze
+> fonctions serverless. C'est la raison pour laquelle `api/distance.js` réunit
+> tout le jeu à distance, pourquoi `api/billing.js` réunit tout le paiement, et
+> pourquoi `api/admin/stats.js` + `api/admin/feedbacks.js` ont fusionné dans
+> `api/admin.js` (`?r=stats|feedbacks|revenus`) — les anciennes adresses sont
+> redirigées par `vercel.json`, aucun signet ne casse. Ajouter une treizième
+> fonction cassera le déploiement : router par `?r=` dans un fichier existant.
 
 ### Partis pris
 

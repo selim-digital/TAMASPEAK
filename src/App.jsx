@@ -31,7 +31,9 @@ import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDem
 import { CercleScreen } from './screens/CercleScreen.jsx'
 import { EnregistrerScreen } from './screens/EnregistrerScreen.jsx'
 import { AccountScreen } from './screens/AccountScreen.jsx'
+import { AbonnementScreen } from './screens/AbonnementScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
+import { etatAbonnement, uniteOuverte, rejoindreFamille, oublierAbonnement } from './lib/abonnement.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl, contentDigest } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -76,7 +78,19 @@ const COMPTE_SUPPRIME = PARAMS_RETOUR.has('compte-supprime')
 // Un lien d'invitation au cercle (…/?cercle=CODE) : mémorisé ici, honoré
 // une fois la session confirmée (il faut être connecté pour rejoindre).
 const CERCLE_CODE = PARAMS_RETOUR.get('cercle')
-if (CERCLE_CODE) window.history.replaceState(null, '', window.location.pathname)
+// Une place de pack famille (…/?famille=CODE) — même mécanique.
+const FAMILLE_CODE = PARAMS_RETOUR.get('famille')
+// Le retour de la caisse Stripe : 'ok' | 'annule' | 'retour' (portail).
+const ABONNEMENT_RETOUR = PARAMS_RETOUR.get('abonnement')
+if (CERCLE_CODE || FAMILLE_CODE || ABONNEMENT_RETOUR) {
+  window.history.replaceState(null, '', window.location.pathname)
+}
+if (ABONNEMENT_RETOUR) {
+  // Le verdict en cache date d'AVANT le paiement : le garder ferait afficher
+  // « pas abonné » à quelqu'un qui vient de payer, le temps que le webhook
+  // arrive. On force une relecture au serveur.
+  oublierAbonnement()
+}
 if (AUTH_ERREUR || COMPTE_SUPPRIME) {
   window.history.replaceState(null, '', window.location.pathname)
   if (COMPTE_SUPPRIME) {
@@ -89,6 +103,7 @@ if (AUTH_ERREUR || COMPTE_SUPPRIME) {
       localStorage.removeItem('tama-speak:v3')
       localStorage.removeItem('tama-speak:events-queue')
       localStorage.removeItem('tama-speak:feedback-queue')
+      localStorage.removeItem('tama-speak:abonnement')
     } catch {
       /* stockage indisponible */
     }
@@ -153,6 +168,14 @@ export default function App() {
   // Le wording de l'écran compte suit l'intention ('creer' | 'connexion') :
   // le flux est le même derrière, mais l'utilisateur doit reconnaître son cas.
   const [compteIntention, setCompteIntention] = useState('creer')
+  /**
+   * L'abonnement. `undefined` = pas encore su, `null` = serveur muet.
+   * DANS LES DEUX CAS ON N'IMPOSE RIEN : le verrou (uniteOuverte) n'existe
+   * que sur un « non » explicite du serveur — même règle que la session.
+   */
+  const [abonnement, setAbonnement] = useState(undefined)
+  // Résultat du lien d'invitation au pack famille, affiché sur l'accueil.
+  const [familleInfo, setFamilleInfo] = useState(null)
 
   useEffect(() => {
     saveStore(store)
@@ -219,6 +242,70 @@ export default function App() {
       vivant = false
       clearInterval(intervalle)
     }
+  }, [sessionEtat])
+
+  /**
+   * L'abonnement se relit à chaque changement d'état de session — se
+   * connecter, c'est justement le moment où l'on peut enfin savoir. On le
+   * relit AUSSI au retour de la caisse : le webhook Stripe et la redirection
+   * du navigateur courent en parallèle, et le navigateur gagne souvent.
+   * D'où le second passage, deux secondes plus tard.
+   */
+  const [abonnementTic, setAbonnementTic] = useState(0)
+  const relireAbonnement = () => setAbonnementTic((n) => n + 1)
+  useEffect(() => {
+    if (sessionEtat === 'inconnu') return
+    let vivant = true
+    etatAbonnement().then((e) => vivant && setAbonnement(e))
+    // Le webhook a quelques centaines de millisecondes de retard sur le
+    // retour de Stripe : on redemande une fois, sans insister davantage.
+    const rattrapage =
+      ABONNEMENT_RETOUR === 'ok' && abonnementTic === 0
+        ? setTimeout(() => etatAbonnement().then((e) => vivant && setAbonnement(e)), 2500)
+        : null
+    return () => {
+      vivant = false
+      if (rattrapage) clearTimeout(rattrapage)
+    }
+  }, [sessionEtat, abonnementTic])
+
+  /**
+   * Le retour de la caisse arrive sur l'accueil (Stripe redirige vers la
+   * racine). Le laisser là serait cruel : quelqu'un qui vient de payer doit
+   * voir une confirmation, pas l'écran d'accueil habituel. On l'emmène donc
+   * une fois sur l'écran d'abonnement — une seule fois, d'où le garde-fou.
+   */
+  const retourTraite = useRef(false)
+  useEffect(() => {
+    if (!ABONNEMENT_RETOUR || retourTraite.current || sessionEtat === 'inconnu') return
+    retourTraite.current = true
+    setScreen(ECRANS.ABONNEMENT)
+  }, [sessionEtat])
+
+  // Le lien d'invitation au pack famille : même règle que le cercle, il
+  // s'honore une fois la session confirmée (il faut un compte pour occuper
+  // une place — chacun garde sa progression).
+  useEffect(() => {
+    if (sessionEtat !== 'connecte' || !FAMILLE_CODE) return
+    rejoindreFamille(FAMILLE_CODE).then(({ statut, avec }) => {
+      setFamilleInfo(
+        statut === 'ok'
+          ? `Ta place est prise${avec ? ` dans le pack de ${avec}` : ''} — tous les cours sont ouverts pour toi.`
+          : statut === 'deja'
+            ? 'Cette invitation a déjà servi — tu es peut-être déjà dans le pack.'
+            : statut === 'complet'
+              ? 'Ce pack famille est complet (4 personnes).'
+              : statut === 'inactif'
+                ? 'Ce pack famille n’est pas actif pour le moment.'
+                : statut === 'introuvable'
+                  ? 'Cette invitation ne mène nulle part — demande à ton proche d’en renvoyer une.'
+                  : null,
+      )
+      if (statut === 'ok') {
+        oublierAbonnement()
+        relireAbonnement()
+      }
+    })
   }, [sessionEtat])
 
   // Le lien d'invitation s'honore dès que la session est confirmée.
@@ -373,7 +460,22 @@ export default function App() {
   // quiz de fin sous les pieds de l'élève.
   const [lessonExercises, setLessonExercises] = useState([])
 
+  /**
+   * Le verrou d'abonnement, en un seul endroit — l'unité de rang `i` du cours
+   * en cours est-elle ouverte ? Rend `true` tant que le serveur n'a pas dit
+   * « non » (hors-ligne, panne, boutique fermée) : voir lib/abonnement.js.
+   */
+  const uniteOuverteIci = (i) => uniteOuverte(i, abonnement)
+
   function startLesson(node) {
+    // Deuxième garde, après celle du chemin : une leçon ne s'ouvre jamais
+    // sans passer par ici (défis, liens, reprises…).
+    const unit = course.unitOfLesson(node.id)
+    const rang = course.units.findIndex((u) => u.id === unit?.id)
+    if (rang >= 0 && !uniteOuverteIci(rang)) {
+      setScreen(ECRANS.ABONNEMENT)
+      return
+    }
     setActiveLesson(node)
     setLessonExercises(avecQuizFin(course, progress, node.id))
     setScreen(ECRANS.LECON)
@@ -539,7 +641,7 @@ export default function App() {
               info={
                 compteSupprime
                   ? 'Ton compte et tes données ont été supprimés — tu repars de zéro. Ansuf, quand tu veux !'
-                  : cercleInfo
+                  : familleInfo || cercleInfo
               }
               onStart={demarrer}
               onLogin={() => {
@@ -586,6 +688,8 @@ export default function App() {
               onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
               onCercle={() => setScreen(ECRANS.CERCLE)}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              uniteOuverte={uniteOuverteIci}
               notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
               lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
@@ -601,6 +705,8 @@ export default function App() {
                 setCompteObligatoire(false)
                 setScreen(ECRANS.COMPTE)
               }}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              abonnement={abonnement}
               onFeedback={() => setScreen(ECRANS.FEEDBACK)}
               onResetLang={(langId) => {
                 // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
@@ -616,6 +722,18 @@ export default function App() {
 
           {screen === ECRANS.FEEDBACK && (
             <FeedbackScreen lang={course.id} onBack={() => setScreen(ECRANS.PROFIL)} />
+          )}
+
+          {screen === ECRANS.ABONNEMENT && (
+            <AbonnementScreen
+              retour={ABONNEMENT_RETOUR}
+              onBack={() => {
+                // Revenir de l'écran d'abonnement relit l'état : on a pu
+                // rejoindre un pack famille ou résilier entre-temps.
+                relireAbonnement()
+                setScreen(ECRANS.CHEMIN)
+              }}
+            />
           )}
 
           {screen === ECRANS.COMPTE && (

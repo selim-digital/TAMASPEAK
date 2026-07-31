@@ -13,6 +13,7 @@ import {
   deleteAccount,
   syncStore,
 } from '../lib/api.js'
+import { oublierAbonnement } from '../lib/abonnement.js'
 
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -154,6 +155,9 @@ export function AccountScreen({
     setEtat('deconnecte')
     setEnvoi(null)
     setConfirmerSuppr(false)
+    // Le verdict d'abonnement en cache appartenait à la personne qui part :
+    // sur un téléphone partagé, le suivant ne doit pas en hériter.
+    oublierAbonnement()
     onSession?.(null)
     note('Déconnecté. Ta progression locale reste sur cet appareil.')
   }

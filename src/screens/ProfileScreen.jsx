@@ -112,7 +112,58 @@ function EmailPrefs() {
  * Aucune donnée ne quitte l'appareil : le partage passe par la feuille de
  * partage du système ou le presse-papiers, jamais par un serveur.
  */
-export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, onResetLang, onBack }) {
+/**
+ * L'abonnement, vu du profil : une seule ligne, qui dit l'état sans jargon.
+ * Elle n'apparaît pas si la boutique n'est pas ouverte (pas de clé Stripe) ni
+ * si le serveur est muet — on ne propose pas de payer ce qu'on ne peut pas
+ * encaisser.
+ */
+function LigneAbonnement({ etat, onOuvrir }) {
+  if (!etat || !etat.paiementOuvert) return null
+  const abonne = etat.abonne === true
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        sfx.click()
+        onOuvrir()
+      }}
+      className={`mt-6 flex w-full items-center gap-3 rounded-2xl border-2 px-3.5 py-3 text-left ${
+        abonne ? 'border-line bg-cream' : 'border-turquoise/40 bg-turquoise/5'
+      }`}
+    >
+      <span
+        className={`grid h-10 w-10 flex-none place-items-center rounded-full ${
+          abonne ? 'bg-turquoise text-white' : 'bg-turquoise/15 text-turquoise-deep'
+        }`}
+        aria-hidden="true"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          {abonne ? <path d="M4 12.5l5.5 5.5L20 6.5" /> : <path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z" />}
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[13px] font-extrabold">
+          {abonne
+            ? etat.via === 'famille'
+              ? 'Pack famille — tu en fais partie'
+              : etat.statut === 'essai'
+                ? 'Essai gratuit en cours'
+                : 'Abonnement actif'
+            : 'Ouvrir tous les cours'}
+        </span>
+        <span className="block text-[10.5px] leading-snug text-ink-soft">
+          {abonne
+            ? 'Voir, gérer, ou inviter tes proches.'
+            : `À partir de ${etat.tarifs?.solo?.parMois || '—'}, résiliable en un clic.`}
+        </span>
+      </span>
+      <span className="flex-none text-[13px] font-extrabold text-ink-soft">›</span>
+    </button>
+  )
+}
+
+export function ProfileScreen({ store, onSave, onDuel, onAccount, onAbonnement, abonnement, onFeedback, onResetLang, onBack }) {
   const [resetEnCours, setResetEnCours] = useState(null) // langId en attente de confirmation
   const profile = store.profile || {}
   const [name, setName] = useState(profile.name || '')
@@ -279,6 +330,8 @@ export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, on
             ))}
           </div>
         )}
+
+        <LigneAbonnement etat={abonnement} onOuvrir={onAbonnement} />
 
         <EmailPrefs />
 

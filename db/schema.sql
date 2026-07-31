@@ -261,3 +261,75 @@ CREATE INDEX IF NOT EXISTS defis_adversaire ON defis (adversaire, created_at DES
 -- de quoi agir : l'id de la demande, le code du défi. Colonne ajoutée après
 -- coup — l'ALTER est idempotent pour les bases déjà installées.
 ALTER TABLE notifications ADD COLUMN IF NOT EXISTS data JSONB;
+
+-- ------------------------------------------------------------------
+-- ABONNEMENTS — la monétisation.
+--
+-- Règle qui gouverne ces trois tables : STRIPE FAIT FOI. On ne recopie ici
+-- que ce qu'il faut pour répondre « cette personne a-t-elle accès ? » sans
+-- appeler Stripe à chaque ouverture d'écran (latence, quotas, panne d'un
+-- tiers). La vérité — montants, moyens de paiement, factures, litiges — vit
+-- chez Stripe, et AUCUN numéro de carte ne transite ni ne dort ici : le
+-- paiement se fait sur les pages hébergées par Stripe (Checkout, Portail).
+--
+-- Deux zones tarifaires (voir src/data/tarifs.js) : Europe/Amériques et
+-- Afrique/Asie. La zone est décidée par le SERVEUR à la souscription et
+-- gravée ici — elle ne se renégocie pas à chaque connexion (quelqu'un en
+-- voyage garde son tarif).
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS abonnements (
+  user_id TEXT PRIMARY KEY REFERENCES "user"("id") ON DELETE CASCADE,
+  stripe_customer TEXT UNIQUE,     -- cus_… (créé au premier passage en caisse)
+  stripe_subscription TEXT UNIQUE, -- sub_…
+  plan TEXT,                       -- 'solo' | 'famille'
+  zone TEXT,                       -- 'nord' | 'sud'
+  statut TEXT NOT NULL DEFAULT 'aucun',
+    -- 'aucun'    : jamais abonné
+    -- 'attente'  : passage en caisse commencé, paiement pas encore confirmé
+    -- 'essai'    : période d'essai en cours (trialing)
+    -- 'actif'    : payé (active)
+    -- 'retard'   : impayé, accès maintenu jusqu'à periode_fin (past_due/unpaid)
+    -- 'annule'   : terminé (canceled)
+  periode_fin TIMESTAMPTZ,         -- fin de la période PAYÉE : l'accès court jusque-là
+  annule_a_la_fin BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS abonnements_statut ON abonnements (statut);
+
+-- Le PACK FAMILLE — quatre personnes : le titulaire + 3 proches.
+--
+-- Même modèle que le cercle : une invitation est un CODE à partager
+-- (WhatsApp), et le lien n'existe qu'une fois le code utilisé par quelqu'un
+-- de connecté. Chacun garde SA progression et SON compte ; seul l'accès est
+-- partagé. Le titulaire peut retirer quelqu'un, et personne d'autre.
+CREATE TABLE IF NOT EXISTS famille_membres (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  proprietaire TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  membre TEXT REFERENCES "user"("id") ON DELETE CASCADE, -- NULL tant que le code dort
+  code TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  joined_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS famille_proprietaire ON famille_membres (proprietaire);
+CREATE INDEX IF NOT EXISTS famille_membre ON famille_membres (membre);
+-- Une personne n'est membre que d'UN seul pack famille : sans cette
+-- contrainte, un même compte pourrait figurer dans plusieurs packs et le
+-- décompte des 4 places deviendrait faux.
+CREATE UNIQUE INDEX IF NOT EXISTS famille_membre_unique
+  ON famille_membres (membre) WHERE membre IS NOT NULL;
+
+-- Journal des webhooks Stripe — l'anti-doublon.
+-- Stripe REJOUE ses événements (c'est sa garantie de livraison : au moins
+-- une fois, pas exactement une fois). Sans cette table, un rejeu de
+-- `checkout.session.completed` pourrait re-déclencher des effets de bord.
+CREATE TABLE IF NOT EXISTS stripe_events (
+  id TEXT PRIMARY KEY,             -- evt_…
+  type TEXT NOT NULL,
+  recu_le TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS stripe_events_recu ON stripe_events (recu_le);

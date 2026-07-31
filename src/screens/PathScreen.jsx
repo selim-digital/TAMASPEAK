@@ -65,6 +65,41 @@ function UnitBanner({ unit, land, progress = 0 }) {
   )
 }
 
+/**
+ * Une unité que l'abonnement n'ouvre pas encore.
+ *
+ * Elle reste VISIBLE — bannière, titre, paysage : on doit voir ce qu'il y a
+ * après, c'est même toute la raison de payer. Seules les leçons cèdent la
+ * place à cette carte. Le ton n'accuse pas et ne presse pas : la règle du
+ * produit vaut aussi quand on demande de l'argent.
+ */
+function UniteVerrouillee({ unit, onAbonnement }) {
+  const lecons = unit.lessons.filter((l) => l.type !== 'chest').length
+  return (
+    <button
+      type="button"
+      onClick={onAbonnement}
+      className="mx-auto mt-3 mb-4 flex w-full max-w-[280px] items-center gap-2.5 rounded-2xl border-2 border-line bg-cream px-3 py-3 text-left transition-transform active:scale-[0.98]"
+    >
+      <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-sand-2 text-ink-soft" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="4.5" y="10.5" width="15" height="10" rx="3" />
+          <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12.5px] font-extrabold">
+          {lecons} leçon{lecons > 1 ? 's' : ''} de plus, ici
+        </span>
+        <span className="block text-[10.5px] leading-snug text-ink-soft">
+          Ouvre tous les cours — et emmène ta famille avec toi.
+        </span>
+      </span>
+      <span className="flex-none text-[11px] font-extrabold text-turquoise-deep">Voir →</span>
+    </button>
+  )
+}
+
 /** Avancement d'une unité (leçons faites / leçons totales, coffres exclus). */
 function progressOf(unit) {
   const lessons = unit.lessons.filter((l) => l.type !== 'chest')
@@ -238,6 +273,10 @@ export function PathScreen({
   onHistoire,
   onCercle,
   onNotifs,
+  onAbonnement,
+  // Verrou d'abonnement : rend `true` tant qu'on ne sait pas (hors-ligne,
+  // serveur muet, boutique fermée) — le doute profite toujours à l'élève.
+  uniteOuverte = () => true,
   notifCount = 0,
   lexiqueCount = 0,
   avatar,
@@ -435,25 +474,34 @@ export function PathScreen({
           {units.map((unit, unitIndex) => {
             const land = landOf(unitIndex, course?.land)
             const progress = progressOf(unit)
-            const hasCurrent = unit.lessons.some((l) => l.status === 'current' || l.status === 'available')
+            const ouverte = uniteOuverte(unitIndex)
+            const hasCurrent = ouverte && unit.lessons.some((l) => l.status === 'current' || l.status === 'available')
             return (
               <div key={unit.id} className="relative mb-2">
                 <UnitBanner unit={unit} land={land} progress={progress} />
                 {hasCurrent && <FamilyCheer cheer={cheer} onOpen={onFamily} />}
-                <div className="flex flex-col items-center py-5">
-                  {unit.lessons.map((node, i) => (
-                    <div
-                      key={node.id}
-                      data-courant={node.status === 'current' || node.status === 'available' ? '1' : undefined}
-                      className="flex flex-col items-center"
-                    >
-                      {i > 0 && <Connector from={offsetOf(i - 1)} to={offsetOf(i)} />}
-                      <div className="animate-enter" style={{ animationDelay: `${i * 60}ms` }}>
-                        <LessonNode node={node} offset={offsetOf(i)} onClick={() => handleNode(node)} unitProgress={progress} />
+                {/* Les nœuds d'une unité verrouillée ne sont pas rendus du
+                    tout (plutôt que masqués) : le placement automatique à
+                    l'ouverture cherche `data-courant` et se poserait sinon
+                    sur une leçon invisible. */}
+                {ouverte ? (
+                  <div className="flex flex-col items-center py-5">
+                    {unit.lessons.map((node, i) => (
+                      <div
+                        key={node.id}
+                        data-courant={node.status === 'current' || node.status === 'available' ? '1' : undefined}
+                        className="flex flex-col items-center"
+                      >
+                        {i > 0 && <Connector from={offsetOf(i - 1)} to={offsetOf(i)} />}
+                        <div className="animate-enter" style={{ animationDelay: `${i * 60}ms` }}>
+                          <LessonNode node={node} offset={offsetOf(i)} onClick={() => handleNode(node)} unitProgress={progress} />
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <UniteVerrouillee unit={unit} onAbonnement={onAbonnement} />
+                )}
               </div>
             )
           })}
