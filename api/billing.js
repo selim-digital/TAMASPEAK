@@ -315,13 +315,19 @@ async function etat(req, res, session) {
   }
 
   // En test, seuls les admins subissent le verrou (voir modeTest ci-dessus).
-  const enRodage = modeTest() && !isAdmin(session)
+  const admin = isAdmin(session)
+  const enRodage = modeTest() && !admin
 
   const acces = await accesDe(session.user.id)
   const a = acces.abonnement
   return res.status(200).json({
     ...base,
     connecte: true,
+    // `admin` ne sert qu'à EXPLIQUER l'écran en mode test : sans lui, un
+    // « tout est ouvert » inexpliqué laisse chercher pendant une heure si
+    // la panne vient de Stripe, du webhook ou de la base — alors qu'il
+    // manque juste une adresse dans ADMIN_EMAILS.
+    admin,
     abonne: acces.abonne || !stripeReady() || enRodage,
     via: acces.via,
     proprietaire: acces.proprietaire || null,
