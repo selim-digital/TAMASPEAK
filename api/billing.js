@@ -136,12 +136,35 @@ function zoneDeLaRequete(req) {
 const modeTest = () => (process.env.STRIPE_SECRET_KEY || '').startsWith('sk_test_')
 
 /**
- * L'identifiant du Price Stripe pour (plan, zone) — quatre variables
- * d'environnement, une par case du tableau des tarifs.
+ * L'identifiant du Price Stripe pour (plan, zone).
+ *
+ * Chez Stripe, le mode test et le mode réel sont deux mondes ÉTANCHES : un
+ * produit créé dans l'un n'existe pas dans l'autre, et une clé de test qui
+ * nomme un tarif réel reçoit « No such price ». Vécu à la mise en route.
+ *
+ * D'où les deux jeux de variables qui cohabitent en permanence :
+ *
+ *   STRIPE_PRICE_SOLO_NORD        le tarif RÉEL   (celui qui encaisse)
+ *   STRIPE_PRICE_SOLO_NORD_TEST   le tarif de TEST (préféré si la clé est
+ *                                 `sk_test_`, ignoré sinon)
+ *
+ * Conséquence, et c'est tout l'intérêt : basculer entre répétition et
+ * représentation ne demande plus de réécrire quatre identifiants — il suffit
+ * de changer STRIPE_SECRET_KEY. Moins de variables à changer, moins de
+ * chances d'en oublier une le jour de l'ouverture.
  */
 function priceId(plan, zone) {
   const cle = `STRIPE_PRICE_${plan}_${zone}`.toUpperCase()
+  if (modeTest() && process.env[`${cle}_TEST`]) return process.env[`${cle}_TEST`]
   return process.env[cle] || null
+}
+
+/** Même principe pour le secret du webhook : un point de terminaison par mode. */
+function webhookSecret() {
+  if (modeTest() && process.env.STRIPE_WEBHOOK_SECRET_TEST) {
+    return process.env.STRIPE_WEBHOOK_SECRET_TEST
+  }
+  return process.env.STRIPE_WEBHOOK_SECRET || null
 }
 
 /**
@@ -596,7 +619,7 @@ async function enregistrerAbonnement(sub) {
 }
 
 async function webhook(req, res) {
-  const secret = process.env.STRIPE_WEBHOOK_SECRET
+  const secret = webhookSecret()
   if (!secret || !stripeReady()) return res.status(503).json({ error: 'webhook non configuré' })
 
   const brut = await lireCorps(req)
@@ -607,6 +630,18 @@ async function webhook(req, res) {
     // de webhook qui fuite ou d'un secret désynchronisé.
     console.error('[tama] webhook Stripe à signature invalide — rejeté')
     return res.status(400).json({ error: 'signature invalide' })
+  }
+
+  // Le monde de l'événement doit être LE NÔTRE. Les deux points de
+  // terminaison (test et réel) visent la même URL ; si les secrets venaient
+  // à se croiser, un événement de test pourrait toucher un abonnement réel.
+  // On acquitte sans rien faire plutôt que de réessayer en boucle.
+  if (ev.livemode === modeTest()) {
+    console.error(
+      `[tama] webhook ignoré : événement ${ev.livemode ? 'réel' : 'de test'} reçu ` +
+        `alors que la clé est en mode ${modeTest() ? 'test' : 'réel'}`,
+    )
+    return res.status(200).json({ ok: true, ignore: 'mode' })
   }
 
   // Anti-rejeu : Stripe garantit « au moins une fois », pas « exactement une
