@@ -82,9 +82,19 @@ cours, après **7 jours d'essai gratuit**.
 La zone est choisie **par le serveur**, d'après l'en-tête géographique de
 Vercel (`x-vercel-ip-country`), jamais d'après le navigateur — sinon chacun
 choisirait son tarif depuis la console. Elle est ensuite **gravée** sur
-l'abonnement : un abonné en voyage garde son tarif. Le tableau des pays
-(Afrique + Asie → zone sud, tout le reste → zone nord) est un simple tableau
-en tête de `src/data/tarifs.js`, fait pour être relu et corrigé.
+l'abonnement : un abonné en voyage garde son tarif.
+
+La règle, en deux temps, dans `src/data/tarifs.js` :
+
+1. Afrique + Asie → zone sud ; tout le reste (Europe, Amériques, Océanie,
+   pays inconnu) → zone nord.
+2. **Sauf les pays à revenu élevé** (catégorie « high income » de la Banque
+   mondiale), qui repassent au tarif du nord : Japon, Corée du Sud,
+   Singapour, Hong Kong, Macao, Taïwan, Brunei, Golfe, Israël, Chypre,
+   Seychelles, La Réunion et Mayotte. Le tarif bas est fait pour le pouvoir
+   d'achat, pas pour le continent — et il est financé par les abonnés du
+   nord. Les pays à revenu intermédiaire (Turquie, Chine, Malaisie,
+   Kazakhstan, Maurice…) restent volontairement au tarif du sud.
 
 ### Moyens de paiement
 

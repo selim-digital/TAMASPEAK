@@ -90,11 +90,40 @@ const ASIE = [
   'LK', 'SY', 'TW', 'TJ', 'TH', 'TL', 'TR', 'TM', 'AE', 'UZ', 'VN', 'YE',
 ]
 
+/**
+ * L'EXCEPTION QUI PRIME SUR LA GÉOGRAPHIE : les pays à revenu élevé d'Afrique
+ * et d'Asie paient le tarif du Nord.
+ *
+ * Le tarif bas existe pour le pouvoir d'achat, pas pour le continent. Le
+ * Japon, la Corée, Singapour ou les monarchies du Golfe sont en Asie sur une
+ * carte, mais quelqu'un qui s'abonne depuis Tokyo ou Doha n'a pas besoin
+ * qu'on lui fasse 60 % de remise — et cette remise-là est financée par les
+ * abonnés d'Europe. La Réunion et Mayotte sont des départements français
+ * (euro, salaires français) : rien ne justifiait qu'ils soient au tarif
+ * d'Alger.
+ *
+ * Le critère retenu, pour qu'il soit vérifiable et pas arbitraire : la
+ * catégorie « revenu élevé » (high income) de la Banque mondiale. Les pays à
+ * revenu intermédiaire — Turquie, Malaisie, Chine, Kazakhstan, Maurice… —
+ * restent volontairement au tarif du Sud.
+ */
+const REVENU_ELEVE = [
+  // Asie de l'Est et du Sud-Est
+  'JP', 'KR', 'SG', 'HK', 'MO', 'TW', 'BN',
+  // Golfe et Proche-Orient
+  'AE', 'QA', 'KW', 'BH', 'OM', 'SA', 'IL', 'CY',
+  // Afrique et océan Indien
+  'SC', 'RE', 'YT',
+]
+
 const PAYS_SUD = new Set([...AFRIQUE, ...ASIE])
+const PAYS_RICHES = new Set(REVENU_ELEVE)
 
 /** La zone tarifaire d'un code pays ISO (insensible à la casse). */
 export function zoneDuPays(code) {
   const c = String(code || '').trim().toUpperCase()
+  // L'exception d'abord : elle est faite pour l'emporter sur la géographie.
+  if (PAYS_RICHES.has(c)) return ZONES.NORD
   return PAYS_SUD.has(c) ? ZONES.SUD : ZONES.NORD
 }
 
