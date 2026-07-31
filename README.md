@@ -135,6 +135,12 @@ Les abonnements Tama Speak arrivent aujourd'hui sur le **compte Stripe déjà
 utilisé par FIQUP** : mêmes virements, même comptabilité, catalogue de produits
 partagé. C'est un choix de commodité pour le lancement, assumé et **temporaire**.
 
+Conséquence visible dès aujourd'hui, et acceptée en connaissance de cause : la
+page de paiement affiche **le nom public du compte** (« NAPE INFINITY »), pas
+« Tama Speak » — il en va de même du logo et du libellé sur les relevés
+bancaires. Le renommer arrangerait Tama Speak et dérangerait FIQUP : c'est le
+même réglage pour les deux. Seul un compte séparé résout vraiment la chose.
+
 Le jour où les deux activités doivent être distinguées (deux structures, deux
 bilans, ou simplement pour y voir clair), il faudra créer un compte Stripe
 dédié à Tama Speak et migrer : nouveaux produits et tarifs, nouvelle clé,
