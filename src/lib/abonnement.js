@@ -79,7 +79,9 @@ async function poste(r, body) {
     })
     if (!isApi(rep)) return null
     const json = await rep.json()
-    return rep.ok ? json : { erreur: json?.error || 'refus' }
+    // `detail` n'est renseigné par le serveur qu'en mode test : c'est le
+    // message brut (de Stripe ou du garde-fou des tarifs).
+    return rep.ok ? json : { erreur: json?.error || 'refus', detail: json?.detail || null }
   } catch {
     return null
   }
@@ -96,11 +98,16 @@ export async function passerEnCaisse(plan) {
     window.location.href = r.url
     return null
   }
-  if (r?.erreur === 'deja abonne') return 'Tu es déjà abonné — merci !'
-  if (r?.erreur === 'tarif non configuré' || r?.erreur === 'paiement non configuré') {
-    return 'Les abonnements ne sont pas encore ouverts. Reviens bientôt.'
-  }
-  return 'La caisse n’a pas répondu. Réessaie dans un instant.'
+  const humain =
+    r?.erreur === 'deja abonne'
+      ? 'Tu es déjà abonné — merci !'
+      : r?.erreur === 'tarif non configuré' || r?.erreur === 'paiement non configuré'
+        ? 'Les abonnements ne sont pas encore ouverts. Reviens bientôt.'
+        : 'La caisse n’a pas répondu. Réessaie dans un instant.'
+  // En mode test, la cause exacte s'affiche sous le message : sans elle,
+  // « la caisse n'a pas répondu » envoie fouiller les journaux d'un serveur
+  // depuis un téléphone — c'est-à-dire nulle part.
+  return r?.detail ? `${humain}\n\n${r.detail}` : humain
 }
 
 /** Ouvre le portail Stripe : résilier, changer de carte, voir ses factures. */

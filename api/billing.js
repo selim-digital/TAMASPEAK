@@ -372,7 +372,9 @@ async function checkout(req, res, session) {
   const souci = await priceConforme(price, plan, zone)
   if (souci) {
     console.error(`[tama] TARIF INCOHÉRENT, caisse refusée — ${souci}`)
-    return res.status(503).json({ error: 'tarif non configuré' })
+    // Le détail ne sort QU'EN MODE TEST : en production, il dirait à un
+    // inconnu comment notre facturation est configurée.
+    return res.status(503).json({ error: 'tarif non configuré', ...(modeTest() ? { detail: souci } : {}) })
   }
 
   // Un seul client Stripe par compte, réutilisé : sans cela, chaque tentative
@@ -702,8 +704,14 @@ export default async function handler(req, res) {
   } catch (e) {
     // Une panne Stripe ne doit pas ressembler à un refus : le message part
     // dans les journaux, l'app affiche « réessaie », rien n'est débité.
-    console.error(`[tama] billing ?r=${r} :`, e?.message)
-    return res.status(502).json({ error: 'paiement indisponible' })
+    console.error(`[tama] billing ?r=${r} :`, e?.message, e?.stripe || '')
+    return res.status(502).json({
+      error: 'paiement indisponible',
+      // Même règle qu'au-dessus : le message brut de Stripe (« No such
+      // price: … ») est un cadeau pendant la mise en route, et une fuite
+      // d'information une fois en production.
+      ...(modeTest() ? { detail: e?.message || String(e) } : {}),
+    })
   }
 
   return res.status(404).json({ error: 'route inconnue' })

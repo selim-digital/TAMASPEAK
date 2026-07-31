@@ -426,7 +426,13 @@ export function AbonnementScreen({ onBack, retour }) {
           </>
         )}
 
-        {erreur && <p className="animate-rise mt-3 text-center text-[11.5px] font-bold text-coral">{erreur}</p>}
+        {/* `whitespace-pre-line` : le détail technique du mode test arrive
+            après un saut de ligne, il ne doit pas se coller au message. */}
+        {erreur && (
+          <p className="animate-rise mt-3 whitespace-pre-line break-words text-center text-[11.5px] font-bold text-coral">
+            {erreur}
+          </p>
+        )}
       </div>
     </div>
   )
