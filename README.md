@@ -129,6 +129,25 @@ client Stripe**, en un clic.
 ouverts. Une boutique fermée ne peut pas exiger de ticket — même règle que
 `DATABASE_URL`.
 
+### À faire plus tard : séparer le compte Stripe
+
+Les abonnements Tama Speak arrivent aujourd'hui sur le **compte Stripe déjà
+utilisé par FIQUP** : mêmes virements, même comptabilité, catalogue de produits
+partagé. C'est un choix de commodité pour le lancement, assumé et **temporaire**.
+
+Le jour où les deux activités doivent être distinguées (deux structures, deux
+bilans, ou simplement pour y voir clair), il faudra créer un compte Stripe
+dédié à Tama Speak et migrer : nouveaux produits et tarifs, nouvelle clé,
+nouveau webhook, et **surtout** les abonnements en cours — Stripe sait migrer
+des abonnements entre comptes, mais cela se demande à son support et prend du
+temps.
+
+Plus il y a d'abonnés, plus la migration coûte cher. Autrement dit : c'est la
+tâche dont le prix augmente chaque jour où on ne la fait pas.
+
+La clé de Tama Speak est nommée `Tama Speak` chez Stripe, distincte de celle de
+FIQUP — révoquer l'une ne touche pas l'autre.
+
 ### Le verrou, sans se raconter d'histoires
 
 Le contenu des cours est dans le bundle de la PWA : c'est ce qui la rend
