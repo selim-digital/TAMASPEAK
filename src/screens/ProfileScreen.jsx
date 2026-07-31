@@ -7,6 +7,7 @@ import { COURSES } from '../data/courses.js'
 import { globalStats, setIdentity } from '../lib/progress.js'
 import { shareText, profileShare } from '../lib/share.js'
 import { getEmailPrefs, setEmailPrefs } from '../lib/api.js'
+import { abonnementReel } from '../lib/abonnement.js'
 import { sfx } from '../lib/sfx.js'
 
 function Tile({ icon, value, label }) {
@@ -120,7 +121,10 @@ function EmailPrefs() {
  */
 function LigneAbonnement({ etat, onOuvrir }) {
   if (!etat || !etat.paiementOuvert) return null
-  const abonne = etat.abonne === true
+  // `abonnementReel` et non `etat.abonne` : en mode test (ou boutique
+  // fermée) l'accès est ouvert sans que personne n'ait payé — annoncer
+  // « Abonnement actif » serait promettre une facture qui n'existe pas.
+  const abonne = abonnementReel(etat)
   return (
     <button
       type="button"

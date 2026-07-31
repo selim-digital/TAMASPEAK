@@ -689,6 +689,7 @@ export default function App() {
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
               onCercle={() => setScreen(ECRANS.CERCLE)}
               onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              abonnement={abonnement}
               uniteOuverte={uniteOuverteIci}
               notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
               lexiqueCount={lexiqueSize(progress)}

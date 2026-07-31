@@ -6,6 +6,7 @@ import { sfx } from '../lib/sfx.js'
 import { PLANS, FAMILLE_TAILLE, FAMILLE_INVITES } from '../data/tarifs.js'
 import {
   etatAbonnement,
+  abonnementReel,
   passerEnCaisse,
   ouvrirPortail,
   inviterFamille,
@@ -338,7 +339,19 @@ export function AbonnementScreen({ onBack, retour }) {
           </p>
         )}
 
-        {etat && etat.abonne && <Gestion etat={etat} onChange={recharger} />}
+        {/* Un abonnement RÉEL : l'écran de gestion. On se garde bien de
+            l'afficher quand l'accès vient d'ailleurs (boutique fermée, mode
+            test) — ce serait promettre une facture qui n'existe pas. */}
+        {etat && abonnementReel(etat) && <Gestion etat={etat} onChange={recharger} />}
+
+        {/* Accès ouvert sans rien avoir payé : on le dit tel quel. */}
+        {etat && !abonnementReel(etat) && etat.abonne && (
+          <div className="rounded-2xl border border-line bg-sand px-3 py-3 text-center text-[12px] leading-snug text-ink-soft">
+            {etat.paiementOuvert
+              ? 'Tout est ouvert pendant la mise en route des abonnements. Rien à faire, et rien à payer.'
+              : 'Les abonnements ne sont pas encore ouverts. En attendant, tous les cours sont accessibles.'}
+          </div>
+        )}
 
         {etat && !etat.abonne && (
           <>
@@ -350,13 +363,9 @@ export function AbonnementScreen({ onBack, retour }) {
               </p>
             </div>
 
-            {!etat.paiementOuvert ? (
-              <p className="rounded-2xl border border-line bg-sand px-3 py-3 text-center text-[12px] leading-snug text-ink-soft">
-                Les abonnements ne sont pas encore ouverts. En attendant, tout est accessible.
-              </p>
-            ) : (
-              <>
-                <div className="flex flex-col gap-2.5">
+            {/* Ici, `abonne` est faux : la boutique est forcément ouverte
+                (le serveur rend `abonne: true` quand elle ne l'est pas). */}
+            <div className="flex flex-col gap-2.5">
                   <Formule
                     plan={PLANS.solo}
                     prix={t.solo}
@@ -405,8 +414,6 @@ export function AbonnementScreen({ onBack, retour }) {
                   locaux — traité par Stripe. Tama Speak ne voit ni ne conserve aucune donnée
                   bancaire.
                 </p>
-              </>
-            )}
           </>
         )}
 

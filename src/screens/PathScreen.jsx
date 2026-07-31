@@ -5,6 +5,7 @@ import { landOf } from '../data/journey.js'
 import { cheerFor } from '../components/mascots/Family.jsx'
 import { isSfxOn, setSfxOn, sfx } from '../lib/sfx.js'
 import { Avatar } from '../components/Avatar.jsx'
+import { verrouActif } from '../lib/abonnement.js'
 
 /** Position horizontale du nœud i sur le chemin sinueux. */
 const offsetOf = (i) => Math.round(Math.sin(i * 0.9) * 66)
@@ -149,6 +150,39 @@ function InstallCard() {
   )
 }
 
+/**
+ * L'invitation à s'abonner, sur le chemin.
+ *
+ * Elle n'apparaît QUE si le serveur a explicitement dit « pas abonné » et que
+ * la boutique est ouverte — jamais en mode local, jamais hors-ligne, jamais
+ * pour quelqu'un qui paie déjà. Et elle reste une ligne : pas de bandeau
+ * clignotant, pas de compte à rebours, pas de « offre limitée ». Le public de
+ * cette app essaie de transmettre une langue à ses enfants ; on lui propose,
+ * on ne le harcèle pas.
+ */
+function CarteAbonnement({ tarif, onOuvrir }) {
+  return (
+    <button
+      type="button"
+      onClick={onOuvrir}
+      className="mx-3.5 mt-1.5 flex items-center gap-2.5 rounded-xl border-2 border-turquoise/40 bg-turquoise/5 px-3 py-2 text-left transition-transform active:scale-[0.98]"
+    >
+      <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise text-white" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z" />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12px] font-extrabold">Ouvrir tous les cours</span>
+        <span className="block text-[10px] leading-snug text-ink-soft">
+          {tarif ? `À partir de ${tarif}, ` : ''}résiliable en un clic. Ou en famille, à 4.
+        </span>
+      </span>
+      <span className="flex-none text-[12px] font-extrabold text-turquoise-deep">→</span>
+    </button>
+  )
+}
+
 /** Anneau d'objectif quotidien (issu de l'onboarding). */
 function DailyGoal({ value = 0, goal }) {
   if (!goal) return null
@@ -274,6 +308,7 @@ export function PathScreen({
   onCercle,
   onNotifs,
   onAbonnement,
+  abonnement,
   // Verrou d'abonnement : rend `true` tant qu'on ne sait pas (hors-ligne,
   // serveur muet, boutique fermée) — le doute profite toujours à l'élève.
   uniteOuverte = () => true,
@@ -463,6 +498,10 @@ export function PathScreen({
           Mon cercle — famille & amis à distance
         </button>
       </div>
+
+      {verrouActif(abonnement) && (
+        <CarteAbonnement tarif={abonnement?.tarifs?.solo?.parMois} onOuvrir={onAbonnement} />
+      )}
 
       <InstallCard />
 

@@ -157,3 +157,23 @@ export function uniteOuverte(indexUnite, etat) {
 export function verrouActif(etat) {
   return !!etat && etat.paiementOuvert === true && etat.abonne !== true
 }
+
+/**
+ * Y a-t-il un ABONNEMENT RÉEL derrière cet accès ?
+ *
+ * À ne jamais confondre avec `etat.abonne`, qui répond à une autre question :
+ * « faut-il ouvrir les leçons ? ». Les deux divergent dans trois cas, et
+ * chacun des trois afficherait sinon « Abonnement actif » à quelqu'un qui n'a
+ * jamais rien payé :
+ *   • boutique fermée (pas de clé Stripe) — tout est ouvert, rien n'est vendu ;
+ *   • mode test — l'app reste entière pour les élèves le temps des essais ;
+ *   • serveur muet — le doute profite à l'élève.
+ *
+ * Promettre un abonnement qui n'existe pas serait un mensonge idiot : la
+ * personne le découvrirait le jour où elle chercherait sa facture.
+ */
+export function abonnementReel(etat) {
+  if (!etat) return false
+  if (etat.via === 'famille') return true
+  return ['essai', 'actif', 'retard'].includes(etat.statut)
+}
