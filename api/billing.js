@@ -26,7 +26,7 @@
  *    alimenté par les webhooks. En cas de doute, c'est Stripe qui a raison.
  */
 import { serverReady, notConfigured, sql, assurerSchema } from './_lib/db.js'
-import { sessionOf } from './_lib/auth.js'
+import { sessionOf, isAdmin } from './_lib/auth.js'
 import { stripe, stripeReady, evenementVerifie } from './_lib/stripe.js'
 import {
   ZONES,
@@ -116,6 +116,24 @@ function zoneDeLaRequete(req) {
   const pays = req.headers['x-vercel-ip-country'] || req.headers['cf-ipcountry'] || ''
   return zoneDuPays(pays)
 }
+
+/**
+ * Sommes-nous sur les clés de TEST de Stripe ?
+ *
+ * Ce que ce drapeau règle, et c'est un vrai problème de calendrier : pour
+ * vérifier la chaîne de paiement de bout en bout (caisse → webhook →
+ * abonnement enregistré), il faut que le code soit DÉPLOYÉ — l'authentification
+ * est liée au domaine tamaspeak.com, une préversion ne saurait connecter
+ * personne. Il faut donc laisser les clés de test en production le temps de
+ * l'essai. Sans précaution, pendant ce temps, les vrais utilisateurs verraient
+ * un mur d'abonnement adossé à une caisse qui REFUSE les vraies cartes.
+ *
+ * D'où la règle : EN MODE TEST, LE VERROU NE S'APPLIQUE QU'AUX ADMINS. On voit
+ * exactement l'expérience réelle et on peut tout essayer ; tout le monde garde
+ * l'app entière, comme la veille. Le jour où les clés `sk_live_` arrivent, le
+ * verrou vaut pour tous — sans toucher une ligne de code.
+ */
+const modeTest = () => (process.env.STRIPE_SECRET_KEY || '').startsWith('sk_test_')
 
 /**
  * L'identifiant du Price Stripe pour (plan, zone) — quatre variables
@@ -287,18 +305,24 @@ async function etat(req, res, session) {
     // Sans clé Stripe, l'app ne verrouille RIEN (voir src/lib/abonnement.js) :
     // une boutique fermée ne peut pas exiger de ticket.
     paiementOuvert: stripeReady(),
+    // L'écran d'abonnement le dit en clair — on ne laisse personne croire
+    // qu'il vient de payer alors qu'il était en mode test.
+    modeTest: modeTest(),
   }
 
   if (!session) {
     return res.status(200).json({ ...base, connecte: false, abonne: !stripeReady() })
   }
 
+  // En test, seuls les admins subissent le verrou (voir modeTest ci-dessus).
+  const enRodage = modeTest() && !isAdmin(session)
+
   const acces = await accesDe(session.user.id)
   const a = acces.abonnement
   return res.status(200).json({
     ...base,
     connecte: true,
-    abonne: acces.abonne || !stripeReady(),
+    abonne: acces.abonne || !stripeReady() || enRodage,
     via: acces.via,
     proprietaire: acces.proprietaire || null,
     statut: a?.statut || 'aucun',

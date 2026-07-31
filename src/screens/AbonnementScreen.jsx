@@ -318,6 +318,16 @@ export function AbonnementScreen({ onBack, retour }) {
           </div>
         )}
 
+        {/* Mode test : dit franchement, et en haut. Quelqu'un qui « paie »
+            sans que rien ne soit débité doit le savoir avant, pas après. */}
+        {etat?.modeTest && (
+          <div className="mb-3 rounded-2xl border-2 border-coral bg-coral/10 px-3 py-2.5 text-[11.5px] font-bold leading-snug">
+            Mode test — aucun paiement réel. Utilise la carte d’essai
+            <span className="tabular-nums"> 4242 4242 4242 4242</span>, une date future et
+            n’importe quel code.
+          </div>
+        )}
+
         {etat === undefined && <p className="mt-6 text-center text-[12px] text-ink-soft">· · ·</p>}
 
         {etat === null && (
