@@ -159,7 +159,21 @@ function priceId(plan, zone) {
   return process.env[cle] || null
 }
 
-/** Même principe pour le secret du webhook : un point de terminaison par mode. */
+/**
+ * Le secret du webhook — un point de terminaison par mode, donc un secret
+ * par mode, et LES DEUX PEUVENT VIVRE CÔTE À CÔTE :
+ *
+ *   STRIPE_WEBHOOK_SECRET        le point de terminaison RÉEL
+ *   STRIPE_WEBHOOK_SECRET_TEST   celui du mode test
+ *
+ * On n'essaie jamais les deux sur un même événement, et ce n'est pas un
+ * oubli : accepter le secret de test en production reviendrait à lui donner
+ * les pouvoirs du secret réel — or un secret de test traîne dans les
+ * carnets, les captures d'écran et les journaux. Quiconque le connaîtrait
+ * pourrait forger un événement marqué `livemode: true` et s'offrir un
+ * abonnement. Un seul secret vaut donc à la fois, celui du mode en cours ;
+ * les événements de l'autre monde sont écartés plus haut, sans bruit.
+ */
 function webhookSecret() {
   if (modeTest() && process.env.STRIPE_WEBHOOK_SECRET_TEST) {
     return process.env.STRIPE_WEBHOOK_SECRET_TEST
@@ -623,6 +637,37 @@ async function webhook(req, res) {
   if (!secret || !stripeReady()) return res.status(503).json({ error: 'webhook non configuré' })
 
   const brut = await lireCorps(req)
+
+  /**
+   * PREMIER TRI : cet événement vient-il de NOTRE monde ?
+   *
+   * Les deux points de terminaison — celui du mode test, celui du mode réel —
+   * visent la même URL. Une fois en production, le point de terminaison de
+   * test existe toujours : au moindre essai, ses événements arriveraient ici,
+   * échoueraient à la vérification (ce n'est pas le bon secret), et Stripe
+   * réessaierait des heures durant avant de désactiver le point de
+   * terminaison pour cause d'échecs. Un beau piège à retardement.
+   *
+   * On lit donc `livemode` AVANT toute vérification, et on acquitte
+   * poliment ce qui ne nous concerne pas. Lire n'est pas croire : aucune
+   * décision n'est prise sur ce contenu non vérifié — on se contente de
+   * répondre « bien reçu, ce n'est pas pour moi ». Tout ce qui AGIT, plus
+   * bas, est passé par la signature.
+   */
+  let apercu = null
+  try {
+    apercu = JSON.parse(brut.toString('utf8'))
+  } catch {
+    /* illisible : la vérification de signature s'en chargera */
+  }
+  if (apercu && typeof apercu.livemode === 'boolean' && apercu.livemode === modeTest()) {
+    console.log(
+      `[tama] webhook ignoré (${apercu.type}) : événement ${apercu.livemode ? 'réel' : 'de test'} ` +
+        `alors que la clé est en mode ${modeTest() ? 'test' : 'réel'}`,
+    )
+    return res.status(200).json({ ok: true, ignore: 'mode' })
+  }
+
   const ev = evenementVerifie(brut, req.headers['stripe-signature'], secret)
   if (!ev) {
     // 400 volontaire : Stripe réessaiera, et une signature invalide doit
@@ -630,18 +675,6 @@ async function webhook(req, res) {
     // de webhook qui fuite ou d'un secret désynchronisé.
     console.error('[tama] webhook Stripe à signature invalide — rejeté')
     return res.status(400).json({ error: 'signature invalide' })
-  }
-
-  // Le monde de l'événement doit être LE NÔTRE. Les deux points de
-  // terminaison (test et réel) visent la même URL ; si les secrets venaient
-  // à se croiser, un événement de test pourrait toucher un abonnement réel.
-  // On acquitte sans rien faire plutôt que de réessayer en boucle.
-  if (ev.livemode === modeTest()) {
-    console.error(
-      `[tama] webhook ignoré : événement ${ev.livemode ? 'réel' : 'de test'} reçu ` +
-        `alors que la clé est en mode ${modeTest() ? 'test' : 'réel'}`,
-    )
-    return res.status(200).json({ ok: true, ignore: 'mode' })
   }
 
   // Anti-rejeu : Stripe garantit « au moins une fois », pas « exactement une
