@@ -353,7 +353,7 @@ export function AbonnementScreen({ onBack, retour }) {
             {/* Le mot qui manquait : en mode test, un « tout est ouvert »
                 inexpliqué envoie chercher la panne du côté de Stripe alors
                 qu'il manque une adresse dans ADMIN_EMAILS. */}
-            {etat.modeTest && etat.connecte && !etat.admin && (
+            {etat.modeTest && etat.connecte && etat.admin === false && (
               <span className="mt-2 block text-[10.5px] leading-snug">
                 Pendant les essais, seuls les comptes listés dans <b>ADMIN_EMAILS</b> voient les
                 formules. Ce compte n’en fait pas partie.

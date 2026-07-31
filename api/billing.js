@@ -136,6 +136,19 @@ function zoneDeLaRequete(req) {
 const modeTest = () => (process.env.STRIPE_SECRET_KEY || '').startsWith('sk_test_')
 
 /**
+ * A-t-on le droit de voir la raison TECHNIQUE d'un refus de caisse
+ * (« No such price: … », « les identifiants sont intervertis ») ?
+ *
+ * En mode test, oui : il n'y a personne d'autre. En mode réel, seulement les
+ * admins — ils sont déjà habilités à voir le tableau de bord, et sans cela
+ * une panne de facturation en production ne se diagnostiquerait qu'en
+ * fouillant les journaux d'un serveur depuis un téléphone, c'est-à-dire pas
+ * du tout. Pour tous les autres, le message reste humain et muet sur notre
+ * configuration.
+ */
+const detailPour = (session) => modeTest() || isAdmin(session)
+
+/**
  * L'identifiant du Price Stripe pour (plan, zone).
  *
  * Chez Stripe, le mode test et le mode réel sont deux mondes ÉTANCHES : un
@@ -409,9 +422,7 @@ async function checkout(req, res, session) {
   const souci = await priceConforme(price, plan, zone)
   if (souci) {
     console.error(`[tama] TARIF INCOHÉRENT, caisse refusée — ${souci}`)
-    // Le détail ne sort QU'EN MODE TEST : en production, il dirait à un
-    // inconnu comment notre facturation est configurée.
-    return res.status(503).json({ error: 'tarif non configuré', ...(modeTest() ? { detail: souci } : {}) })
+    return res.status(503).json({ error: 'tarif non configuré', ...(detailPour(session) ? { detail: souci } : {}) })
   }
 
   // Un seul client Stripe par compte, réutilisé : sans cela, chaque tentative
@@ -775,10 +786,8 @@ export default async function handler(req, res) {
     console.error(`[tama] billing ?r=${r} :`, e?.message, e?.stripe || '')
     return res.status(502).json({
       error: 'paiement indisponible',
-      // Même règle qu'au-dessus : le message brut de Stripe (« No such
-      // price: … ») est un cadeau pendant la mise en route, et une fuite
-      // d'information une fois en production.
-      ...(modeTest() ? { detail: e?.message || String(e) } : {}),
+      // Le message brut de Stripe, réservé à qui a le droit de le lire.
+      ...(detailPour(session) ? { detail: e?.message || String(e) } : {}),
     })
   }
 
