@@ -31,6 +31,7 @@ import { stripe, stripeReady, evenementVerifie } from './_lib/stripe.js'
 import {
   ZONES,
   PLANS,
+  DEVISE,
   FAMILLE_INVITES,
   ESSAI_JOURS,
   UNITES_LIBRES,
@@ -123,6 +124,46 @@ function zoneDeLaRequete(req) {
 function priceId(plan, zone) {
   const cle = `STRIPE_PRICE_${plan}_${zone}`.toUpperCase()
   return process.env[cle] || null
+}
+
+/**
+ * Le Price nommé par l'environnement vaut-il bien ce que l'app affiche ?
+ *
+ * LA FAUTE QU'ON EMPÊCHE ICI : les quatre `STRIPE_PRICE_*` se ressemblent
+ * tous (`price_1TzKr0BFur…`). Les intervertir prend trois secondes
+ * d'inattention et ne casse RIEN — l'app afficherait 4,99 € et Stripe
+ * débiterait 1,99 €, ou l'inverse, silencieusement, pendant des mois. C'est
+ * exactement l'écart affichage/débit que tout le reste du code s'applique à
+ * rendre impossible ; il serait absurde de le laisser rentrer par la porte
+ * de la configuration.
+ *
+ * On vérifie donc le montant, la devise et la récurrence AVANT d'ouvrir la
+ * caisse. Le résultat est mémorisé par instance : un aller-retour Stripe au
+ * premier passage en caisse après un démarrage à froid, zéro ensuite.
+ *
+ * @returns {Promise<string|null>} la raison du refus, ou null si tout est bon
+ */
+const pricesVerifies = new Set()
+
+async function priceConforme(price, plan, zone) {
+  if (pricesVerifies.has(price)) return null
+  const attendu = tarifsDe(zone)[plan]?.centimes
+  if (!attendu) return `aucun montant de référence pour ${plan}/${zone}`
+
+  const p = await stripe(`prices/${price}`, { method: 'GET' })
+
+  if (p.unit_amount !== attendu) {
+    return `le tarif ${plan}/${zone} vaut ${(p.unit_amount ?? 0) / 100} € chez Stripe, ` +
+      `l'app affiche ${attendu / 100} € — les identifiants STRIPE_PRICE_* sont probablement intervertis`
+  }
+  if (p.currency !== DEVISE) return `le tarif ${plan}/${zone} est en ${p.currency}, attendu en ${DEVISE}`
+  if (p.recurring?.interval !== 'month' || p.recurring?.interval_count !== 1) {
+    return `le tarif ${plan}/${zone} n'est pas un abonnement mensuel`
+  }
+  if (p.active === false) return `le tarif ${plan}/${zone} est archivé chez Stripe`
+
+  pricesVerifies.add(price)
+  return null
 }
 
 /** Le plan correspondant à un Price reçu de Stripe (chemin inverse). */
@@ -292,6 +333,15 @@ async function checkout(req, res, session) {
   const price = priceId(plan, zone)
   if (!price) {
     console.error(`[tama] Price Stripe manquant pour ${plan}/${zone} — voir .env.example`)
+    return res.status(503).json({ error: 'tarif non configuré' })
+  }
+
+  // On refuse d'ouvrir la caisse plutôt que de débiter un montant qui ne
+  // correspond pas à ce qui vient d'être affiché. Un abonnement en moins se
+  // rattrape ; un débit surprise, non.
+  const souci = await priceConforme(price, plan, zone)
+  if (souci) {
+    console.error(`[tama] TARIF INCOHÉRENT, caisse refusée — ${souci}`)
     return res.status(503).json({ error: 'tarif non configuré' })
   }
 

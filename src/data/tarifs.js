@@ -38,20 +38,36 @@ export const ESSAI_JOURS = 7
  */
 export const UNITES_LIBRES = 1
 
+/**
+ * `centimes` n'est PAS là pour débiter — seul Stripe débite, d'après le Price
+ * qu'on lui nomme. Il est là pour VÉRIFIER : avant chaque passage en caisse,
+ * le serveur relit le Price chez Stripe et refuse s'il ne vaut pas ce montant
+ * (voir api/billing.js).
+ *
+ * Ce qu'il empêche, très concrètement : les quatre identifiants de Price sont
+ * quatre variables d'environnement qui se ressemblent toutes
+ * (`price_1TzKr0BFur…`). Les intervertir est une faute d'inattention de trois
+ * secondes, invisible à l'œil, et elle facturerait 1,99 € à l'Europe ou
+ * 4,99 € à l'Algérie — sans que rien ne plante, pendant des mois. Avec cette
+ * vérification, l'interversion devient un refus bruyant au premier essai.
+ */
 export const TARIFS = Object.freeze({
   nord: {
     id: 'nord',
     libelle: 'Europe & Amériques',
-    solo: { prix: '4,99 €', parMois: '4,99 €/mois' },
-    famille: { prix: '14,99 €', parMois: '14,99 €/mois' },
+    solo: { prix: '4,99 €', parMois: '4,99 €/mois', centimes: 499 },
+    famille: { prix: '14,99 €', parMois: '14,99 €/mois', centimes: 1499 },
   },
   sud: {
     id: 'sud',
     libelle: 'Afrique & Asie',
-    solo: { prix: '1,99 €', parMois: '1,99 €/mois' },
-    famille: { prix: '5,99 €', parMois: '5,99 €/mois' },
+    solo: { prix: '1,99 €', parMois: '1,99 €/mois', centimes: 199 },
+    famille: { prix: '5,99 €', parMois: '5,99 €/mois', centimes: 599 },
   },
 })
+
+/** La devise unique de la facturation — les deux zones paient en euros. */
+export const DEVISE = 'eur'
 
 export const PLANS = Object.freeze({
   solo: {

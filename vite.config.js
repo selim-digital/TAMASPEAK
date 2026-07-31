@@ -39,6 +39,10 @@ const pwa = VitePWA({
     // 206, que la route precache ne sait pas produire. Le cache est
     // réchauffé côté page (warmAudioCache) pour garder le hors-ligne.
     globPatterns: ['**/*.{js,css,html,svg,png}'],
+    // Le tableau de bord admin ne voyage PAS dans la poche des élèves : ni
+    // pré-caché (il pèserait pour rien chez tout le monde), ni servi depuis
+    // le cache (on veut les chiffres du jour, jamais ceux d'avant-hier).
+    globIgnores: ['**/admin.html'],
     // ⚠️ LA LIGNE QUI A COÛTÉ DES HEURES. Sans elle, le repli de navigation
     // (navigateFallback → index.html) intercepte AUSSI le retour OAuth
     // `GET /api/auth/callback/google?code=…` : le service worker sert
@@ -47,7 +51,10 @@ const pwa = VitePWA({
     // silence. curl ne passe pas par le SW, donc toutes les sondes serveur
     // juraient que le rappel fonctionnait. Rien sous /api ne doit être
     // servi par le shell.
-    navigateFallbackDenylist: [/^\/api\//],
+    // Même piège que /api ci-dessus : sans /admin dans cette liste, ouvrir
+    // /admin.html servirait l'APP depuis le shell pré-caché au lieu de la
+    // page admin — un « clic qui ne fait rien », impossible à diagnostiquer.
+    navigateFallbackDenylist: [/^\/api\//, /^\/admin/],
     runtimeCaching: [
       {
         urlPattern: /\/audio\/.*\.(mp3|json)$/,
