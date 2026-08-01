@@ -10,6 +10,7 @@
  */
 import { serverReady, notConfigured, sql } from './_lib/db.js'
 import { sessionOf } from './_lib/auth.js'
+import { sansVisages } from './_lib/texte.js'
 
 const MOODS = new Set(['love', 'good', 'meh', 'bad'])
 const CATS = new Set(['idee', 'bug', 'contenu', 'autre'])
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
       ${session?.user?.id || null},
       ${mood},
       ${CATS.has(category) ? category : null},
-      ${typeof message === 'string' ? message.slice(0, 1000) : null},
+      ${typeof message === 'string' ? sansVisages(message.slice(0, 1000)) : null},
       ${LANGS.has(lang) ? lang : null}
     )`
   return res.status(200).json({ ok: true })

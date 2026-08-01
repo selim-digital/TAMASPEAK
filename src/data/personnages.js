@@ -142,15 +142,6 @@ export const PERSONNAGES = [
     embleme: '🛡️',
   },
   {
-    id: 'simohand',
-    nom: 'Si Mohand ou-Mhand',
-    dates: 'v. 1848 – 1905',
-    role: 'Le poète errant',
-    bio: 'Des centaines d’isefra — courts poèmes kabyles — composés sur les routes et transmis de bouche en bouche. Le plus cité des poètes kabyles.',
-    recit: null,
-    embleme: '🖋️',
-  },
-  {
     id: 'kaocen',
     nom: 'Kaocen ag Mohammed',
     dates: 'v. 1880 – 1919',
