@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TopBar } from '../components/TopBar.jsx'
 import { LessonNode } from '../components/LessonNode.jsx'
 import { landOf } from '../data/journey.js'
@@ -193,6 +193,9 @@ export function PathScreen({
 }) {
   const cheer = cheerFor(cheerCount)
   const scrollerRef = useRef(null)
+  // Tap sur une leçon encore verrouillée : on RÉPOND (signalé par Selim —
+  // un tap muet ressemble à une panne). L'indice s'efface tout seul.
+  const [indice, setIndice] = useState(null)
 
   // À l'ouverture, on se place sur la leçon en cours plutôt qu'en haut du
   // chemin : avec dix unités, l'élève ne doit pas avoir à se chercher.
@@ -225,9 +228,23 @@ export function PathScreen({
   function handleNode(node) {
     if (node.type === 'chest') {
       if (node.status === 'available') onOpenChest?.(node)
+      else if (node.status === 'locked') montrerIndice(node)
     } else if (node.status === 'current') {
       onSelectLesson?.(node)
+    } else if (node.status === 'locked') {
+      montrerIndice(node)
     }
+  }
+
+  function montrerIndice(node) {
+    sfx.click()
+    setIndice(
+      node.type === 'chest'
+        ? 'Ce cadeau s’ouvrira en avançant sur le chemin.'
+        : `« ${node.title} » s’ouvrira après les leçons précédentes — « Continuer » t’emmène à la tienne.`,
+    )
+    clearTimeout(montrerIndice.t)
+    montrerIndice.t = setTimeout(() => setIndice(null), 2800)
   }
 
   return (
@@ -247,6 +264,12 @@ export function PathScreen({
           vit désormais dans la barre d'onglets et l'écran Aujourd'hui.
           Ici : la carte du voyage, plein écran, et UN bouton fixe pour
           continuer sa leçon. */}
+
+      {indice && (
+        <p className="animate-rise mx-3.5 mb-1 rounded-xl border border-turquoise/40 bg-turquoise/10 px-3 py-2 text-center text-[11px] font-bold leading-snug text-ink">
+          {indice}
+        </p>
+      )}
 
       <div ref={scrollerRef} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-16">
         <div className="relative">

@@ -118,16 +118,23 @@ const DIAPOS = [
   {
     id: 'ensemble',
     etat: 'curious',
-    titre: 'On apprend ensemble',
+    titre: 'On apprend en famille',
     texte:
-      'Joue à deux sur un seul téléphone, pars en mission poser une question à un proche, et rapporte ses mots dans ton lexique — chaque famille a son parler, et le tien compte.',
+      'Invite tes proches dans ton cercle : défiez-vous à distance, chacun sur son téléphone — et demande-leur d’enregistrer un mot avec leur voix : c’est elle que tu entendras dans tes leçons.',
   },
   {
     id: 'tresors',
     etat: 'idle',
     titre: 'Écris, découvre, collectionne',
     texte:
-      'Trace le tifinagh au doigt, traverse l’histoire amazighe, et ouvre des coffres : couscous, bijoux, monuments… Toute une culture t’attend sur le chemin.',
+      'Trace le tifinagh au doigt, traverse l’histoire amazighe — des origines à aujourd’hui —, réponds aux quiz et ouvre des coffres : toute une culture t’attend.',
+  },
+  {
+    id: 'navigation',
+    etat: 'celebrate',
+    titre: 'Tout est sous ton pouce',
+    texte:
+      'En bas de l’écran : Aujourd’hui pour ta leçon du jour, le Chemin pour voir le voyage, les Jeux, ton Cercle — et Moi pour tout ce qui est à toi.',
   },
 ]
 

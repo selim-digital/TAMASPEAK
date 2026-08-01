@@ -935,6 +935,8 @@ export default function App() {
               onCercle={() => setScreen(ECRANS.CERCLE)}
               onQuiz={() => setScreen(ECRANS.QUIZ)}
               onDuo={() => setScreen(ECRANS.DUO)}
+              abonnement={abonnement}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
               faitIndex={store.faitIndex || 0}
               onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
