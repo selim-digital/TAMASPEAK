@@ -9,16 +9,49 @@ gardant sa propre progression :
 
 | Cours | Autonyme | Région | Contenu |
 | --- | --- | --- | --- |
-| Kabyle | Taqbaylit | Kabylie · Algérie | 10 unités, 35 leçons |
-| Tachelhit | Tacelḥit | Souss & Anti-Atlas · Maroc | 2 unités, 9 leçons |
-| Tarifit | Tarifit | Rif · Maroc | 2 unités, 9 leçons |
-| Tamazight (Atlas) | Tamaziɣt | Maroc central · Moyen Atlas | 2 unités, 9 leçons |
-| Amazighe standard | Tamaziɣt tanawayt | Norme officielle · tifinagh | 2 unités, 11 leçons |
+| Kabyle | Taqbaylit | Kabylie · Algérie | 15 unités, 53 leçons |
+| Tachelhit | Tacelḥit | Souss & Anti-Atlas · Maroc | 4 unités, 17 leçons |
+| Tarifit | Tarifit | Rif · Maroc | 4 unités, 17 leçons |
+| Tamazight (Atlas) | Tamaziɣt | Maroc central · Moyen Atlas | 4 unités, 17 leçons |
+| Amazighe standard | Tamaziɣt tanawayt | Norme officielle · tifinagh | 4 unités, 19 leçons |
+
+Les deux dernières unités de **chaque** cours sont **« Au travail »** et
+**« Au sport »** : ce sont les domaines où l'amazigh moderne emprunte le plus,
+et où le contraste entre le mot d'usage et le mot du fonds amazigh
+(lxedmet / tawuri, ryaḍa / addal, lkuṛa / takurt) s'enseigne le mieux.
 
 > **Le contenu linguistique est PROVISOIRE** et doit être validé par des
 > locuteurs natifs avant diffusion large. Chaque cours cite ses sources en tête
 > de son fichier (`src/data/courses/*.js`) et signale explicitement ce qui est
 > néologisme militant, emprunt arabe d'usage courant ou forme contestée.
+
+### Le lexique, et les emprunts à l'arabe
+
+```bash
+npm run gen:lexique   # → lexique.csv + lexique.md (les 5 cours, 268 entrées)
+npm run gen:audio     # → public/audio/manifest.json + content-review.csv (kabyle)
+```
+
+`lexique.md` est la **fiche de validation complète** : tout ce que l'app fait
+dire, langue par langue, avec le nom du fichier audio attendu. Elle est
+dérivée du contenu réel des cours — jamais tenue à la main, sinon elle
+divergerait dès la leçon suivante.
+
+Les expressions venues de l'arabe sont recensées dans `src/data/emprunts.js`.
+Quand l'élève **valide la bonne réponse** sur l'une d'elles, une modale lui
+donne le mot amazigh plus classique quand il en existe un (azul, tanemmirt,
+tawuri, addal…) — et dit, toujours, que **les deux sont justes** : l'arabe est
+présent depuis des siècles dans les régions et la culture amazighes. Trois
+garde-fous tiennent ce fichier honnête :
+
+- pas de « mot classique » inventé pour combler une case (`ssuq` n'a pas de
+  remplaçant vivant, et le dire vaut mieux que fabriquer) ;
+- les formules qui nomment Dieu (`Lla yɛawn`, `Qqim g lman`…) sont **hors du
+  registre** — ce sont des bénédictions, pas des choix de vocabulaire ;
+- ce dont l'origine est discutée attend dans `A_TRANCHER`, affiché nulle part.
+
+La modale s'affiche **une fois par mot et par langue** (`src/lib/emprunts.js`) :
+sinon, au troisième passage, on ferme sans lire.
 
 ## Démarrer
 
@@ -184,6 +217,7 @@ src/
     courses/*.js     contenu par langue (+ sources en commentaire)
     units.js         unités du cours de kabyle
     lessons.js       exercices du cours de kabyle
+    emprunts.js      les mots venus de l'arabe + le mot amazigh classique
     journey.js       les 11 paysages ; le voyage part de « chez » la langue
     badges.js        badges dérivés de la progression
   lib/
@@ -197,6 +231,7 @@ src/
 scripts/
   gen-icons.mjs      icônes PWA générées (rasterizer maison, sans dépendance)
   gen-audio-manifest.mjs
+  gen-lexique.mjs    lexique.csv + lexique.md — les 5 cours, fiche de validation
 ```
 
 ```

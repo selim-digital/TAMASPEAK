@@ -34,6 +34,7 @@ import { AccountScreen } from './screens/AccountScreen.jsx'
 import { AbonnementScreen } from './screens/AbonnementScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
 import { etatAbonnement, uniteOuverte, rejoindreFamille, oublierAbonnement } from './lib/abonnement.js'
+import { oublierEmprunts } from './lib/emprunts.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl, contentDigest } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -711,6 +712,9 @@ export default function App() {
               onFeedback={() => setScreen(ECRANS.FEEDBACK)}
               onResetLang={(langId) => {
                 // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
+                // Les modales d'emprunt partent avec : qui recommence le cours
+                // doit retrouver ses explications, pas un parcours muet.
+                oublierEmprunts(langId)
                 setStore((s) => {
                   const apres = resetLanguage(s, langId)
                   pushStore(apres)

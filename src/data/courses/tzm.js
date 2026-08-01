@@ -185,6 +185,127 @@ const tzm9 = [
   ),
 ]
 
+// -------- Unité 3 — Au travail --------
+// Au Moyen Atlas, le travail c'est d'abord la terre et le troupeau : le
+// vocabulaire pastoral (amksa, ulli, tafunast) est du fonds amazigh le mieux
+// conservé qui soit, là où les métiers de la ville passent tous par l'arabe.
+// L'unité boucle avec « Lla yɛawn », déjà appris à l'unité 1 : c'est la
+// salutation qu'on adresse justement à quelqu'un au travail.
+const tzm10 = [
+  qk('Que veut dire « Tawuri » ?', 'Tawuri', 'Le travail', ['Le travail', 'Le marché', 'La maison', 'Le champ']),
+  qk('Que veut dire « Lxdmt » ?', 'Lxdmt', 'Le travail (mot arabe)', [
+    'Le travail (mot arabe)',
+    'Le repos',
+    'Le salaire',
+    'Le marché',
+  ]),
+  qk('Que veut dire « Axddam » ?', 'Axddam', 'Le travailleur', ['Le travailleur', 'Le travail', 'Le patron', 'Le voisin']),
+  culture(
+    'À qui dit-on « Lla yɛawn » (que Dieu t’aide) ?',
+    'À quelqu’un en plein travail',
+    ['À quelqu’un en plein travail', 'À un enfant', 'À un invité qui part', 'À un malade'],
+  ),
+]
+
+const tzm11 = [
+  qk('Que veut dire « Afllaḥ » ?', 'Afllaḥ', 'Le paysan', ['Le paysan', 'Le berger', 'Le médecin', 'Le maçon']),
+  qk('Que veut dire « Amksa » ?', 'Amksa', 'Le berger', ['Le berger', 'Le paysan', 'Le voisin', 'Le marchand']),
+  qk('Que veut dire « Igr » ?', 'Igr', 'Le champ', ['Le champ', 'Le jardin', 'La montagne', 'La maison']),
+  match([
+    { kab: 'Afllaḥ', fr: 'Le paysan' },
+    { kab: 'Amksa', fr: 'Le berger' },
+    { kab: 'Igr', fr: 'Le champ' },
+  ]),
+]
+
+const tzm12 = [
+  qk('Que veut dire « Ulli » ?', 'Ulli', 'Les brebis', ['Les brebis', 'Les vaches', 'Les chevaux', 'Les poules']),
+  qk('Que veut dire « Tafunast » ?', 'Tafunast', 'La vache', ['La vache', 'La brebis', 'La jument', 'La chèvre']),
+  qk('Que veut dire « Aɣyul » ?', 'Aɣyul', 'L’âne', ['L’âne', 'Le cheval', 'Le mulet', 'Le chien']),
+  culture(
+    'Le Moyen Atlas est avant tout une région…',
+    'D’élevage et de transhumance',
+    ['D’élevage et de transhumance', 'De pêche', 'De mines', 'De vignobles'],
+  ),
+]
+
+const tzm13 = [
+  match([
+    { kab: 'Tawuri', fr: 'Le travail' },
+    { kab: 'Axddam', fr: 'Le travailleur' },
+    { kab: 'Amksa', fr: 'Le berger' },
+  ]),
+  q('Comment dit-on « Le champ » en tamazight ?', 'Le champ', 'Igr', ['Igr', 'Taddart', 'Ssuq', 'Ulli']),
+  match([
+    { kab: 'Ulli', fr: 'Les brebis' },
+    { kab: 'Tafunast', fr: 'La vache' },
+    { kab: 'Aɣyul', fr: 'L’âne' },
+  ]),
+  culture(
+    '« Tawuri » et « lxdmt » veulent dire « travail ». Lequel est amazigh ?',
+    'Tawuri',
+    ['Tawuri', 'Lxdmt', 'Les deux', 'Aucun'],
+  ),
+]
+
+// -------- Unité 4 — Au sport --------
+const tzm14 = [
+  qk('Que veut dire « Addal » ?', 'Addal', 'Le sport', ['Le sport', 'Le jeu', 'La course', 'Le travail']),
+  qk('Que veut dire « Takurt » ?', 'Takurt', 'Le ballon', ['Le ballon', 'Le pied', 'Le jeu', 'La main']),
+  qk('Que veut dire « Urar » ?', 'Urar', 'Le jeu', ['Le jeu', 'Le sport', 'Le ballon', 'La course']),
+  culture(
+    '« Addal » (le sport) s’entend surtout…',
+    'À l’école et à la télévision',
+    ['À l’école et à la télévision', 'Au marché', 'Entre bergers', 'Nulle part'],
+  ),
+]
+
+const tzm15 = [
+  qk('Que veut dire « Tazzla » ?', 'Tazzla', 'La course', ['La course', 'Le saut', 'La marche', 'Le jeu']),
+  qk('Que veut dire « Azzl ! » ?', 'Azzl !', 'Cours !', ['Cours !', 'Saute !', 'Viens !', 'Assieds-toi !']),
+  match([
+    { kab: 'Tazzla', fr: 'La course' },
+    { kab: 'Azzl !', fr: 'Cours !' },
+    { kab: 'Urar', fr: 'Le jeu' },
+  ]),
+  culture(
+    'Le kabyle dit « tazzla », le tarifit « tazzřa ». Le tamazight dit…',
+    'Tazzla',
+    ['Tazzla', 'Tazzřa', 'Ryaḍa', 'Uraren'],
+  ),
+]
+
+const tzm16 = [
+  qk('Que veut dire « Aḍar » ?', 'Aḍar', 'Le pied', ['Le pied', 'La main', 'La tête', 'Le bras']),
+  qk('Que veut dire « Afus » ?', 'Afus', 'La main', ['La main', 'Le pied', 'La tête', 'Le doigt']),
+  qk('Que veut dire « Ixf » ?', 'Ixf', 'La tête', ['La tête', 'Le pied', 'La main', 'Le cœur']),
+  match([
+    { kab: 'Aḍar', fr: 'Le pied' },
+    { kab: 'Afus', fr: 'La main' },
+    { kab: 'Ixf', fr: 'La tête' },
+  ]),
+]
+
+const tzm17 = [
+  match([
+    { kab: 'Addal', fr: 'Le sport' },
+    { kab: 'Takurt', fr: 'Le ballon' },
+    { kab: 'Tazzla', fr: 'La course' },
+    { kab: 'Aḍar', fr: 'Le pied' },
+  ]),
+  q('Comment dit-on « Le ballon » en tamazight ?', 'Le ballon', 'Takurt', ['Takurt', 'Lkuṛa', 'Urar', 'Addal']),
+  culture(
+    'Pourquoi « takurt » plutôt que « lkuṛa » dans ce cours ?',
+    'Takurt est le mot amazigh',
+    ['Takurt est le mot amazigh', 'Lkuṛa n’existe pas', 'Takurt est plus court', 'C’est un mot français'],
+  ),
+  match([
+    { kab: 'Tawuri', fr: 'Le travail' },
+    { kab: 'Urar', fr: 'Le jeu' },
+    { kab: 'Ixf', fr: 'La tête' },
+  ]),
+]
+
 export const tzmUnits = [
   {
     id: 'tzm-u1',
@@ -215,6 +336,37 @@ export const tzmUnits = [
       { id: 'tzm9', title: 'Tifinagh & cousins', icon: 'ⵣ', status: 'locked' },
     ],
   },
+  {
+    id: 'tzm-u3',
+    level: 'Initiation',
+    unitLabel: 'Unité 3',
+    title: 'Au travail — Tawuri',
+    trophy: '🛠️',
+    lessons: [
+      { id: 'tzm10', title: 'Le travail', icon: '🛠️', status: 'locked' },
+      { id: 'tzm11', title: 'La terre', icon: '🌾', status: 'locked' },
+      { id: 'tzm-c3', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'tzm12', title: 'Le troupeau', icon: '🐑', status: 'locked' },
+      { id: 'tzm13', title: 'Révision du travail', icon: '🏅', status: 'locked' },
+    ],
+  },
+  {
+    id: 'tzm-u4',
+    level: 'Initiation',
+    unitLabel: 'Unité 4',
+    title: 'Au sport — Addal',
+    trophy: '🏃',
+    lessons: [
+      { id: 'tzm14', title: 'Le sport', icon: '🏃', status: 'locked' },
+      { id: 'tzm15', title: 'Courir', icon: '👟', status: 'locked' },
+      { id: 'tzm-c4', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'tzm16', title: 'Le corps qui bouge', icon: '🖐️', status: 'locked' },
+      { id: 'tzm17', title: 'Révision du sport', icon: '🏅', status: 'locked' },
+    ],
+  },
 ]
 
-export const tzmLessons = { tzm1, tzm2, tzm3, tzm4, tzm5, tzm6, tzm7, tzm8, tzm9 }
+export const tzmLessons = {
+  tzm1, tzm2, tzm3, tzm4, tzm5, tzm6, tzm7, tzm8, tzm9,
+  tzm10, tzm11, tzm12, tzm13, tzm14, tzm15, tzm16, tzm17,
+}

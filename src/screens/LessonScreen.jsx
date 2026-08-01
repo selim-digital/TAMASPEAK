@@ -3,10 +3,13 @@ import { Button } from '../components/Button.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { FeedbackBar } from '../components/FeedbackBar.jsx'
 import { MatchExercise } from '../components/MatchExercise.jsx'
+import { EmpruntModal } from '../components/EmpruntModal.jsx'
 import { Scene } from '../components/illustrations/Scenes.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { playWord, isProvisional } from '../lib/audio.js'
 import { hasVoice } from '../lib/speakerVoice.js'
+import { trouverEmprunt } from '../data/emprunts.js'
+import { dejaVu, marquerVu } from '../lib/emprunts.js'
 import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -69,6 +72,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const [praise, setPraise] = useState(null)
   const [shakeKey, setShakeKey] = useState(0)
   const [audioMode, setAudioMode] = useState(null)
+  const [emprunt, setEmprunt] = useState(null)
 
   const ex = exercises[index]
   const isMatch = ex.type === 'match'
@@ -80,6 +84,10 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   // Le mot amazigh de l'exercice : c'est `word`, sauf en fr→kab où l'énoncé
   // est français et où le mot à prononcer est la réponse.
   const motAmazigh = ex.kind === 'fr-to-kab' ? ex.answer : ex.word
+  // Sur un exercice « image », l'énoncé est un dessin : le mot amazigh est la
+  // bonne réponse. Ailleurs, `motAmazigh` suffit — et les questions de
+  // culture, dont les deux faces sont françaises, ne matchent rien.
+  const motDeLExercice = ex.type === 'image' ? ex.answer : motAmazigh
   // Une contribution rend audible un mot qui ne l'était pas : c'est ainsi que
   // les langues sans aucun enregistrement natif gagnent du son. On ne dévoile
   // jamais la réponse avant l'heure (fr→kab : après validation).
@@ -117,6 +125,22 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
     sfx.wrong()
   }
 
+  /**
+   * La modale « ce mot vient de l'arabe » — demandée par Selim.
+   *
+   * Elle ne s'ouvre qu'APRÈS une bonne réponse : c'est un cadeau de fin de
+   * question, pas un avertissement. Une fois par mot et par langue (voir
+   * lib/emprunts.js), et jamais sur un exercice « associe » — une grille
+   * porte plusieurs paires, on n'empile pas trois explications d'un coup.
+   */
+  function montrerEmprunt() {
+    if (!motDeLExercice) return
+    const e = trouverEmprunt(lang, motDeLExercice)
+    if (!e || dejaVu(lang, e.mot)) return
+    marquerVu(lang, e.mot)
+    setEmprunt(e)
+  }
+
   function choiceState(choice) {
     if (!answered) return selected === choice ? 'selected' : 'idle'
     if (choice === ex.answer) return 'correct'
@@ -146,13 +170,16 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
     setAnswered(false)
     setAudioMode(null)
     setPraise(null)
+    setEmprunt(null)
   }
 
   function handleAction() {
     if (!answered) {
       if (isMatch) return
-      if (selected === ex.answer) markCorrect()
-      else markWrong()
+      if (selected === ex.answer) {
+        markCorrect()
+        montrerEmprunt()
+      } else markWrong()
       setAnswered(true)
       // fr→kab : on fait entendre la bonne réponse en kabyle.
       if (!ex.audio && ex.kind === 'fr-to-kab') playWord(ex.answer, lang).then(setAudioMode)
@@ -165,7 +192,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const actionDisabled = !answered && (isMatch || !selected)
 
   return (
-    <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
+    <div className="animate-enter relative flex min-h-0 flex-1 flex-col bg-cream">
       <div className="flex items-center gap-3 px-4 pt-8 pb-2">
         <button type="button" onClick={onExit} aria-label="Quitter la leçon" className="text-xl font-extrabold text-ink-soft">
           ✕
@@ -269,6 +296,8 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
           {actionLabel}
         </Button>
       </div>
+
+      <EmpruntModal emprunt={emprunt} onClose={() => setEmprunt(null)} />
     </div>
   )
 }

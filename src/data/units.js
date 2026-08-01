@@ -192,5 +192,39 @@ export const units = [
       { id: 'l45', title: 'Grande révision', icon: '🎓', status: 'locked' },
     ],
   },
+
+  // ---- « Au travail » et « au sport » — demandés par Selim, et présents
+  // dans les CINQ cours. Ce sont les deux domaines où l'amazigh moderne
+  // emprunte le plus à l'arabe : chaque unité enseigne donc le mot d'usage
+  // ET le mot amazigh, sans en cacher un derrière l'autre (voir la modale
+  // des emprunts, data/emprunts.js).
+  {
+    id: 'u14',
+    level: 'Confirmé',
+    unitLabel: 'Unité 14',
+    title: 'Au travail — Axeddim',
+    trophy: '🛠️',
+    lessons: [
+      { id: 'l46', title: 'Le travail', icon: '🛠️', status: 'locked' },
+      { id: 'l47', title: 'Les métiers', icon: '👷', status: 'locked' },
+      { id: 'chest14', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l48', title: 'Où travailles-tu ?', icon: '💬', status: 'locked' },
+      { id: 'l49', title: 'Révision du travail', icon: '🏅', status: 'locked' },
+    ],
+  },
+  {
+    id: 'u15',
+    level: 'Confirmé',
+    unitLabel: 'Unité 15',
+    title: 'Au sport — Addal',
+    trophy: '🏃',
+    lessons: [
+      { id: 'l50', title: 'Le sport', icon: '🏃', status: 'locked' },
+      { id: 'l51', title: 'Courir & bouger', icon: '👟', status: 'locked' },
+      { id: 'chest15', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'l52', title: 'Jouer ensemble', icon: '🤾', status: 'locked' },
+      { id: 'l53', title: 'Révision du sport', icon: '🏅', status: 'locked' },
+    ],
+  },
 ]
 

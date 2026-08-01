@@ -170,6 +170,156 @@ const rif9 = [
   ),
 ]
 
+// -------- Unité 3 — Au travail --------
+// Le Rif est la région amazighe qui emprunte le plus : à l'arabe pour le
+// travail, à l'espagnol pour tout ce qui est venu du protectorat de Melilla
+// et de Nador (Kossmann, « Loanwords in Tarifiyt »). Le cours l'enseigne
+// tel quel, en nommant chaque emprunt — c'est la vérité du terrain, et
+// c'est aussi ce que l'apprenant entendra là-bas.
+const rif10 = [
+  qk('Que veut dire « Lxedmet » ?', 'Lxedmet', 'Le travail', ['Le travail', 'Le marché', 'La maison', 'Le chemin']),
+  qk('Que veut dire « Axeddam » ?', 'Axeddam', 'Le travailleur', [
+    'Le travailleur',
+    'Le travail',
+    'Le voisin',
+    'Le patron',
+  ]),
+  q('Comment dit-on « Le travail » en tarifit ?', 'Le travail', 'Lxedmet', ['Lxedmet', 'Tawuri', 'Ssuq', 'Uraren']),
+  culture(
+    'Le mot amazigh pour « travail », vivant au Souss et dans l’Atlas, est…',
+    'Tawuri',
+    ['Tawuri', 'Lxedmet', 'Ssuq', 'Ryaḍa'],
+  ),
+]
+
+const rif11 = [
+  qk('Que veut dire « Afellaḥ » ?', 'Afellaḥ', 'Le paysan', ['Le paysan', 'Le médecin', 'Le berger', 'Le maçon']),
+  qk('Que veut dire « Ṭṭbib » ?', 'Ṭṭbib', 'Le médecin', ['Le médecin', 'Le paysan', 'Le maître', 'Le marchand']),
+  qk('Que veut dire « Lmɛellem » ?', 'Lmɛellem', 'Le patron, le maître artisan', [
+    'Le patron, le maître artisan',
+    'L’apprenti',
+    'Le voisin',
+    'Le vieil homme',
+  ]),
+  culture(
+    'Ces trois noms de métiers viennent…',
+    'De l’arabe',
+    ['De l’arabe', 'De l’espagnol', 'Du berbère ancien', 'Du français'],
+  ),
+]
+
+const rif12 = [
+  qk('Que veut dire « Ssuq » ?', 'Ssuq', 'Le marché', ['Le marché', 'La boutique', 'Le champ', 'La rue']),
+  qk('Que veut dire « Taḥanut » ?', 'Taḥanut', 'La boutique', ['La boutique', 'Le marché', 'La maison', 'La porte']),
+  qk('Que veut dire « Iger » ?', 'Iger', 'Le champ', ['Le champ', 'Le jardin', 'La montagne', 'Le village']),
+  culture(
+    'Le tarifit emprunte aussi à l’espagnol. Lequel de ces mots en vient ?',
+    'Simana (la semaine)',
+    ['Simana (la semaine)', 'Lxedmet (le travail)', 'Iger (le champ)', 'Afellaḥ (le paysan)'],
+  ),
+]
+
+const rif13 = [
+  match([
+    { kab: 'Lxedmet', fr: 'Le travail' },
+    { kab: 'Axeddam', fr: 'Le travailleur' },
+    { kab: 'Ssuq', fr: 'Le marché' },
+  ]),
+  q('Comment dit-on « Le champ » en tarifit ?', 'Le champ', 'Iger', ['Iger', 'Taḥanut', 'Ssuq', 'Lxedmet']),
+  match([
+    { kab: 'Afellaḥ', fr: 'Le paysan' },
+    { kab: 'Ṭṭbib', fr: 'Le médecin' },
+    { kab: 'Taḥanut', fr: 'La boutique' },
+  ]),
+  culture(
+    'Dans le Rif, les mots du travail moderne sont surtout…',
+    'Empruntés à l’arabe',
+    ['Empruntés à l’arabe', 'Empruntés au français', 'Tous amazighs', 'Empruntés au turc'],
+  ),
+]
+
+// -------- Unité 4 — Au sport --------
+const rif14 = [
+  qk('Que veut dire « Ryaḍa » ?', 'Ryaḍa', 'Le sport', ['Le sport', 'Le jeu', 'La course', 'La fête']),
+  qk('Que veut dire « Lkuṛa » ?', 'Lkuṛa', 'Le ballon', ['Le ballon', 'Le pied', 'Le jeu', 'La main']),
+  qk('Que veut dire « Uraren » ?', 'Uraren', 'Les jeux', ['Les jeux', 'Les enfants', 'Les mains', 'Les jours']),
+  culture(
+    'Au Rif, « le sport » se dit tous les jours…',
+    'Ryaḍa',
+    ['Ryaḍa', 'Addal', 'Uraren', 'Lkuṛa'],
+  ),
+]
+
+const rif15 = [
+  qk('Que veut dire « Tazzřa » ?', 'Tazzřa', 'La course', ['La course', 'Le saut', 'La marche', 'Le jeu']),
+  qk('Que veut dire « Azzeř ! » ?', 'Azzeř !', 'Cours !', ['Cours !', 'Saute !', 'Viens !', 'Assieds-toi !']),
+  culture(
+    'Pourquoi dit-on « tazzřa » et non « tazzla » ?',
+    'Le tarifit change le « l » en « ř »',
+    [
+      'Le tarifit change le « l » en « ř »',
+      'C’est un emprunt à l’espagnol',
+      'C’est le pluriel',
+      'C’est le féminin',
+    ],
+  ),
+  match([
+    { kab: 'Tazzřa', fr: 'La course' },
+    { kab: 'Azzeř !', fr: 'Cours !' },
+    { kab: 'Uraren', fr: 'Les jeux' },
+  ]),
+]
+
+const rif16 = [
+  qk('Que veut dire « Takurt » ?', 'Takurt', 'Le ballon (mot amazigh)', [
+    'Le ballon (mot amazigh)',
+    'La course',
+    'Le jeu',
+    'Le pied',
+  ]),
+  qk('Que veut dire « Addal » ?', 'Addal', 'Le sport (mot amazigh)', [
+    'Le sport (mot amazigh)',
+    'Le jeu',
+    'Le ballon',
+    'Le travail',
+  ]),
+  culture(
+    '« Lkuṛa » et « takurt » désignent le ballon. Lequel est amazigh ?',
+    'Takurt',
+    ['Takurt', 'Lkuṛa', 'Les deux', 'Aucun'],
+  ),
+  match([
+    { kab: 'Addal', fr: 'Le sport' },
+    { kab: 'Takurt', fr: 'Le ballon' },
+    { kab: 'Ryaḍa', fr: 'Le sport (arabe)' },
+  ]),
+]
+
+const rif17 = [
+  match([
+    { kab: 'Ryaḍa', fr: 'Le sport' },
+    { kab: 'Lkuṛa', fr: 'Le ballon' },
+    { kab: 'Tazzřa', fr: 'La course' },
+    { kab: 'Uraren', fr: 'Les jeux' },
+  ]),
+  q('Comment dit-on « Cours ! » en tarifit ?', 'Cours !', 'Azzeř !', ['Azzeř !', 'Azzel !', 'Tazzřa', 'Uraren']),
+  culture(
+    'Ce que le Rif dit du sport et du travail, en un mot…',
+    'Les mots d’usage sont empruntés, les mots amazighs existent aussi',
+    [
+      'Les mots d’usage sont empruntés, les mots amazighs existent aussi',
+      'Tout est amazigh',
+      'Tout est arabe',
+      'Aucun mot n’existe',
+    ],
+  ),
+  match([
+    { kab: 'Lxedmet', fr: 'Le travail' },
+    { kab: 'Addal', fr: 'Le sport' },
+    { kab: 'Iger', fr: 'Le champ' },
+  ]),
+]
+
 export const rifUnits = [
   {
     id: 'rif-u1',
@@ -200,6 +350,37 @@ export const rifUnits = [
       { id: 'rif9', title: 'Le son du Rif', icon: 'ⵣ', status: 'locked' },
     ],
   },
+  {
+    id: 'rif-u3',
+    level: 'Initiation',
+    unitLabel: 'Unité 3',
+    title: 'Au travail — Lxedmet',
+    trophy: '🛠️',
+    lessons: [
+      { id: 'rif10', title: 'Le travail', icon: '🛠️', status: 'locked' },
+      { id: 'rif11', title: 'Les métiers', icon: '👷', status: 'locked' },
+      { id: 'rif-c3', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'rif12', title: 'Marché & champ', icon: '🛒', status: 'locked' },
+      { id: 'rif13', title: 'Révision du travail', icon: '🏅', status: 'locked' },
+    ],
+  },
+  {
+    id: 'rif-u4',
+    level: 'Initiation',
+    unitLabel: 'Unité 4',
+    title: 'Au sport — Ryaḍa',
+    trophy: '🏃',
+    lessons: [
+      { id: 'rif14', title: 'Le sport', icon: '🏃', status: 'locked' },
+      { id: 'rif15', title: 'Courir', icon: '👟', status: 'locked' },
+      { id: 'rif-c4', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'rif16', title: 'Lkuṛa ou takurt ?', icon: '⚖️', status: 'locked' },
+      { id: 'rif17', title: 'Révision du sport', icon: '🏅', status: 'locked' },
+    ],
+  },
 ]
 
-export const rifLessons = { rif1, rif2, rif3, rif4, rif5, rif6, rif7, rif8, rif9 }
+export const rifLessons = {
+  rif1, rif2, rif3, rif4, rif5, rif6, rif7, rif8, rif9,
+  rif10, rif11, rif12, rif13, rif14, rif15, rif16, rif17,
+}

@@ -233,6 +233,133 @@ const zgh11 = [
   ),
 ]
 
+// -------- Unité 3 — Le travail (ⵜⴰⵡⵓⵔⵉ) --------
+// Ici le travail se LIT avant de se dire : chaque mot est donné en tifinagh,
+// comme sur un panneau ou dans un manuel. C'est aussi l'unité où les
+// néologismes de l'IRCAM (ⵜⵉⵏⵎⵍ l'école, ⴰⴷⵍⵉⵙ le livre, tous deux marqués
+// « néo. » au dictionnaire) cessent d'être une curiosité de l'unité 2 pour
+// devenir du vocabulaire — la norme sert précisément à nommer l'école.
+const zgh12 = [
+  qk('Que veut dire ⵜⴰⵡⵓⵔⵉ (tawuri) ?', 'ⵜⴰⵡⵓⵔⵉ', 'Le travail', ['Le travail', 'Le marché', 'La maison', 'Le livre']),
+  qk('Que veut dire ⵜⵉⵏⵎⵍ (tinml) ?', 'ⵜⵉⵏⵎⵍ', 'L’école', ['L’école', 'La maison', 'La boutique', 'Le champ']),
+  qk('Que veut dire ⴰⵙⵍⵎⴰⴷ (aslmad) ?', 'ⴰⵙⵍⵎⴰⴷ', 'L’enseignant', ['L’enseignant', 'L’élève', 'Le paysan', 'Le médecin']),
+  match([
+    { kab: 'ⵜⴰⵡⵓⵔⵉ', fr: 'Le travail' },
+    { kab: 'ⵜⵉⵏⵎⵍ', fr: 'L’école' },
+    { kab: 'ⴰⵙⵍⵎⴰⴷ', fr: 'L’enseignant' },
+  ]),
+]
+
+const zgh13 = [
+  qk('Que veut dire ⴰⵏⵍⵎⴰⴷ (anlmad) ?', 'ⴰⵏⵍⵎⴰⴷ', 'L’élève', ['L’élève', 'L’enseignant', 'L’enfant', 'Le livre']),
+  qk('Que veut dire ⴰⴷⵍⵉⵙ (adlis) ?', 'ⴰⴷⵍⵉⵙ', 'Le livre', ['Le livre', 'L’école', 'Le cahier', 'La lettre']),
+  culture(
+    'Pourquoi l’IRCAM a-t-il dû créer ⵜⵉⵏⵎⵍ (école) et ⴰⴷⵍⵉⵙ (livre) ?',
+    'L’école en amazighe est récente',
+    [
+      'L’école en amazighe est récente',
+      'Les anciens mots étaient interdits',
+      'Ils viennent du kabyle',
+      'Ce sont des mots arabes',
+    ],
+  ),
+  match([
+    { kab: 'ⴰⵏⵍⵎⴰⴷ', fr: 'L’élève' },
+    { kab: 'ⴰⴷⵍⵉⵙ', fr: 'Le livre' },
+    { kab: 'ⵜⵉⵏⵎⵍ', fr: 'L’école' },
+  ]),
+]
+
+const zgh14 = [
+  qk('Que veut dire ⴰⴼⵍⵍⴰⵃ (afllaḥ) ?', 'ⴰⴼⵍⵍⴰⵃ', 'Le paysan', ['Le paysan', 'Le berger', 'Le médecin', 'Le marchand']),
+  qk('Que veut dire ⴰⵎⴽⵙⴰ (amksa) ?', 'ⴰⵎⴽⵙⴰ', 'Le berger', ['Le berger', 'Le paysan', 'Le voisin', 'L’élève']),
+  qk('Que veut dire ⵜⴰⵃⴰⵏⵓⵜ (taḥanut) ?', 'ⵜⴰⵃⴰⵏⵓⵜ', 'La boutique', ['La boutique', 'Le marché', 'L’école', 'La maison']),
+  match([
+    { kab: 'ⴰⴼⵍⵍⴰⵃ', fr: 'Le paysan' },
+    { kab: 'ⴰⵎⴽⵙⴰ', fr: 'Le berger' },
+    { kab: 'ⵜⴰⵃⴰⵏⵓⵜ', fr: 'La boutique' },
+  ]),
+]
+
+const zgh15 = [
+  qk('Lis ce mot : ⵍⵅⴷⵎⵜ', 'ⵍⵅⴷⵎⵜ', 'lxdmt — le travail (mot arabe)', [
+    'lxdmt — le travail (mot arabe)',
+    'lxmdt',
+    'lkhdmt — l’école',
+    'lxdmn',
+  ]),
+  culture(
+    'Deux mots pour « travail » : ⵜⴰⵡⵓⵔⵉ et ⵍⵅⴷⵎⵜ. Lequel la norme retient-elle ?',
+    'ⵜⴰⵡⵓⵔⵉ (tawuri)',
+    ['ⵜⴰⵡⵓⵔⵉ (tawuri)', 'ⵍⵅⴷⵎⵜ (lxdmt)', 'Les deux', 'Aucun'],
+  ),
+  match([
+    { kab: 'ⵜⴰⵡⵓⵔⵉ', fr: 'Le travail' },
+    { kab: 'ⴰⵙⵍⵎⴰⴷ', fr: 'L’enseignant' },
+    { kab: 'ⴰⴼⵍⵍⴰⵃ', fr: 'Le paysan' },
+    { kab: 'ⵜⴰⵃⴰⵏⵓⵜ', fr: 'La boutique' },
+  ]),
+  qk('Que veut dire ⵜⴰⵡⵓⵔⵉ (tawuri) ?', 'ⵜⴰⵡⵓⵔⵉ', 'Le travail', ['Le travail', 'L’école', 'Le berger', 'Le livre']),
+]
+
+// -------- Unité 4 — Le sport (ⴰⴷⴷⴰⵍ) --------
+const zgh16 = [
+  qk('Que veut dire ⴰⴷⴷⴰⵍ (addal) ?', 'ⴰⴷⴷⴰⵍ', 'Le sport', ['Le sport', 'Le jeu', 'La course', 'Le travail']),
+  qk('Que veut dire ⵜⴰⴽⵓⵔⵜ (takurt) ?', 'ⵜⴰⴽⵓⵔⵜ', 'Le ballon', ['Le ballon', 'Le pied', 'La main', 'Le jeu']),
+  qk('Que veut dire ⵓⵔⴰⵔ (urar) ?', 'ⵓⵔⴰⵔ', 'Le jeu', ['Le jeu', 'Le sport', 'Le ballon', 'La course']),
+  match([
+    { kab: 'ⴰⴷⴷⴰⵍ', fr: 'Le sport' },
+    { kab: 'ⵜⴰⴽⵓⵔⵜ', fr: 'Le ballon' },
+    { kab: 'ⵓⵔⴰⵔ', fr: 'Le jeu' },
+  ]),
+]
+
+const zgh17 = [
+  qk('Que veut dire ⵜⴰⵣⵣⵍⴰ (tazzla) ?', 'ⵜⴰⵣⵣⵍⴰ', 'La course', ['La course', 'Le saut', 'La marche', 'Le jeu']),
+  qk('Que veut dire ⴰⵣⵣⵍ (azzl) ?', 'ⴰⵣⵣⵍ', 'Cours !', ['Cours !', 'Saute !', 'Viens !', 'Arrête !']),
+  culture(
+    'ⵜⴰⵣⵣⵍⴰ s’écrit sans « e ». Pourquoi ?',
+    'La norme n’écrit pas le schwa',
+    ['La norme n’écrit pas le schwa', 'Le mot est arabe', 'C’est un pluriel', 'C’est une abréviation'],
+  ),
+  match([
+    { kab: 'ⵜⴰⵣⵣⵍⴰ', fr: 'La course' },
+    { kab: 'ⴰⵣⵣⵍ', fr: 'Cours !' },
+    { kab: 'ⵓⵔⴰⵔ', fr: 'Le jeu' },
+  ]),
+]
+
+const zgh18 = [
+  qk('Que veut dire ⴰⴹⴰⵔ (aḍar) ?', 'ⴰⴹⴰⵔ', 'Le pied', ['Le pied', 'La main', 'La tête', 'Le bras']),
+  qk('Que veut dire ⴰⴼⵓⵙ (afus) ?', 'ⴰⴼⵓⵙ', 'La main', ['La main', 'Le pied', 'La tête', 'Le doigt']),
+  qk('Que veut dire ⵉⵅⴼ (ixf) ?', 'ⵉⵅⴼ', 'La tête', ['La tête', 'Le pied', 'La main', 'Le cœur']),
+  match([
+    { kab: 'ⴰⴹⴰⵔ', fr: 'Le pied' },
+    { kab: 'ⴰⴼⵓⵙ', fr: 'La main' },
+    { kab: 'ⵉⵅⴼ', fr: 'La tête' },
+  ]),
+]
+
+const zgh19 = [
+  match([
+    { kab: 'ⴰⴷⴷⴰⵍ', fr: 'Le sport' },
+    { kab: 'ⵜⴰⴽⵓⵔⵜ', fr: 'Le ballon' },
+    { kab: 'ⵜⴰⵣⵣⵍⴰ', fr: 'La course' },
+    { kab: 'ⴰⴹⴰⵔ', fr: 'Le pied' },
+  ]),
+  qk('Que veut dire ⴰⴷⴷⴰⵍ (addal) ?', 'ⴰⴷⴷⴰⵍ', 'Le sport', ['Le sport', 'Le travail', 'L’école', 'Le jeu']),
+  culture(
+    'Sur un panneau marocain, ⴰⴷⴷⴰⵍ signale…',
+    'Le sport',
+    ['Le sport', 'L’école', 'L’hôpital', 'La mairie'],
+  ),
+  match([
+    { kab: 'ⵜⴰⵡⵓⵔⵉ', fr: 'Le travail' },
+    { kab: 'ⵓⵔⴰⵔ', fr: 'Le jeu' },
+    { kab: 'ⵉⵅⴼ', fr: 'La tête' },
+  ]),
+]
+
 export const zghUnits = [
   {
     id: 'zgh-u1',
@@ -265,6 +392,37 @@ export const zghUnits = [
       { id: 'zgh11', title: 'Ce qu’est le standard', icon: '📜', status: 'locked' },
     ],
   },
+  {
+    id: 'zgh-u3',
+    level: 'Initiation',
+    unitLabel: 'Unité 3',
+    title: 'Au travail — ⵜⴰⵡⵓⵔⵉ',
+    trophy: '🛠️',
+    lessons: [
+      { id: 'zgh12', title: 'Lire le travail', icon: '🛠️', status: 'locked' },
+      { id: 'zgh13', title: 'À l’école', icon: '📗', status: 'locked' },
+      { id: 'zgh-c3', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'zgh14', title: 'Les métiers', icon: '👷', status: 'locked' },
+      { id: 'zgh15', title: 'Révision du travail', icon: '🏅', status: 'locked' },
+    ],
+  },
+  {
+    id: 'zgh-u4',
+    level: 'Initiation',
+    unitLabel: 'Unité 4',
+    title: 'Au sport — ⴰⴷⴷⴰⵍ',
+    trophy: '🏃',
+    lessons: [
+      { id: 'zgh16', title: 'Lire le sport', icon: '🏃', status: 'locked' },
+      { id: 'zgh17', title: 'Courir', icon: '👟', status: 'locked' },
+      { id: 'zgh-c4', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
+      { id: 'zgh18', title: 'Le corps qui bouge', icon: '🖐️', status: 'locked' },
+      { id: 'zgh19', title: 'Révision du sport', icon: '🏅', status: 'locked' },
+    ],
+  },
 ]
 
-export const zghLessons = { zgh1, zgh2, zgh3, zgh4, zgh5, zgh6, zgh7, zgh8, zgh9, zgh10, zgh11 }
+export const zghLessons = {
+  zgh1, zgh2, zgh3, zgh4, zgh5, zgh6, zgh7, zgh8, zgh9, zgh10, zgh11,
+  zgh12, zgh13, zgh14, zgh15, zgh16, zgh17, zgh18, zgh19,
+}
