@@ -188,7 +188,7 @@
 | 23 | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | expression | arabe → Azul | `rif/ssalamu-elikum.mp3` | rif1 |
 | 24 | **Ssuq** | Le marché | mot | arabe | `rif/ssuq.mp3` | rif12 rif13 |
 | 25 | **Taḥanut** | La boutique | mot | arabe | `rif/tahanut.mp3` | rif12 rif13 |
-| 26 | **Takurt** | Le ballon (mot amazigh) / Le ballon | mot | amazigh | `rif/takurt.mp3` | rif16 |
+| 26 | **Takurt** | Le ballon (forme amazighe) / Le ballon | mot | amazigh | `rif/takurt.mp3` | rif16 |
 | 27 | **Tazzřa** | La course | mot | amazigh | `rif/tazzra.mp3` | rif15 rif17 |
 | 28 | **Tiwecca** | Demain | mot | amazigh | `rif/tiwecca.mp3` | rif5 |
 | 29 | **Tlata** | Trois | mot | arabe → Kraḍ | `rif/tlata.mp3` | rif8 |
@@ -352,7 +352,7 @@ Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient de
 | Tarifit | **Ssuq** | Le marché | — | De l’arabe « sūq » — l’emprunt est partagé par toutes les langues amazighes. |
 | Tarifit | **Taḥanut** | La boutique | — | De l’arabe « ḥānūt », habillé du t…t féminin amazigh. |
 | Tarifit | **Ryaḍa** | Le sport | **Addal** | C’est le mot de tous les jours. « Addal » est amazigh, créé au XXᵉ siècle et repris par l’école. |
-| Tarifit | **Lkuṛa** | Le ballon | **Takurt** | De l’arabe « kura ». « Takurt » est un vrai mot amazigh, encore employé pour la balle. |
+| Tarifit | **Lkuṛa** | Le ballon | **Takurt** | De l’arabe « kura ». « Takurt » porte, elle, la forme amazighe (ta—t) — plusieurs auteurs y voient tout de même un emprunt ancien à la même racine. |
 | Tamazight (Atlas) | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | **Azul** | C’est ce qu’on dit au Moyen Atlas. « Azul » est la forme de l’école et des pancartes — les deux sont de l’amazigh d’aujourd’hui. |
 | Tamazight (Atlas) | **Ɛlikum ssalam** | Et sur vous la paix (réponse) | **Azul** | La réponse à la salutation, du même arabe. |
 | Tamazight (Atlas) | **Cukran** | Merci | **Tanmmirt** | De l’arabe « šukran ». « Tanmmirt » s’emploie surtout à l’écrit et à l’école au Maroc central — mais c’est bien le mot amazigh. |

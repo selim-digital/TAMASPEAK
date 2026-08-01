@@ -280,8 +280,8 @@ const rif15 = [
 ]
 
 const rif16 = [
-  qk('Que veut dire « Takurt » ?', 'Takurt', 'Le ballon (mot amazigh)', [
-    'Le ballon (mot amazigh)',
+  qk('Que veut dire « Takurt » ?', 'Takurt', 'Le ballon (forme amazighe)', [
+    'Le ballon (forme amazighe)',
     'La course',
     'Le jeu',
     'Le pied',
@@ -292,8 +292,13 @@ const rif16 = [
     'Le ballon',
     'Le travail',
   ]),
+  // On demande la FORME, pas l'origine : « takurt » porte le ta—t du
+  // féminin amazigh, c'est sûr — mais plusieurs auteurs y voient un emprunt
+  // ancien à l'arabe « kura », et le dictionnaire de l'app le signale comme
+  // discuté. Une question de cours ne doit pas trancher ce que les sources
+  // ne tranchent pas.
   culture(
-    '« Lkuṛa » et « takurt » désignent le ballon. Lequel est amazigh ?',
+    '« Lkuṛa » et « takurt » désignent le ballon. Lequel porte la forme amazighe (ta—t) ?',
     'Takurt',
     ['Takurt', 'Lkuṛa', 'Les deux', 'Aucun'],
   ),

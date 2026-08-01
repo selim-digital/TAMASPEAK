@@ -296,8 +296,13 @@ const tzm17 = [
   q('Comment dit-on « Le ballon » en tamazight ?', 'Le ballon', 'Takurt', ['Takurt', 'Lkuṛa', 'Urar', 'Addal']),
   culture(
     'Pourquoi « takurt » plutôt que « lkuṛa » dans ce cours ?',
-    'Takurt est le mot amazigh',
-    ['Takurt est le mot amazigh', 'Lkuṛa n’existe pas', 'Takurt est plus court', 'C’est un mot français'],
+    'Takurt porte la forme amazighe',
+    [
+      'Takurt porte la forme amazighe',
+      'Lkuṛa n’existe pas',
+      'Takurt est plus court',
+      'C’est un mot français',
+    ],
   ),
   match([
     { kab: 'Tawuri', fr: 'Le travail' },

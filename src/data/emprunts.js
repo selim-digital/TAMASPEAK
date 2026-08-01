@@ -222,7 +222,8 @@ export const EMPRUNTS = {
       mot: 'Lkuṛa',
       sens: 'Le ballon',
       classique: 'Takurt',
-      usage: 'De l’arabe « kura ». « Takurt » est un vrai mot amazigh, encore employé pour la balle.',
+      usage:
+        'De l’arabe « kura ». « Takurt » porte, elle, la forme amazighe (ta—t) — plusieurs auteurs y voient tout de même un emprunt ancien à la même racine.',
     },
   ],
 
