@@ -111,6 +111,28 @@ export default async function handler(req, res) {
     if (r.status === 401 || r.status === 403) throw new Error(`clé refusée (${r.status})`)
   })
 
+  // L'email de suppression « jamais reçu » (vécu) : trois sondes pour
+  // trancher entre gabarit cassé, quota atteint et panne Resend — sans
+  // envoyer un seul email ni révéler la moindre adresse.
+  await step('gabarit-suppression', async () => {
+    const { renderTemplate } = await import('./_lib/templates.js')
+    const html = renderTemplate('confirmer-suppression', { name: 'Sonde', url: 'https://tamaspeak.com/x' })
+    if (!html || !html.includes('supprimer')) throw new Error('rendu inattendu')
+  })
+
+  await step('quota-jour', async () => {
+    const { serverReady, sql } = await import('./_lib/db.js')
+    if (!serverReady()) throw new Error('DATABASE_URL absente')
+    const [t] = await sql()`
+      SELECT COALESCE(SUM(n), 0)::int AS total,
+             COUNT(*) FILTER (WHERE n > 15)::int AS adresses_bloquees
+      FROM email_quota WHERE day = CURRENT_DATE`
+    // Chiffres publics et anonymes : le total du jour et le nombre
+    // d'adresses au-dessus du plafond transactionnel.
+    out.quotaJour = { total: t?.total ?? 0, adressesAuPlafond: t?.adresses_bloquees ?? 0, plafondGlobal: 80 }
+    if ((t?.total ?? 0) > 80) throw new Error('plafond global atteint — plus aucun envoi aujourd’hui')
+  })
+
   await step('verification-table', async () => {
     const { sql } = await import('./_lib/db.js')
     const [row] = await sql()`
