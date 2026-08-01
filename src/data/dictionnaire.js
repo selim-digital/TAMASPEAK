@@ -148,12 +148,17 @@ function entreesDe(course) {
     // elles font foi sur celles qu'on devine depuis les exercices.
     if (!e.sens.length && emprunt?.sens) e.sens = [emprunt.sens]
     e.emprunt = emprunt
-    e.etymologie = etymologieDe(e.cle, e.lang)
+    // La forme exacte est passée en plus de la clé : sans elle, ⵜ et ⵟ (ou
+    // ⵣ et ⵥ) partageraient la même note — la normalisation les confond.
+    e.etymologie = etymologieDe(e.cle, e.lang, e.mot)
     // Le tifinagh ne se translittère pas en nom de fichier — et le cours
     // d'amazighe standard n'a de toute façon pas d'audio (voir courses/zgh.js).
     const s = slug(e.mot)
     e.audio = s ? (e.lang === 'kab' ? `${s}.mp3` : `${e.lang}/${s}.mp3`) : null
     e.noyaux = [...new Set(e.sens.map(noyauSens).filter(Boolean))]
+    // Les autres façons de chercher ce mot — aujourd'hui le nom des lettres
+    // tifinagh (« yaz » pour ⵣ), qui ne s'écrit nulle part dans l'entrée.
+    e.alias = (e.etymologie?.alias || []).map(cleRecherche).filter(Boolean)
   }
   return [...vues.values()]
 }
@@ -245,8 +250,11 @@ export function chercher(q, { lang, limite = 60 } = {}) {
   const notes = []
   for (const e of base) {
     let score = 0
+    let viaAlias = false
     if (e.cle === requete) score = 100
+    else if (e.alias.includes(requete)) ((score = 90), (viaAlias = true))
     else if (e.cle.startsWith(requete)) score = 80
+    else if (e.alias.some((a) => a.startsWith(requete))) ((score = 70), (viaAlias = true))
     else if (e.cle.includes(requete)) score = 60
     if (!score) {
       // Côté français, on compare d'abord au NOYAU du sens : « travail »
@@ -262,7 +270,9 @@ export function chercher(q, { lang, limite = 60 } = {}) {
     }
     // Les lettres de l'alphabet tifinagh ne remontent que si on les cherche
     // vraiment : sinon « a » noierait la liste sous des caractères isolés.
-    if (score && e.categorie === 'lettre' && score < 100) score -= 40
+    // Chercher « yaz », en revanche, ne peut viser qu'une lettre — pas de
+    // pénalité quand c'est le nom du signe qui a répondu.
+    if (score && e.categorie === 'lettre' && score < 100 && !viaAlias) score -= 40
     if (score > 0) notes.push({ e, score })
   }
   notes.sort((a, b) => b.score - a.score || a.e.mot.localeCompare(b.e.mot, 'fr'))

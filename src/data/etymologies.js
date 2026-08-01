@@ -6,18 +6,29 @@
  * contenu des cours (voir data/dictionnaire.js). Ici on ajoute ce qu'aucun
  * exercice ne contient — la racine, l'origine, l'histoire du mot.
  *
- * TOUT CE FICHIER EST À VALIDER par un linguiste ou un locuteur natif, au
- * même titre que le vocabulaire. L'étymologie amazighe est un terrain où les
- * auteurs se contredisent souvent : quand c'est le cas, on l'écrit
- * (`discute: true`) au lieu de trancher à leur place. Une note absente vaut
- * mieux qu'une note inventée — le dictionnaire affiche simplement l'origine
- * générale et se tait sur le reste.
+ * ÉTAT DE VALIDATION. Selim a relu et validé cette passe (voir la section
+ * « Étymologies » de lexique.md, générée pour ça). Cela vaut pour le CONTENU
+ * ÉDITORIAL — ce qu'on choisit de dire, et comment. La validation par un
+ * linguiste ou un locuteur natif, elle, reste ouverte, comme pour tout le
+ * vocabulaire de l'app : les deux ne se remplacent pas.
+ *
+ * L'étymologie amazighe est un terrain où les auteurs se contredisent
+ * souvent : quand c'est le cas, on l'écrit (`discute: true`) au lieu de
+ * trancher à leur place, et l'app le dit à l'élève. Une note absente vaut
+ * mieux qu'une note inventée — le dictionnaire affiche alors « l'origine de
+ * ce mot n'est pas encore écrite » plutôt que de meubler.
  *
  * CLÉS. La clé est la forme normalisée (voir lib/translit.js) : minuscules,
  * sans diacritique, tifinagh translittéré. « Aḍar », « aḍar » et « ⴰⴹⴰⵔ »
  * partagent donc la clé « adar », et une seule note sert les cinq cours —
  * c'est exactement ce qu'on veut d'un fonds commun. Quand une langue diverge,
  * on préfixe : « rif:ur » l'emporte sur « ur ».
+ *
+ * Une clé peut aussi être la FORME EXACTE, et elle l'emporte alors sur tout
+ * le reste. C'est indispensable pour l'alphabet : la normalisation retire les
+ * diacritiques (pour qu'on trouve « aḍar » en tapant « adar »), ce qui
+ * ramènerait ⵜ et ⵟ à la même clé « t », ⵣ et ⵥ à « z ». Ce sont quatre
+ * lettres distinctes ; on les nomme par leur signe.
  */
 
 /** Les grandes familles d'origine, telles qu'affichées. */
@@ -58,6 +69,7 @@ export const ORIGINES = Object.freeze({
  * @property {string}  [note]     une ou deux phrases, jamais plus
  * @property {boolean} [discute]  les sources ne s'accordent pas
  * @property {string}  [voir]     un autre mot du dictionnaire à rapprocher
+ * @property {string[]} [alias]   autres façons de chercher ce mot (« yaz » pour ⵣ)
  */
 export const ETYMOLOGIES = Object.freeze({
   /* ---------------- salutations & politesse ---------------- */
@@ -386,6 +398,52 @@ export const ETYMOLOGIES = Object.freeze({
   'labas l hamdullah': { origine: 'arabe', note: 'Ça va, Dieu merci — la forme du Moyen Atlas.' },
   'mlih l hamdu li llah': { origine: 'arabe', note: 'Ça va bien, Dieu merci — la forme du Rif.' },
 
+  /* ---------------- l'alphabet tifinagh ---------------- */
+  // Les noms de lettres suivent l'épellation officielle de l'IRCAM
+  // (« Initiation à la langue amazighe », 2004, Tableau 3) : chaque signe se
+  // dit « ya » + sa consonne. Les clés sont les SIGNES eux-mêmes, pas leur
+  // translittération — sinon ⵜ et ⵟ, ⵣ et ⵥ se confondraient (voir en-tête).
+  // `alias` rend la lettre trouvable par son NOM : sans lui, ⵣ ne se
+  // chercherait que par « z » — or on l'appelle « yaz », c'est même ainsi
+  // qu'on la nomme dans le cours et sur le drapeau.
+  ⴰ: {
+    origine: 'amazigh',
+    alias: ['ya'],
+    note: 'ya — la première lettre, la voyelle a. Les voyelles sont une addition du tifinagh moderne : le libyque ancien, dont l’alphabet descend, ne les notait pas.',
+  },
+  ⴳ: { origine: 'amazigh', alias: ['yag'], note: 'yag — le g.' },
+  ⴹ: {
+    origine: 'amazigh',
+    alias: ['yad'],
+    note: 'yaḍ — l’emphatique de ⴷ (yad) : le trait ajouté au signe marque l’emphase.',
+  },
+  ⵃ: {
+    origine: 'amazigh',
+    alias: ['yah'],
+    note: 'yaḥ — le ḥ de la gorge. Il sert surtout dans les mots venus de l’arabe.',
+  },
+  ⵄ: {
+    origine: 'amazigh',
+    alias: ['yae'],
+    note: 'yaɛ — le ɛ, lui aussi présent surtout dans le vocabulaire emprunté à l’arabe.',
+  },
+  ⵅ: { origine: 'amazigh', alias: ['yax'], note: 'yax — le x, comme la jota espagnole.' },
+  ⵍ: { origine: 'amazigh', alias: ['yal'], note: 'yal — le l. C’est lui que le tarifit transforme en ř.' },
+  ⵎ: { origine: 'amazigh', alias: ['yam'], note: 'yam — le m.' },
+  ⵏ: { origine: 'amazigh', alias: ['yan'], note: 'yan — le n.' },
+  ⵓ: { origine: 'amazigh', alias: ['yu'], note: 'yu — la voyelle u, notée « ou » en français.' },
+  ⵔ: { origine: 'amazigh', alias: ['yar'], note: 'yar — le r.' },
+  ⵖ: { origine: 'amazigh', alias: ['yagh'], note: 'yaɣ — le ɣ, proche du r de Paris.' },
+  ⵚ: { origine: 'amazigh', alias: ['yas'], note: 'yaṣ — l’emphatique de ⵙ (yas).' },
+  ⵜ: { origine: 'amazigh', alias: ['yat'], note: 'yat — le t. Il encadre le féminin amazigh : ta—t.' },
+  ⵟ: { origine: 'amazigh', alias: ['yat'], note: 'yaṭ — l’emphatique de ⵜ (yat).' },
+  ⵣ: {
+    origine: 'amazigh',
+    alias: ['yaz'],
+    note: 'yaz — le z, et l’emblème du drapeau amazigh. C’est le signe que porte le logo de l’app.',
+  },
+  ⵥ: { origine: 'amazigh', alias: ['yaz'], note: 'yaẓ — l’emphatique de ⵣ (yaz).' },
+
   /* ---------------- l'écriture, l'identité ---------------- */
   tifinagh: {
     origine: 'amazigh',
@@ -400,7 +458,20 @@ export const ETYMOLOGIES = Object.freeze({
   },
 })
 
-/** L'étymologie d'un mot : d'abord la note propre à la langue, sinon la commune. */
-export function etymologieDe(cle, langId) {
+/**
+ * L'étymologie d'un mot, du plus précis au plus général : la forme exacte
+ * pour cette langue, la forme exacte, la clé normalisée pour cette langue,
+ * puis la clé normalisée — commune à tous les cours.
+ *
+ * @param {string} cle     la forme normalisée (lib/translit.js)
+ * @param {string} langId  le cours ('kab', 'zgh'…)
+ * @param {string} [forme] la forme telle qu'écrite — ⵟ, ⵥ… quand la
+ *   normalisation ne suffit pas à distinguer deux signes
+ */
+export function etymologieDe(cle, langId, forme) {
+  if (forme) {
+    const exact = ETYMOLOGIES[`${langId}:${forme}`] || ETYMOLOGIES[forme]
+    if (exact) return exact
+  }
   return ETYMOLOGIES[`${langId}:${cle}`] || ETYMOLOGIES[cle] || null
 }

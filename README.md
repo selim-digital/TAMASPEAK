@@ -37,7 +37,8 @@ dire, langue par langue, avec le nom du fichier audio attendu. Elle est
 dérivée du contenu réel des cours — jamais tenue à la main, sinon elle
 divergerait dès la leçon suivante.
 
-Les expressions venues de l'arabe sont recensées dans `src/data/emprunts.js`.
+Les expressions empruntées sont recensées dans `src/data/emprunts.js` — 58 à
+l'arabe, une à l'espagnol (`simana`, la semaine, entrée au Rif par Melilla).
 Quand l'élève **valide la bonne réponse** sur l'une d'elles, une modale lui
 donne le mot amazigh plus classique quand il en existe un (azul, tanemmirt,
 tawuri, addal…) — et dit, toujours, que **les deux sont justes** : l'arabe est

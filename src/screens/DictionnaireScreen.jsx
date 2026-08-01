@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { chercher, cousins, synonymes, entree, STATS, VEDETTES, ORIGINES } from '../data/dictionnaire.js'
+import { SOURCES } from '../data/emprunts.js'
 import { versLatin } from '../lib/translit.js'
 import { entreeDicoOuverte } from '../lib/abonnement.js'
 import { playWord } from '../lib/audio.js'
@@ -173,10 +174,9 @@ function Fiche({ e, onMot }) {
       </Bloc>
 
       {e.emprunt && (
-        <Bloc titre="Emprunt à l’arabe">
+        <Bloc titre={(SOURCES[e.emprunt.origine] || SOURCES.arabe).badge}>
           <p className="text-[12.5px] leading-relaxed text-ink">
-            <b>Les deux sont justes.</b> L’arabe est présent depuis des siècles dans les régions et la
-            culture amazighes.
+            <b>Les deux sont justes.</b> {(SOURCES[e.emprunt.origine] || SOURCES.arabe).phrase}
           </p>
           {e.emprunt.classique && (
             <p className="mt-1 text-[12.5px] text-ink">

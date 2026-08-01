@@ -43,7 +43,7 @@ const ligne = (e) => ({
   mot: e.mot,
   sens: e.sens.join(' / '),
   categorie: e.categorie,
-  emprunt: e.emprunt ? 'arabe' : TRANCHER[e.lang]?.has(e.cle) ? 'à trancher' : '',
+  emprunt: e.emprunt ? e.emprunt.origine || 'arabe' : TRANCHER[e.lang]?.has(e.cle) ? 'à trancher' : '',
   classique: e.emprunt?.classique || '',
   // Une case vide se lirait « pas concerné ». Elle veut dire « pas encore
   // écrit » : le dictionnaire affiche d'ailleurs la même chose à l'élève.
@@ -111,8 +111,11 @@ for (const { course, lignes } of parLangue) {
   md.push('| # | Mot / expression | Français | Type | Origine | Fichier audio | Leçons |')
   md.push('| ---: | --- | --- | --- | --- | --- | --- |')
   lignes.forEach((r, i) => {
-    const origine =
-      r.emprunt === 'arabe' ? (r.classique ? `arabe → ${cellule(r.classique)}` : 'arabe') : r.emprunt || r.origine
+    const origine = ['arabe', 'espagnol'].includes(r.emprunt)
+      ? r.classique
+        ? `${r.emprunt} → ${cellule(r.classique)}`
+        : r.emprunt
+      : r.emprunt || r.origine
     md.push(
       `| ${i + 1} | **${cellule(r.mot)}** | ${cellule(r.sens) || '_à préciser_'} | ${r.categorie} | ${origine} | ${
         r.fichier ? `\`${r.fichier}\`` : '—'
@@ -178,18 +181,18 @@ if (sansEtymo.length) {
   md.push('')
 }
 
-md.push('## Emprunts à l’arabe — les modales du cours')
+md.push('## Emprunts — les modales du cours')
 md.push('')
 md.push(
-  'Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient de l’arabe » (`src/data/emprunts.js`).',
+  'Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient d’ailleurs » (`src/data/emprunts.js`).',
 )
 md.push('')
-md.push('| Cours | Expression | Français | Mot amazigh classique | Note affichée |')
-md.push('| --- | --- | --- | --- | --- |')
+md.push('| Cours | Expression | Français | Vient de | Mot amazigh classique | Note affichée |')
+md.push('| --- | --- | --- | --- | --- | --- |')
 for (const lang of ORDRE_LANGUES) {
   for (const e of EMPRUNTS[lang] || []) {
     md.push(
-      `| ${COURSES[lang].name} | **${cellule(e.mot)}** | ${cellule(e.sens)} | ${
+      `| ${COURSES[lang].name} | **${cellule(e.mot)}** | ${cellule(e.sens)} | ${e.origine || 'arabe'} | ${
         e.classique ? `**${cellule(e.classique)}**` : '—'
       } | ${cellule(e.usage || '')} |`,
     )

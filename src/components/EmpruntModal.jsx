@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { Button } from './Button.jsx'
 import { YazMark } from './Logo.jsx'
+import { SOURCES } from '../data/emprunts.js'
 
 /**
- * « Ce mot vient de l'arabe » — la modale qui s'ouvre après une bonne
+ * « Ce mot vient d'ailleurs » — la modale qui s'ouvre après une bonne
  * réponse, sur les expressions empruntées (voir data/emprunts.js).
  *
  * LE TON EST LE FOND. Elle arrive juste après un succès : elle félicite
@@ -28,6 +29,11 @@ export function EmpruntModal({ emprunt, onClose }) {
 
   if (!emprunt) return null
 
+  // L'arabe est le cas général, l'espagnol l'exception rifaine — mais la
+  // phrase de fond change avec la provenance : « des siècles dans la culture
+  // amazighe » ne décrit pas Melilla.
+  const source = SOURCES[emprunt.origine] || SOURCES.arabe
+
   return (
     <div
       className="absolute inset-0 z-50 flex items-end justify-center bg-ink/45 px-3 pb-3 backdrop-blur-[2px]"
@@ -50,7 +56,7 @@ export function EmpruntModal({ emprunt, onClose }) {
               id="emprunt-titre"
               className="block text-[10px] font-extrabold uppercase leading-tight tracking-[0.1em] text-turquoise-deep"
             >
-              Mot venu de l’arabe
+              {source.badge}
             </span>
             <div className="mt-1 text-[17px] font-extrabold leading-tight">{emprunt.mot}</div>
             <div className="text-[12px] font-semibold text-ink-soft">{emprunt.sens}</div>
@@ -78,9 +84,7 @@ export function EmpruntModal({ emprunt, onClose }) {
         )}
 
         <p className="mt-3 text-[12.5px] leading-relaxed text-ink">
-          <b>Les deux sont justes.</b> L’arabe est présent depuis des siècles dans les régions et la
-          culture amazighes : ce qu’on entend au village fait partie de la langue, autant que le mot
-          ancien.
+          <b>Les deux sont justes.</b> {source.phrase}
         </p>
 
         {emprunt.usage && (

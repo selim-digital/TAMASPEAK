@@ -1,13 +1,13 @@
 # Lexique complet — Tama Speak
 
 > Généré depuis le contenu des cours (`npm run gen:lexique`) — ne pas éditer à la main.
-> **268 entrées** dans 5 langues. Tout est **provisoire** tant qu'un locuteur natif ne l'a pas validé.
+> **269 entrées** dans 5 langues. Tout est **provisoire** tant qu'un locuteur natif ne l'a pas validé.
 
 | Cours | Entrées | Audio |
 | --- | ---: | --- |
 | Kabyle (Taqbaylit) | 96 | en cours |
 | Tachelhit (Tacelḥit) | 42 | à enregistrer |
-| Tarifit (Tarifit) | 36 | à enregistrer |
+| Tarifit (Tarifit) | 37 | à enregistrer |
 | Tamazight (Atlas) (Tamaziɣt) | 46 | à enregistrer |
 | Amazighe standard (Tamaziɣt tanawayt) | 48 | aucun (norme écrite) |
 
@@ -159,7 +159,7 @@
 | 41 | **Yah** | Oui | mot | à trancher | `shi/yah.mp3` | shi2 |
 | 42 | **Yan** | Un | mot | amazigh | `shi/yan.mp3` | shi8 |
 
-## Tarifit — Tarifit (36)
+## Tarifit — Tarifit (37)
 
 | # | Mot / expression | Français | Type | Origine | Fichier audio | Leçons |
 | ---: | --- | --- | --- | --- | --- | --- |
@@ -185,20 +185,21 @@
 | 20 | **Mliḥ** | Ça va bien | mot | arabe | `rif/mlih.mp3` | rif4 |
 | 21 | **Mliḥ, l-ḥamdu li-llah** | _à préciser_ | expression | à trancher | `rif/mlih-l-hamdu-li-llah.mp3` | rif4 |
 | 22 | **Ryaḍa** | Le sport / Le sport (arabe) | mot | arabe → Addal | `rif/ryada.mp3` | rif14 rif16 rif17 |
-| 23 | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | expression | arabe → Azul | `rif/ssalamu-elikum.mp3` | rif1 |
-| 24 | **Ssuq** | Le marché | mot | arabe | `rif/ssuq.mp3` | rif12 rif13 |
-| 25 | **Taḥanut** | La boutique | mot | arabe | `rif/tahanut.mp3` | rif12 rif13 |
-| 26 | **Takurt** | Le ballon (forme amazighe) / Le ballon | mot | amazigh | `rif/takurt.mp3` | rif16 |
-| 27 | **Tazzřa** | La course | mot | amazigh | `rif/tazzra.mp3` | rif15 rif17 |
-| 28 | **Tiwecca** | Demain | mot | amazigh | `rif/tiwecca.mp3` | rif5 |
-| 29 | **Tlata** | Trois | mot | arabe → Kraḍ | `rif/tlata.mp3` | rif8 |
-| 30 | **Tnayen** | Deux | mot | arabe → Sin | `rif/tnayen.mp3` | rif8 |
-| 31 | **Ṭṭbib** | Le médecin | mot | arabe → Amejjay | `rif/ttbib.mp3` | rif11 rif13 |
-| 32 | **Uř** | Le cœur | mot | amazigh | `rif/ur.mp3` | rif9 |
-| 33 | **Uraren** | Les jeux | mot | amazigh | `rif/uraren.mp3` | rif14 rif15 rif17 |
-| 34 | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `rif/wa-elikum-ssalam.mp3` | rif1 |
-| 35 | **Wah** | Oui | mot | à trancher | `rif/wah.mp3` | rif2 |
-| 36 | **Yemma** | Maman | mot | amazigh | `rif/yemma.mp3` | rif6 |
+| 23 | **Simana** | La semaine | mot | espagnol | `rif/simana.mp3` | rif12 |
+| 24 | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | expression | arabe → Azul | `rif/ssalamu-elikum.mp3` | rif1 |
+| 25 | **Ssuq** | Le marché | mot | arabe | `rif/ssuq.mp3` | rif12 rif13 |
+| 26 | **Taḥanut** | La boutique | mot | arabe | `rif/tahanut.mp3` | rif12 rif13 |
+| 27 | **Takurt** | Le ballon (forme amazighe) / Le ballon | mot | amazigh | `rif/takurt.mp3` | rif16 |
+| 28 | **Tazzřa** | La course | mot | amazigh | `rif/tazzra.mp3` | rif15 rif17 |
+| 29 | **Tiwecca** | Demain | mot | amazigh | `rif/tiwecca.mp3` | rif5 |
+| 30 | **Tlata** | Trois | mot | arabe → Kraḍ | `rif/tlata.mp3` | rif8 |
+| 31 | **Tnayen** | Deux | mot | arabe → Sin | `rif/tnayen.mp3` | rif8 |
+| 32 | **Ṭṭbib** | Le médecin | mot | arabe → Amejjay | `rif/ttbib.mp3` | rif11 rif13 |
+| 33 | **Uř** | Le cœur | mot | amazigh | `rif/ur.mp3` | rif9 |
+| 34 | **Uraren** | Les jeux | mot | amazigh | `rif/uraren.mp3` | rif14 rif15 rif17 |
+| 35 | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `rif/wa-elikum-ssalam.mp3` | rif1 |
+| 36 | **Wah** | Oui | mot | à trancher | `rif/wah.mp3` | rif2 |
+| 37 | **Yemma** | Maman | mot | amazigh | `rif/yemma.mp3` | rif6 |
 
 ## Tamazight (Atlas) — Tamaziɣt (46)
 
@@ -256,7 +257,7 @@
 | # | Mot / expression | Français | Type | Origine | Fichier audio | Leçons |
 | ---: | --- | --- | --- | --- | --- | --- |
 | 1 | **kraḍ** | Trois | mot | amazigh | `zgh/krad.mp3` | zgh10 |
-| 2 | **ⴰ** | a | lettre | à préciser | — | zgh1 zgh2 |
+| 2 | **ⴰ** | a | lettre | amazigh | — | zgh1 zgh2 |
 | 3 | **ⴰⴷⴷⴰⵍ** | Le sport | mot | neo | — | zgh16 zgh19 |
 | 4 | **ⴰⴷⵍⵉⵙ** | Le livre | mot | neo | — | zgh13 |
 | 5 | **ⴰⴹⴰⵔ** | Le pied | mot | amazigh | — | zgh18 zgh19 |
@@ -270,25 +271,25 @@
 | 13 | **ⴰⵙⵍⵎⴰⴷ** | L’enseignant | mot | neo | — | zgh12 zgh15 |
 | 14 | **ⴰⵣⵓⵍ** | azul — salut / Salut, bonjour / Salut | mot | amazigh | — | zgh4 zgh7 zgh8 |
 | 15 | **ⴰⵣⵣⵍ** | Cours ! | mot | amazigh | — | zgh17 |
-| 16 | **ⴳ** | g | lettre | à préciser | — | zgh3 |
-| 17 | **ⴹ** | ḍ | lettre | à préciser | — | zgh6 |
+| 16 | **ⴳ** | g | lettre | amazigh | — | zgh3 |
+| 17 | **ⴹ** | ḍ | lettre | amazigh | — | zgh6 |
 | 18 | **ⴽⵔⴰⴹ** | Trois | mot | amazigh | — | zgh10 |
-| 19 | **ⵃ** | ḥ | lettre | à préciser | — | zgh5 |
-| 20 | **ⵄ** | ɛ | lettre | à préciser | — | zgh5 |
-| 21 | **ⵅ** | La « jota » espagnole / x | lettre | à préciser | — | zgh5 |
+| 19 | **ⵃ** | ḥ | lettre | amazigh | — | zgh5 |
+| 20 | **ⵄ** | ɛ | lettre | amazigh | — | zgh5 |
+| 21 | **ⵅ** | La « jota » espagnole / x | lettre | amazigh | — | zgh5 |
 | 22 | **ⵉⵅⴼ** | La tête | mot | amazigh | — | zgh18 zgh19 |
-| 23 | **ⵍ** | l | lettre | à préciser | — | zgh4 |
+| 23 | **ⵍ** | l | lettre | amazigh | — | zgh4 |
 | 24 | **ⵍⵅⴷⵎⵜ** | lxdmt — le travail (mot arabe) | mot | arabe → ⵜⴰⵡⵓⵔⵉ | — | zgh15 |
-| 25 | **ⵎ** | m | lettre | à préciser | — | zgh1 |
-| 26 | **ⵏ** | n | lettre | à préciser | — | zgh1 zgh2 |
-| 27 | **ⵓ** | u (ou) / u | lettre | à préciser | — | zgh3 zgh4 |
+| 25 | **ⵎ** | m | lettre | amazigh | — | zgh1 |
+| 26 | **ⵏ** | n | lettre | amazigh | — | zgh1 zgh2 |
+| 27 | **ⵓ** | u (ou) / u | lettre | amazigh | — | zgh3 zgh4 |
 | 28 | **ⵓⵀⵓ** | Non | mot | amazigh | — | zgh8 |
 | 29 | **ⵓⵔⴰⵔ** | Le jeu | mot | amazigh | — | zgh16 zgh17 zgh19 |
-| 30 | **ⵔ** | r | lettre | à préciser | — | zgh3 |
-| 31 | **ⵖ** | Le « r » de Paris / ɣ | lettre | à préciser | — | zgh5 |
+| 30 | **ⵔ** | r | lettre | amazigh | — | zgh3 |
+| 31 | **ⵖ** | Le « r » de Paris / ɣ | lettre | amazigh | — | zgh5 |
 | 32 | **ⵙⵉⵏ** | Deux | mot | amazigh | — | zgh10 |
-| 33 | **ⵚ** | ṣ | lettre | à préciser | — | zgh6 |
-| 34 | **ⵜ** | t | lettre | à préciser | — | zgh2 |
+| 33 | **ⵚ** | ṣ | lettre | amazigh | — | zgh6 |
+| 34 | **ⵜ** | t | lettre | amazigh | — | zgh2 |
 | 35 | **ⵜⴰⴽⵓⵔⵜ** | Le ballon | mot | amazigh | — | zgh16 zgh19 |
 | 36 | **ⵜⴰⵃⴰⵏⵓⵜ** | La boutique | mot | arabe | — | zgh14 zgh15 |
 | 37 | **ⵜⴰⵎⵖⴰⵔⵜ** | La femme | mot | amazigh | — | zgh9 |
@@ -298,17 +299,17 @@
 | 41 | **ⵜⵉⴳⵎⵎⵉ** | La maison | mot | amazigh | — | zgh8 zgh9 |
 | 42 | **ⵜⵉⴼⵉⵏⴰⵖ** | tifinagh — l’écriture amazighe | mot | amazigh | — | zgh6 |
 | 43 | **ⵜⵉⵏⵎⵍ** | L’école | mot | neo | — | zgh12 zgh13 |
-| 44 | **ⵟ** | ṭ | lettre | à préciser | — | zgh6 |
+| 44 | **ⵟ** | ṭ | lettre | amazigh | — | zgh6 |
 | 45 | **ⵢⴰⵏ** | Un | mot | amazigh | — | zgh10 |
 | 46 | **ⵢⵢⵉⵀ** | Oui | mot | amazigh | — | zgh8 |
-| 47 | **ⵣ** | z | lettre | à préciser | — | zgh4 |
-| 48 | **ⵥ** | ẓ | lettre | à préciser | — | zgh6 |
+| 47 | **ⵣ** | z | lettre | amazigh | — | zgh4 |
+| 48 | **ⵥ** | ẓ | lettre | amazigh | — | zgh6 |
 
 ## Étymologies — la couche écrite à la main
 
 > `src/data/etymologies.js`. C’est la SEULE partie du dictionnaire qui ne soit pas dérivée du contenu des cours : elle est à valider ligne par ligne. « Discuté » signale que les sources ne s’accordent pas — l’app l’affiche alors à l’élève.
 
-### Fonds amazigh (119)
+### Fonds amazigh (136)
 
 | Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
 | --- | --- | --- | --- | :-: | :-: |
@@ -428,9 +429,26 @@
 | **Yat** | tzm | — | Une — le féminin de « yan ». |  | ☐ |
 | **Yemma** | kab rif | — | Maman — « immi » au Souss, « mma » au Moyen Atlas. |  | ☐ |
 | **Yiwen** | kab | — | Un, en kabyle. Le Maroc dit « yan », et « yat » au féminin. |  | ☐ |
+| **ⴰ** | zgh | — | ya — la première lettre, la voyelle a. Les voyelles sont une addition du tifinagh moderne : le libyque ancien, dont l’alphabet descend, ne les notait pas. |  | ☐ |
+| **ⴳ** | zgh | — | yag — le g. |  | ☐ |
+| **ⴹ** | zgh | — | yaḍ — l’emphatique de ⴷ (yad) : le trait ajouté au signe marque l’emphase. |  | ☐ |
+| **ⵃ** | zgh | — | yaḥ — le ḥ de la gorge. Il sert surtout dans les mots venus de l’arabe. |  | ☐ |
+| **ⵄ** | zgh | — | yaɛ — le ɛ, lui aussi présent surtout dans le vocabulaire emprunté à l’arabe. |  | ☐ |
+| **ⵅ** | zgh | — | yax — le x, comme la jota espagnole. |  | ☐ |
+| **ⵍ** | zgh | — | yal — le l. C’est lui que le tarifit transforme en ř. |  | ☐ |
+| **ⵎ** | zgh | — | yam — le m. |  | ☐ |
+| **ⵏ** | zgh | — | yan — le n. |  | ☐ |
+| **ⵓ** | zgh | — | yu — la voyelle u, notée « ou » en français. |  | ☐ |
+| **ⵔ** | zgh | — | yar — le r. |  | ☐ |
+| **ⵖ** | zgh | — | yaɣ — le ɣ, proche du r de Paris. |  | ☐ |
+| **ⵚ** | zgh | — | yaṣ — l’emphatique de ⵙ (yas). |  | ☐ |
+| **ⵜ** | zgh | — | yat — le t. Il encadre le féminin amazigh : ta—t. |  | ☐ |
 | **ⵜⴰⵎⵖⴰⵔⵜ** | zgh | MƔR | De la racine « être grand » : la femme d’âge, celle qui compte. « Amɣar », c’est l’ancien, le chef. |  | ☐ |
 | **ⵜⵉⴼⵉⵏⴰⵖ** | zgh | — | Le nom de l’écriture. Souvent lu « les phéniciennes », par rapprochement avec l’alphabet punique — lecture répandue, mais discutée. | ⚠️ | ☐ |
+| **ⵟ** | zgh | — | yaṭ — l’emphatique de ⵜ (yat). |  | ☐ |
 | **ⵢⵢⵉⵀ** | zgh | — | Le oui de la norme écrite. |  | ☐ |
+| **ⵣ** | zgh | — | yaz — le z, et l’emblème du drapeau amazigh. C’est le signe que porte le logo de l’app. |  | ☐ |
+| **ⵥ** | zgh | — | yaẓ — l’emphatique de ⵣ (yaz). |  | ☐ |
 
 ### Néologisme amazigh (9)
 
@@ -491,6 +509,12 @@
 | **Wah** | rif | — | Probable emprunt à l’arabe maghrébin — à confirmer. | ⚠️ | ☐ |
 | **Waxxa** | tzm | — | De l’arabe marocain — d’accord, soit. |  | ☐ |
 
+### Emprunt à l’espagnol (1)
+
+| Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
+| --- | --- | --- | --- | :-: | :-: |
+| **Simana** | rif | — | La semaine, de l’espagnol « semana » — un des nombreux mots venus de Melilla. |  | ☐ |
+
 ### Mot voyageur (2)
 
 | Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
@@ -498,94 +522,71 @@
 | **Atay** | kab | — | Venu de Chine par l’arabe maghrébin. Le mot a voyagé avec la boisson : il n’y a pas de thé amazigh plus ancien que lui. |  | ☐ |
 | **Idrimen** | kab | — | Arrivé par l’arabe « dirham », lui-même venu du grec « drachmê » : trois langues pour une pièce de monnaie. |  | ☐ |
 
-### Sans étymologie — à écrire (17)
+## Emprunts — les modales du cours
 
-Le dictionnaire affiche pour ces entrées : « L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur ou un linguiste, bi-idniLlah. »
+Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient d’ailleurs » (`src/data/emprunts.js`).
 
-| Forme | Cours | Français |
-| --- | --- | --- |
-| **ⴰ** | zgh | a |
-| **ⴳ** | zgh | g |
-| **ⴹ** | zgh | ḍ |
-| **ⵃ** | zgh | ḥ |
-| **ⵄ** | zgh | ɛ |
-| **ⵅ** | zgh | La « jota » espagnole / x |
-| **ⵍ** | zgh | l |
-| **ⵎ** | zgh | m |
-| **ⵏ** | zgh | n |
-| **ⵓ** | zgh | u (ou) / u |
-| **ⵔ** | zgh | r |
-| **ⵖ** | zgh | Le « r » de Paris / ɣ |
-| **ⵚ** | zgh | ṣ |
-| **ⵜ** | zgh | t |
-| **ⵟ** | zgh | ṭ |
-| **ⵣ** | zgh | z |
-| **ⵥ** | zgh | ẓ |
-
-## Emprunts à l’arabe — les modales du cours
-
-Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient de l’arabe » (`src/data/emprunts.js`).
-
-| Cours | Expression | Français | Mot amazigh classique | Note affichée |
-| --- | --- | --- | --- | --- |
-| Kabyle | **Labas** | Ça va (bien) | — | De l’arabe « la ba’s » — littéralement « pas de mal ». Pour demander en kabyle sans emprunt : « Amek telliḍ ? » |
-| Kabyle | **Labas ?** | Ça va ? | **Amek telliḍ ?** | La forme kabyle entière existe, et elle s’apprend à l’unité 4. |
-| Kabyle | **Aql-i labas** | Je vais bien | — | La phrase est kabyle, seul « labas » vient de l’arabe. |
-| Kabyle | **Ssuq** | Le marché | — | De l’arabe « sūq ». L’emprunt est si ancien et si complet qu’aucun mot amazigh ne lui fait concurrence — c’est le marché de tout le Maghreb. |
-| Kabyle | **Idrimen** | L’argent | — | Arrivé par l’arabe « dirham », lui-même venu du grec « drachmê » : trois langues pour une pièce de monnaie. |
-| Kabyle | **Atay** | Le thé | — | Venu de Chine, passé par l’arabe maghrébin. Le mot a voyagé avec la boisson — il n’y a pas de thé amazigh plus ancien que le mot. |
-| Kabyle | **Semmeḥ-iyi** | Excuse-moi | **Suref-iyi** | Les deux s’entendent en Kabylie ; « suref-iyi » est le mot du fonds kabyle. |
-| Kabyle | **Axeddim** | Le travail | **Tawuri** | La racine « xdm » est arabe. « Tawuri » est amazigh, et vivant : c’est le mot du Souss et de l’Atlas. |
-| Kabyle | **Axeddam** | Le travailleur | — | Même racine arabe que « axeddim », avec la forme du nom de métier amazigh (a—am). |
-| Kabyle | **Afellaḥ** | Le paysan | **Amekraz** | De l’arabe « fallāḥ ». « Amekraz » vient de « krez », labourer — un verbe kabyle. |
-| Kabyle | **Ɛumm !** | Nage ! | — | De l’arabe « ɛām ». Le kabyle n’a pas gardé de verbe propre pour la nage. |
-| Tachelhit | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | **Azul** | Au Souss, le bonjour amazigh du matin est « Tifawin » — « les lumières ». « Azul » est la forme moderne, celle de l’école. |
-| Tachelhit | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | **Azul** | La réponse suit la salutation, toutes deux venues de l’arabe. |
-| Tachelhit | **Ak isrbḥ rbbi** | Merci (que Dieu te fasse réussir) | **Tanmmirt** | La formule est celle du Souss ; « tanmmirt » est le mot amazigh du merci. |
-| Tachelhit | **Afak** | S’il te plaît | — | De l’arabe « ɛafā-k ». À une femme : « afakm ». |
-| Tachelhit | **Afakm** | S’il te plaît (à une femme) | — | Même emprunt que « afak », avec la marque du féminin amazigh. |
-| Tachelhit | **Bslama** | Au revoir | — | De l’arabe « bi-s-salāma » — « dans la paix ». |
-| Tachelhit | **Brrk** | Bienvenue | **Ansuf** | « Ansuf » est le mot amazigh de l’accueil ; il vit surtout en Kabylie. |
-| Tachelhit | **Labas** | Ça va | — | De l’arabe « la ba’s » — « pas de mal ». Toutes les langues amazighes l’ont adopté. |
-| Tachelhit | **Lxdmt** | Le travail | **Tawuri** | Le tachelhit a gardé « tawuri », le mot amazigh — les deux s’entendent au Souss. |
-| Tachelhit | **Axddam** | Le travailleur | — | Racine arabe « xdm », habillée en amazigh. |
-| Tachelhit | **Afllaḥ** | Le paysan | — | De l’arabe « fallāḥ ». |
-| Tachelhit | **Ṭṭbib** | Le médecin | **Amejjay** | « Amejjay » vient de « ajjy », soigner. |
-| Tachelhit | **Ssuq** | Le marché | — | De l’arabe « sūq ». |
-| Tachelhit | **Taḥanut** | La boutique | — | De l’arabe « ḥānūt », avec le t…t féminin amazigh autour. |
-| Tarifit | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | **Azul** | C’est LA salutation du Rif, celle qu’on entend partout. « Azul » est le bonjour amazigh, porté par l’école et les médias. |
-| Tarifit | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | **Azul** | La réponse va avec la salutation : les deux viennent de l’arabe. |
-| Tarifit | **Barek llahu fik** | Merci (que Dieu te bénisse) | **Tanemmirt** | Au Rif, on remercie ainsi. « Tanemmirt » est kabyle ; en amazighe standard il s’écrit « tanmmirt ». |
-| Tarifit | **Marḥba** | Bienvenue | **Ansuf** | « Ansuf » est le mot amazigh de l’accueil, vivant en Kabylie. |
-| Tarifit | **Ɛafak** | S’il te plaît | — | De l’arabe « ɛafā-k ». En kabyle, on entend aussi « ma ulac aɣilif » — « s’il n’y a pas de gêne ». |
-| Tarifit | **B-essalama** | Au revoir | — | De l’arabe « salāma », la paix — la même racine que « ssalamu ɛlikum ». |
-| Tarifit | **Mliḥ** | Ça va bien | — | De l’arabe « mlīḥ », bon, bien. |
-| Tarifit | **Tnayen** | Deux | **Sin** | Le tarifit compte en arabe au-delà de « un ». Les nombres amazighs (sin, kraḍ, kkuẓ) sont restés vivants au Souss et dans l’Atlas. |
-| Tarifit | **Tlata** | Trois | **Kraḍ** | Même histoire que « tnayen » : les nombres sont le domaine où l’emprunt a le plus avancé. |
-| Tarifit | **Lxedmet** | Le travail | **Tawuri** | Racine arabe « xdm ». « Tawuri » est le mot amazigh, gardé au Souss et dans l’Atlas. |
-| Tarifit | **Axeddam** | Le travailleur | — | Racine arabe, forme amazighe : la langue habille l’emprunt à sa façon. |
-| Tarifit | **Afellaḥ** | Le paysan | — | De l’arabe « fallāḥ », le cultivateur. |
-| Tarifit | **Ṭṭbib** | Le médecin | **Amejjay** | « Amejjay » vient de « ajjy », soigner — il s’emploie surtout en kabyle et dans les médias. |
-| Tarifit | **Lmɛellem** | Le patron, le maître artisan | — | De l’arabe « muɛallim », celui qui enseigne le métier. |
-| Tarifit | **Ssuq** | Le marché | — | De l’arabe « sūq » — l’emprunt est partagé par toutes les langues amazighes. |
-| Tarifit | **Taḥanut** | La boutique | — | De l’arabe « ḥānūt », habillé du t…t féminin amazigh. |
-| Tarifit | **Ryaḍa** | Le sport | **Addal** | C’est le mot de tous les jours. « Addal » est amazigh, créé au XXᵉ siècle et repris par l’école. |
-| Tarifit | **Lkuṛa** | Le ballon | **Takurt** | De l’arabe « kura ». « Takurt » porte, elle, la forme amazighe (ta—t) — plusieurs auteurs y voient tout de même un emprunt ancien à la même racine. |
-| Tamazight (Atlas) | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | **Azul** | C’est ce qu’on dit au Moyen Atlas. « Azul » est la forme de l’école et des pancartes — les deux sont de l’amazigh d’aujourd’hui. |
-| Tamazight (Atlas) | **Ɛlikum ssalam** | Et sur vous la paix (réponse) | **Azul** | La réponse à la salutation, du même arabe. |
-| Tamazight (Atlas) | **Cukran** | Merci | **Tanmmirt** | De l’arabe « šukran ». « Tanmmirt » s’emploie surtout à l’écrit et à l’école au Maroc central — mais c’est bien le mot amazigh. |
-| Tamazight (Atlas) | **Bla jmil** | De rien | — | De l’arabe — littéralement « sans obligation ». |
-| Tamazight (Atlas) | **Ɛafak** | S’il te plaît | — | De l’arabe « ɛafā-k ». |
-| Tamazight (Atlas) | **Mrḥba** | Bienvenue | **Ansuf** | « Ansuf » est le mot amazigh de l’accueil, vivant en Kabylie. |
-| Tamazight (Atlas) | **Waxxa** | D’accord | — | De l’arabe marocain « waxxa ». |
-| Tamazight (Atlas) | **Labas** | Ça va | — | De l’arabe « la ba’s » — « pas de mal ». |
-| Tamazight (Atlas) | **Lxdmt** | Le travail | **Tawuri** | Le Moyen Atlas dit les deux ; « tawuri » est le mot amazigh. |
-| Tamazight (Atlas) | **Axddam** | Le travailleur | — | Racine arabe « xdm », forme amazighe. |
-| Tamazight (Atlas) | **Afllaḥ** | Le paysan | — | De l’arabe « fallāḥ ». Le berger, lui, garde son nom amazigh : « amksa ». |
-| Tamazight (Atlas) | **Ssuq** | Le marché | — | De l’arabe « sūq ». |
-| Amazighe standard | **ⵍⵅⴷⵎⵜ** | Le travail (mot arabe) | **ⵜⴰⵡⵓⵔⵉ** | La norme de l’IRCAM retient « tawuri » ; « lxdmt » se lit pourtant partout, parce que c’est ce qu’on dit. |
-| Amazighe standard | **ⵜⴰⵃⴰⵏⵓⵜ** | La boutique | — | De l’arabe « ḥānūt ». Le dictionnaire de l’IRCAM l’enregistre : un emprunt installé reste de la langue. |
-| Amazighe standard | **ⴰⴼⵍⵍⴰⵃ** | Le paysan | — | De l’arabe « fallāḥ », lexicalisé en amazighe standard. |
+| Cours | Expression | Français | Vient de | Mot amazigh classique | Note affichée |
+| --- | --- | --- | --- | --- | --- |
+| Kabyle | **Labas** | Ça va (bien) | arabe | — | De l’arabe « la ba’s » — littéralement « pas de mal ». Pour demander en kabyle sans emprunt : « Amek telliḍ ? » |
+| Kabyle | **Labas ?** | Ça va ? | arabe | **Amek telliḍ ?** | La forme kabyle entière existe, et elle s’apprend à l’unité 4. |
+| Kabyle | **Aql-i labas** | Je vais bien | arabe | — | La phrase est kabyle, seul « labas » vient de l’arabe. |
+| Kabyle | **Ssuq** | Le marché | arabe | — | De l’arabe « sūq ». L’emprunt est si ancien et si complet qu’aucun mot amazigh ne lui fait concurrence — c’est le marché de tout le Maghreb. |
+| Kabyle | **Idrimen** | L’argent | arabe | — | Arrivé par l’arabe « dirham », lui-même venu du grec « drachmê » : trois langues pour une pièce de monnaie. |
+| Kabyle | **Atay** | Le thé | arabe | — | Venu de Chine, passé par l’arabe maghrébin. Le mot a voyagé avec la boisson — il n’y a pas de thé amazigh plus ancien que le mot. |
+| Kabyle | **Semmeḥ-iyi** | Excuse-moi | arabe | **Suref-iyi** | Les deux s’entendent en Kabylie ; « suref-iyi » est le mot du fonds kabyle. |
+| Kabyle | **Axeddim** | Le travail | arabe | **Tawuri** | La racine « xdm » est arabe. « Tawuri » est amazigh, et vivant : c’est le mot du Souss et de l’Atlas. |
+| Kabyle | **Axeddam** | Le travailleur | arabe | — | Même racine arabe que « axeddim », avec la forme du nom de métier amazigh (a—am). |
+| Kabyle | **Afellaḥ** | Le paysan | arabe | **Amekraz** | De l’arabe « fallāḥ ». « Amekraz » vient de « krez », labourer — un verbe kabyle. |
+| Kabyle | **Ɛumm !** | Nage ! | arabe | — | De l’arabe « ɛām ». Le kabyle n’a pas gardé de verbe propre pour la nage. |
+| Tachelhit | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | arabe | **Azul** | Au Souss, le bonjour amazigh du matin est « Tifawin » — « les lumières ». « Azul » est la forme moderne, celle de l’école. |
+| Tachelhit | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | arabe | **Azul** | La réponse suit la salutation, toutes deux venues de l’arabe. |
+| Tachelhit | **Ak isrbḥ rbbi** | Merci (que Dieu te fasse réussir) | arabe | **Tanmmirt** | La formule est celle du Souss ; « tanmmirt » est le mot amazigh du merci. |
+| Tachelhit | **Afak** | S’il te plaît | arabe | — | De l’arabe « ɛafā-k ». À une femme : « afakm ». |
+| Tachelhit | **Afakm** | S’il te plaît (à une femme) | arabe | — | Même emprunt que « afak », avec la marque du féminin amazigh. |
+| Tachelhit | **Bslama** | Au revoir | arabe | — | De l’arabe « bi-s-salāma » — « dans la paix ». |
+| Tachelhit | **Brrk** | Bienvenue | arabe | **Ansuf** | « Ansuf » est le mot amazigh de l’accueil ; il vit surtout en Kabylie. |
+| Tachelhit | **Labas** | Ça va | arabe | — | De l’arabe « la ba’s » — « pas de mal ». Toutes les langues amazighes l’ont adopté. |
+| Tachelhit | **Lxdmt** | Le travail | arabe | **Tawuri** | Le tachelhit a gardé « tawuri », le mot amazigh — les deux s’entendent au Souss. |
+| Tachelhit | **Axddam** | Le travailleur | arabe | — | Racine arabe « xdm », habillée en amazigh. |
+| Tachelhit | **Afllaḥ** | Le paysan | arabe | — | De l’arabe « fallāḥ ». |
+| Tachelhit | **Ṭṭbib** | Le médecin | arabe | **Amejjay** | « Amejjay » vient de « ajjy », soigner. |
+| Tachelhit | **Ssuq** | Le marché | arabe | — | De l’arabe « sūq ». |
+| Tachelhit | **Taḥanut** | La boutique | arabe | — | De l’arabe « ḥānūt », avec le t…t féminin amazigh autour. |
+| Tarifit | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | arabe | **Azul** | C’est LA salutation du Rif, celle qu’on entend partout. « Azul » est le bonjour amazigh, porté par l’école et les médias. |
+| Tarifit | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | arabe | **Azul** | La réponse va avec la salutation : les deux viennent de l’arabe. |
+| Tarifit | **Barek llahu fik** | Merci (que Dieu te bénisse) | arabe | **Tanemmirt** | Au Rif, on remercie ainsi. « Tanemmirt » est kabyle ; en amazighe standard il s’écrit « tanmmirt ». |
+| Tarifit | **Marḥba** | Bienvenue | arabe | **Ansuf** | « Ansuf » est le mot amazigh de l’accueil, vivant en Kabylie. |
+| Tarifit | **Ɛafak** | S’il te plaît | arabe | — | De l’arabe « ɛafā-k ». En kabyle, on entend aussi « ma ulac aɣilif » — « s’il n’y a pas de gêne ». |
+| Tarifit | **B-essalama** | Au revoir | arabe | — | De l’arabe « salāma », la paix — la même racine que « ssalamu ɛlikum ». |
+| Tarifit | **Mliḥ** | Ça va bien | arabe | — | De l’arabe « mlīḥ », bon, bien. |
+| Tarifit | **Tnayen** | Deux | arabe | **Sin** | Le tarifit compte en arabe au-delà de « un ». Les nombres amazighs (sin, kraḍ, kkuẓ) sont restés vivants au Souss et dans l’Atlas. |
+| Tarifit | **Tlata** | Trois | arabe | **Kraḍ** | Même histoire que « tnayen » : les nombres sont le domaine où l’emprunt a le plus avancé. |
+| Tarifit | **Lxedmet** | Le travail | arabe | **Tawuri** | Racine arabe « xdm ». « Tawuri » est le mot amazigh, gardé au Souss et dans l’Atlas. |
+| Tarifit | **Axeddam** | Le travailleur | arabe | — | Racine arabe, forme amazighe : la langue habille l’emprunt à sa façon. |
+| Tarifit | **Afellaḥ** | Le paysan | arabe | — | De l’arabe « fallāḥ », le cultivateur. |
+| Tarifit | **Ṭṭbib** | Le médecin | arabe | **Amejjay** | « Amejjay » vient de « ajjy », soigner — il s’emploie surtout en kabyle et dans les médias. |
+| Tarifit | **Lmɛellem** | Le patron, le maître artisan | arabe | — | De l’arabe « muɛallim », celui qui enseigne le métier. |
+| Tarifit | **Ssuq** | Le marché | arabe | — | De l’arabe « sūq » — l’emprunt est partagé par toutes les langues amazighes. |
+| Tarifit | **Taḥanut** | La boutique | arabe | — | De l’arabe « ḥānūt », habillé du t…t féminin amazigh. |
+| Tarifit | **Ryaḍa** | Le sport | arabe | **Addal** | C’est le mot de tous les jours. « Addal » est amazigh, créé au XXᵉ siècle et repris par l’école. |
+| Tarifit | **Simana** | La semaine | espagnol | — | De l’espagnol « semana ». Le Rif est la seule langue amazighe du cours à emprunter autant à l’espagnol qu’à l’arabe — c’est l’héritage de Melilla et de Nador. |
+| Tarifit | **Lkuṛa** | Le ballon | arabe | **Takurt** | De l’arabe « kura ». « Takurt » porte, elle, la forme amazighe (ta—t) — plusieurs auteurs y voient tout de même un emprunt ancien à la même racine. |
+| Tamazight (Atlas) | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | arabe | **Azul** | C’est ce qu’on dit au Moyen Atlas. « Azul » est la forme de l’école et des pancartes — les deux sont de l’amazigh d’aujourd’hui. |
+| Tamazight (Atlas) | **Ɛlikum ssalam** | Et sur vous la paix (réponse) | arabe | **Azul** | La réponse à la salutation, du même arabe. |
+| Tamazight (Atlas) | **Cukran** | Merci | arabe | **Tanmmirt** | De l’arabe « šukran ». « Tanmmirt » s’emploie surtout à l’écrit et à l’école au Maroc central — mais c’est bien le mot amazigh. |
+| Tamazight (Atlas) | **Bla jmil** | De rien | arabe | — | De l’arabe — littéralement « sans obligation ». |
+| Tamazight (Atlas) | **Ɛafak** | S’il te plaît | arabe | — | De l’arabe « ɛafā-k ». |
+| Tamazight (Atlas) | **Mrḥba** | Bienvenue | arabe | **Ansuf** | « Ansuf » est le mot amazigh de l’accueil, vivant en Kabylie. |
+| Tamazight (Atlas) | **Waxxa** | D’accord | arabe | — | De l’arabe marocain « waxxa ». |
+| Tamazight (Atlas) | **Labas** | Ça va | arabe | — | De l’arabe « la ba’s » — « pas de mal ». |
+| Tamazight (Atlas) | **Lxdmt** | Le travail | arabe | **Tawuri** | Le Moyen Atlas dit les deux ; « tawuri » est le mot amazigh. |
+| Tamazight (Atlas) | **Axddam** | Le travailleur | arabe | — | Racine arabe « xdm », forme amazighe. |
+| Tamazight (Atlas) | **Afllaḥ** | Le paysan | arabe | — | De l’arabe « fallāḥ ». Le berger, lui, garde son nom amazigh : « amksa ». |
+| Tamazight (Atlas) | **Ssuq** | Le marché | arabe | — | De l’arabe « sūq ». |
+| Amazighe standard | **ⵍⵅⴷⵎⵜ** | Le travail (mot arabe) | arabe | **ⵜⴰⵡⵓⵔⵉ** | La norme de l’IRCAM retient « tawuri » ; « lxdmt » se lit pourtant partout, parce que c’est ce qu’on dit. |
+| Amazighe standard | **ⵜⴰⵃⴰⵏⵓⵜ** | La boutique | arabe | — | De l’arabe « ḥānūt ». Le dictionnaire de l’IRCAM l’enregistre : un emprunt installé reste de la langue. |
+| Amazighe standard | **ⴰⴼⵍⵍⴰⵃ** | Le paysan | arabe | — | De l’arabe « fallāḥ », lexicalisé en amazighe standard. |
 
 ### En attente d’une décision (aucune modale affichée)
 
@@ -595,7 +596,6 @@ Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient de
 | Kabyle | **Tanemmirt aṭas** | Merci beaucoup | « aṭas » (beaucoup) est parfois donné comme emprunt ; le mot principal, lui, est amazigh. |
 | Tarifit | **Wah** | Oui | Probable emprunt à l’arabe maghrébin — à confirmer. |
 | Tarifit | **Mliḥ, l-ḥamdu li-llah** | Ça va bien, Dieu merci | Formule qui nomme Dieu — modale à écarter ou à reformuler. |
-| Tarifit | **Simana** | La semaine | Emprunt à l’ESPAGNOL, pas à l’arabe — mérite peut-être sa propre modale. |
 | Tachelhit | **Yah** | Oui | Origine discutée — à confirmer par un locuteur du Souss. |
 | Tachelhit | **Labas, lḥamdulillah** | Ça va, Dieu merci | Formule qui nomme Dieu — modale à écarter ou à reformuler. |
 | Tamazight (Atlas) | **Yah** | Oui | Origine discutée — à confirmer. |

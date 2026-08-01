@@ -1,5 +1,5 @@
 /**
- * LES EMPRUNTS À L'ARABE — le registre, et ce que l'app en dit.
+ * LES EMPRUNTS — le registre, et ce que l'app en dit.
  *
  * Demande de Selim : quand l'élève valide la bonne réponse sur une
  * expression venue de l'arabe, une modale lui explique que le mot amazigh
@@ -30,6 +30,27 @@
  * validé, comme le reste du contenu (voir README).
  */
 
+/**
+ * D'où vient l'emprunt — le badge de la modale et la phrase qui l'accompagne.
+ *
+ * L'arabe est le cas général (58 entrées sur 59) et reste la valeur par
+ * défaut. L'espagnol est arrivé avec « simana » au Rif : Melilla et Nador ont
+ * laissé des mots comme les siècles arabes en ont laissé, et la modale doit
+ * pouvoir le dire sans mentir sur la provenance.
+ */
+export const SOURCES = Object.freeze({
+  arabe: {
+    badge: 'Mot venu de l’arabe',
+    phrase:
+      'L’arabe est présent depuis des siècles dans les régions et la culture amazighes : ce qu’on entend au village fait partie de la langue, autant que le mot ancien.',
+  },
+  espagnol: {
+    badge: 'Mot venu de l’espagnol',
+    phrase:
+      'L’espagnol est entré au Rif par Melilla et Nador. Un siècle de voisinage laisse des mots : ils font partie du tarifit d’aujourd’hui, au même titre que les autres.',
+  },
+})
+
 /** Clé de comparaison : « Labas ? » et « labas » sont le même mot. */
 const cle = (mot) =>
   String(mot || '')
@@ -45,6 +66,7 @@ const cle = (mot) =>
  * @typedef  {object} Emprunt
  * @property {string}  mot         l'expression telle qu'elle apparaît dans les leçons
  * @property {string}  sens        sa traduction française
+ * @property {keyof SOURCES} [origine]  d'où vient l'emprunt — 'arabe' par défaut
  * @property {string} [classique]  le mot amazigh plus classique, s'il en existe un
  * @property {string} [sensClassique] ce que veut dire ce mot amazigh, s'il diffère
  * @property {string} [usage]      la nuance régionale, en une phrase
@@ -217,6 +239,13 @@ export const EMPRUNTS = {
       sens: 'Le sport',
       classique: 'Addal',
       usage: 'C’est le mot de tous les jours. « Addal » est amazigh, créé au XXᵉ siècle et repris par l’école.',
+    },
+    {
+      mot: 'Simana',
+      sens: 'La semaine',
+      origine: 'espagnol',
+      usage:
+        'De l’espagnol « semana ». Le Rif est la seule langue amazighe du cours à emprunter autant à l’espagnol qu’à l’arabe — c’est l’héritage de Melilla et de Nador.',
     },
     {
       mot: 'Lkuṛa',
@@ -413,7 +442,6 @@ export const A_TRANCHER = [
   { lang: 'kab', mot: 'Tanemmirt aṭas', sens: 'Merci beaucoup', raison: '« aṭas » (beaucoup) est parfois donné comme emprunt ; le mot principal, lui, est amazigh.' },
   { lang: 'rif', mot: 'Wah', sens: 'Oui', raison: 'Probable emprunt à l’arabe maghrébin — à confirmer.' },
   { lang: 'rif', mot: 'Mliḥ, l-ḥamdu li-llah', sens: 'Ça va bien, Dieu merci', raison: 'Formule qui nomme Dieu — modale à écarter ou à reformuler.' },
-  { lang: 'rif', mot: 'Simana', sens: 'La semaine', raison: 'Emprunt à l’ESPAGNOL, pas à l’arabe — mérite peut-être sa propre modale.' },
   { lang: 'shi', mot: 'Yah', sens: 'Oui', raison: 'Origine discutée — à confirmer par un locuteur du Souss.' },
   { lang: 'shi', mot: 'Labas, lḥamdulillah', sens: 'Ça va, Dieu merci', raison: 'Formule qui nomme Dieu — modale à écarter ou à reformuler.' },
   { lang: 'tzm', mot: 'Yah', sens: 'Oui', raison: 'Origine discutée — à confirmer.' },

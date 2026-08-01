@@ -221,6 +221,11 @@ const rif12 = [
   qk('Que veut dire « Ssuq » ?', 'Ssuq', 'Le marché', ['Le marché', 'La boutique', 'Le champ', 'La rue']),
   qk('Que veut dire « Taḥanut » ?', 'Taḥanut', 'La boutique', ['La boutique', 'Le marché', 'La maison', 'La porte']),
   qk('Que veut dire « Iger » ?', 'Iger', 'Le champ', ['Le champ', 'Le jardin', 'La montagne', 'Le village']),
+  // « Simana » n'était qu'une réponse de question de culture : le mot était
+  // cité, jamais enseigné — donc absent du dictionnaire et des enregistrements.
+  // Il s'apprend maintenant pour de bon. C'est le seul emprunt à l'ESPAGNOL
+  // du cours, et il inaugure cette famille dans le dictionnaire.
+  qk('Que veut dire « Simana » ?', 'Simana', 'La semaine', ['La semaine', 'Le mois', 'Le marché', 'Le matin']),
   culture(
     'Le tarifit emprunte aussi à l’espagnol. Lequel de ces mots en vient ?',
     'Simana (la semaine)',
