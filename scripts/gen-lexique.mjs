@@ -58,15 +58,22 @@ const TRANCHER_PAR_LANG = A_TRANCHER.reduce((acc, e) => {
  * amazigh est la réponse — les confondre ferait enregistrer « Oui » à la
  * place de « Ih ». Les questions de culture n'ont pas de mot amazigh à
  * enregistrer : leurs deux faces sont en français.
+ *
+ * UN PIÈGE, corrigé ici. Sur les questions « on te dit X, que réponds-tu ? »,
+ * le champ `word` porte le CONTEXTE affiché sur la carte, pas une traduction :
+ * « Wa ɛlikum ssalam » se retrouverait dans la fiche avec pour sens
+ * « Ssalamu ɛlikum », et le locuteur n'aurait aucun moyen de le voir. On
+ * préfère laisser le sens vide — « à préciser » se corrige, une fausse
+ * traduction se recopie.
  */
+const REPONSE = /réponds-tu|répond-on|que réponds/i
 function pairesDe(ex) {
   if (ex.type === 'match') return ex.pairs.map((p) => ({ mot: p.kab, sens: p.fr }))
   if (ex.type === 'culture') return []
   if (ex.type === 'image') return [{ mot: ex.answer, sens: '' }]
   if (!ex.word) return []
-  return ex.kind === 'fr-to-kab'
-    ? [{ mot: ex.answer, sens: ex.word }]
-    : [{ mot: ex.word, sens: ex.answer }]
+  if (ex.kind !== 'fr-to-kab') return [{ mot: ex.word, sens: ex.answer }]
+  return [{ mot: ex.answer, sens: REPONSE.test(ex.prompt || '') ? '' : ex.word }]
 }
 
 function lexiqueDe(course) {
@@ -97,9 +104,16 @@ function lexiqueDe(course) {
       }
     }
   }
+  // Un sens qui est lui-même un mot amazigh du cours n'est pas une
+  // traduction : c'est le mot de l'énoncé qui a débordé (« Uř » = « Uř »).
+  const motsConnus = new Set(vus.keys())
   return [...vus.values()].map((l) => {
     const emprunt = EMPRUNT_PAR_LANG[l.lang]?.get(cle(l.mot))
     const trancher = TRANCHER_PAR_LANG[l.lang]?.get(cle(l.mot))
+    if (motsConnus.has(cle(l.sens))) l.sens = ''
+    // Le registre des emprunts, lui, porte des traductions écrites à la main :
+    // elles font foi sur celles qu'on devine depuis les exercices.
+    if (!l.sens) l.sens = emprunt?.sens || trancher?.sens || ''
     return {
       ...l,
       lecons: [...l.lecons].join(' '),

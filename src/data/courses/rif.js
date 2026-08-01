@@ -161,8 +161,17 @@ const rif9 = [
     'ř',
     ['ř', 'n', 'd', 'g'],
   ),
-  qk('Le mot kabyle « ul » (cœur) devient en tarifit…', 'Uř', 'Uř', ['Uř', 'Ul', 'Un', 'Ud']),
-  qk('Le mot kabyle « argaz » (homme) devient en tarifit…', 'Aryaz', 'Aryaz', ['Aryaz', 'Argaz', 'Arjaz', 'Aryal']),
+  // Ces deux questions montraient la réponse sur la carte : en kab→fr, c'est
+  // le mot amazigh qui s'affiche, et il figurait aussi dans les choix. On
+  // demande donc le SENS, et la règle l → ř reste portée par les questions de
+  // culture qui encadrent — c'est leur travail.
+  qk('Que veut dire « Uř » ?', 'Uř', 'Le cœur', ['Le cœur', 'La tête', 'La main', 'Le sang']),
+  qk('Que veut dire « Aryaz » ?', 'Aryaz', 'L’homme', ['L’homme', 'La femme', 'Le garçon', 'Le frère']),
+  culture(
+    'Le kabyle dit « argaz », le tarifit « aryaz ». Qu’est-ce qui change ?',
+    'Le g devient y',
+    ['Le g devient y', 'Le r devient ř', 'Le a devient i', 'Rien du tout'],
+  ),
   culture(
     'Comment dit-on « ma sœur » en tarifit (kabyle : weltma) ?',
     'Učma',

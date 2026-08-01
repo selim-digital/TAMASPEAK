@@ -138,7 +138,7 @@
 | 20 | **Kkuẓ** | Quatre | mot |  | `shi/kkuz.mp3` | shi8 |
 | 21 | **Kraḍ** | Trois | mot |  | `shi/krad.mp3` | shi8 |
 | 22 | **Labas** | Ça va | mot | arabe | `shi/labas.mp3` | shi4 |
-| 23 | **Labas, lḥamdulillah** | Comment vas-tu ? | expression | à trancher | `shi/labas-lhamdulillah.mp3` | shi4 |
+| 23 | **Labas, lḥamdulillah** | Ça va, Dieu merci | expression | à trancher | `shi/labas-lhamdulillah.mp3` | shi4 |
 | 24 | **Lxdmt** | Le travail (mot arabe) | mot | arabe → Tawuri | `shi/lxdmt.mp3` | shi10 |
 | 25 | **Manzakin ?** | Comment vas-tu ? | expression |  | `shi/manzakin.mp3` | shi4 |
 | 26 | **Sin** | Deux | mot |  | `shi/sin.mp3` | shi8 |
@@ -155,7 +155,7 @@
 | 37 | **Ṭṭbib** | Le médecin | mot | arabe → Amejjay | `shi/ttbib.mp3` | shi11 |
 | 38 | **Uhu** | Non | mot |  | `shi/uhu.mp3` | shi2 |
 | 39 | **Urar** | Le jeu | mot |  | `shi/urar.mp3` | shi14 shi15 shi17 |
-| 40 | **Wa ɛlikum ssalam** | Ssalamu ɛlikum | expression | arabe → Azul | `shi/wa-elikum-ssalam.mp3` | shi1 |
+| 40 | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `shi/wa-elikum-ssalam.mp3` | shi1 |
 | 41 | **Yah** | Oui | mot | à trancher | `shi/yah.mp3` | shi2 |
 | 42 | **Yan** | Un | mot |  | `shi/yan.mp3` | shi8 |
 
@@ -167,7 +167,7 @@
 | 2 | **Afellaḥ** | Le paysan | mot | arabe | `rif/afellah.mp3` | rif11 rif13 |
 | 3 | **Aɣrum** | Le pain | mot |  | `rif/aghrum.mp3` | rif7 |
 | 4 | **Aman** | L’eau | mot |  | `rif/aman.mp3` | rif7 |
-| 5 | **Aryaz** | Aryaz | mot |  | `rif/aryaz.mp3` | rif9 |
+| 5 | **Aryaz** | L’homme | mot |  | `rif/aryaz.mp3` | rif9 |
 | 6 | **Axeddam** | Le travailleur | mot | arabe | `rif/axeddam.mp3` | rif10 rif13 |
 | 7 | **Azzeř !** | Cours ! | expression |  | `rif/azzer.mp3` | rif15 rif17 |
 | 8 | **B-essalama** | Au revoir | mot | arabe | `rif/b-essalama.mp3` | rif5 |
@@ -183,7 +183,7 @@
 | 18 | **Mamec teǧǧid ?** | Comment vas-tu ? | expression |  | `rif/mamec-teggid.mp3` | rif4 |
 | 19 | **Marḥba** | Bienvenue | mot | arabe → Ansuf | `rif/marhba.mp3` | rif1 rif2 |
 | 20 | **Mliḥ** | Ça va bien | mot | arabe | `rif/mlih.mp3` | rif4 |
-| 21 | **Mliḥ, l-ḥamdu li-llah** | Comment vas-tu ? | expression | à trancher | `rif/mlih-l-hamdu-li-llah.mp3` | rif4 |
+| 21 | **Mliḥ, l-ḥamdu li-llah** | Ça va bien, Dieu merci | expression | à trancher | `rif/mlih-l-hamdu-li-llah.mp3` | rif4 |
 | 22 | **Ryaḍa** | Le sport | mot | arabe → Addal | `rif/ryada.mp3` | rif14 rif16 rif17 |
 | 23 | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | expression | arabe → Azul | `rif/ssalamu-elikum.mp3` | rif1 |
 | 24 | **Ssuq** | Le marché | mot | arabe | `rif/ssuq.mp3` | rif12 rif13 |
@@ -194,9 +194,9 @@
 | 29 | **Tlata** | Trois | mot | arabe → Kraḍ | `rif/tlata.mp3` | rif8 |
 | 30 | **Tnayen** | Deux | mot | arabe → Sin | `rif/tnayen.mp3` | rif8 |
 | 31 | **Ṭṭbib** | Le médecin | mot | arabe → Amejjay | `rif/ttbib.mp3` | rif11 rif13 |
-| 32 | **Uř** | Uř | mot |  | `rif/ur.mp3` | rif9 |
+| 32 | **Uř** | Le cœur | mot |  | `rif/ur.mp3` | rif9 |
 | 33 | **Uraren** | Les jeux | mot |  | `rif/uraren.mp3` | rif14 rif15 rif17 |
-| 34 | **Wa ɛlikum ssalam** | Ssalamu ɛlikum | expression | arabe → Azul | `rif/wa-elikum-ssalam.mp3` | rif1 |
+| 34 | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `rif/wa-elikum-ssalam.mp3` | rif1 |
 | 35 | **Wah** | Oui | mot | à trancher | `rif/wah.mp3` | rif2 |
 | 36 | **Yemma** | Maman | mot |  | `rif/yemma.mp3` | rif6 |
 
@@ -220,7 +220,7 @@
 | 14 | **Bla jmil** | De rien | expression | arabe | `tzm/bla-jmil.mp3` | tzm3 |
 | 15 | **Cukran** | Merci | mot | arabe → Tanmmirt | `tzm/cukran.mp3` | tzm3 |
 | 16 | **Ɛafak** | S’il te plaît | mot | arabe | `tzm/eafak.mp3` | tzm3 tzm4 |
-| 17 | **Ɛlikum ssalam** | Ssalamu ɛlikum | expression | arabe → Azul | `tzm/elikum-ssalam.mp3` | tzm1 |
+| 17 | **Ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `tzm/elikum-ssalam.mp3` | tzm1 |
 | 18 | **Igr** | Le champ | mot |  | `tzm/igr.mp3` | tzm11 tzm13 |
 | 19 | **Is thnna ɣur-k ?** | Tout est tranquille chez toi ? | expression |  | `tzm/is-thnna-ghur-k.mp3` | tzm4 |
 | 20 | **Ixf** | La tête | mot |  | `tzm/ixf.mp3` | tzm16 tzm17 |
