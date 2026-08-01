@@ -304,6 +304,7 @@ export function PathScreen({
   onMissions,
   onJeux,
   onTifinagh,
+  onDictionnaire,
   onHistoire,
   onCercle,
   onNotifs,
@@ -479,6 +480,34 @@ export function PathScreen({
           className="flex flex-none items-center justify-center rounded-xl border border-line bg-cream px-3 py-2 text-[13px] font-extrabold text-ink tifinagh"
         >
           ⵣ
+        </button>
+      </div>
+
+      {/* Le dictionnaire — la seule vue qui traverse les cinq langues d'un
+          coup. Il a sa propre ligne : c'est une porte, pas un raccourci de
+          plus, et la recherche s'y ouvre à tout le monde (seule la fiche
+          complète demande l'abonnement — voir entreeDicoOuverte). */}
+      <div className="px-3.5 pt-1.5">
+        <button
+          type="button"
+          onClick={onDictionnaire}
+          className="flex w-full items-center gap-2.5 rounded-xl border border-line bg-cream px-3 py-2.5 text-left transition active:translate-y-[1px]"
+        >
+          <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise/12 text-turquoise-deep">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6" />
+              <path d="M15 15l4.5 4.5" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12.5px] font-extrabold text-ink">Dictionnaire</span>
+            <span className="block truncate text-[10.5px] text-ink-soft">
+              Un mot, et ce qu’il devient dans les cinq langues
+            </span>
+          </span>
+          <span className="flex-none text-[13px] font-extrabold text-ink-soft" aria-hidden="true">
+            ›
+          </span>
         </button>
       </div>
 

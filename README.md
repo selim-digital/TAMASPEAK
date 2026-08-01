@@ -53,6 +53,47 @@ garde-fous tiennent ce fichier honnête :
 La modale s'affiche **une fois par mot et par langue** (`src/lib/emprunts.js`) :
 sinon, au troisième passage, on ferme sans lire.
 
+## Le dictionnaire
+
+La vue en travers des cinq cours — celle qu'aucune leçon ne peut donner.
+Chercher « eau » et voir `aman` identique du Rif au Souss ; chercher « maison »
+et voir `axxam`, `tigmmi`, `taddart` se partager le territoire ; chercher
+« travail » et voir l'emprunt et le mot du fonds côte à côte.
+
+**Il ne tient aucune liste à lui.** `src/data/dictionnaire.js` dérive ses
+entrées du contenu réel des leçons — le même module sert le moteur de
+recherche de l'app *et* `npm run gen:lexique`. Une seconde liste tenue à la
+main aurait divergé dès la leçon suivante, et un dictionnaire qui ment sur ce
+que l'app enseigne ne vaut rien.
+
+| Couche | Fichier | Sûreté |
+| --- | --- | --- |
+| Entrées (mot, sens, unité, leçons) | dérivées des exercices | ce sont des faits |
+| Liens (synonymes, cousins entre langues) | calculés sur le noyau du sens français | mécanique, vérifiable |
+| Étymologie (origine, racine, note) | `src/data/etymologies.js`, **écrit à la main** | **à valider** |
+
+Le tifinagh est indexé sous sa forme latine (`src/lib/translit.js`) : taper
+« azul » trouve ⴰⵣⵓⵍ, taper « adar » trouve `aḍar`. La conversion inverse
+n'existe pas volontairement — le schwa ne s'écrit pas en norme IRCAM, et une
+translittération mécanique fabriquerait des mots faux.
+
+Quand les sources se contredisent, l'entrée porte `discute: true` et l'écran
+l'affiche. Quand on ne sait pas, **on n'affiche rien**.
+
+### Ce qui est payant, et ce qui ne l'est pas
+
+**La recherche n'est jamais verrouillée.** Sans abonnement on voit toujours le
+mot, sa langue et son sens : cacher jusqu'à l'existence des mots ferait un
+dictionnaire inutilisable, donc invendable. C'est la **fiche** — origine,
+racine, synonymes, correspondances dans les quatre autres langues — qui
+demande l'abonnement.
+
+Et la règle des unités libres s'applique telle quelle (`entreeDicoOuverte`
+délègue à `uniteOuverte`) : **les mots de la première unité de chaque cours
+ont leur fiche ouverte pour toujours**. Ce qui était gratuit le reste. Comme
+partout, on ne verrouille que sur un **refus explicite du serveur** —
+hors-ligne, panne ou boutique fermée laissent tout ouvert.
+
 ## Démarrer
 
 ```bash
@@ -218,11 +259,14 @@ src/
     units.js         unités du cours de kabyle
     lessons.js       exercices du cours de kabyle
     emprunts.js      les mots venus de l'arabe + le mot amazigh classique
+    dictionnaire.js  les 5 cours réunis : entrées, cousins, recherche
+    etymologies.js   origines & racines, écrites à la main — à valider
     journey.js       les 11 paysages ; le voyage part de « chez » la langue
     badges.js        badges dérivés de la progression
   lib/
     progress.js      store multi-langues + migration, localStorage
     audio.js         natif → synthèse → voix du navigateur
+    translit.js      tifinagh → latin, et la clé de recherche du dictionnaire
     challenge.js     défi entre amis par graine (sans serveur)
     share.js         cartes de partage, Web Share + presse-papiers
     sfx.js           sons de jeu synthétisés (WebAudio, aucun fichier)

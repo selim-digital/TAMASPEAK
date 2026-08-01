@@ -160,6 +160,28 @@ export function uniteOuverte(indexUnite, etat) {
   return etat.abonne === true
 }
 
+/**
+ * Cette fiche du dictionnaire est-elle ouverte ?
+ *
+ * Le dictionnaire est une option payante — la première du projet qui ne soit
+ * pas une unité de cours. Il suit pourtant EXACTEMENT la même règle, et c'est
+ * volontaire : ce qui est déjà gratuit le reste. Les mots des unités libres
+ * (la première de chaque cours) s'ouvrent en entier, sans compte ni carte ;
+ * le reste demande un abonnement ; et un serveur muet n'interdit rien.
+ *
+ * Ce qui n'est JAMAIS verrouillé, et ne doit pas l'être : la recherche
+ * elle-même. On voit toujours que le mot existe, dans quelle langue, et ce
+ * qu'il veut dire. C'est la fiche — étymologie, cousins d'une langue à
+ * l'autre, synonymes — qui est derrière la porte. Cacher jusqu'à l'existence
+ * du mot ferait un dictionnaire inutilisable, donc invendable.
+ *
+ * @param {{uniteIndex:number}} entree  une entrée de data/dictionnaire.js
+ * @param {object|null} etat            ce que `etatAbonnement()` a rendu
+ */
+export function entreeDicoOuverte(entree, etat) {
+  return uniteOuverte(entree?.uniteIndex ?? 0, etat)
+}
+
 /** Reste-t-il quelque chose à débloquer ? (sert à décider d'inviter, ou non) */
 export function verrouActif(etat) {
   return !!etat && etat.paiementOuvert === true && etat.abonne !== true

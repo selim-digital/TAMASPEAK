@@ -16,6 +16,7 @@ import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.
 import { DuoScreen } from './screens/DuoScreen.jsx'
 import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
+import { DictionnaireScreen } from './screens/DictionnaireScreen.jsx'
 import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
@@ -686,6 +687,7 @@ export default function App() {
               onMissions={() => setScreen(ECRANS.MISSIONS)}
               onJeux={() => setScreen(ECRANS.JEUX)}
               onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
+              onDictionnaire={() => setScreen(ECRANS.DICTIONNAIRE)}
               onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
               onCercle={() => setScreen(ECRANS.CERCLE)}
@@ -862,6 +864,14 @@ export default function App() {
           )}
 
           {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.CHEMIN)} />}
+
+          {screen === ECRANS.DICTIONNAIRE && (
+            <DictionnaireScreen
+              abonnement={abonnement}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
 
           {screen === ECRANS.JEUX && (
             <JeuxScreen

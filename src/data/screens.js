@@ -41,4 +41,5 @@ export const ECRANS = Object.freeze({
   CERCLE: 'cercle',
   ENREGISTRER: 'enregistrer',
   ABONNEMENT: 'abonnement',
+  DICTIONNAIRE: 'dictionnaire',
 })

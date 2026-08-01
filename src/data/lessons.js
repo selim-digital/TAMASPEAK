@@ -449,7 +449,7 @@ const l46 = [
   match([
     { kab: 'Axeddim', fr: 'Le travail' },
     { kab: 'Axeddam', fr: 'Le travailleur' },
-    { kab: 'Tawuri', fr: 'Le travail (amazigh)' },
+    { kab: 'Tawuri', fr: 'Le travail (mot amazigh)' },
   ]),
 ]
 const l47 = [
