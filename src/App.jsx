@@ -575,8 +575,16 @@ export default function App() {
     setScreen(ECRANS.DUEL_INTRO)
   }
 
-  /** Toucher une notification du cercle : on mène directement à l'action. */
+  /**
+   * Toucher une notification : on mène DIRECTEMENT à l'action (demande de
+   * Selim — aucune carte morte). Les locales portent leur écran de
+   * destination (`ecran`) ; celles du cercle portent de quoi agir (`data`).
+   */
   async function ouvrirNotifServeur(n) {
+    if (n.ecran) {
+      setScreen(n.ecran)
+      return
+    }
     if (n.kind === 'demande-audio' && n.data?.demandeId) {
       const d = await mesDemandes()
       const demande = d?.recues?.find((x) => x.id === n.data.demandeId)
