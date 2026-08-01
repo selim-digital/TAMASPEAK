@@ -155,6 +155,17 @@ CREATE INDEX IF NOT EXISTS notifications_user ON notifications (user_id, created
 -- 80/jour au total (marge de 20 pour les codes de connexion).
 -- ------------------------------------------------------------------
 
+-- Journal des envois d'email — la « panne lisible en 30 s » de l'audit,
+-- appliquée aux emails après l'affaire de l'email de suppression
+-- introuvable : chaque tentative laisse une trace ANONYME (gabarit,
+-- statut, raison — jamais d'adresse), lisible via /api/health.
+CREATE TABLE IF NOT EXISTS journal_emails (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  template TEXT NOT NULL,
+  statut TEXT NOT NULL,        -- 'envoye' | 'refus-quota' | 'erreur: …'
+  at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS email_quota (
   day DATE NOT NULL,
   email TEXT NOT NULL,

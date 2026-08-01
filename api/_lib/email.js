@@ -64,10 +64,25 @@ async function quotaOk(to, marketing) {
   }
 }
 
+/** Trace anonyme de chaque tentative (gabarit + statut, JAMAIS l'adresse). */
+async function journaliser(template, statut) {
+  try {
+    const { serverReady, sql } = await import('./db.js')
+    if (!serverReady()) return
+    await sql()`INSERT INTO journal_emails (template, statut) VALUES (${template}, ${String(statut).slice(0, 200)})`
+  } catch {
+    /* le journal est un bonus — jamais bloquant */
+  }
+}
+
 export async function sendEmail({ to, subject, template, data = {}, marketing = false }) {
-  if (!emailReady()) return false
+  if (!emailReady()) {
+    await journaliser(template, 'refus: RESEND_API_KEY absente')
+    return false
+  }
   if (!(await quotaOk(to, marketing))) {
     console.error(`[tama] quota email atteint — envoi refusé vers ${to} (${template})`)
+    await journaliser(template, 'refus-quota')
     return false
   }
   const { Resend } = await import('resend')
@@ -90,7 +105,9 @@ export async function sendEmail({ to, subject, template, data = {}, marketing = 
   })
   if (error) {
     console.error('[tama] échec email', template, error?.message || error)
+    await journaliser(template, `erreur: ${error?.message || error}`)
     return false
   }
+  await journaliser(template, 'envoye')
   return true
 }

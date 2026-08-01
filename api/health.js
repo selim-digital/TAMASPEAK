@@ -133,6 +133,18 @@ export default async function handler(req, res) {
     if ((t?.total ?? 0) > 80) throw new Error('plafond global atteint — plus aucun envoi aujourd’hui')
   })
 
+  await step('journal-emails', async () => {
+    const { serverReady, sql } = await import('./_lib/db.js')
+    if (!serverReady()) throw new Error('DATABASE_URL absente')
+    // Les 5 dernières tentatives d'envoi — gabarit + statut + heure,
+    // jamais d'adresse : de quoi voir en un regard si un email est parti,
+    // a été refusé (quota) ou a été rejeté par Resend (et pourquoi).
+    const lignes = await sql()`
+      SELECT template, statut, to_char(at, 'HH24:MI:SS') AS heure
+      FROM journal_emails ORDER BY at DESC LIMIT 5`
+    out.derniersEmails = lignes
+  })
+
   await step('verification-table', async () => {
     const { sql } = await import('./_lib/db.js')
     const [row] = await sql()`
