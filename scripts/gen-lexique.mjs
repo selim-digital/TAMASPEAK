@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { COURSES } from '../src/data/courses.js'
 import { EMPRUNTS, A_TRANCHER } from '../src/data/emprunts.js'
+import { ORIGINES } from '../src/data/etymologies.js'
 import { ENTREES, ORDRE_LANGUES, STATS } from '../src/data/dictionnaire.js'
 import { cleRecherche } from '../src/lib/translit.js'
 
@@ -44,7 +45,9 @@ const ligne = (e) => ({
   categorie: e.categorie,
   emprunt: e.emprunt ? 'arabe' : TRANCHER[e.lang]?.has(e.cle) ? 'à trancher' : '',
   classique: e.emprunt?.classique || '',
-  origine: e.etymologie?.origine || '',
+  // Une case vide se lirait « pas concerné ». Elle veut dire « pas encore
+  // écrit » : le dictionnaire affiche d'ailleurs la même chose à l'élève.
+  origine: e.etymologie?.origine || 'à préciser',
   fichier: e.audio || '',
   lecons: e.lecons.join(' '),
 })
@@ -119,6 +122,62 @@ for (const { course, lignes } of parLangue) {
   md.push('')
 }
 
+/* ---------------- étymologies ---------------- */
+// Une même note sert souvent plusieurs cours — « aman » est le même mot du Rif
+// au Souss. On regroupe donc par NOTE, pas par mot : Selim valide une fois ce
+// qui vaut pour cinq entrées, au lieu de relire cinq fois la même phrase.
+const parEtymo = new Map()
+const sansEtymo = []
+for (const e of ENTREES) {
+  if (!e.etymologie) {
+    sansEtymo.push(e)
+    continue
+  }
+  if (!parEtymo.has(e.etymologie)) parEtymo.set(e.etymologie, [])
+  parEtymo.get(e.etymologie).push(e)
+}
+const formes = (liste) => [...new Set(liste.map((e) => e.mot))].join(' · ')
+const cours = (liste) => [...new Set(liste.map((e) => e.lang))].join(' ')
+
+md.push('## Étymologies — la couche écrite à la main')
+md.push('')
+md.push(
+  '> `src/data/etymologies.js`. C’est la SEULE partie du dictionnaire qui ne soit pas dérivée du contenu des cours : elle est à valider ligne par ligne. « Discuté » signale que les sources ne s’accordent pas — l’app l’affiche alors à l’élève.',
+)
+md.push('')
+for (const [famille, o] of Object.entries(ORIGINES)) {
+  const lignes = [...parEtymo.entries()]
+    .filter(([et]) => et.origine === famille)
+    .sort((a, b) => a[1][0].mot.localeCompare(b[1][0].mot, 'fr'))
+  if (!lignes.length) continue
+  md.push(`### ${o.label} (${lignes.length})`)
+  md.push('')
+  md.push('| Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |')
+  md.push('| --- | --- | --- | --- | :-: | :-: |')
+  for (const [et, liste] of lignes) {
+    md.push(
+      `| **${cellule(formes(liste))}** | ${cours(liste)} | ${et.racine || '—'} | ${cellule(et.note || '')} | ${
+        et.discute ? '⚠️' : ''
+      } | ☐ |`,
+    )
+  }
+  md.push('')
+}
+if (sansEtymo.length) {
+  md.push(`### Sans étymologie — à écrire (${sansEtymo.length})`)
+  md.push('')
+  md.push(
+    'Le dictionnaire affiche pour ces entrées : « L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur ou un linguiste, bi-idniLlah. »',
+  )
+  md.push('')
+  md.push('| Forme | Cours | Français |')
+  md.push('| --- | --- | --- |')
+  for (const e of sansEtymo) {
+    md.push(`| **${cellule(e.mot)}** | ${e.lang} | ${cellule(e.sens.join(' / ')) || '—'} |`)
+  }
+  md.push('')
+}
+
 md.push('## Emprunts à l’arabe — les modales du cours')
 md.push('')
 md.push(
@@ -150,9 +209,10 @@ md.push('')
 writeFileSync(join(root, 'lexique.md'), md.join('\n'))
 
 const nbEmprunts = Object.values(EMPRUNTS).reduce((n, l) => n + l.length, 0)
-const sansEtymo = ENTREES.filter((e) => !e.etymologie && e.categorie !== 'lettre').length
 console.log(`OK — ${total} entrées, ${nbEmprunts} emprunts affichés, ${A_TRANCHER.length} en attente.`)
 for (const s of STATS) console.log(`  ${s.nom.padEnd(20)} ${s.total}`)
-console.log(`  ${sansEtymo} entrées encore sans étymologie (le dictionnaire n'affiche alors rien).`)
+console.log(
+  `  ${parEtymo.size} étymologies écrites, ${sansEtymo.length} entrées sans (« sera ajoutée plus tard » dans l'app).`,
+)
 console.log('  lexique.csv')
 console.log('  lexique.md')

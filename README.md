@@ -78,7 +78,17 @@ n'existe pas volontairement — le schwa ne s'écrit pas en norme IRCAM, et une
 translittération mécanique fabriquerait des mots faux.
 
 Quand les sources se contredisent, l'entrée porte `discute: true` et l'écran
-l'affiche. Quand on ne sait pas, **on n'affiche rien**.
+l'affiche. Quand l'étymologie n'est pas encore écrite, la fiche ne se tait
+pas non plus : elle affiche « **l'origine de ce mot n'est pas encore écrite,
+elle sera ajoutée après validation** » et porte la pastille « origine à
+préciser ». Un bloc absent laisserait croire que la question ne se pose pas ;
+c'est la case qui est vide, pas le mot.
+
+`npm run gen:lexique` produit la section **« Étymologies — la couche écrite à
+la main »** de `lexique.md` : chaque note avec les formes qu'elle couvre, sa
+racine, les cours concernés, une colonne « discuté » et une case à cocher.
+C'est la liste à valider — et elle groupe par NOTE, pas par mot : « aman » est
+le même mot du Rif au Souss, il se valide une fois.
 
 ### Ce qui est payant, et ce qui ne l'est pas
 

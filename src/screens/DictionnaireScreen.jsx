@@ -38,15 +38,36 @@ const TEINTES = {
   silver: 'bg-sand-2 text-ink-soft',
 }
 
+/**
+ * Le badge d'origine. Sans étymologie écrite, il ne disparaît pas : il dit
+ * que la case est vide. Une pastille absente laisserait croire que la
+ * question ne se pose pas ; « à préciser » dit la vérité — personne ne l'a
+ * encore écrite.
+ */
 function Origine({ etymologie }) {
-  if (!etymologie) return null
-  const o = ORIGINES[etymologie.origine]
-  if (!o) return null
+  const o = etymologie && ORIGINES[etymologie.origine]
+  if (!o) {
+    return (
+      <span className="rounded-full bg-sand-2 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-ink-soft">
+        Origine à préciser
+      </span>
+    )
+  }
   return (
     <span className={`rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide ${TEINTES[o.couleur]}`}>
       {o.label}
       {etymologie.discute && ' · discuté'}
     </span>
+  )
+}
+
+/** Ce qu'on affiche tant que l'étymologie n'a pas été écrite ni validée. */
+function OrigineAVenir() {
+  return (
+    <p className="text-[12.5px] italic leading-relaxed text-ink-soft">
+      L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur
+      ou un linguiste, bi-idniLlah.
+    </p>
   )
 }
 
@@ -138,16 +159,18 @@ function Fiche({ e, onMot }) {
         </ul>
       </Bloc>
 
-      {e.etymologie?.note && (
-        <Bloc titre={e.etymologie.racine ? `Origine · racine ${e.etymologie.racine}` : 'Origine'}>
+      <Bloc titre={e.etymologie?.racine ? `Origine · racine ${e.etymologie.racine}` : 'Origine'}>
+        {e.etymologie?.note ? (
           <p className="text-[12.5px] leading-relaxed text-ink">{e.etymologie.note}</p>
-          {e.etymologie.discute && (
-            <p className="mt-1 text-[11px] italic leading-snug text-ink-soft">
-              Les sources ne s’accordent pas sur ce point — à valider.
-            </p>
-          )}
-        </Bloc>
-      )}
+        ) : (
+          <OrigineAVenir />
+        )}
+        {e.etymologie?.discute && (
+          <p className="mt-1 text-[11px] italic leading-snug text-ink-soft">
+            Les sources ne s’accordent pas sur ce point — à valider.
+          </p>
+        )}
+      </Bloc>
 
       {e.emprunt && (
         <Bloc titre="Emprunt à l’arabe">

@@ -256,7 +256,7 @@
 | # | Mot / expression | Français | Type | Origine | Fichier audio | Leçons |
 | ---: | --- | --- | --- | --- | --- | --- |
 | 1 | **kraḍ** | Trois | mot | amazigh | `zgh/krad.mp3` | zgh10 |
-| 2 | **ⴰ** | a | lettre |  | — | zgh1 zgh2 |
+| 2 | **ⴰ** | a | lettre | à préciser | — | zgh1 zgh2 |
 | 3 | **ⴰⴷⴷⴰⵍ** | Le sport | mot | neo | — | zgh16 zgh19 |
 | 4 | **ⴰⴷⵍⵉⵙ** | Le livre | mot | neo | — | zgh13 |
 | 5 | **ⴰⴹⴰⵔ** | Le pied | mot | amazigh | — | zgh18 zgh19 |
@@ -270,25 +270,25 @@
 | 13 | **ⴰⵙⵍⵎⴰⴷ** | L’enseignant | mot | neo | — | zgh12 zgh15 |
 | 14 | **ⴰⵣⵓⵍ** | azul — salut / Salut, bonjour / Salut | mot | amazigh | — | zgh4 zgh7 zgh8 |
 | 15 | **ⴰⵣⵣⵍ** | Cours ! | mot | amazigh | — | zgh17 |
-| 16 | **ⴳ** | g | lettre |  | — | zgh3 |
-| 17 | **ⴹ** | ḍ | lettre |  | — | zgh6 |
+| 16 | **ⴳ** | g | lettre | à préciser | — | zgh3 |
+| 17 | **ⴹ** | ḍ | lettre | à préciser | — | zgh6 |
 | 18 | **ⴽⵔⴰⴹ** | Trois | mot | amazigh | — | zgh10 |
-| 19 | **ⵃ** | ḥ | lettre |  | — | zgh5 |
-| 20 | **ⵄ** | ɛ | lettre |  | — | zgh5 |
-| 21 | **ⵅ** | La « jota » espagnole / x | lettre |  | — | zgh5 |
+| 19 | **ⵃ** | ḥ | lettre | à préciser | — | zgh5 |
+| 20 | **ⵄ** | ɛ | lettre | à préciser | — | zgh5 |
+| 21 | **ⵅ** | La « jota » espagnole / x | lettre | à préciser | — | zgh5 |
 | 22 | **ⵉⵅⴼ** | La tête | mot | amazigh | — | zgh18 zgh19 |
-| 23 | **ⵍ** | l | lettre |  | — | zgh4 |
+| 23 | **ⵍ** | l | lettre | à préciser | — | zgh4 |
 | 24 | **ⵍⵅⴷⵎⵜ** | lxdmt — le travail (mot arabe) | mot | arabe → ⵜⴰⵡⵓⵔⵉ | — | zgh15 |
-| 25 | **ⵎ** | m | lettre |  | — | zgh1 |
-| 26 | **ⵏ** | n | lettre |  | — | zgh1 zgh2 |
-| 27 | **ⵓ** | u (ou) / u | lettre |  | — | zgh3 zgh4 |
+| 25 | **ⵎ** | m | lettre | à préciser | — | zgh1 |
+| 26 | **ⵏ** | n | lettre | à préciser | — | zgh1 zgh2 |
+| 27 | **ⵓ** | u (ou) / u | lettre | à préciser | — | zgh3 zgh4 |
 | 28 | **ⵓⵀⵓ** | Non | mot | amazigh | — | zgh8 |
 | 29 | **ⵓⵔⴰⵔ** | Le jeu | mot | amazigh | — | zgh16 zgh17 zgh19 |
-| 30 | **ⵔ** | r | lettre |  | — | zgh3 |
-| 31 | **ⵖ** | Le « r » de Paris / ɣ | lettre |  | — | zgh5 |
+| 30 | **ⵔ** | r | lettre | à préciser | — | zgh3 |
+| 31 | **ⵖ** | Le « r » de Paris / ɣ | lettre | à préciser | — | zgh5 |
 | 32 | **ⵙⵉⵏ** | Deux | mot | amazigh | — | zgh10 |
-| 33 | **ⵚ** | ṣ | lettre |  | — | zgh6 |
-| 34 | **ⵜ** | t | lettre |  | — | zgh2 |
+| 33 | **ⵚ** | ṣ | lettre | à préciser | — | zgh6 |
+| 34 | **ⵜ** | t | lettre | à préciser | — | zgh2 |
 | 35 | **ⵜⴰⴽⵓⵔⵜ** | Le ballon | mot | amazigh | — | zgh16 zgh19 |
 | 36 | **ⵜⴰⵃⴰⵏⵓⵜ** | La boutique | mot | arabe | — | zgh14 zgh15 |
 | 37 | **ⵜⴰⵎⵖⴰⵔⵜ** | La femme | mot | amazigh | — | zgh9 |
@@ -298,11 +298,229 @@
 | 41 | **ⵜⵉⴳⵎⵎⵉ** | La maison | mot | amazigh | — | zgh8 zgh9 |
 | 42 | **ⵜⵉⴼⵉⵏⴰⵖ** | tifinagh — l’écriture amazighe | mot | amazigh | — | zgh6 |
 | 43 | **ⵜⵉⵏⵎⵍ** | L’école | mot | neo | — | zgh12 zgh13 |
-| 44 | **ⵟ** | ṭ | lettre |  | — | zgh6 |
+| 44 | **ⵟ** | ṭ | lettre | à préciser | — | zgh6 |
 | 45 | **ⵢⴰⵏ** | Un | mot | amazigh | — | zgh10 |
 | 46 | **ⵢⵢⵉⵀ** | Oui | mot | amazigh | — | zgh8 |
-| 47 | **ⵣ** | z | lettre |  | — | zgh4 |
-| 48 | **ⵥ** | ẓ | lettre |  | — | zgh6 |
+| 47 | **ⵣ** | z | lettre | à préciser | — | zgh4 |
+| 48 | **ⵥ** | ẓ | lettre | à préciser | — | zgh6 |
+
+## Étymologies — la couche écrite à la main
+
+> `src/data/etymologies.js`. C’est la SEULE partie du dictionnaire qui ne soit pas dérivée du contenu des cours : elle est à valider ligne par ligne. « Discuté » signale que les sources ne s’accordent pas — l’app l’affiche alors à l’élève.
+
+### Fonds amazigh (119)
+
+| Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
+| --- | --- | --- | --- | :-: | :-: |
+| **Aberkan** | kab | BRK | Le noir. |  | ☐ |
+| **Aḍar · ⴰⴹⴰⵔ** | kab shi tzm zgh | — | Le pied — pan-amazigh, et inchangé du Rif au Souss. |  | ☐ |
+| **Adfel** | kab | — | La neige — le mot des montagnes, du Djurdjura à l’Atlas. |  | ☐ |
+| **Aḍu** | kab | — | Le vent. |  | ☐ |
+| **Afus · ⴰⴼⵓⵙ** | kab shi tzm zgh | — | La main, dans toutes les langues amazighes, jusqu’au touareg. |  | ☐ |
+| **Ageffur** | kab | — | La pluie, en kabyle. |  | ☐ |
+| **Aɣrum · ⴰⵖⵔⵓⵎ** | kab shi rif tzm zgh | — | Le pain, partout pareil — un des mots les plus stables de la langue. |  | ☐ |
+| **Aɣyul** | tzm | — | L’âne — pan-amazigh. |  | ☐ |
+| **Ala** | kab | — | Le non kabyle. |  | ☐ |
+| **Aman · ⴰⵎⴰⵏ** | kab shi rif tzm zgh | — | L’eau — toujours au pluriel, jamais au singulier, comme si l’eau ne pouvait pas se compter. Identique du Rif au Souss. |  | ☐ |
+| **Amcic** | kab | — | Le chat. Sans doute une onomatopée d’appel, partagée avec l’arabe maghrébin — l’emprunt pourrait aller dans les deux sens. | ⚠️ | ☐ |
+| **Amekraz** | kab | KRZ | Le laboureur, de « krez », labourer — le mot amazigh du travail de la terre. |  | ☐ |
+| **Amellal** | kab | MLL | Le blanc. |  | ☐ |
+| **Amksa · ⴰⵎⴽⵙⴰ** | tzm zgh | KS | Le berger, de « ks », faire paître. |  | ☐ |
+| **Anda telliḍ ?** | kab | ILI | Même verbe « ili » : où es-tu ? |  | ☐ |
+| **Anda txeddmeḍ ?** | kab | — | « Anda », où — suivi du verbe à la deuxième personne (t… -ḍ). |  | ☐ |
+| **Ansuf** | kab | — | L’accueil, en kabyle. « Ansuf yes-k » : bienvenue à toi. |  | ☐ |
+| **Ansuf yes-k** | kab | — | Ansuf + yes-k, « avec toi ». |  | ☐ |
+| **Aqcic** | kab | — | Le garçon ; « taqcict », la fille. |  | ☐ |
+| **Aqerruy** | kab | — | La tête, en kabyle. Le sud dit « ixf ». |  | ☐ |
+| **Aql-i labas** | kab | — | « Aql-i », me voici — puis labas, l’emprunt arabe. |  | ☐ |
+| **Ar tufat** | kab | — | « Jusqu’au matin » : tufat, c’est le matin qui vient. On ne se quitte pas, on se donne rendez-vous. |  | ☐ |
+| **Argaz · ⴰⵔⴳⴰⵣ** | kab zgh | — | L’homme, du Rif au Sahara. Le tarifit dit « aryaz » : le g y devient y. |  | ☐ |
+| **Arrac** | kab | — | Les enfants, en kabyle — un pluriel qui n’a pas de singulier courant. |  | ☐ |
+| **Aryaz** | rif | — | L’homme, au Rif — « argaz » ailleurs. |  | ☐ |
+| **As-d !** | kab | — | Le verbe « as » (venir) suivi de -d, la particule qui ramène vers celui qui parle. Sans elle, on part. |  | ☐ |
+| **Asigna** | kab | — | Le nuage. |  | ☐ |
+| **Askka** | tzm | — | Demain, au Moyen Atlas. |  | ☐ |
+| **Ass** | kab | — | Le jour. « Ass-a » : ce jour-ci, aujourd’hui. |  | ☐ |
+| **Ass-a** | kab | — | Ass (le jour) + -a, qui montre ce qui est proche : ce jour-ci. |  | ☐ |
+| **Awraɣ** | kab | WRƔ | Le jaune, de la même racine que « urɣ », l’or. |  | ☐ |
+| **Axxam** | kab | — | La maison kabyle — la maisonnée autant que le bâtiment. |  | ☐ |
+| **Azeggaɣ** | kab | ZGƔ | Le rouge. |  | ☐ |
+| **Azegzaw** | kab | ZGZ | Le vert — et souvent le bleu. Beaucoup de langues amazighes ne séparent pas les deux : c’est la couleur de ce qui pousse et de ce qui est frais. |  | ☐ |
+| **Azekka** | kab | — | Demain — « azkka » au Souss, « askka » au Moyen Atlas, « tiwecca » au Rif. |  | ☐ |
+| **Aẓemmur** | kab | — | L’olive et l’olivier. Le mot est amazigh ; les Romains l’ont croisé ici. |  | ☐ |
+| **Azkka** | shi | — | Demain, au Souss. |  | ☐ |
+| **Azul · ⴰⵣⵓⵍ** | kab zgh | — | Donné par l’Amawal (1974) et rapproché du touareg « ahul ». Le dictionnaire de l’IRCAM ne le marque PAS néologisme, contrairement à « adlis » ou « tinml » — c’est ce qui en fait la bonne réponse du cours d’amazighe standard. | ⚠️ | ☐ |
+| **Azul fell-ak** | kab | — | Azul + fell-ak, « sur toi » — le salut se pose sur quelqu’un. |  | ☐ |
+| **Azul, amek telliḍ ?** | kab | — | Le salut puis la question, sans un mot d’emprunt : la formule kabyle entière. |  | ☐ |
+| **Azzel !** | kab | ZL | Cours ! — l’impératif du verbe courir. |  | ☐ |
+| **Azzeř !** | rif | ZL | Cours ! au Rif. |  | ☐ |
+| **Azzl ! · ⴰⵣⵣⵍ** | shi tzm zgh | ZL | Cours ! au Maroc. |  | ☐ |
+| **Baba** | kab shi rif | — | Mot du langage enfantin, comme dans beaucoup de langues. « Bba » au Moyen Atlas. |  | ☐ |
+| **Bba** | tzm | — | Mon père, au Maroc central. |  | ☐ |
+| **Bbaḥllu** | tzm | — | Grand-père, au Moyen Atlas ; « mmaḥllu » pour la grand-mère. |  | ☐ |
+| **D acu-yagi ?** | kab | — | « acu » (quoi) suivi de -agi, ceci : qu’est-ce que ceci ? |  | ☐ |
+| **Ečč !** | kab | — | Mange ! — impératif du verbe « ečč ». |  | ☐ |
+| **Gma** | kab | — | Mot composé : « g(u)-ma », le fils de ma mère. La parenté amazighe se dit par la mère. |  | ☐ |
+| **Iḍ** | kab | — | La nuit. |  | ☐ |
+| **Iḍelli** | kab | — | Hier. |  | ☐ |
+| **Iger** | rif | — | Le champ, au Rif. |  | ☐ |
+| **Igr** | shi tzm | — | Le champ — pan-amazigh ; « iger » au Rif. |  | ☐ |
+| **Ih** | kab | — | Le oui kabyle. |  | ☐ |
+| **Ijjen** | rif | — | Un, au Rif. Au-delà, le Rif compte en arabe. |  | ☐ |
+| **Ilemẓi** | kab | LMẒ | Le jeune homme ; « tilemẓit » pour la jeune fille. |  | ☐ |
+| **Immi** | shi | — | Maman, au Souss. |  | ☐ |
+| **Is thnna ɣur-k ?** | tzm | — | « Is » ouvre la question, « ɣur-k » veut dire chez toi. On demande la tranquillité de la maison, pas la santé. | ⚠️ | ☐ |
+| **Ixf · ⵉⵅⴼ** | shi tzm zgh | — | La tête, au Maroc — et aussi « soi-même » : « ixf-inu », moi-même. |  | ☐ |
+| **Kečč** | kab | — | Toi, à un homme. L’amazigh distingue le masculin et le féminin à la deuxième personne — le français, non. |  | ☐ |
+| **Kemm** | kab | — | Toi, à une femme. |  | ☐ |
+| **Kkuẓ** | kab shi tzm | — | Quatre. |  | ☐ |
+| **Kraḍ · kraḍ · ⴽⵔⴰⴹ** | kab shi tzm zgh | — | Trois — un des nombres que le Souss a le mieux gardés. |  | ☐ |
+| **Lla** | rif | — | Le non du Rif. | ⚠️ | ☐ |
+| **Mamec teǧǧid ?** | rif | — | Comment vas-tu ?, au Rif. |  | ☐ |
+| **Manzakin ?** | shi | — | Comment vas-tu ? — la terminaison change avec le genre : « manzakmin ? » à une femme. |  | ☐ |
+| **Mayd tɛnit ?** | tzm | — | Comment vas-tu ?, au Moyen Atlas. Le ɛ laisse penser à une racine arabe — à trancher. | ⚠️ | ☐ |
+| **Melmi ?** | kab | — | Quand ? |  | ☐ |
+| **Mma** | tzm | — | Ma mère, au Moyen Atlas. |  | ☐ |
+| **Mmaḥllu** | tzm | — | Grand-mère, au Moyen Atlas. |  | ☐ |
+| **Nekk** | kab | — | Moi. Les pronoms indépendants amazighs sont très stables d’une langue à l’autre. |  | ☐ |
+| **Netta** | kab | — | Lui ; « nettat » pour elle. |  | ☐ |
+| **Nettat** | kab | — | Elle. |  | ☐ |
+| **Qqim g lman** | tzm | — | Formule mixte : « qqim » (reste) est amazigh, « lman » vient de l’arabe « amān », la sauvegarde. |  | ☐ |
+| **Semmus** | kab | — | Cinq ; « smmus » au Maroc. |  | ☐ |
+| **Sew !** | kab | — | Bois ! — impératif du verbe « sew ». |  | ☐ |
+| **Sew atay** | kab | — | Impératif « sew » + atay, le mot voyageur du thé. |  | ☐ |
+| **Sin · ⵙⵉⵏ** | kab shi tzm zgh | — | Deux. Conservé au Souss et dans l’Atlas ; le Rif dit « tnayen », de l’arabe. |  | ☐ |
+| **Smmus** | shi tzm | — | Cinq, au Maroc. |  | ☐ |
+| **Taddart** | kab tzm | — | FAUX-AMI : le village en kabyle, la MAISON au Maroc central. Le même mot, deux échelles. |  | ☐ |
+| **Tafukt** | kab | FK / FW | Le soleil — même famille que « tifawin », les lumières, le bonjour du Souss. |  | ☐ |
+| **Tafunast** | tzm | — | La vache ; le taureau, c’est « afunas ». |  | ☐ |
+| **Takurt · ⵜⴰⴽⵓⵔⵜ** | kab shi rif tzm zgh | — | La balle, le ballon. Elle porte la forme amazighe (ta—t) ; certains auteurs y voient tout de même un emprunt ancien à l’arabe « kura ». | ⚠️ | ☐ |
+| **Tameddit** | kab | — | Le soir, en kabyle. |  | ☐ |
+| **Tament** | kab | — | Le miel — mot du fonds, jusqu’au touareg. |  | ☐ |
+| **Tameṭṭut** | kab | — | La femme. Le t…t qui l’encadre est la marque du féminin. |  | ☐ |
+| **Tanemmirt** | kab | NMR | Le merci kabyle, repris par la norme marocaine sous la graphie « tanmmirt » — sans e, le schwa ne s’écrit pas. |  | ☐ |
+| **Tanemmirt aṭas** | kab | — | Tanemmirt + aṭas, beaucoup. |  | ☐ |
+| **Tanezzayt** | kab | — | Le matin, en kabyle. |  | ☐ |
+| **Tanmmirt · ⵜⴰⵏⵎⵎⵉⵔⵜ** | shi zgh | NMR | Merci — la graphie sans schwa, celle du Maroc et de la norme. |  | ☐ |
+| **Taqcict** | kab | — | La fille — le même mot que « aqcic », passé au féminin. |  | ☐ |
+| **Tawuri · ⵜⴰⵡⵓⵔⵉ** | kab shi tzm zgh | — | Le travail, la tâche, la fonction. Donné pour le kabyle par Dallet, et bien vivant au Souss et dans l’Atlas — c’est le mot que la norme marocaine retient. |  | ☐ |
+| **Tawwurt** | kab | — | La porte. |  | ☐ |
+| **Tazzla · ⵜⴰⵣⵣⵍⴰ** | kab shi tzm zgh | ZL | La course, de « azzel », courir. |  | ☐ |
+| **Tazzřa** | rif | ZL | La course, au Rif — le l ancien y devient ř. |  | ☐ |
+| **Tifawin** | shi | FW | Littéralement « les lumières » — le bonjour du matin au Souss. |  | ☐ |
+| **Tigmmi · ⵜⵉⴳⵎⵎⵉ** | shi zgh | — | La maison, au Souss et dans la norme écrite. |  | ☐ |
+| **Tilemẓit** | kab | LMẒ | La jeune fille. |  | ☐ |
+| **Tiwecca** | rif | — | Demain, au Rif. |  | ☐ |
+| **Tiwizi** | kab | — | L’entraide : le village travaille chez l’un, puis chez l’autre, sans salaire. Une institution autant qu’un mot. |  | ☐ |
+| **Ttxil-k** | kab | — | Origine débattue : fonds kabyle pour les uns, tournure arabe pour les autres. | ⚠️ | ☐ |
+| **Tura** | kab | — | Maintenant. |  | ☐ |
+| **Uhu · ⵓⵀⵓ** | shi tzm zgh | — | Le non marocain, du Souss à l’Atlas. |  | ☐ |
+| **Ul** | kab | — | Le cœur. Le tarifit en fait « uř » : son l ancien devient ř. |  | ☐ |
+| **Ulli** | tzm | — | Les brebis et les chèvres — un pluriel sans singulier, comme « aman ». |  | ☐ |
+| **Uř** | rif | — | Le cœur, au Rif — c’est « ul » ailleurs, avec le passage l → ř. |  | ☐ |
+| **Ur fhimeɣ ara** | kab | — | La négation kabyle tient en deux morceaux qui encadrent le verbe : ur… ara. En oublier un, c’est dire l’inverse. |  | ☐ |
+| **Urar · ⵓⵔⴰⵔ** | kab shi tzm zgh | — | Le jeu. Le pluriel « uraren » vaut pour les jeux d’enfants. |  | ☐ |
+| **Uraren** | rif | — | Les jeux — le pluriel de « urar ». |  | ☐ |
+| **Weltma** | kab | — | Composé lui aussi : « welt-ma », la fille de ma mère. Le Rif en fait « učma ». |  | ☐ |
+| **Xeddmeɣ deg wexxam** | kab | — | Le -ɣ final, c’est « je ». Et « axxam » devient « wexxam » après la préposition : c’est l’état d’annexion, la marque la plus reconnaissable de la grammaire amazighe. |  | ☐ |
+| **Yah** | shi tzm | — | Origine discutée : fonds amazigh ou emprunt. | ⚠️ | ☐ |
+| **Yan · ⵢⴰⵏ** | shi tzm zgh | — | Un, au Maroc ; « yat » au féminin. |  | ☐ |
+| **Yat** | tzm | — | Une — le féminin de « yan ». |  | ☐ |
+| **Yemma** | kab rif | — | Maman — « immi » au Souss, « mma » au Moyen Atlas. |  | ☐ |
+| **Yiwen** | kab | — | Un, en kabyle. Le Maroc dit « yan », et « yat » au féminin. |  | ☐ |
+| **ⵜⴰⵎⵖⴰⵔⵜ** | zgh | MƔR | De la racine « être grand » : la femme d’âge, celle qui compte. « Amɣar », c’est l’ancien, le chef. |  | ☐ |
+| **ⵜⵉⴼⵉⵏⴰⵖ** | zgh | — | Le nom de l’écriture. Souvent lu « les phéniciennes », par rapprochement avec l’alphabet punique — lecture répandue, mais discutée. | ⚠️ | ☐ |
+| **ⵢⵢⵉⵀ** | zgh | — | Le oui de la norme écrite. |  | ☐ |
+
+### Néologisme amazigh (9)
+
+| Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
+| --- | --- | --- | --- | :-: | :-: |
+| **Addal · ⴰⴷⴷⴰⵍ** | kab shi rif tzm zgh | — | Le sport — mot du XXᵉ siècle, formé sur des racines amazighes et repris par l’école et la télévision. |  | ☐ |
+| **Adlis · ⴰⴷⵍⵉⵙ** | kab zgh | — | Créé pour l’école. Le dictionnaire de l’IRCAM le marque « néo. » — contrairement à azul ou tanmmirt. |  | ☐ |
+| **Amejjay** | kab | JJY | Le médecin, de « ajjy », guérir. Mot des médias et de l’école. |  | ☐ |
+| **Anelmad** | kab | LMD | De « lmed », apprendre — l’élève. |  | ☐ |
+| **Anlmad · ⴰⵏⵍⵎⴰⴷ** | shi zgh | LMD | L’élève, au Maroc. |  | ☐ |
+| **Aselmad** | kab | LMD | De « slmed », faire apprendre — l’enseignant. |  | ☐ |
+| **Aslmad · ⴰⵙⵍⵎⴰⴷ** | shi zgh | LMD | L’enseignant, au Maroc. |  | ☐ |
+| **Tanarit** | kab | — | Le bureau — mot moderne, formé pour nommer un lieu qui n’existait pas au village. |  | ☐ |
+| **ⵜⵉⵏⵎⵍ** | zgh | LMD | L’école, formé sur « lmed », apprendre. Marqué « néo. » par l’IRCAM. |  | ☐ |
+
+### Emprunt à l’arabe (40)
+
+| Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
+| --- | --- | --- | --- | :-: | :-: |
+| **Afak** | shi | — | De « ɛafā-k ». Au féminin : afakm. |  | ☐ |
+| **Afellaḥ** | kab rif | — | De « fallāḥ », le cultivateur. |  | ☐ |
+| **Afllaḥ · ⴰⴼⵍⵍⴰⵃ** | shi tzm zgh | — | De « fallāḥ ». |  | ☐ |
+| **Ak isrbḥ rbbi** | shi | — | Que Dieu te fasse réussir — le merci du Souss. |  | ☐ |
+| **Axddam** | shi tzm | XDM | Le travailleur, au Maroc. |  | ☐ |
+| **Axeddam** | kab rif | XDM | Même racine arabe, avec la forme amazighe du nom de métier. |  | ☐ |
+| **Axeddim** | kab | XDM | De la racine arabe « xdm », servir, travailler. |  | ☐ |
+| **B-essalama** | rif | — | Même formule qu’au Souss, avec l’article du Rif. |  | ☐ |
+| **Barek llahu fik** | rif | — | Que Dieu te bénisse — le merci du Rif. |  | ☐ |
+| **Bla jmil** | tzm | — | Littéralement « sans obligation » : tu ne me dois rien. |  | ☐ |
+| **Brrk** | shi | BRK | De la racine arabe de la bénédiction, baraka. |  | ☐ |
+| **Bslama** | shi | — | De « bi-s-salāma » — dans la paix. |  | ☐ |
+| **Cukran** | tzm | — | De « šukran ». |  | ☐ |
+| **Ɛafak** | rif tzm | — | De « ɛafā-k ». « Afak » au Souss, « afakm » à une femme. |  | ☐ |
+| **Ɛlikum ssalam** | tzm | — | La forme courte de la réponse, au Maroc central. |  | ☐ |
+| **Ɛumm !** | kab | — | De « ɛām », nager. Le kabyle n’a pas gardé de verbe propre pour la nage. |  | ☐ |
+| **Labas ? · Labas** | kab shi tzm | — | De « la ba’s » — littéralement « pas de mal ». |  | ☐ |
+| **Labas, l-ḥamdullah** | tzm | — | Ça va, Dieu merci — la forme du Moyen Atlas. |  | ☐ |
+| **Labas, lḥamdulillah** | shi | — | Ça va, Dieu merci. |  | ☐ |
+| **Lkuṛa** | rif | — | De « kura », le ballon — la forme d’usage au Rif et au Maroc. |  | ☐ |
+| **Lla yɛawn** | tzm | — | Que Dieu t’aide — ce qu’on dit à quelqu’un en plein travail. |  | ☐ |
+| **Lmɛellem** | rif | — | De « muɛallim », celui qui enseigne le métier — le patron d’atelier. |  | ☐ |
+| **Lxdmt · ⵍⵅⴷⵎⵜ** | shi tzm zgh | XDM | Le travail — la forme marocaine, avec l’article arabe soudé. |  | ☐ |
+| **Lxedmet** | rif | XDM | Le travail, au Rif. |  | ☐ |
+| **Marḥba** | rif | — | De « marḥaban ». « Mrḥba » au Maroc central. |  | ☐ |
+| **Mliḥ** | rif | — | De « mlīḥ » — bon, bien. |  | ☐ |
+| **Mliḥ, l-ḥamdu li-llah** | rif | — | Ça va bien, Dieu merci — la forme du Rif. |  | ☐ |
+| **Mrḥba** | tzm | — | De l’arabe « marḥaban » — bienvenue. |  | ☐ |
+| **Ṛuḥ !** | kab | — | Va, pars. Rapproché de l’arabe « rāḥ » ; le kabyle a aussi « ddu », du fonds amazigh. | ⚠️ | ☐ |
+| **Ryaḍa** | rif | — | De « riyāḍa », le sport — ce qu’on dit tous les jours. |  | ☐ |
+| **Semmeḥ-iyi** | kab | SMḤ | De « samaḥ », pardonner. |  | ☐ |
+| **Ssalamu ɛlikum** | shi rif tzm | — | La salutation musulmane, partagée par tout le Maghreb. |  | ☐ |
+| **Ssuq** | kab shi rif | — | De « sūq ». L’emprunt est si ancien et si complet qu’aucun mot amazigh ne lui fait concurrence. |  | ☐ |
+| **Taḥanut · ⵜⴰⵃⴰⵏⵓⵜ** | shi rif zgh | — | De « ḥānūt », habillé du t…t féminin amazigh. |  | ☐ |
+| **Tlata** | rif | — | Trois, emprunté à l’arabe. |  | ☐ |
+| **Tnayen** | rif | — | Deux, emprunté à l’arabe — le Rif a perdu la série amazighe au-delà de un. |  | ☐ |
+| **Ṭṭbib** | shi rif | — | De « ṭabīb ». C’est ce qu’on dit partout au Maghreb. |  | ☐ |
+| **Wa ɛlikum ssalam** | shi rif | — | La réponse obligée : et sur vous la paix. |  | ☐ |
+| **Wah** | rif | — | Probable emprunt à l’arabe maghrébin — à confirmer. | ⚠️ | ☐ |
+| **Waxxa** | tzm | — | De l’arabe marocain — d’accord, soit. |  | ☐ |
+
+### Mot voyageur (2)
+
+| Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
+| --- | --- | --- | --- | :-: | :-: |
+| **Atay** | kab | — | Venu de Chine par l’arabe maghrébin. Le mot a voyagé avec la boisson : il n’y a pas de thé amazigh plus ancien que lui. |  | ☐ |
+| **Idrimen** | kab | — | Arrivé par l’arabe « dirham », lui-même venu du grec « drachmê » : trois langues pour une pièce de monnaie. |  | ☐ |
+
+### Sans étymologie — à écrire (17)
+
+Le dictionnaire affiche pour ces entrées : « L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur ou un linguiste, bi-idniLlah. »
+
+| Forme | Cours | Français |
+| --- | --- | --- |
+| **ⴰ** | zgh | a |
+| **ⴳ** | zgh | g |
+| **ⴹ** | zgh | ḍ |
+| **ⵃ** | zgh | ḥ |
+| **ⵄ** | zgh | ɛ |
+| **ⵅ** | zgh | La « jota » espagnole / x |
+| **ⵍ** | zgh | l |
+| **ⵎ** | zgh | m |
+| **ⵏ** | zgh | n |
+| **ⵓ** | zgh | u (ou) / u |
+| **ⵔ** | zgh | r |
+| **ⵖ** | zgh | Le « r » de Paris / ɣ |
+| **ⵚ** | zgh | ṣ |
+| **ⵜ** | zgh | t |
+| **ⵟ** | zgh | ṭ |
+| **ⵣ** | zgh | z |
+| **ⵥ** | zgh | ẓ |
 
 ## Emprunts à l’arabe — les modales du cours
 
