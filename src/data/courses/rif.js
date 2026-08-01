@@ -180,7 +180,7 @@ export const rifUnits = [
     lessons: [
       { id: 'rif1', title: 'Se saluer', icon: '👋', status: 'current' },
       { id: 'rif2', title: 'Oui & non', icon: '✅', status: 'locked' },
-      { id: 'rif3', title: 'Merci', icon: '🙏', status: 'locked' },
+      { id: 'rif3', title: 'Merci', icon: '💐', status: 'locked' },
       { id: 'rif-c1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'rif4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'rif5', title: 'Se quitter', icon: '🌙', status: 'locked' },

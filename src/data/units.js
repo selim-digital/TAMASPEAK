@@ -21,7 +21,7 @@ export const units = [
       // cochées — signalé par Selim, corrigé avec une migration des profils
       // touchés (voir loadStore).
       { id: 'l1', title: 'Azul', icon: '👋', status: 'current' },
-      { id: 'l2', title: 'Politesse', icon: '🙏', status: 'locked' },
+      { id: 'l2', title: 'Politesse', icon: '💐', status: 'locked' },
       { id: 'l3', title: 'Se présenter', icon: '★', status: 'locked' },
       { id: 'chest1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'l4', title: 'Ça va ?', icon: '💬', status: 'locked' },
@@ -33,10 +33,10 @@ export const units = [
     level: 'Initiation',
     unitLabel: 'Unité 2',
     title: 'Réponses & politesse',
-    trophy: '🙏',
+    trophy: '💐',
     lessons: [
       { id: 'l6', title: 'Oui / Non', icon: '✅', status: 'locked' },
-      { id: 'l7', title: 'Dire merci', icon: '🙏', status: 'locked' },
+      { id: 'l7', title: 'Dire merci', icon: '💐', status: 'locked' },
       { id: 'chest2', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'l8', title: 'Accueillir', icon: '🚪', status: 'locked' },
       { id: 'l9', title: 'Révision', icon: '🔁', status: 'locked' },

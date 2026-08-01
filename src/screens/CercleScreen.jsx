@@ -181,7 +181,7 @@ function AudioRecu({ demande, onGarde }) {
   )
 }
 
-export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onBack }) {
+export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onMissions, onContribuer, onBack }) {
   // null = chargement ; false = serveur muet ; objet = données.
   const [cercle, setCercle] = useState(null)
   const [demandes, setDemandes] = useState({ recues: [], envoyees: [] })
@@ -378,6 +378,44 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
             </Button>
           </div>
         )}
+
+        {/* Refonte C : tout ce qui se vit AVEC des proches habite ici —
+            les missions (aller demander un mot en vrai) et la contribution
+            vocale (faire parler le cours avec une vraie voix). */}
+        <div className="mt-2.5 flex gap-2">
+          <button
+            type="button"
+            onClick={onMissions}
+            className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-line bg-cream px-3 py-2.5 text-left transition-transform active:scale-[0.98]"
+          >
+            <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise text-white" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 21s7-5.4 7-10.5A7 7 0 0 0 5 10.5C5 15.6 12 21 12 21z" />
+                <circle cx="12" cy="10.2" r="2.4" />
+              </svg>
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[12px] font-extrabold">Missions</span>
+              <span className="block truncate text-[9.5px] font-bold text-ink-soft">et mon lexique</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={onContribuer}
+            className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-line bg-cream px-3 py-2.5 text-left transition-transform active:scale-[0.98]"
+          >
+            <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-coral text-white" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="3" width="6" height="11" rx="3" />
+                <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
+              </svg>
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[12px] font-extrabold">Faire parler le cours</span>
+              <span className="block truncate text-[9.5px] font-bold text-ink-soft">enregistre les mots</span>
+            </span>
+          </button>
+        </div>
 
         {/* ------------- classement (semaine · mois · année) ------------- */}
         <Classement donnees={classement} />

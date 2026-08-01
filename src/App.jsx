@@ -21,6 +21,8 @@ import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
 import { MotsCroisesScreen } from './screens/MotsCroisesScreen.jsx'
 import { QuizScreen } from './screens/QuizScreen.jsx'
+import { AujourdhuiScreen } from './screens/AujourdhuiScreen.jsx'
+import { TabBar } from './components/TabBar.jsx'
 import { FaitCard } from './components/FaitCard.jsx'
 import { faitPour } from './data/faits.js'
 import { nonLues } from './lib/notifications.js'
@@ -340,8 +342,9 @@ export default function App() {
   faitVisibleRef.current = !!faitAffiche
   useEffect(() => {
     const CALMES = new Set([
-      ECRANS.CHEMIN, ECRANS.PROFIL, ECRANS.CERCLE, ECRANS.LANGUES, ECRANS.TROPHEES,
-      ECRANS.JEUX, ECRANS.MISSIONS, ECRANS.HISTOIRE, ECRANS.FAMILLE, ECRANS.LECON_FINIE,
+      ECRANS.AUJOURDHUI, ECRANS.CHEMIN, ECRANS.PROFIL, ECRANS.CERCLE, ECRANS.LANGUES,
+      ECRANS.TROPHEES, ECRANS.JEUX, ECRANS.MISSIONS, ECRANS.HISTOIRE, ECRANS.FAMILLE,
+      ECRANS.LECON_FINIE,
     ])
     const intervalle = setInterval(() => {
       if (!CALMES.has(screenRef.current) || faitVisibleRef.current) return
@@ -385,6 +388,31 @@ export default function App() {
   const unitsWithStatuses = course.units.map((u) => applyStatuses(u, progress.statuses))
   const canChallenge = challengeAvailable(progress)
 
+  /**
+   * La leçon en cours — LE geste du jour (bouton « Continuer » de l'écran
+   * Aujourd'hui et du chemin). Un coffre disponible passe avant : il se
+   * réclame en un geste et débloque la suite.
+   */
+  const leconCourante = (() => {
+    const node = course.orderedNodes.find((n) => {
+      const st = progress.statuses[n.id]
+      return n.type === 'chest' ? st === 'available' : st === 'current'
+    })
+    return node ? { node, unit: course.unitOfLesson(node.id) } : null
+  })()
+
+  /**
+   * Refonte C : la barre d'onglets est masquée pendant les flux immersifs
+   * (leçon, duel, micro, récompenses…) — on ne sort pas d'une leçon par
+   * accident — et avant l'entrée dans l'app (accueil, onboarding, compte).
+   */
+  const SANS_BARRE = new Set([
+    ECRANS.ACCUEIL, ECRANS.ONBOARDING, ECRANS.COMPTE, ECRANS.LECON,
+    ECRANS.LECON_FINIE, ECRANS.COFFRE, ECRANS.UNITE_FINIE, ECRANS.DEFI,
+    ECRANS.DEFI_FINI, ECRANS.DUEL_INTRO, ECRANS.DUEL, ECRANS.DUEL_RESULTAT,
+    ECRANS.DUO, ECRANS.ENREGISTRER,
+  ])
+
   /** Entrer dans l'app depuis l'accueil, selon l'état de session. */
   function demarrer() {
     // Règles du comité : connecté, optimiste ou hors-ligne → on entre.
@@ -397,7 +425,7 @@ export default function App() {
     } else if (sessionEtat === 'inconnu') {
       setDepartEnAttente(true)
     } else {
-      setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+      setScreen(hasProfile(store) ? ECRANS.AUJOURDHUI : ECRANS.ONBOARDING)
     }
   }
 
@@ -438,7 +466,7 @@ export default function App() {
       setEmailPrefs({ relances: true, resumeHebdo: contact === 'tout' })
     }
     setPendingLang(null)
-    setScreen(ECRANS.CHEMIN)
+    setScreen(ECRANS.AUJOURDHUI)
   }
 
   /**
@@ -479,6 +507,16 @@ export default function App() {
     setActiveLesson(node)
     setLessonExercises(avecQuizFin(course, progress, node.id))
     setScreen(ECRANS.LECON)
+  }
+
+  /** « Continuer » depuis Aujourd'hui : leçon → jouer, coffre → ouvrir. */
+  function continuerParcours(node) {
+    if (node.type === 'chest') {
+      setActiveChest(node)
+      setScreen(ECRANS.COFFRE)
+    } else {
+      startLesson(node)
+    }
   }
 
   function finishLesson(result) {
@@ -668,6 +706,35 @@ export default function App() {
             <OnboardingScreen hasProfile={hasProfile(store)} presetLang={pendingLang} onFinish={finishOnboarding} />
           )}
 
+          {screen === ECRANS.AUJOURDHUI && (
+            <AujourdhuiScreen
+              course={course}
+              name={user?.name || store.profile?.name}
+              avatar={store.profile?.avatar}
+              notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
+              xpTodayValue={xpToday(progress)}
+              dailyGoalXp={store.profile?.dailyGoalXp}
+              streak={progress.streak}
+              leconCourante={leconCourante}
+              canChallenge={canChallenge}
+              fait={faitPour(Math.max((store.faitIndex || 1) - 1, 0))}
+              recitsLusCount={(progress.recitsLus || []).length}
+              suggestions={notifsServ.filter((n) => !n.lue && ['demande-audio', 'defi'].includes(n.kind)).slice(0, 2)}
+              abonnement={abonnement}
+              onContinuer={continuerParcours}
+              onChemin={() => setScreen(ECRANS.CHEMIN)}
+              onChallenge={startChallenge}
+              onQuiz={() => setScreen(ECRANS.QUIZ)}
+              onHistoire={() => setScreen(ECRANS.HISTOIRE)}
+              onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
+              onNotifs={() => setScreen(ECRANS.NOTIFS)}
+              onProfile={() => setScreen(ECRANS.PROFIL)}
+              onLanguages={() => setScreen(ECRANS.LANGUES)}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              onOuvrirNotif={ouvrirNotifServeur}
+            />
+          )}
+
           {screen === ECRANS.CHEMIN && (
             <PathScreen
               course={course}
@@ -675,32 +742,20 @@ export default function App() {
               xp={progress.xp}
               gems={progress.gems}
               streak={progress.streak}
-              xpTodayValue={xpToday(progress)}
-              dailyGoalXp={store.profile?.dailyGoalXp}
               cheerCount={lessonsDone(course, progress)}
-              canChallenge={canChallenge}
+              leconCourante={leconCourante}
               onSelectLesson={startLesson}
               onOpenChest={(node) => {
                 setActiveChest(node)
                 setScreen(ECRANS.COFFRE)
               }}
-              onChallenge={startChallenge}
-              onTrophies={() => setScreen(ECRANS.TROPHEES)}
               onFamily={() => setScreen(ECRANS.FAMILLE)}
               onLanguages={() => setScreen(ECRANS.LANGUES)}
               onProfile={() => setScreen(ECRANS.PROFIL)}
-              onDuo={() => setScreen(ECRANS.DUO)}
-              onMissions={() => setScreen(ECRANS.MISSIONS)}
-              onJeux={() => setScreen(ECRANS.JEUX)}
-              onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
-              onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
-              onCercle={() => setScreen(ECRANS.CERCLE)}
               onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
-              abonnement={abonnement}
               uniteOuverte={uniteOuverteIci}
               notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
-              lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
           )}
@@ -717,6 +772,8 @@ export default function App() {
               onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
               abonnement={abonnement}
               onFeedback={() => setScreen(ECRANS.FEEDBACK)}
+              onTrophees={() => setScreen(ECRANS.TROPHEES)}
+              onFamille={() => setScreen(ECRANS.FAMILLE)}
               onResetLang={(langId) => {
                 // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
                 setStore((s) => {
@@ -725,7 +782,7 @@ export default function App() {
                   return apres
                 })
               }}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
           )}
 
@@ -740,7 +797,7 @@ export default function App() {
                 // Revenir de l'écran d'abonnement relit l'état : on a pu
                 // rejoindre un pack famille ou résilier entre-temps.
                 relireAbonnement()
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.PROFIL)
               }}
             />
           )}
@@ -760,7 +817,7 @@ export default function App() {
                   setScreen(ECRANS.PROFIL)
                 } else if (user) {
                   // Connexion faite (l'écran avance tout seul) : on entre.
-                  setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+                  setScreen(hasProfile(store) ? ECRANS.AUJOURDHUI : ECRANS.ONBOARDING)
                 } else {
                   // Retour sans connexion : l'accueil, toujours verrouillé.
                   setScreen(ECRANS.ACCUEIL)
@@ -777,7 +834,7 @@ export default function App() {
               onStart={() => setScreen(ECRANS.DUEL)}
               onCancel={() => {
                 setDuel(null)
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.AUJOURDHUI)
               }}
             />
           )}
@@ -787,7 +844,7 @@ export default function App() {
               course={duelCourse}
               duel={duel}
               onFinishDuel={finishDuel}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.JEUX)}
             />
           )}
 
@@ -796,7 +853,7 @@ export default function App() {
               course={duelCourse}
               duel={duel}
               onFinishDuel={finishDuel}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.JEUX)}
             />
           )}
 
@@ -818,19 +875,19 @@ export default function App() {
               avatar={store.profile?.avatar}
               onDone={() => {
                 setDuel(null)
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.AUJOURDHUI)
               }}
             />
           )}
 
           {screen === ECRANS.LANGUES && (
-            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen(ECRANS.AUJOURDHUI)} />
           )}
 
           {screen === ECRANS.FAMILLE && (
             <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-5 text-center">
               <div className="mb-2 flex items-center gap-3 text-left">
-                <button type="button" onClick={() => setScreen(ECRANS.CHEMIN)} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
+                <button type="button" onClick={() => setScreen(ECRANS.PROFIL)} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
                   ←
                 </button>
                 <h2 className="text-lg font-extrabold">La famille</h2>
@@ -858,14 +915,14 @@ export default function App() {
           )}
 
           {screen === ECRANS.CONTRIBUER && (
-            <ContributeVoiceScreen course={course} onBack={() => setScreen(ECRANS.FAMILLE)} />
+            <ContributeVoiceScreen course={course} onBack={() => setScreen(ECRANS.CERCLE)} />
           )}
 
           {screen === ECRANS.DUO && (
-            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen(ECRANS.JEUX)} />
           )}
 
-          {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.CHEMIN)} />}
+          {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.AUJOURDHUI)} />}
 
           {screen === ECRANS.JEUX && (
             <JeuxScreen
@@ -877,8 +934,9 @@ export default function App() {
               onMotsDuel={startMotsDuel}
               onCercle={() => setScreen(ECRANS.CERCLE)}
               onQuiz={() => setScreen(ECRANS.QUIZ)}
+              onDuo={() => setScreen(ECRANS.DUO)}
               faitIndex={store.faitIndex || 0}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
           )}
 
@@ -930,7 +988,7 @@ export default function App() {
               onBack={() => {
                 // Le badge serveur tombe localement aussi (le POST est parti).
                 setNotifsServ((ns) => ns.map((n) => ({ ...n, lue: true })))
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.AUJOURDHUI)
               }}
             />
           )}
@@ -940,11 +998,13 @@ export default function App() {
               course={course}
               onDefier={defierMembre}
               onJouerDefi={(code) => ouvrirNotifServeur({ kind: 'defi', data: { code } })}
+              onMissions={() => setScreen(ECRANS.MISSIONS)}
+              onContribuer={() => setScreen(ECRANS.CONTRIBUER)}
               onEnregistrer={(d) => {
                 setDemandeActive(d)
                 setScreen(ECRANS.ENREGISTRER)
               }}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
           )}
 
@@ -963,7 +1023,7 @@ export default function App() {
           )}
 
           {screen === ECRANS.HISTOIRE && (
-            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.AUJOURDHUI)} />
           )}
 
           {screen === ECRANS.MISSIONS && (
@@ -972,7 +1032,7 @@ export default function App() {
               progress={progress}
               profile={store.profile}
               onSave={setProgress}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.CERCLE)}
             />
           )}
 
@@ -1043,8 +1103,12 @@ export default function App() {
           )}
 
           {screen === ECRANS.TROPHEES && (
-            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen(ECRANS.PROFIL)} />
           )}
+          {/* Refonte C : la barre d'onglets — cinq familles sous le pouce,
+              masquée pendant les flux immersifs (leçon, duel, micro…). */}
+          {!SANS_BARRE.has(screen) && <TabBar ecran={screen} onGo={setScreen} />}
+
           {/* La respiration : posée par-dessus l'écran calme du moment. */}
           <FaitCard
             fait={faitAffiche}

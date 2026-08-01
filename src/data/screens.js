@@ -11,6 +11,7 @@
  */
 export const ECRANS = Object.freeze({
   ACCUEIL: 'welcome',
+  AUJOURDHUI: 'aujourdhui',
   ONBOARDING: 'onboarding',
   CHEMIN: 'path',
   LECON: 'lesson',

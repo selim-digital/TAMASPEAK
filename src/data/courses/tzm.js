@@ -195,7 +195,7 @@ export const tzmUnits = [
     lessons: [
       { id: 'tzm1', title: 'Se saluer', icon: '👋', status: 'current' },
       { id: 'tzm2', title: 'Oui & non', icon: '✅', status: 'locked' },
-      { id: 'tzm3', title: 'Merci', icon: '🙏', status: 'locked' },
+      { id: 'tzm3', title: 'Merci', icon: '💐', status: 'locked' },
       { id: 'tzm-c1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'tzm4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'tzm5', title: 'Se quitter', icon: '🌙', status: 'locked' },

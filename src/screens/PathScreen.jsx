@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { TopBar } from '../components/TopBar.jsx'
 import { LessonNode } from '../components/LessonNode.jsx'
 import { landOf } from '../data/journey.js'
 import { cheerFor } from '../components/mascots/Family.jsx'
-import { isSfxOn, setSfxOn, sfx } from '../lib/sfx.js'
+import { sfx } from '../lib/sfx.js'
 import { Avatar } from '../components/Avatar.jsx'
-import { verrouActif } from '../lib/abonnement.js'
 
 /** Position horizontale du nœud i sur le chemin sinueux. */
 const offsetOf = (i) => Math.round(Math.sin(i * 0.9) * 66)
@@ -108,119 +107,6 @@ function progressOf(unit) {
   return lessons.filter((l) => l.status === 'done').length / lessons.length
 }
 
-/**
- * Proposition d'installation (Android/Chrome). L'événement est capturé très
- * tôt dans main.jsx ; ici on ne fait qu'offrir le bouton quand il existe.
- * La carte disparaît après installation, refus, ou si le navigateur ne
- * propose rien (iPhone : l'installation passe par le menu Partager).
- */
-function InstallCard() {
-  const [dispo, setDispo] = useState(() => !!window.__installPrompt)
-  useEffect(() => {
-    const f = () => setDispo(true)
-    window.addEventListener('tama-installable', f)
-    return () => window.removeEventListener('tama-installable', f)
-  }, [])
-  if (!dispo) return null
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        const p = window.__installPrompt
-        if (!p) return
-        p.prompt()
-        await p.userChoice.catch(() => {})
-        window.__installPrompt = null
-        setDispo(false)
-      }}
-      className="mx-3.5 mt-1.5 flex items-center gap-2.5 rounded-xl border-2 border-turquoise/40 bg-turquoise/5 px-3 py-2 text-left"
-    >
-      <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise text-white" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3v12M7 10l5 5 5-5M4 19h16" />
-        </svg>
-      </span>
-      <span className="min-w-0">
-        <span className="block text-[12px] font-extrabold">Installer Tama Speak</span>
-        <span className="block text-[10px] leading-snug text-ink-soft">
-          Sur ton écran d'accueil, comme une vraie app.
-        </span>
-      </span>
-    </button>
-  )
-}
-
-/**
- * L'invitation à s'abonner, sur le chemin.
- *
- * Elle n'apparaît QUE si le serveur a explicitement dit « pas abonné » et que
- * la boutique est ouverte — jamais en mode local, jamais hors-ligne, jamais
- * pour quelqu'un qui paie déjà. Et elle reste une ligne : pas de bandeau
- * clignotant, pas de compte à rebours, pas de « offre limitée ». Le public de
- * cette app essaie de transmettre une langue à ses enfants ; on lui propose,
- * on ne le harcèle pas.
- */
-function CarteAbonnement({ tarif, onOuvrir }) {
-  return (
-    <button
-      type="button"
-      onClick={onOuvrir}
-      className="mx-3.5 mt-1.5 flex items-center gap-2.5 rounded-xl border-2 border-turquoise/40 bg-turquoise/5 px-3 py-2 text-left transition-transform active:scale-[0.98]"
-    >
-      <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise text-white" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z" />
-        </svg>
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[12px] font-extrabold">Ouvrir tous les cours</span>
-        <span className="block text-[10px] leading-snug text-ink-soft">
-          {tarif ? `À partir de ${tarif}, ` : ''}résiliable en un clic. Ou en famille, à 4.
-        </span>
-      </span>
-      <span className="flex-none text-[12px] font-extrabold text-turquoise-deep">→</span>
-    </button>
-  )
-}
-
-/** Anneau d'objectif quotidien (issu de l'onboarding). */
-function DailyGoal({ value = 0, goal }) {
-  if (!goal) return null
-  const p = Math.min(1, value / goal)
-  const C = 2 * Math.PI * 14
-  const done = p >= 1
-  return (
-    // `mt-2.5` : la rangée d'actions au-dessus n'a pas de padding bas, la carte
-    // se retrouvait collée à elle. 10 px reprend l'écart des autres rangées.
-    <div className="mx-3.5 mt-2.5 mb-1.5 flex items-center gap-2.5 rounded-xl border border-line bg-cream px-3 py-2">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
-        <circle cx="17" cy="17" r="14" fill="none" stroke="var(--color-sand-2)" strokeWidth="4.5" />
-        <circle
-          cx="17"
-          cy="17"
-          r="14"
-          fill="none"
-          stroke={done ? 'var(--color-green-vif)' : 'var(--color-coral)'}
-          strokeWidth="4.5"
-          strokeLinecap="round"
-          strokeDasharray={`${C * p} ${C}`}
-          transform="rotate(-90 17 17)"
-          className="transition-all duration-700"
-        />
-        {done && (
-          <path d="M11.5 17.5l4 4 7-8" fill="none" stroke="var(--color-green-vif)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-        )}
-      </svg>
-      <div className="flex-1">
-        <div className="text-[11.5px] font-extrabold">{done ? 'Objectif du jour atteint — Igerrez !' : 'Objectif du jour'}</div>
-        <div className="text-[10.5px] font-bold text-ink-soft tabular-nums">
-          {Math.min(value, goal)} / {goal} XP
-        </div>
-      </div>
-    </div>
-  )
-}
-
 /** Un membre de la famille encourage l'élève près de sa leçon en cours
  *  (animé, et cliquable pour faire connaissance). */
 function FamilyCheer({ cheer, onOpen }) {
@@ -289,35 +175,23 @@ export function PathScreen({
   xp,
   gems,
   streak,
-  xpTodayValue = 0,
-  dailyGoalXp,
   cheerCount = 0,
-  canChallenge,
+  // La leçon en cours { node, unit } — pour le bouton fixe « Continuer ».
+  leconCourante = null,
   onSelectLesson,
   onOpenChest,
-  onChallenge,
-  onTrophies,
   onFamily,
   onLanguages,
   onProfile,
-  onDuo,
-  onMissions,
-  onJeux,
-  onTifinagh,
-  onHistoire,
-  onCercle,
   onNotifs,
   onAbonnement,
-  abonnement,
   // Verrou d'abonnement : rend `true` tant qu'on ne sait pas (hors-ligne,
   // serveur muet, boutique fermée) — le doute profite toujours à l'élève.
   uniteOuverte = () => true,
   notifCount = 0,
-  lexiqueCount = 0,
   avatar,
 }) {
   const cheer = cheerFor(cheerCount)
-  const [soundOn, setSoundOn] = useState(isSfxOn)
   const scrollerRef = useRef(null)
 
   // À l'ouverture, on se place sur la leçon en cours plutôt qu'en haut du
@@ -348,12 +222,6 @@ export function PathScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course?.id])
 
-  function toggleSound() {
-    const next = !soundOn
-    setSfxOn(next)
-    setSoundOn(next)
-    if (next) sfx.click()
-  }
   function handleNode(node) {
     if (node.type === 'chest') {
       if (node.status === 'available') onOpenChest?.(node)
@@ -374,138 +242,11 @@ export function PathScreen({
       />
       <TopBar streak={streak} xp={xp} gems={gems} />
 
-      {/* Actions */}
-      <div className="flex gap-2 px-3.5 pb-1">
-        <button
-          type="button"
-          onClick={onChallenge}
-          className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[12.5px] font-extrabold transition ${
-            canChallenge ? 'bg-coral text-white shadow-[0_3px_0_var(--color-coral-dark)]' : 'bg-sand-2 text-ink-soft'
-          }`}
-          disabled={!canChallenge}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none" />
-          </svg>
-          {canChallenge ? 'Défi du jour' : 'Défi fait ✓'}
-        </button>
-        <button
-          type="button"
-          onClick={onTrophies}
-          className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-[12.5px] font-extrabold text-ink transition"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 4h12v4a6 6 0 0 1-12 0zM9 20h6M12 14v6" />
-          </svg>
-          Trophées
-        </button>
-        <button
-          type="button"
-          onClick={onJeux}
-          className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-[12.5px] font-extrabold text-ink transition"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.8" />
-            <rect x="13" y="13" width="7.5" height="7.5" rx="1.8" />
-            <path d="M16.75 3.5v7.5M13 7.25h7.5M7.25 13v7.5M3.5 16.75H11" />
-          </svg>
-          Jeux
-        </button>
-        <button
-          type="button"
-          onClick={toggleSound}
-          aria-label={soundOn ? 'Couper les sons' : 'Activer les sons'}
-          aria-pressed={soundOn}
-          className={`grid place-items-center rounded-xl border border-line px-2.5 transition ${soundOn ? 'bg-cream text-turquoise-deep' : 'bg-sand-2 text-ink-soft'}`}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M4 9v6h4l5 5V4L8 9H4z" />
-            {soundOn ? (
-              <path d="M16 8c1.5 1.2 1.5 6.8 0 8M18.5 6c2.5 2 2.5 10 0 12" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-            ) : (
-              <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-            )}
-          </svg>
-        </button>
-      </div>
-
-      {/* Les deux façons d'apprendre qui ne se jouent pas seul face à l'écran :
-          à deux sur ce téléphone, ou dehors auprès de quelqu'un qui parle. */}
-      <div className="flex gap-2 px-3.5 pt-1.5">
-        <button
-          type="button"
-          onClick={onDuo}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3 py-2 text-[12px] font-extrabold text-ink transition"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="8.5" cy="8" r="3.2" />
-            <circle cx="16.5" cy="8" r="3.2" />
-            <path d="M3 19c0-2.6 2.4-4.5 5.5-4.5S14 16.4 14 19M13.5 19c.3-2.2 2.4-3.7 5-3.7 1.2 0 2.4.3 3.3.9" />
-          </svg>
-          À deux
-        </button>
-        <button
-          type="button"
-          onClick={onMissions}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3 py-2 text-[12px] font-extrabold text-ink transition"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M12 21s7-5.4 7-10.5A7 7 0 0 0 5 10.5C5 15.6 12 21 12 21z" />
-            <circle cx="12" cy="10.2" r="2.4" />
-          </svg>
-          Missions
-          {lexiqueCount > 0 && (
-            <span className="rounded-full bg-turquoise/15 px-1.5 text-[9px] font-extrabold tabular-nums text-turquoise-deep">
-              {lexiqueCount}
-            </span>
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={onHistoire}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-cream px-3 py-2 text-[12px] font-extrabold text-ink transition"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
-            <path d="M9 7.5h6M9 11h4" />
-          </svg>
-          Histoire
-        </button>
-        <button
-          type="button"
-          onClick={onTifinagh}
-          aria-label="Écrire le tifinagh"
-          className="flex flex-none items-center justify-center rounded-xl border border-line bg-cream px-3 py-2 text-[13px] font-extrabold text-ink tifinagh"
-        >
-          ⵣ
-        </button>
-      </div>
-
-      {/* Le cercle : jouer avec sa famille et ses amis, chacun sur SON
-          téléphone — défis à distance et voix demandées aux proches. */}
-      <div className="px-3.5 pt-1.5">
-        <button
-          type="button"
-          onClick={onCercle}
-          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-turquoise/40 bg-turquoise/5 px-3 py-2 text-[12px] font-extrabold text-turquoise-deep transition-transform active:scale-[0.98]"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="9" r="2.6" />
-            <path d="M6.8 18.4c.7-2.3 2.8-3.7 5.2-3.7s4.5 1.4 5.2 3.7" />
-          </svg>
-          Mon cercle — famille & amis à distance
-        </button>
-      </div>
-
-      {verrouActif(abonnement) && (
-        <CarteAbonnement tarif={abonnement?.tarifs?.solo?.parMois} onOuvrir={onAbonnement} />
-      )}
-
-      <InstallCard />
-
-      <DailyGoal value={xpTodayValue} goal={dailyGoalXp} />
+      {/* Refonte C : le chemin est rendu à sa raison d'être — tout le
+          sommaire (défi, jeux, cercle, culture, objectif, abonnement…)
+          vit désormais dans la barre d'onglets et l'écran Aujourd'hui.
+          Ici : la carte du voyage, plein écran, et UN bouton fixe pour
+          continuer sa leçon. */}
 
       <div ref={scrollerRef} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-16">
         <div className="relative">
@@ -546,6 +287,25 @@ export function PathScreen({
           })}
         </div>
       </div>
+
+      {/* LE geste principal, toujours sous le pouce (avis du comité UX) :
+          plus besoin de chercher le nœud courant sur le sentier sinueux. */}
+      {leconCourante && (
+        <div className="flex-none border-t border-line bg-cream/95 px-3.5 py-2 backdrop-blur-sm">
+          <button
+            type="button"
+            onClick={() => {
+              sfx.click()
+              // handleNode aiguille : leçon courante → jouer, coffre → ouvrir.
+              handleNode(leconCourante.node)
+            }}
+            className="flex w-full items-center justify-between gap-2 rounded-2xl bg-turquoise px-4 py-3 text-white shadow-[0_4px_0_var(--color-turquoise-dark)] transition-transform active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-turquoise-dark)]"
+          >
+            <span className="truncate text-[14px] font-extrabold">Continuer — {leconCourante.node.title}</span>
+            <span className="flex-none text-[16px]" aria-hidden="true">→</span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

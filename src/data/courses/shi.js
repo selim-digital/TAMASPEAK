@@ -187,7 +187,7 @@ export const shiUnits = [
     lessons: [
       { id: 'shi1', title: 'Se saluer', icon: '👋', status: 'current' },
       { id: 'shi2', title: 'Oui & non', icon: '✅', status: 'locked' },
-      { id: 'shi3', title: 'Merci', icon: '🙏', status: 'locked' },
+      { id: 'shi3', title: 'Merci', icon: '💐', status: 'locked' },
       { id: 'shi-c1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'shi4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'shi5', title: 'Se quitter', icon: '🌙', status: 'locked' },

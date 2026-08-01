@@ -18,6 +18,7 @@ export function JeuxScreen({
   onMots,
   onMotsDuel,
   onQuiz,
+  onDuo,
   onCercle,
   onBack,
 }) {
@@ -158,6 +159,28 @@ export function JeuxScreen({
           <span className="flex-none text-[15px]" aria-hidden="true">
             🏆
           </span>
+        </button>
+
+        {/* À deux sur ce téléphone — rapatrié du chemin par la refonte C :
+            c'est un JEU, il vit avec les jeux. */}
+        <button
+          type="button"
+          onClick={onDuo}
+          className="mt-2.5 flex w-full items-center gap-3 rounded-2xl border-2 border-line bg-cream px-3.5 py-3.5 text-left transition active:scale-[0.99]"
+        >
+          <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-ink text-white" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="7.5" y="2.5" width="9" height="19" rx="2.2" />
+              <path d="M10.5 5h3M12 18.5h.01" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-extrabold">À deux, un téléphone</span>
+            <span className="block text-[10.5px] leading-snug text-ink-soft">
+              On alterne les tours — parfait entre parent et enfant.
+            </span>
+          </span>
+          <span className="flex-none text-[12px] font-extrabold text-ink-soft">→</span>
         </button>
 
         {/* Quiz Tamazgha — les cartes « Le savais-tu ? » deviennent un jeu. */}

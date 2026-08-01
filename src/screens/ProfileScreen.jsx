@@ -8,7 +8,7 @@ import { globalStats, setIdentity } from '../lib/progress.js'
 import { shareText, profileShare } from '../lib/share.js'
 import { getEmailPrefs, setEmailPrefs } from '../lib/api.js'
 import { abonnementReel } from '../lib/abonnement.js'
-import { sfx } from '../lib/sfx.js'
+import { sfx, isSfxOn, setSfxOn } from '../lib/sfx.js'
 
 function Tile({ icon, value, label }) {
   return (
@@ -167,13 +167,34 @@ function LigneAbonnement({ etat, onOuvrir }) {
   )
 }
 
-export function ProfileScreen({ store, onSave, onDuel, onAccount, onAbonnement, abonnement, onFeedback, onResetLang, onBack }) {
+export function ProfileScreen({
+  store,
+  onSave,
+  onDuel,
+  onAccount,
+  onAbonnement,
+  abonnement,
+  onFeedback,
+  onTrophees,
+  onFamille,
+  onResetLang,
+  onBack,
+}) {
   const [resetEnCours, setResetEnCours] = useState(null) // langId en attente de confirmation
   const profile = store.profile || {}
   const [name, setName] = useState(profile.name || '')
   const [avatar, setAvatar] = useState(profile.avatar || 'akermus')
   const [picking, setPicking] = useState(false)
   const [flash, setFlash] = useState(null)
+  // Le réglage du son — rapatrié du chemin par la refonte C : c'est un
+  // réglage, il vit avec « Moi », pas dans la rangée d'action primaire.
+  const [soundOn, setSoundOn] = useState(isSfxOn)
+  function toggleSound() {
+    const next = !soundOn
+    setSfxOn(next)
+    setSoundOn(next)
+    if (next) sfx.click()
+  }
 
   const stats = globalStats(store, COURSES)
   const dirty = name !== (profile.name || '') || avatar !== (profile.avatar || 'akermus')
@@ -339,7 +360,49 @@ export function ProfileScreen({ store, onSave, onDuel, onAccount, onAbonnement, 
 
         <EmailPrefs />
 
-        <div className="mt-6 flex flex-col gap-2">
+        {/* Refonte C : le hub « Moi » — trophées et famille y trouvent leur
+            porte, avec le réglage du son. */}
+        <div className="mt-5 flex gap-2">
+          <button
+            type="button"
+            onClick={onTrophees}
+            className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-line bg-cream py-2.5 text-[12px] font-extrabold transition-transform active:scale-[0.98]"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 4h12v4a6 6 0 0 1-12 0zM9 20h6M12 14v6" />
+            </svg>
+            Trophées
+          </button>
+          <button
+            type="button"
+            onClick={onFamille}
+            className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-line bg-cream py-2.5 text-[12px] font-extrabold transition-transform active:scale-[0.98]"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3.5 L20.5 12 L12 20.5 L3.5 12 Z" />
+              <circle cx="12" cy="12" r="2.6" />
+            </svg>
+            La famille
+          </button>
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-label={soundOn ? 'Couper les sons' : 'Activer les sons'}
+            aria-pressed={soundOn}
+            className={`grid flex-none place-items-center rounded-2xl border border-line px-3 transition ${soundOn ? 'bg-cream text-turquoise-deep' : 'bg-sand-2 text-ink-soft'}`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4 9v6h4l5 5V4L8 9H4z" />
+              {soundOn ? (
+                <path d="M16 8c1.5 1.2 1.5 6.8 0 8M18.5 6c2.5 2 2.5 10 0 12" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+              ) : (
+                <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        <div className="mt-3 flex flex-col gap-2">
           <Button variant="primary" onClick={onDuel}>
             Défier un ami
           </Button>
