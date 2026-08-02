@@ -48,8 +48,8 @@ const l1 = [
     'kab-to-fr',
     'Yemma salue Aqcic, le garçon. Que dit-elle ?',
     'Azul fell-ak',
-    'Bonjour à toi',
-    ['Bonjour à toi', 'Merci beaucoup', 'À demain', 'Comment vas-tu ?'],
+    'Bonjour à toi (à un homme)',
+    ['Bonjour à toi (à un homme)', 'Merci beaucoup', 'À demain', 'Comment vas-tu ?'],
     true,
     'yemma',
   ),
@@ -101,7 +101,7 @@ const l4 = [
   // Une vraie paire de dialogue : on te demande, tu réponds par une phrase.
   qcm(
     'fr-to-kab',
-    'On te demande « Labas ? ». Que réponds-tu ?',
+    'Baba te demande « Labas ? ». Que réponds-tu ?',
     'Je vais bien',
     'Aql-i labas',
     ['Aql-i labas', 'Ar tufat', 'Ansuf yes-k', 'Ala'],
@@ -113,24 +113,33 @@ const l4 = [
 ]
 const l5 = [
   qcm('kab-to-fr', 'Que signifie ?', 'Ar tufat', 'À demain', ['À demain', 'Bonjour', 'Merci', 'Oui']),
-  // Même règle de genre qu'en l1 : `yes-k` s'adresse à un HOMME. On nomme
-  // donc qui arrive, au lieu d'écrire « quelqu'un » — un destinataire sans
-  // genre rendrait la forme injustifiable.
+  // La même paire qu'en l1, sur un autre support : les suffixes de 2ᵉ
+  // personne du kabyle sont -k au masculin, -m au féminin, et ils se posent
+  // sur la préposition comme sur « fell- ». D'où fell-ak / fell-am en l1, et
+  // yes-k / yes-m ici. C'est un seul fait de grammaire, revu deux fois dans
+  // deux formules d'accueil : c'est ainsi qu'un paradigme s'installe.
   //
-  // Le féminin `yes-m` n'est PAS enseigné ici, volontairement : Selim a
-  // confirmé `fell-am`, pas `yes-m`. La symétrie le rend probable, mais
-  // probable n'est pas attesté, et la règle de la maison est de ne jamais
-  // publier une forme construite par analogie. À faire trancher, puis à
-  // ajouter en face de `yes-k` comme la paire fell-ak / fell-am.
-  sentence('Ansuf yes-k', 'Bienvenue à toi', ['Bienvenue à toi', 'Bonjour', 'Merci beaucoup', 'À demain'], 'yemma'),
+  // On NOMME toujours qui est accueilli. Tant que le destinataire est
+  // « toi », l'app ignore le genre de l'élève et aucune des deux formes
+  // n'est justifiable — c'est le défaut que Selim a relevé en l1.
+  sentence('Ansuf yes-k', 'Bienvenue à toi (à un homme)', ['Bienvenue à toi (à un homme)', 'Bonjour', 'Merci beaucoup', 'À demain'], 'yemma'),
   qcm(
     'fr-to-kab',
     'Jeddi arrive chez toi. Tu l’accueilles — que dis-tu ?',
-    'Bienvenue à toi',
+    'Bienvenue à toi (à un homme)',
     'Ansuf yes-k',
     ['Ansuf yes-k', 'Ar tufat', 'Aql-i labas', 'Ala'],
     false,
-    'yemma',
+    'jeddi',
+  ),
+  qcm(
+    'fr-to-kab',
+    'Et quand c’est Setti qui arrive ?',
+    'Bienvenue à toi (à une femme)',
+    'Ansuf yes-m',
+    ['Ansuf yes-m', 'Ansuf yes-k', 'Azul fell-ak', 'Ar tufat'],
+    false,
+    'setti',
   ),
   match([
     { kab: 'Ih', fr: 'Oui' },
@@ -243,7 +252,9 @@ const l15 = [
 const l16 = [
   sentence('Azul, amek telliḍ ?', 'Bonjour, comment vas-tu ?', ['Bonjour, comment vas-tu ?', 'Merci beaucoup', 'Bienvenue à toi', 'À demain']),
   sentence('Aql-i labas', 'Je vais bien', ['Je vais bien', 'Au revoir', 'Merci beaucoup', 'Bonjour']),
-  sentence('Ansuf yes-k', 'Bienvenue à toi', ['Bienvenue à toi', 'Bonjour', 'Merci beaucoup', 'À demain']),
+  // Glose alignée sur l5 : « Bienvenue à toi » tout court laisserait croire
+  // que la formule est neutre, alors qu'elle porte le masculin.
+  sentence('Ansuf yes-k', 'Bienvenue à toi (à un homme)', ['Bienvenue à toi (à un homme)', 'Bonjour', 'Merci beaucoup', 'À demain']),
   qcm('fr-to-kab', 'Comment dit-on « Merci beaucoup » ?', 'Merci beaucoup', 'Tanemmirt aṭas', ['Tanemmirt aṭas', 'Azul fell-ak', 'Ar tufat', 'Ansuf yes-k']),
 ]
 const l17 = [

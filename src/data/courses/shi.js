@@ -96,7 +96,12 @@ const shi4 = [
     ['Manzakmin ?', 'Manzakin ?', 'Manzakt ?', 'Manzant ?'],
   ),
   qk('Que veut dire « Labas » ?', 'Labas', 'Ça va', ['Ça va', 'Ça ne va pas', 'Merci', 'Bienvenue']),
-  q('On te demande « Manzakin ? ». Que réponds-tu ?', 'Comment vas-tu ?', 'Labas, lḥamdulillah', [
+  // Ce cours vient d'enseigner que « Manzakin ? » s'adresse à un homme et
+  // « Manzakmin ? » à une femme. Poser ensuite « Manzakin ? » à un « toi »
+  // dont l'app ignore le genre contredisait la leçon d'avant. On applique
+  // donc la règle à l'exercice lui-même : le genre du destinataire est
+  // toujours celui de quelqu'un qu'on nomme.
+  q('Tu demandes « Manzakin ? » à un homme. Que va-t-il répondre ?', 'Comment vas-tu ?', 'Labas, lḥamdulillah', [
     'Labas, lḥamdulillah',
     'Wa ɛlikum ssalam',
     'Ar azkka',

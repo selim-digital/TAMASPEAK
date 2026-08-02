@@ -10,11 +10,24 @@
  *   - 'culture'  : question de culture/histoire (réponses en français).
  *   - 'sentence' : écouter une phrase entière → choisir son sens.
  *
- * QUI PARLE — le champ `qui`
- * --------------------------
+ * QUI EST LÀ — le champ `qui`
+ * ---------------------------
  * Toute fabrique accepte en dernier argument un identifiant de personnage
- * (`'yemma'`, `'aqcic'`… voir components/mascots/Family.jsx). L'énoncé est
- * alors présenté comme SA phrase, silhouette à l'appui.
+ * (`'yemma'`, `'aqcic'`… voir components/mascots/Family.jsx). La scène est
+ * alors présentée avec lui, silhouette à l'appui.
+ *
+ * C'est le personnage PRÉSENT dans l'exercice, pas nécessairement celui qui
+ * prononce la phrase : tantôt il parle (« Yemma salue Aqcic, que dit-elle ? »),
+ * tantôt c'est l'élève qui lui parle (« Setti te tend un verre de thé, que
+ * dis-tu ? »). Dans les deux cas c'est la même personne qu'on retrouve, et
+ * c'est cela qui compte.
+ *
+ * ATTENTION AU GENRE. Beaucoup de formules amazighes marquent le genre du
+ * DESTINATAIRE, pas celui du locuteur : `fell-ak` / `yes-k` s'adressent à un
+ * homme, `fell-am` / `yes-m` à une femme. Un énoncé dont le destinataire est
+ * « toi » est donc ingérable — l'app ignore le genre de l'élève, et aucune des
+ * deux formes n'est justifiable. Règle : dans un exercice situationnel,
+ * NOMMER la personne à qui l'on parle.
  *
  * L'attribution n'est pas un ornement, elle est GRAMMATICALE : chaque
  * personnage porte toujours la même forme — Aqcic les questions, Yemma les
