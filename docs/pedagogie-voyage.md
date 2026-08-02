@@ -142,18 +142,39 @@ l'apprentissage.
 
 ## 4. Palier 2 — l'armature narrative du voyage
 
-> **Décision de Selim, qui commande tout ce qui suit.** L'élève doit vivre une
-> aventure à travers les sections, en traversant plusieurs paysages,
-> **accompagné des mêmes personnages du début à la fin**. Le comité narration
-> avait proposé l'inverse — une famille qui reste au village et un hôte
-> différent à chaque région, le moteur étant l'éloignement. Cette version est
-> écartée. Ce qui suit est l'armature corrigée.
+> **⚠️ CE PALIER EST UN PARCOURS PARALLÈLE, ESTAMPILLÉ BÊTA.** Décision de
+> Selim, sans ambiguïté : tout ce qui suit est un **cours à part**, proposé aux
+> utilisateurs qui *veulent* le tester. Cela ne remplace rien, ne modifie aucun
+> cours existant, et n'est imposé à personne. Le cours kabyle actuel continue
+> de vivre intact à côté. Les modalités techniques sont au §7 ; elles ne sont
+> pas un détail d'implémentation mais **la condition de tout ce chapitre**.
+>
+> **Décisions de Selim sur le casting.** L'élève vit une aventure à travers les
+> sections, traverse plusieurs paysages, **accompagné des mêmes personnages
+> tout du long** — mais c'est un **noyau qui part, pendant que les anciens
+> tiennent la maison et réapparaissent aux grandes étapes**. Le comité
+> narration avait proposé que toute la famille reste au village, avec un hôte
+> différent par région et l'éloignement pour moteur : cette version est
+> écartée.
 
 ### La prémisse
 
-Tu ne pars pas seul, et tu ne pars pas de rien : **la famille voyage avec
-toi**. Les six d'`Family.jsx` plus Akermus forment une troupe qui traverse les
-onze paysages du premier au dernier. Le décor change, les compagnons non.
+Tu ne pars pas seul : **un noyau de la famille voyage avec toi**, et il ne
+change pas. Akermus, Aqcic, Taqcict, Yemma et Baba traversent les onze
+paysages du premier au dernier. Le décor change, les compagnons non.
+
+**Setti et Jeddi tiennent la maison.** Ils ne suivent pas au jour le jour — ils
+**reparaissent aux grandes étapes**, et leur venue est justement ce qui signale
+qu'une étape est grande. Ce n'est pas une demi-mesure : c'est ce qui donne du
+relief. Une présence continue finit par ne plus se remarquer ; une présence
+rare, attendue, se remarque toujours.
+
+**Ce qu'est une « grande étape », concrètement** — et c'est déjà dans les
+données. `units.js` découpe le cours en trois niveaux : *Initiation* (u1–u8),
+*Découverte* (u9–u10), *Confirmé* (u11–u13). Les anciens paraissent donc quatre
+fois, à chaque seuil : **au départ** (u1), **au passage en Découverte** (u9),
+**au passage en Confirmé** (u11), et **à l'arrivée** (u13, le Tassili). Aucun
+compteur à inventer : le seuil de niveau existe déjà et pilote la scène.
 
 Chaque région traversée parle une langue cousine de la tienne : parfois tu
 comprends, parfois presque, parfois plus du tout. Le voyage sert à vérifier
@@ -168,12 +189,18 @@ exactement le ressort de Duolingo : neuf personnages qui reviennent, qu'on
 finit par connaître. Et l'habitude est précisément ce qui fait revenir un
 utilisateur demain.
 
-Le voyage n'est pas non plus une fuite : à mesure qu'on avance, **la troupe
-apprend en même temps que toi**. Aqcic se trompe et se corrige, Setti reconnaît
-un mot qu'elle croyait perdu, Jeddi retrouve un chemin qu'il avait fait jeune.
-Le dernier paysage, le Tassili, n'a personne pour traduire : des gravures sur
-la paroi, et vous êtes sept à les regarder. Ce que tu sais lire, tu le lis à
-voix haute — pour eux.
+Les anciens jouent l'autre corde, celle que l'habitude ne peut pas jouer :
+**la reconnaissance du chemin parcouru**. Quand Setti et Jeddi reparaissent au
+seuil d'un niveau, ils constatent — « tu ne disais pas ça, avant ». C'est le
+seul moment où le récit mesure la progression, et il tombe exactement là où
+l'app change de niveau.
+
+Le voyage n'est pas non plus une fuite : à mesure qu'on avance, **le noyau
+apprend en même temps que toi**. Aqcic se trompe et se corrige, Taqcict compte
+plus vite qu'elle ne comprend, Baba demande une explication que tu viens
+d'obtenir. Le dernier paysage, le Tassili, n'a personne pour traduire : des
+gravures sur la paroi — et les anciens sont là, parce que c'est la dernière
+grande étape. Ce que tu sais lire, tu le lis à voix haute. Pour eux.
 
 ### Le problème de l'ordre variable, résolu par la troupe
 
@@ -183,7 +210,7 @@ fixe : le tachelhit commence au Ksar, le kabyle au Djurdjura. Un récit accroch�
 
 **La troupe résout cela d'elle-même.** Si la continuité est portée par les
 personnages et non par les régions, l'ordre des paysages n'a plus d'importance
-narrative. Le fil, c'est que Setti et Aqcic sont toujours là. Les paysages
+narrative. Le fil, c'est qu'Aqcic et Yemma sont toujours là. Les paysages
 redeviennent ce qu'ils sont — un décor qui change, la preuve visible qu'on
 avance.
 
@@ -210,13 +237,13 @@ dans n'importe quel ordre.
 de « majestueux », pas de « millénaire », pas de « âme ». On dit ce qui se
 passe. Trois à six phrases par fragment : c'est une app, pas un roman.
 
-**Départ — Djurdjura, cours de kabyle**
+**Départ — Djurdjura, cours de kabyle** *(grande étape : les anciens sont là)*
 
-> Le car vous laisse au col, une heure avant le village. La crête tient encore
-> un peu de neige ; en bas, les terrasses d'oliviers descendent jusqu'à la
-> route. Jeddi est déjà en train de marcher. Setti compte les sacs. Ici, on ne
-> vous demandera pas d'où vous venez — on attendra de voir si tu sais dire
-> bonjour.
+> Le car attend au col. Setti a fait le pain pour la route et le donne à Yemma,
+> qui n'en voulait pas. Jeddi ne descend pas jusqu'au car ; il regarde de la
+> terrasse, une main levée. Ils restent, vous partez. En bas, les oliviers
+> descendent jusqu'à la route. Ici, on ne vous demandera pas d'où vous venez —
+> on attendra de voir si tu sais dire bonjour.
 
 **Ouverture — Unité 1, Azul**
 
@@ -228,8 +255,8 @@ passe. Trois à six phrases par fragment : c'est une app, pas un roman.
 
 > Tu as dit azul, et on t'a répondu. Ferroudja, qui greffe des oliviers depuis
 > l'aube, te donne un mot pour la route : celui qu'on lance dans le dos de
-> quelqu'un qui s'en va. Setti le répète pour elle-même, deux fois. Elle ne
-> l'avait pas entendu depuis longtemps. Un mot dans le carnet.
+> quelqu'un qui s'en va. Taqcict le note deux fois, au cas où. Un mot dans le
+> carnet.
 
 **Escale type — M'zab, en position quelconque**
 
@@ -239,14 +266,21 @@ passe. Trois à six phrases par fragment : c'est une app, pas un roman.
 > chez lui, se paie en litres. Baba veut comprendre le calcul avant de boire.
 > Aqcic a déjà bu.
 
+**Seuil de niveau — les anciens reparaissent** *(u9, passage en Découverte)*
+
+> Ils sont là en arrivant, tous les deux, comme s'ils avaient toujours été là.
+> Setti te fait dire les mots un par un, sans t'aider. Elle écoute jusqu'au
+> bout. Puis elle dit à Jeddi, pas à toi : « il ne disait pas ça, avant. »
+
 **Note de mise en scène.** Les fragments citent **un ou deux compagnons à la
-fois**, jamais les six. La troupe est permanente dans l'histoire, pas à
-l'écran : c'est ce qui la rend tenable sur un téléphone (voir « la règle de
-mise en scène » plus bas).
+fois**, jamais tout le monde. Le noyau est permanent dans l'histoire, pas à
+l'écran (voir « la règle de mise en scène » plus bas) — et les anciens ne
+paraissent qu'aux quatre seuils, ce qui rend leur venue lisible sans qu'on ait
+à l'annoncer.
 
 ### Le casting
 
-**La troupe — permanente, du premier paysage au dernier.** Sept présences, sept
+**Le noyau — permanent, du premier paysage au dernier.** Cinq présences, cinq
 registres, jamais interchangeables. C'est la fin du `cheerFor` aléatoire : on ne
 tire plus un personnage au hasard, on sait qui parle et pourquoi.
 
@@ -254,21 +288,38 @@ tire plus un personnage au hasard, on sait qui parle et pourquoi.
 | --- | --- | --- |
 | **Akermus** | celui qui doute tout haut | la forme fausse, puis la bonne |
 | **Aqcic** | il arrive toujours le premier | les questions |
-| **Taqcict** | elle compte, elle liste, elle retient | énumérations, nombres |
+| **Taqcict** | elle compte, elle liste, elle note | énumérations, nombres |
 | **Yemma** | elle fait répéter avant de frapper | salutations, accueil, formules |
 | **Baba** | il veut comprendre avant d'agir | impératifs, explications |
-| **Setti** | elle reconnaît des mots qu'elle croyait perdus | mots anciens, bénédictions d'usage |
-| **Jeddi** | il a déjà fait ce chemin, autrement | directions, conseils, le passé |
+
+**Les anciens — quatre apparitions, aux seuils.** Ils ne voyagent pas ; ils sont
+là au départ, aux deux changements de niveau, et à l'arrivée. Leur registre
+n'est pas celui du quotidien : c'est celui de la **mémoire et de la mesure**.
+
+| Ancien | Ce qu'il fait aux seuils | Ce qu'il porte dans la langue |
+| --- | --- | --- |
+| **Setti** | elle te fait dire, elle écoute jusqu'au bout | mots anciens, bénédictions d'usage |
+| **Jeddi** | il a fait ce chemin, autrement, il y a longtemps | le passé, les directions |
+
+**Pourquoi ce partage vaut mieux que sept compagnons permanents :** une présence
+continue cesse de se remarquer. En réservant Setti et Jeddi aux quatre seuils,
+on obtient deux choses qu'aucune présence constante ne donne — **leur venue
+signale l'étape** (pas besoin d'écran « niveau supérieur »), et **ce sont les
+seuls à pouvoir constater la progression**, puisqu'ils ne t'ont pas entendu
+depuis huit unités.
 
 **Ce qui les fait exister, et c'est le point le plus important :** ils
-**apprennent avec l'élève**. Aqcic se trompe et se corrige ; Setti retrouve un
-mot ; Baba demande une explication que l'élève vient d'obtenir. Un compagnon
-qui sait déjà tout n'est pas un compagnon, c'est un professeur — et l'app en a
-déjà un, c'est le moteur de leçon.
+**apprennent avec l'élève**. Aqcic se trompe et se corrige ; Taqcict note avant
+d'avoir compris ; Baba demande une explication que l'élève vient d'obtenir. Un
+compagnon qui sait déjà tout n'est pas un compagnon, c'est un professeur — et
+l'app en a déjà un, c'est le moteur de leçon. Les anciens font exception, et
+c'est justement pourquoi ils ne sont là qu'aux seuils : Setti *sait*, et un
+personnage qui sait ne peut pas marcher à côté de toi tous les jours sans
+écraser ton apprentissage.
 
-**La règle de mise en scène — permanent dans l'histoire, pas à l'écran.** La
-troupe est constante, mais **on n'en montre qu'un ou deux à la fois** : celui
-que la scène appelle. Six silhouettes en permanence sur un téléphone seraient
+**La règle de mise en scène — permanent dans l'histoire, pas à l'écran.** Le
+noyau est constant, mais **on n'en montre qu'un ou deux à la fois** : celui que
+la scène appelle. Cinq silhouettes en permanence sur un téléphone seraient
 illisibles, et le comité game design alerterait sur l'encombrement vertical.
 Duolingo tient neuf personnages récurrents en n'en affichant qu'un ou deux par
 exercice. Même règle ici : le casting est permanent, le cadrage tourne.
@@ -297,8 +348,9 @@ rapport ambivalent à sa langue** :
 **Ce qui les tient debout : chacun se trompe sur ta langue une fois, et tu le
 corriges.** Un hôte qu'on ne peut jamais corriger est un décor.
 
-Le Tassili, dernière étape, n'a volontairement pas d'hôte : la paroi gravée, et
-la troupe autour. Personne pour traduire. C'est l'élève qui lit.
+Le Tassili, dernière étape, n'a volontairement pas d'hôte : la paroi gravée, le
+noyau, et **les anciens venus pour le dernier seuil**. Personne pour traduire.
+C'est l'élève qui lit.
 
 Le comité culturel ajoute une figure qu'il tient pour la meilleure de toutes :
 **une grand-mère qui refuse d'enseigner sa langue**, parce qu'elle l'associe à
@@ -507,14 +559,37 @@ narrateur ne prescrit jamais, les personnages vivent.
 
 ---
 
-## 7. La bêta kabyle
+## 7. La bêta kabyle — un parcours parallèle, jamais un remplacement
 
-**La forme.** Un cours parallèle, pas une refonte. `COURSES.kab` reste ; on
-ajoute `kab-beta` dans `courses.js` avec son propre contenu. Le store est déjà
-multi-langues (`progress.js:222-290`) : rien à changer. Sur `LanguagesScreen`,
-une carte distincte et honnête — « **Kabyle — Le voyage (bêta)** · nouvelle
-façon d'apprendre, dis-nous ce que tu en penses ». On n'A/B-teste pas en
-cachette : on invite.
+> **La règle, posée par Selim, et qui prime sur tout le §4 :** le voyage narratif
+> est un **parcours parallèle estampillé bêta**, offert aux utilisateurs qui
+> veulent le tester. Il ne remplace rien. Personne ne doit s'y retrouver sans
+> l'avoir choisi.
+
+**La forme.** Un cours parallèle, pas une refonte. `COURSES.kab` reste **intact
+et par défaut** ; on ajoute `kab-beta` dans `courses.js` avec son propre
+contenu. Le store est déjà multi-langues (`progress.js:222-290`) : rien à
+changer, et les deux progressions coexistent sans se marcher dessus — un
+utilisateur peut suivre les deux, ou revenir au cours normal sans rien perdre.
+
+Sur `LanguagesScreen`, une carte distincte et honnête — « **Kabyle — Le voyage
+(bêta)** · nouvelle façon d'apprendre, dis-nous ce que tu en penses », avec le
+mot **bêta** visible sur la carte elle-même, pas seulement dans un écran de
+détail. On n'A/B-teste pas en cachette : on invite.
+
+**Les quatre garde-fous qui découlent de la règle :**
+
+1. **Aucun basculement automatique.** On n'y entre que par un tap délibéré sur
+   la carte bêta. Pas de redirection, pas de « nouveauté ! » qui pousse
+   l'utilisateur dedans.
+2. **Le cours kabyle standard reste le défaut** pour tout nouvel inscrit,
+   pendant toute la durée de la bêta.
+3. **On peut en sortir à tout moment**, et la progression du cours standard est
+   intacte au retour — c'est déjà vrai par construction, le store étant
+   multi-langues. À vérifier explicitement quand même.
+4. **La bêta n'est pas un argument de vente.** L'unité 1 y est gratuite comme
+   partout ailleurs ; on ne vend pas un abonnement sur du contenu qu'on
+   annonce soi-même comme non stabilisé.
 
 **Le feedback.** `FeedbackScreen.jsx` est le bon canal — l'emoji seul suffit à
 envoyer. Deux ajouts minuscules : ajouter `'beta'` aux catégories dans
@@ -601,12 +676,23 @@ un mot) :
 C'est le « basique mais efficace » demandé, sur les cinq langues, sans risque
 de contenu. La première session change de nature pour un coût très faible.
 
-**Le point 5 est aussi la première brique de la troupe** : dès qu'un énoncé est
-attribué à Setti ou à Aqcic *de façon stable*, la récurrence commence — et
-c'est elle qui manque aujourd'hui (§1). On peut donc poser le compagnonnage
+**Le point 5 est aussi la première brique du compagnonnage** : dès qu'un énoncé
+est attribué à Yemma ou à Aqcic *de façon stable*, la récurrence commence — et
+c'est elle qui manque aujourd'hui (§1). On peut donc poser les personnages
 avant d'écrire une seule ligne de récit, sur les cinq langues, sans validation
-de locuteur : il suffit d'assigner à chaque compagnon la forme grammaticale
-qu'il portera pour toujours (tableau du §4) et de s'y tenir.
+de locuteur : il suffit d'assigner à chacun la forme grammaticale qu'il portera
+pour toujours (tableaux du §4) et de s'y tenir.
+
+**Attention à ne pas confondre les deux périmètres** — c'est la distinction que
+Selim a posée dès le départ :
+
+| | Périmètre | Statut |
+| --- | --- | --- |
+| **Palier 1** (points 1 à 5) | **les 5 langues**, cours existants | livré à tout le monde |
+| **Palier 2** (le voyage, §4) | **kabyle seulement**, cours `kab-beta` | **parcours parallèle, estampillé bêta, sur choix de l'utilisateur** |
+
+Autrement dit : les personnages qui parlent dans les exercices, oui, pour tous.
+Le voyage narratif, en bêta, pour ceux qui le demandent.
 
 **Ensuite, et dans cet ordre :**
 
