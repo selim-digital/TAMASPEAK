@@ -209,7 +209,18 @@ function retention(label, base, revenus) {
 /* Vue « Usage »                                                        */
 /* ------------------------------------------------------------------ */
 
-const LANGUES = { kab: 'Kabyle', rif: 'Tarifit', shi: 'Tachelhit', tzm: 'Tamazight (Atlas)', zgh: 'Amazighe standard' }
+/*
+  Le nom des cours vient désormais du SERVEUR (`nom` sur les lignes de
+  statistiques, `langNom` sur les retours) : lui seul peut importer
+  src/data/languages.js, et une table recopiée à la main dérive. Elle a
+  d'ailleurs dérivé — le parcours d'essai « kab-beta » s'affichait en code
+  brut, faute d'une ligne ajoutée ici.
+
+  Ce qui suit n'est plus qu'un FILET : il sert si l'API n'a pas encore été
+  redéployée. Il n'a pas à être tenu à jour ; un code brut affiché vaut
+  mieux qu'une case vide, et le vrai nom arrive dès le déploiement suivant.
+*/
+const LANGUES = { kab: 'Kabyle', 'kab-beta': 'Kabyle — Le voyage', rif: 'Tarifit', shi: 'Tachelhit', tzm: 'Tamazight (Atlas)', zgh: 'Amazighe standard' }
 
 async function vueUsage() {
   const d = await api('stats')
@@ -242,7 +253,7 @@ async function vueUsage() {
           el('thead', {}, el('tr', {}, el('th', {}, 'Cours'), el('th', {}, 'Part'), el('th', { class: 'n' }, 'Leçons'))),
           el('tbody', {}, (d.parLangue || []).map((l) =>
             el('tr', {},
-              el('td', {}, LANGUES[l.lang] || l.lang),
+              el('td', {}, l.nom || LANGUES[l.lang] || l.lang),
               el('td', { style: 'width:50%' },
                 el('div', { class: 'barre' }, el('i', { style: `width:${pourcent(l.lecons, totalLecons)}%` }))),
               el('td', { class: 'n' }, nombre(l.lecons)))))))
@@ -334,7 +345,7 @@ async function vueRetours() {
           el('span', { style: 'font-size:17px' }, HUMEURS[f.mood] || '•'),
           el('span', { class: `puce ${f.status === 'traite' ? 'actif' : f.status === 'vu' ? 'essai' : 'attente'}` }, f.status),
           f.category ? el('span', {}, f.category) : null,
-          f.lang ? el('span', {}, LANGUES[f.lang] || f.lang) : null,
+          f.lang ? el('span', {}, f.langNom || LANGUES[f.lang] || f.lang) : null,
           el('span', {}, new Date(f.created_at).toLocaleString('fr-FR')),
           f.email ? el('span', {}, f.email) : el('span', {}, 'anonyme')),
         f.message ? el('p', { class: 'msg' }, f.message) : el('p', { class: 'msg muet' }, '(emoji seul, sans texte)'),

@@ -23,6 +23,7 @@
  * que l'app sait, et s'arrête là — c'est ce qui le rend fiable.
  */
 import { COURSES } from './courses.js'
+import { LANGUAGES } from './languages.js'
 import { EMPRUNTS } from './emprunts.js'
 import { etymologieDe, ORIGINES } from './etymologies.js'
 import { cleRecherche, enTifinagh } from '../lib/translit.js'
@@ -30,8 +31,28 @@ import { slug } from '../lib/slug.js'
 
 export { ORIGINES }
 
-/** L'ordre d'affichage des cours — le kabyle d'abord, il porte le plus de contenu. */
-export const ORDRE_LANGUES = ['kab', 'shi', 'rif', 'tzm', 'zgh']
+/**
+ * L'ordre d'affichage des cours — le kabyle d'abord, il porte le plus de
+ * contenu.
+ *
+ * LES PARCOURS D'ESSAI EN SONT EXCLUS, et il faut le dire explicitement :
+ * « kab-beta » est bâti sur les MÊMES unités et les MÊMES leçons que le
+ * kabyle (voir data/courses.js) — il raconte le même contenu autrement. Le
+ * laisser entrer dupliquerait chaque mot kabyle du dictionnaire, et ferait
+ * apparaître « Kabyle — Le voyage » dans la liste des cousins d'un mot,
+ * comme si c'était une autre langue.
+ *
+ * La liste est dérivée plutôt qu'écrite à la main : le jour où une deuxième
+ * bêta arrive, elle sera écartée sans que personne ait à y penser.
+ */
+const PREFERENCE = ['kab', 'shi', 'rif', 'tzm', 'zgh']
+export const ORDRE_LANGUES = LANGUAGES.filter((l) => !l.beta && COURSES[l.id])
+  .map((l) => l.id)
+  .sort((a, b) => {
+    const ia = PREFERENCE.indexOf(a)
+    const ib = PREFERENCE.indexOf(b)
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib)
+  })
 
 /* ------------------------------------------------------------------ */
 /* Le noyau d'un sens — ce qui permet de rapprocher deux langues       */
