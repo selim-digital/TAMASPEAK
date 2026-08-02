@@ -356,8 +356,21 @@ export const ETYMOLOGIES = Object.freeze({
   },
   'd acu yagi': { origine: 'amazigh', note: '« acu » (quoi) suivi de -agi, ceci : qu’est-ce que ceci ?' },
   melmi: { origine: 'amazigh', note: 'Quand ?' },
-  'azul fell ak': { origine: 'amazigh', note: 'Azul + fell-ak, « sur toi » — le salut se pose sur quelqu’un.' },
-  'ansuf yes k': { origine: 'amazigh', note: 'Ansuf + yes-k, « avec toi ».' },
+  'azul fell ak': {
+    origine: 'amazigh',
+    note: 'Azul + fell-ak, « sur toi » — le salut se pose sur quelqu’un. À une femme : « azul fell-am ».',
+  },
+  'azul fell am': {
+    origine: 'amazigh',
+    note: 'La même salutation adressée à une femme : -am au lieu de -ak. L’amazigh marque le genre de celui à qui l’on parle, ce que le français ne fait pas.',
+    voir: 'Azul fell-ak',
+  },
+  'ansuf yes k': { origine: 'amazigh', note: 'Ansuf + yes-k, « avec toi ». À une femme : « ansuf yes-m ».' },
+  'ansuf yes m': {
+    origine: 'amazigh',
+    note: 'L’accueil adressé à une femme : -m au lieu de -k.',
+    voir: 'Ansuf yes-k',
+  },
   'aql i labas': { origine: 'amazigh', note: '« Aql-i », me voici — puis labas, l’emprunt arabe.', voir: 'Labas' },
   'anda txeddmed': { origine: 'amazigh', note: '« Anda », où — suivi du verbe à la deuxième personne (t… -ḍ).' },
   'xeddmegh deg wexxam': {

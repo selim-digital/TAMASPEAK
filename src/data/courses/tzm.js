@@ -1,4 +1,4 @@
-import { qcm, match, culture } from '../exercises.js'
+import { qcm, match, culture, image } from '../exercises.js'
 
 /**
  * Cours de TAMAZIGHT DU MAROC CENTRAL (tamaziɣt) — Moyen Atlas de
@@ -136,8 +136,11 @@ const tzm6 = [
 ]
 
 const tzm7 = [
-  qk('Que veut dire « Aman » ?', 'Aman', 'L’eau', ['L’eau', 'Le pain', 'Le lait', 'Le thé']),
-  qk('Que veut dire « Aɣrum » ?', 'Aɣrum', 'Le pain', ['Le pain', 'L’eau', 'Le sel', 'Le beurre']),
+  // Les scènes de Scenes.jsx ne portent aucune langue : elles se partagent
+  // entre les cinq cours. Voir l'objet et le nommer vaut mieux que traduire
+  // un mot par un mot — et c'est ce qui manquait le plus à ce cours.
+  image('water', 'Aman', ['Aman', 'Aɣrum', 'Taddart']),
+  image('bread', 'Aɣrum', ['Aɣrum', 'Aman', 'Taddart']),
   qk('Que veut dire « Taddart » au Maroc central ?', 'Taddart', 'La maison', [
     'La maison',
     'Le village',
@@ -152,8 +155,8 @@ const tzm7 = [
 ]
 
 const tzm8 = [
-  qk('Que veut dire « Yan » ?', 'Yan', 'Un', ['Un', 'Deux', 'Trois', 'Quatre']),
-  q('Comment dit-on « Trois » en tamazight ?', 'Trois', 'Kraḍ', ['Kraḍ', 'Sin', 'Kkuẓ', 'Smmus']),
+  image('count-1', 'Yan', ['Yan', 'Sin', 'Kraḍ', 'Kkuẓ']),
+  image('count-3', 'Kraḍ', ['Kraḍ', 'Sin', 'Kkuẓ', 'Smmus']),
   match([
     { kab: 'Yan', fr: 'Un' },
     { kab: 'Sin', fr: 'Deux' },
@@ -321,7 +324,7 @@ export const tzmUnits = [
     lessons: [
       { id: 'tzm1', title: 'Se saluer', icon: '👋', status: 'current' },
       { id: 'tzm2', title: 'Oui & non', icon: '✅', status: 'locked' },
-      { id: 'tzm3', title: 'Merci', icon: '🙏', status: 'locked' },
+      { id: 'tzm3', title: 'Merci', icon: '💐', status: 'locked' },
       { id: 'tzm-c1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'tzm4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'tzm5', title: 'Se quitter', icon: '🌙', status: 'locked' },

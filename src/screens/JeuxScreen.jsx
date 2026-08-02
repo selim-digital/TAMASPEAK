@@ -1,6 +1,19 @@
 import { niveauxMots } from '../lib/jeux.js'
 import { JEUX } from '../data/economy.js'
 import { NB_FAITS } from '../data/faits.js'
+import { verrouActif } from '../lib/abonnement.js'
+
+/** Petit cadenas d'angle pour un jeu de la version payante. */
+function Cadenas() {
+  return (
+    <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-sand-2 text-ink-soft" aria-hidden="true">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4.5" y="10.5" width="15" height="10" rx="3" />
+        <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+      </svg>
+    </span>
+  )
+}
 
 /**
  * Le coin jeux — deux façons de réviser sans en avoir l'air.
@@ -18,12 +31,25 @@ export function JeuxScreen({
   onMots,
   onMotsDuel,
   onQuiz,
+  onDuo,
   onCercle,
+  abonnement,
+  onAbonnement,
   onBack,
 }) {
   const niveaux = niveauxMots(course)
   const faits = (progress.jeux?.motsFaits || []).filter((id) => niveaux.some((n) => n.id === id)).length
   const victoires = progress.jeux?.memoryVictoires || 0
+
+  /**
+   * Décision de Selim : certains jeux appartiennent à la version payante —
+   * Mots croisés et À deux. Le Mémory reste l'appât gratuit, et le Quiz
+   * Tamazgha reste ouvert à tous (la culture est la mission de l'app, pas
+   * un produit). Même règle que les unités : visibles, jamais cachés, et
+   * le doute (hors-ligne, boutique fermée) profite TOUJOURS à l'élève.
+   */
+  const verrouille = verrouActif(abonnement)
+  const ouvrir = (action) => (verrouille ? onAbonnement : action)
 
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col bg-cream">
@@ -89,9 +115,10 @@ export function JeuxScreen({
         {/* Mots croisés */}
         <button
           type="button"
-          onClick={onMots}
-          className="mt-2.5 flex w-full items-center gap-3 rounded-2xl border-2 border-coral/40 bg-coral/5 px-3.5 py-3.5 text-left transition active:scale-[0.99]"
+          onClick={ouvrir(onMots)}
+          className="relative mt-2.5 flex w-full items-center gap-3 rounded-2xl border-2 border-coral/40 bg-coral/5 px-3.5 py-3.5 text-left transition active:scale-[0.99]"
         >
+          {verrouille && <Cadenas />}
           <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-coral text-white" aria-hidden="true">
             {/* Petite grille croisée */}
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
@@ -120,7 +147,7 @@ export function JeuxScreen({
             la graine voyage dans le lien, le chrono départage. */}
         <button
           type="button"
-          onClick={onMotsDuel}
+          onClick={ouvrir(onMotsDuel)}
           className="mt-1.5 flex w-full items-center gap-2.5 rounded-xl border border-line bg-cream px-3.5 py-2.5 text-left transition active:scale-[0.99]"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-coral-dark)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -158,6 +185,29 @@ export function JeuxScreen({
           <span className="flex-none text-[15px]" aria-hidden="true">
             🏆
           </span>
+        </button>
+
+        {/* À deux sur ce téléphone — rapatrié du chemin par la refonte C :
+            c'est un JEU, il vit avec les jeux. */}
+        <button
+          type="button"
+          onClick={ouvrir(onDuo)}
+          className="relative mt-2.5 flex w-full items-center gap-3 rounded-2xl border-2 border-line bg-cream px-3.5 py-3.5 text-left transition active:scale-[0.99]"
+        >
+          {verrouille && <Cadenas />}
+          <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-ink text-white" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="7.5" y="2.5" width="9" height="19" rx="2.2" />
+              <path d="M10.5 5h3M12 18.5h.01" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-extrabold">À deux, un téléphone</span>
+            <span className="block text-[10.5px] leading-snug text-ink-soft">
+              On alterne les tours — parfait entre parent et enfant.
+            </span>
+          </span>
+          <span className="flex-none text-[12px] font-extrabold text-ink-soft">→</span>
         </button>
 
         {/* Quiz Tamazgha — les cartes « Le savais-tu ? » deviennent un jeu. */}

@@ -69,7 +69,14 @@ export function auth() {
             template: 'confirmer-suppression',
             data: { name: user.name, url },
           })
-          if (!ok) console.log(`[tama] lien de suppression pour ${user.email} : ${url}`)
+          if (!ok) {
+            // Vécu par Selim : l'email refusé (quota) laissait l'app dire
+            // « email envoyé » — un mensonge sur un droit RGPD. On échoue
+            // FRANCHEMENT : le client affichera « réessaie », pas « vérifie
+            // ta boîte ». Le lien reste en log pour un dépannage manuel.
+            console.log(`[tama] lien de suppression pour ${user.email} : ${url}`)
+            throw new Error('email de confirmation refusé (quota ou panne Resend)')
+          }
         },
         /**
          * AVANT d'effacer : arrêter l'abonnement Stripe.

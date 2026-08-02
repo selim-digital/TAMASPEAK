@@ -6,6 +6,7 @@ import { MatchExercise } from '../components/MatchExercise.jsx'
 import { EmpruntModal } from '../components/EmpruntModal.jsx'
 import { Scene } from '../components/illustrations/Scenes.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
+import { findMember, REFORMULE } from '../components/mascots/Family.jsx'
 import { playWord, isProvisional } from '../lib/audio.js'
 import { hasVoice } from '../lib/speakerVoice.js'
 import { trouverEmprunt } from '../data/emprunts.js'
@@ -14,6 +15,25 @@ import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 const PRAISES = ['Igerrez !', 'Yelha !', 'Bravo !', 'Excellent !', 'Continue !']
+
+/**
+ * Qui pose l'énoncé — la bulle du personnage, au-dessus de la question.
+ *
+ * On n'annonce pas « untel dit » : on MONTRE la silhouette et le nom, et la
+ * question suit. C'est la mise en page de FamilyCheer (écran du chemin),
+ * réduite à la hauteur d'un exercice pour ne pas manger l'écran.
+ */
+function QuiParle({ member }) {
+  if (!member) return null
+  return (
+    <div className="animate-rise mb-2 flex items-center gap-2">
+      <div className="fam-anim flex-none" aria-hidden="true">
+        <member.Comp height={44} />
+      </div>
+      <span className="text-[11px] font-extrabold text-turquoise-deep">{member.name}</span>
+    </div>
+  )
+}
 
 function SpeakerButton({ onPlay, big }) {
   return (
@@ -65,7 +85,16 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [answered, setAnswered] = useState(false)
+  // Les cœurs restent (choix de Selim). Ils sont DÉCORATIFS et doivent le
+  // rester : rien ne se passe à zéro, la leçon continue. C'est ce qui les rend
+  // compatibles avec la règle de data/economy.js — « aucune de ces valeurs ne
+  // doit servir à INTERROMPRE une session en cours ». Ne jamais les brancher
+  // sur une interruption, un mur ou un achat : ce serait enfreindre la règle,
+  // pas l'étendre.
   const [hearts, setHearts] = useState(5)
+  // Ce qu'on compte VRAIMENT pour l'apprentissage, à côté : les mots ratés,
+  // qui reviennent au quiz de fin de leçon.
+  const [aRevoir, setARevoir] = useState(0)
   const [correctCount, setCorrectCount] = useState(0)
   const [combo, setCombo] = useState(0)
   const [pulse, setPulse] = useState(0)
@@ -96,6 +125,9 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
     ex.audio || (answered && ex.kind === 'fr-to-kab') || (contribution && ex.kind !== 'fr-to-kab')
   const isCorrect = answered && (isMatch || selected === ex.answer)
   const progress = answered ? ((index + 1) / total) * 100 : (index / total) * 100
+  // Qui porte cet énoncé. Le quiz de fin rejoue des exercices d'autres leçons :
+  // le personnage vient avec, c'est même ce qui fait qu'on le reconnaît.
+  const quiParle = findMember(ex.qui)
 
   // Auto-lecture pour les exercices « écoute ».
   useEffect(() => {
@@ -106,6 +138,9 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   function praiseFor(n) {
     if (n >= 3) return `En feu ! ×${n} 🔥`
     if (n === 2) return 'Combo ×2 ! 🔥'
+    // Quand quelqu'un a posé la question, c'est lui qui félicite : un éloge
+    // anonyme ne construit personne, celui d'un personnage qu'on retrouve si.
+    if (quiParle) return quiParle.cheers[(index + n) % quiParle.cheers.length]
     return PRAISES[Math.floor((index + n) % PRAISES.length)]
   }
   function markCorrect() {
@@ -121,6 +156,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   function markWrong() {
     setCombo(0)
     setHearts((h) => Math.max(0, h - 1))
+    setARevoir((n) => n + 1)
     setShakeKey((k) => k + 1)
     sfx.wrong()
   }
@@ -162,7 +198,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
 
   function goNext() {
     if (isLast) {
-      onFinish?.({ correct: correctCount, total, hearts, perfect: correctCount === total })
+      onFinish?.({ correct: correctCount, total, hearts, aRevoir, perfect: correctCount === total })
       return
     }
     setIndex((i) => i + 1)
@@ -200,16 +236,32 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
         <div className="h-3 flex-1 overflow-hidden rounded-full bg-sand-2">
           <div className="h-full rounded-full bg-turquoise transition-[width] duration-300" style={{ width: `${progress}%` }} />
         </div>
-        <div key={shakeKey} className={`flex items-center gap-1 text-sm font-extrabold text-coral ${shakeKey ? 'animate-shake' : ''}`}>
-          <span aria-hidden="true">♥</span> {hearts}
+        {/* Les cœurs, et à côté le nombre de mots à revoir — celui-ci ne
+            s'affiche que s'il y a quelque chose à revoir, et en encre douce :
+            il informe, il ne menace pas. Ces mots-là reviendront au quiz de
+            fin de leçon. */}
+        <div key={shakeKey} className={`flex items-center gap-2 ${shakeKey ? 'animate-shake' : ''}`}>
+          {aRevoir > 0 && (
+            <span className="flex items-center gap-1 text-[11px] font-bold text-ink-soft">
+              <span aria-hidden="true">↺</span> {aRevoir}
+            </span>
+          )}
+          <span className="flex items-center gap-1 text-sm font-extrabold text-coral">
+            <span aria-hidden="true">♥</span> {hearts}
+          </span>
         </div>
       </div>
 
       <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 pt-4">
+        {/* La bulle s'élargit quand c'est un personnage qui félicite : ses
+            répliques sont des phrases, pas des interjections — « nowrap » les
+            ferait déborder de l'écran. */}
         {answered && isCorrect && praise && (
           <div
             key={praise.key}
-            className="animate-float-up pointer-events-none absolute left-1/2 top-2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-turquoise px-3 py-1 text-sm font-extrabold text-white shadow-lg"
+            className={`animate-float-up pointer-events-none absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded-2xl bg-turquoise px-3 py-1 text-center text-sm font-extrabold text-white shadow-lg ${
+              quiParle ? 'max-w-[80%] text-[12.5px] leading-snug' : 'whitespace-nowrap'
+            }`}
           >
             {praise.text}
           </div>
@@ -232,6 +284,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
             Quiz de fin de leçon — on révise !
           </span>
         )}
+        <QuiParle member={quiParle} />
         <h2 className="pr-16 text-[18px] font-extrabold tracking-tight">{ex.prompt}</h2>
 
         {isMatch ? (
@@ -291,7 +344,14 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-5 pt-3">
-        {answered && !isMatch && <FeedbackBar correct={isCorrect} word={ex.word} answer={ex.answer} />}
+        {answered && !isMatch && (
+          <FeedbackBar
+            correct={isCorrect}
+            word={ex.word}
+            answer={ex.answer}
+            reformule={quiParle ? REFORMULE[quiParle.id] : null}
+          />
+        )}
         <Button variant={answered && !isCorrect ? 'coral' : 'primary'} disabled={actionDisabled} onClick={handleAction}>
           {actionLabel}
         </Button>

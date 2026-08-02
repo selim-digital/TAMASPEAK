@@ -1,17 +1,17 @@
 # Lexique complet — Tama Speak
 
 > Généré depuis le contenu des cours (`npm run gen:lexique`) — ne pas éditer à la main.
-> **269 entrées** dans 5 langues. Tout est **provisoire** tant qu'un locuteur natif ne l'a pas validé.
+> **271 entrées** dans 5 langues. Tout est **provisoire** tant qu'un locuteur natif ne l'a pas validé.
 
 | Cours | Entrées | Audio |
 | --- | ---: | --- |
-| Kabyle (Taqbaylit) | 96 | en cours |
+| Kabyle (Taqbaylit) | 98 | en cours |
 | Tachelhit (Tacelḥit) | 42 | à enregistrer |
 | Tarifit (Tarifit) | 37 | à enregistrer |
 | Tamazight (Atlas) (Tamaziɣt) | 46 | à enregistrer |
 | Amazighe standard (Tamaziɣt tanawayt) | 48 | aucun (norme écrite) |
 
-## Kabyle — Taqbaylit (96)
+## Kabyle — Taqbaylit (98)
 
 | # | Mot / expression | Français | Type | Origine | Fichier audio | Leçons |
 | ---: | --- | --- | --- | --- | --- | --- |
@@ -35,82 +35,84 @@
 | 18 | **Anda txeddmeḍ ?** | Où travailles-tu ? | expression | amazigh | `anda-txeddmed.mp3` | l48 l49 |
 | 19 | **Anelmad** | L’élève | mot | neo | `anelmad.mp3` | l47 |
 | 20 | **Ansuf** | Bienvenue | mot | amazigh | `ansuf.mp3` | l1 l4 l5 l8 l9 |
-| 21 | **Ansuf yes-k** | Bienvenue à toi | expression | amazigh | `ansuf-yes-k.mp3` | l16 |
-| 22 | **Aqcic** | Garçon | mot | amazigh | `aqcic.mp3` | l37 l38 |
-| 23 | **Aqerruy** | Tête | mot | amazigh | `aqerruy.mp3` | l36 l38 |
-| 24 | **Aql-i labas** | Je vais bien | expression | arabe | `aql-i-labas.mp3` | l16 |
-| 25 | **Ar tufat** | À demain | expression | amazigh | `ar-tufat.mp3` | l3 l5 l7 l9 |
-| 26 | **Argaz** | Homme | mot | amazigh | `argaz.mp3` | l37 l38 |
-| 27 | **Arrac** | Les enfants | mot | amazigh | `arrac.mp3` | l52 |
-| 28 | **As-d !** | Viens ! | expression | amazigh | `as-d.mp3` | l43 l45 |
-| 29 | **Aselmad** | L’enseignant | mot | neo | `aselmad.mp3` | l47 l49 |
-| 30 | **Asigna** | Nuage | mot | amazigh | `asigna.mp3` | l28 l29 |
-| 31 | **Ass** | Jour | mot | amazigh | `ass.mp3` | l39 |
-| 32 | **Ass-a** | Aujourd’hui | mot | amazigh | `ass-a.mp3` | l39 l45 |
-| 33 | **Atay** | Thé | mot | arabe | `atay.mp3` | l11 l12 l17 |
-| 34 | **Awraɣ** | Jaune | mot | amazigh | `awragh.mp3` | l22 l23 |
-| 35 | **Axeddam** | Le travailleur | mot | arabe | `axeddam.mp3` | l46 |
-| 36 | **Axeddim** | Le travail | mot | arabe → Tawuri | `axeddim.mp3` | l46 l49 |
-| 37 | **Axxam** | Maison | mot | amazigh | `axxam.mp3` | l10 l12 l17 |
-| 38 | **Azeggaɣ** | Rouge | mot | amazigh | `azeggagh.mp3` | l21 l23 l35 |
-| 39 | **Azegzaw** | Vert | mot | amazigh | `azegzaw.mp3` | l21 l23 |
-| 40 | **Azekka** | Demain | mot | amazigh | `azekka.mp3` | l41 l45 |
-| 41 | **Aẓemmur** | Olives | mot | amazigh | `azemmur.mp3` | l25 |
-| 42 | **Azul** | Bonjour | mot | amazigh | `azul.mp3` | l1 l3 l5 l7 l8 l9 |
-| 43 | **Azul fell-ak** | Bonjour à toi | expression | amazigh | `azul-fell-ak.mp3` | l1 l4 |
-| 44 | **Azul, amek telliḍ ?** | Bonjour, comment vas-tu ? | expression | amazigh | `azul-amek-tellid.mp3` | l16 |
-| 45 | **Azzel !** | Cours ! | expression | amazigh | `azzel.mp3` | l51 |
-| 46 | **Baba** | Père | mot | amazigh | `baba.mp3` | l14 l15 l17 |
-| 47 | **D acu-yagi ?** | Qu’est-ce que c’est ? | expression | amazigh | `d-acu-yagi.mp3` | l44 |
-| 48 | **Ečč !** | Mange ! | expression | amazigh | `ecc.mp3` | l43 l45 |
-| 49 | **Ɛumm !** | Nage ! | expression | arabe | `eumm.mp3` | l51 |
-| 50 | **Gma** | Frère | mot | amazigh | `gma.mp3` | l14 l15 |
-| 51 | **Iḍ** | Nuit | mot | amazigh | `id.mp3` | l39 l40 |
-| 52 | **Iḍelli** | Hier | mot | amazigh | `idelli.mp3` | l41 |
-| 53 | **Idrimen** | Argent | mot | arabe | `idrimen.mp3` | l26 |
-| 54 | **Ih** | Oui | mot | amazigh | `ih.mp3` | l2 l3 l5 l6 l9 |
-| 55 | **Ilemẓi** | Le jeune homme | mot | amazigh | `ilemzi.mp3` | l52 |
-| 56 | **Kečč** | Toi (à un homme) | mot | amazigh | `kecc.mp3` | l42 |
-| 57 | **Kemm** | Toi (à une femme) | mot | amazigh | `kemm.mp3` | l42 |
-| 58 | **Kkuẓ** | Quatre | mot | amazigh | `kkuz.mp3` | l19 l20 |
-| 59 | **Kraḍ** | Trois | mot | amazigh | `krad.mp3` | l18 l20 |
-| 60 | **Labas ?** | Ça va ? / Ça va (bien) / Ça va | expression | arabe → Amek telliḍ ? | `labas.mp3` | l3 l4 l6 l9 |
-| 61 | **Melmi ?** | Quand ? | expression | amazigh | `melmi.mp3` | l41 |
-| 62 | **Nekk** | Moi | mot | amazigh | `nekk.mp3` | l42 l45 |
-| 63 | **Netta** | Lui | mot | amazigh | `netta.mp3` | l42 |
-| 64 | **Nettat** | Elle | mot | amazigh | `nettat.mp3` | l42 |
-| 65 | **Ṛuḥ !** | Va ! / Pars ! / Va ! | expression | arabe | `ruh.mp3` | l43 l45 |
-| 66 | **Semmeḥ-iyi** | Excuse-moi | mot | arabe → Suref-iyi | `semmeh-iyi.mp3` | l44 |
-| 67 | **Semmus** | Cinq | mot | amazigh | `semmus.mp3` | l19 l20 l35 |
-| 68 | **Sew !** | Bois ! | expression | amazigh | `sew.mp3` | l43 l45 |
-| 69 | **Sew atay** | Bois du thé | expression | amazigh | `sew-atay.mp3` | l43 |
-| 70 | **Sin** | Deux | mot | amazigh | `sin.mp3` | l18 l20 |
-| 71 | **Ssuq** | Marché / Le marché | mot | arabe | `ssuq.mp3` | l24 l25 l26 l35 l48 |
-| 72 | **Taddart** | Village | mot | amazigh | `taddart.mp3` | l13 |
-| 73 | **Tafukt** | Soleil | mot | amazigh | `tafukt.mp3` | l27 l29 l35 |
-| 74 | **Takurt** | Le ballon | mot | amazigh | `takurt.mp3` | l50 l53 |
-| 75 | **Tameddit** | Le soir | mot | amazigh | `tameddit.mp3` | l40 |
-| 76 | **Tament** | Miel | mot | amazigh | `tament.mp3` | l25 l26 l35 |
-| 77 | **Tameṭṭut** | Femme | mot | amazigh | `tamettut.mp3` | l37 l45 |
-| 78 | **Tanarit** | Le bureau | mot | neo | `tanarit.mp3` | l48 l49 |
-| 79 | **Tanemmirt** | Merci | mot | amazigh | `tanemmirt.mp3` | l2 l3 l7 l9 |
-| 80 | **Tanemmirt aṭas** | Merci beaucoup | expression | à trancher | `tanemmirt-atas.mp3` | l12 l16 l17 |
-| 81 | **Tanezzayt** | Le matin | mot | amazigh | `tanezzayt.mp3` | l40 |
-| 82 | **Taqcict** | Fille | mot | amazigh | `taqcict.mp3` | l37 l38 |
-| 83 | **Tawuri** | Le travail (mot amazigh) | mot | amazigh | `tawuri.mp3` | l46 |
-| 84 | **Tawwurt** | Porte | mot | amazigh | `tawwurt.mp3` | l10 l12 |
-| 85 | **Tazzla** | La course | mot | amazigh | `tazzla.mp3` | l51 l53 |
-| 86 | **Tilemẓit** | La jeune fille | mot | amazigh | `tilemzit.mp3` | l52 |
-| 87 | **Tiwizi** | L’entraide | mot | amazigh | `tiwizi.mp3` | l49 |
-| 88 | **Ttxil-k** | S’il te plaît | mot | à trancher | `ttxil-k.mp3` | l44 |
-| 89 | **Tura** | Maintenant | mot | amazigh | `tura.mp3` | l41 |
-| 90 | **Ul** | Cœur | mot | amazigh | `ul.mp3` | l36 |
-| 91 | **Ur fhimeɣ ara** | Je ne comprends pas | expression | amazigh | `ur-fhimegh-ara.mp3` | l44 l45 |
-| 92 | **Urar** | Le jeu | mot | amazigh | `urar.mp3` | l50 l53 |
-| 93 | **Weltma** | Sœur | mot | amazigh | `weltma.mp3` | l15 |
-| 94 | **Xeddmeɣ deg wexxam** | Je travaille à la maison | expression | amazigh | `xeddmegh-deg-wexxam.mp3` | l48 |
-| 95 | **Yemma** | Mère | mot | amazigh | `yemma.mp3` | l14 |
-| 96 | **Yiwen** | Un | mot | amazigh | `yiwen.mp3` | l18 l20 |
+| 21 | **Ansuf yes-k** | Bienvenue à toi (à un homme) | expression | amazigh | `ansuf-yes-k.mp3` | l5 l16 |
+| 22 | **Ansuf yes-m** | Bienvenue à toi (à une femme) | expression | amazigh | `ansuf-yes-m.mp3` | l5 |
+| 23 | **Aqcic** | Garçon | mot | amazigh | `aqcic.mp3` | l37 l38 |
+| 24 | **Aqerruy** | Tête | mot | amazigh | `aqerruy.mp3` | l36 l38 |
+| 25 | **Aql-i labas** | Je vais bien | expression | arabe | `aql-i-labas.mp3` | l4 l16 |
+| 26 | **Ar tufat** | À demain | expression | amazigh | `ar-tufat.mp3` | l3 l5 l7 l9 |
+| 27 | **Argaz** | Homme | mot | amazigh | `argaz.mp3` | l37 l38 |
+| 28 | **Arrac** | Les enfants | mot | amazigh | `arrac.mp3` | l52 |
+| 29 | **As-d !** | Viens ! | expression | amazigh | `as-d.mp3` | l43 l45 |
+| 30 | **Aselmad** | L’enseignant | mot | neo | `aselmad.mp3` | l47 l49 |
+| 31 | **Asigna** | Nuage | mot | amazigh | `asigna.mp3` | l28 l29 |
+| 32 | **Ass** | Jour | mot | amazigh | `ass.mp3` | l39 |
+| 33 | **Ass-a** | Aujourd’hui | mot | amazigh | `ass-a.mp3` | l39 l45 |
+| 34 | **Atay** | Thé | mot | arabe | `atay.mp3` | l11 l12 l17 |
+| 35 | **Awraɣ** | Jaune | mot | amazigh | `awragh.mp3` | l22 l23 |
+| 36 | **Axeddam** | Le travailleur | mot | arabe | `axeddam.mp3` | l46 |
+| 37 | **Axeddim** | Le travail | mot | arabe → Tawuri | `axeddim.mp3` | l46 l49 |
+| 38 | **Axxam** | Maison | mot | amazigh | `axxam.mp3` | l10 l12 l17 |
+| 39 | **Azeggaɣ** | Rouge | mot | amazigh | `azeggagh.mp3` | l21 l23 l35 |
+| 40 | **Azegzaw** | Vert | mot | amazigh | `azegzaw.mp3` | l21 l23 |
+| 41 | **Azekka** | Demain | mot | amazigh | `azekka.mp3` | l41 l45 |
+| 42 | **Aẓemmur** | Olives | mot | amazigh | `azemmur.mp3` | l25 |
+| 43 | **Azul** | Bonjour | mot | amazigh | `azul.mp3` | l1 l3 l7 l8 l9 |
+| 44 | **Azul fell-ak** | Bonjour à toi (à un homme) | expression | amazigh | `azul-fell-ak.mp3` | l1 |
+| 45 | **Azul fell-am** | Bonjour à toi (à une femme) | expression | amazigh | `azul-fell-am.mp3` | l1 |
+| 46 | **Azul, amek telliḍ ?** | Bonjour, comment vas-tu ? | expression | amazigh | `azul-amek-tellid.mp3` | l16 |
+| 47 | **Azzel !** | Cours ! | expression | amazigh | `azzel.mp3` | l51 |
+| 48 | **Baba** | Père | mot | amazigh | `baba.mp3` | l14 l15 l17 |
+| 49 | **D acu-yagi ?** | Qu’est-ce que c’est ? | expression | amazigh | `d-acu-yagi.mp3` | l44 |
+| 50 | **Ečč !** | Mange ! | expression | amazigh | `ecc.mp3` | l43 l45 |
+| 51 | **Ɛumm !** | Nage ! | expression | arabe | `eumm.mp3` | l51 |
+| 52 | **Gma** | Frère | mot | amazigh | `gma.mp3` | l14 l15 |
+| 53 | **Iḍ** | Nuit | mot | amazigh | `id.mp3` | l39 l40 |
+| 54 | **Iḍelli** | Hier | mot | amazigh | `idelli.mp3` | l41 |
+| 55 | **Idrimen** | Argent | mot | arabe | `idrimen.mp3` | l26 |
+| 56 | **Ih** | Oui | mot | amazigh | `ih.mp3` | l2 l3 l5 l6 l9 |
+| 57 | **Ilemẓi** | Le jeune homme | mot | amazigh | `ilemzi.mp3` | l52 |
+| 58 | **Kečč** | Toi (à un homme) | mot | amazigh | `kecc.mp3` | l42 |
+| 59 | **Kemm** | Toi (à une femme) | mot | amazigh | `kemm.mp3` | l42 |
+| 60 | **Kkuẓ** | Quatre | mot | amazigh | `kkuz.mp3` | l19 l20 |
+| 61 | **Kraḍ** | Trois | mot | amazigh | `krad.mp3` | l18 l20 |
+| 62 | **Labas ?** | Ça va ? / Ça va (bien) / Ça va | expression | arabe → Amek telliḍ ? | `labas.mp3` | l3 l4 l6 l9 |
+| 63 | **Melmi ?** | Quand ? | expression | amazigh | `melmi.mp3` | l41 |
+| 64 | **Nekk** | Moi | mot | amazigh | `nekk.mp3` | l42 l45 |
+| 65 | **Netta** | Lui | mot | amazigh | `netta.mp3` | l42 |
+| 66 | **Nettat** | Elle | mot | amazigh | `nettat.mp3` | l42 |
+| 67 | **Ṛuḥ !** | Va ! / Pars ! / Va ! | expression | arabe | `ruh.mp3` | l43 l45 |
+| 68 | **Semmeḥ-iyi** | Excuse-moi | mot | arabe → Suref-iyi | `semmeh-iyi.mp3` | l44 |
+| 69 | **Semmus** | Cinq | mot | amazigh | `semmus.mp3` | l19 l20 l35 |
+| 70 | **Sew !** | Bois ! | expression | amazigh | `sew.mp3` | l43 l45 |
+| 71 | **Sew atay** | Bois du thé | expression | amazigh | `sew-atay.mp3` | l43 |
+| 72 | **Sin** | Deux | mot | amazigh | `sin.mp3` | l18 l20 |
+| 73 | **Ssuq** | Marché / Le marché | mot | arabe | `ssuq.mp3` | l24 l25 l26 l35 l48 |
+| 74 | **Taddart** | Village | mot | amazigh | `taddart.mp3` | l13 |
+| 75 | **Tafukt** | Soleil | mot | amazigh | `tafukt.mp3` | l27 l29 l35 |
+| 76 | **Takurt** | Le ballon | mot | amazigh | `takurt.mp3` | l50 l53 |
+| 77 | **Tameddit** | Le soir | mot | amazigh | `tameddit.mp3` | l40 |
+| 78 | **Tament** | Miel | mot | amazigh | `tament.mp3` | l25 l26 l35 |
+| 79 | **Tameṭṭut** | Femme | mot | amazigh | `tamettut.mp3` | l37 l45 |
+| 80 | **Tanarit** | Le bureau | mot | neo | `tanarit.mp3` | l48 l49 |
+| 81 | **Tanemmirt** | Merci | mot | amazigh | `tanemmirt.mp3` | l2 l3 l7 l9 |
+| 82 | **Tanemmirt aṭas** | Merci beaucoup | expression | à trancher | `tanemmirt-atas.mp3` | l12 l16 l17 |
+| 83 | **Tanezzayt** | Le matin | mot | amazigh | `tanezzayt.mp3` | l40 |
+| 84 | **Taqcict** | Fille | mot | amazigh | `taqcict.mp3` | l37 l38 |
+| 85 | **Tawuri** | Le travail (mot amazigh) | mot | amazigh | `tawuri.mp3` | l46 |
+| 86 | **Tawwurt** | Porte | mot | amazigh | `tawwurt.mp3` | l10 l12 |
+| 87 | **Tazzla** | La course | mot | amazigh | `tazzla.mp3` | l51 l53 |
+| 88 | **Tilemẓit** | La jeune fille | mot | amazigh | `tilemzit.mp3` | l52 |
+| 89 | **Tiwizi** | L’entraide | mot | amazigh | `tiwizi.mp3` | l49 |
+| 90 | **Ttxil-k** | S’il te plaît | mot | à trancher | `ttxil-k.mp3` | l44 |
+| 91 | **Tura** | Maintenant | mot | amazigh | `tura.mp3` | l41 |
+| 92 | **Ul** | Cœur | mot | amazigh | `ul.mp3` | l36 |
+| 93 | **Ur fhimeɣ ara** | Je ne comprends pas | expression | amazigh | `ur-fhimegh-ara.mp3` | l44 l45 |
+| 94 | **Urar** | Le jeu | mot | amazigh | `urar.mp3` | l50 l53 |
+| 95 | **Weltma** | Sœur | mot | amazigh | `weltma.mp3` | l15 |
+| 96 | **Xeddmeɣ deg wexxam** | Je travaille à la maison | expression | amazigh | `xeddmegh-deg-wexxam.mp3` | l48 |
+| 97 | **Yemma** | Mère | mot | amazigh | `yemma.mp3` | l14 |
+| 98 | **Yiwen** | Un | mot | amazigh | `yiwen.mp3` | l18 l20 |
 
 ## Tachelhit — Tacelḥit (42)
 
@@ -138,7 +140,7 @@
 | 20 | **Kkuẓ** | Quatre | mot | amazigh | `shi/kkuz.mp3` | shi8 |
 | 21 | **Kraḍ** | Trois | mot | amazigh | `shi/krad.mp3` | shi8 |
 | 22 | **Labas** | Ça va | mot | arabe | `shi/labas.mp3` | shi4 |
-| 23 | **Labas, lḥamdulillah** | _à préciser_ | expression | à trancher | `shi/labas-lhamdulillah.mp3` | shi4 |
+| 23 | **Labas, lḥamdulillah** | Comment vas-tu ? | expression | à trancher | `shi/labas-lhamdulillah.mp3` | shi4 |
 | 24 | **Lxdmt** | Le travail (mot arabe) | mot | arabe → Tawuri | `shi/lxdmt.mp3` | shi10 |
 | 25 | **Manzakin ?** | Comment vas-tu ? | expression | amazigh | `shi/manzakin.mp3` | shi4 |
 | 26 | **Sin** | Deux | mot | amazigh | `shi/sin.mp3` | shi8 |
@@ -209,9 +211,9 @@
 | 2 | **Addal** | Le sport | mot | neo | `tzm/addal.mp3` | tzm14 tzm17 |
 | 3 | **Afllaḥ** | Le paysan | mot | arabe | `tzm/afllah.mp3` | tzm11 |
 | 4 | **Afus** | La main | mot | amazigh | `tzm/afus.mp3` | tzm16 |
-| 5 | **Aɣrum** | Le pain | mot | amazigh | `tzm/aghrum.mp3` | tzm7 |
+| 5 | **Aɣrum** | _à préciser_ | mot | amazigh | `tzm/aghrum.mp3` | tzm7 |
 | 6 | **Aɣyul** | L’âne | mot | amazigh | `tzm/aghyul.mp3` | tzm12 tzm13 |
-| 7 | **Aman** | L’eau | mot | amazigh | `tzm/aman.mp3` | tzm7 |
+| 7 | **Aman** | _à préciser_ | mot | amazigh | `tzm/aman.mp3` | tzm7 |
 | 8 | **Amksa** | Le berger | mot | amazigh | `tzm/amksa.mp3` | tzm11 tzm13 |
 | 9 | **Askka** | Demain | mot | amazigh | `tzm/askka.mp3` | tzm5 |
 | 10 | **Axddam** | Le travailleur | mot | arabe | `tzm/axddam.mp3` | tzm10 tzm13 |
@@ -309,7 +311,7 @@
 
 > `src/data/etymologies.js`. C’est la SEULE partie du dictionnaire qui ne soit pas dérivée du contenu des cours : elle est à valider ligne par ligne. « Discuté » signale que les sources ne s’accordent pas — l’app l’affiche alors à l’élève.
 
-### Fonds amazigh (136)
+### Fonds amazigh (138)
 
 | Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
 | --- | --- | --- | --- | :-: | :-: |
@@ -330,7 +332,8 @@
 | **Anda telliḍ ?** | kab | ILI | Même verbe « ili » : où es-tu ? |  | ☐ |
 | **Anda txeddmeḍ ?** | kab | — | « Anda », où — suivi du verbe à la deuxième personne (t… -ḍ). |  | ☐ |
 | **Ansuf** | kab | — | L’accueil, en kabyle. « Ansuf yes-k » : bienvenue à toi. |  | ☐ |
-| **Ansuf yes-k** | kab | — | Ansuf + yes-k, « avec toi ». |  | ☐ |
+| **Ansuf yes-k** | kab | — | Ansuf + yes-k, « avec toi ». À une femme : « ansuf yes-m ». |  | ☐ |
+| **Ansuf yes-m** | kab | — | L’accueil adressé à une femme : -m au lieu de -k. |  | ☐ |
 | **Aqcic** | kab | — | Le garçon ; « taqcict », la fille. |  | ☐ |
 | **Aqerruy** | kab | — | La tête, en kabyle. Le sud dit « ixf ». |  | ☐ |
 | **Aql-i labas** | kab | — | « Aql-i », me voici — puis labas, l’emprunt arabe. |  | ☐ |
@@ -351,7 +354,8 @@
 | **Aẓemmur** | kab | — | L’olive et l’olivier. Le mot est amazigh ; les Romains l’ont croisé ici. |  | ☐ |
 | **Azkka** | shi | — | Demain, au Souss. |  | ☐ |
 | **Azul · ⴰⵣⵓⵍ** | kab zgh | — | Donné par l’Amawal (1974) et rapproché du touareg « ahul ». Le dictionnaire de l’IRCAM ne le marque PAS néologisme, contrairement à « adlis » ou « tinml » — c’est ce qui en fait la bonne réponse du cours d’amazighe standard. | ⚠️ | ☐ |
-| **Azul fell-ak** | kab | — | Azul + fell-ak, « sur toi » — le salut se pose sur quelqu’un. |  | ☐ |
+| **Azul fell-ak** | kab | — | Azul + fell-ak, « sur toi » — le salut se pose sur quelqu’un. À une femme : « azul fell-am ». |  | ☐ |
+| **Azul fell-am** | kab | — | La même salutation adressée à une femme : -am au lieu de -ak. L’amazigh marque le genre de celui à qui l’on parle, ce que le français ne fait pas. |  | ☐ |
 | **Azul, amek telliḍ ?** | kab | — | Le salut puis la question, sans un mot d’emprunt : la formule kabyle entière. |  | ☐ |
 | **Azzel !** | kab | ZL | Cours ! — l’impératif du verbe courir. |  | ☐ |
 | **Azzeř !** | rif | ZL | Cours ! au Rif. |  | ☐ |

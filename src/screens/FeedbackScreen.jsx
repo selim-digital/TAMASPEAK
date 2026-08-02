@@ -28,6 +28,9 @@ const CATEGORIES = [
   { id: 'idee', label: '💡 Une idée' },
   { id: 'bug', label: '🔧 Un problème' },
   { id: 'contenu', label: '📚 Le contenu' },
+  // Le parcours raconté a sa propre case : sans elle, ses retours se
+  // dilueraient dans « le contenu » et on ne saurait pas s'il plaît.
+  { id: 'beta', label: '🧭 Le voyage (bêta)' },
   { id: 'autre', label: '💬 Autre chose' },
 ]
 

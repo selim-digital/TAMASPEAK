@@ -1,4 +1,4 @@
-import { qcm, match, culture } from '../exercises.js'
+import { qcm, match, culture, image } from '../exercises.js'
 
 /**
  * Cours de TARIFIT (rifain) — Rif, nord-est du Maroc.
@@ -21,6 +21,13 @@ import { qcm, match, culture } from '../exercises.js'
  * Pas d'exercice audio tant qu'aucun enregistrement natif n'existe pour
  * cette langue (audio: false partout) — mieux vaut le silence qu'une voix
  * de synthèse qui déforme la prononciation.
+ *
+ * Les IMAGES, en revanche, ne se recyclent pas : elles se partagent. Les
+ * scènes d'illustrations/Scenes.jsx ne portent aucune langue — une miche de
+ * pain est une miche de pain. Ce cours n'en utilisait aucune ; il n'y avait
+ * à cela aucune raison de fond, seulement l'ordre dans lequel les cours ont
+ * été écrits. Voir un objet et le nommer, plutôt que traduire un mot par un
+ * autre mot, est ce qui manquait le plus ici.
  */
 
 const q = (prompt, word, answer, choices) => qcm('fr-to-kab', prompt, word, answer, choices, false)
@@ -130,8 +137,8 @@ const rif6 = [
 ]
 
 const rif7 = [
-  qk('Que veut dire « Aman » ?', 'Aman', 'L’eau', ['L’eau', 'Le pain', 'Le lait', 'Le thé']),
-  qk('Que veut dire « Aɣrum » ?', 'Aɣrum', 'Le pain', ['Le pain', 'L’eau', 'Le sel', 'L’huile']),
+  image('water', 'Aman', ['Aman', 'Aɣrum', 'Atay', 'Uḍi']),
+  image('bread', 'Aɣrum', ['Aɣrum', 'Aman', 'Uḍi', 'Atay']),
   q('Comment dit-on « L’eau » en tarifit ?', 'L’eau', 'Aman', ['Aman', 'Aɣrum', 'Atay', 'Uḍi']),
   match([
     { kab: 'Aman', fr: 'L’eau' },
@@ -141,8 +148,11 @@ const rif7 = [
 ]
 
 const rif8 = [
-  qk('Que veut dire « Ijjen » ?', 'Ijjen', 'Un', ['Un', 'Deux', 'Trois', 'Dix']),
-  q('Comment dit-on « Deux » en tarifit ?', 'Deux', 'Tnayen', ['Tnayen', 'Sin', 'Ijjen', 'Tlata']),
+  // Trois choix seulement, et c'est voulu : ce cours n'enseigne les nombres
+  // que jusqu'à trois. Un quatrième distracteur obligerait à inventer un
+  // numéral — exactement ce que l'en-tête de ce fichier interdit.
+  image('count-1', 'Ijjen', ['Ijjen', 'Tnayen', 'Tlata']),
+  image('count-2', 'Tnayen', ['Tnayen', 'Ijjen', 'Tlata']),
   culture(
     'En tarifit, les nombres à partir de deux viennent…',
     'De l’arabe',
@@ -349,7 +359,7 @@ export const rifUnits = [
     lessons: [
       { id: 'rif1', title: 'Se saluer', icon: '👋', status: 'current' },
       { id: 'rif2', title: 'Oui & non', icon: '✅', status: 'locked' },
-      { id: 'rif3', title: 'Merci', icon: '🙏', status: 'locked' },
+      { id: 'rif3', title: 'Merci', icon: '💐', status: 'locked' },
       { id: 'rif-c1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'rif4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'rif5', title: 'Se quitter', icon: '🌙', status: 'locked' },

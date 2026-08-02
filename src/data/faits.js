@@ -513,22 +513,6 @@ export const FAITS = [
     },
   },
   {
-    id: 'si-mohand',
-    cat: 'langue',
-    texte:
-      'Si Mohand ou-Mhand, poète errant du XIXᵉ siècle, a laissé des centaines d’isefra — courts poèmes kabyles — transmis de bouche en bouche avant d’être écrits. Le plus cité des poètes kabyles.',
-    question: {
-      prompt: 'Qui est Si Mohand ou-Mhand ?',
-      answer: 'Le grand poète errant kabyle du XIXᵉ siècle',
-      choices: [
-        'Le grand poète errant kabyle du XIXᵉ siècle',
-        'Un roi numide',
-        'Un romancier des années 1970',
-        'Un général de la conquête',
-      ],
-    },
-  },
-  {
     id: 'feraoun',
     cat: 'langue',
     texte:

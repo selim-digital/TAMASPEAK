@@ -1,4 +1,4 @@
-import { qcm, match, culture } from '../exercises.js'
+import { qcm, match, culture, image } from '../exercises.js'
 
 /**
  * Cours de TACHELHIT (tacelḥit) — Souss, Anti-Atlas, Haut-Atlas occidental.
@@ -96,7 +96,12 @@ const shi4 = [
     ['Manzakmin ?', 'Manzakin ?', 'Manzakt ?', 'Manzant ?'],
   ),
   qk('Que veut dire « Labas » ?', 'Labas', 'Ça va', ['Ça va', 'Ça ne va pas', 'Merci', 'Bienvenue']),
-  q('On te demande « Manzakin ? ». Que réponds-tu ?', 'Comment vas-tu ?', 'Labas, lḥamdulillah', [
+  // Ce cours vient d'enseigner que « Manzakin ? » s'adresse à un homme et
+  // « Manzakmin ? » à une femme. Poser ensuite « Manzakin ? » à un « toi »
+  // dont l'app ignore le genre contredisait la leçon d'avant. On applique
+  // donc la règle à l'exercice lui-même : le genre du destinataire est
+  // toujours celui de quelqu'un qu'on nomme.
+  q('Tu demandes « Manzakin ? » à un homme. Que va-t-il répondre ?', 'Comment vas-tu ?', 'Labas, lḥamdulillah', [
     'Labas, lḥamdulillah',
     'Wa ɛlikum ssalam',
     'Ar azkka',
@@ -128,9 +133,12 @@ const shi6 = [
 ]
 
 const shi7 = [
-  qk('Que veut dire « Aman » ?', 'Aman', 'L’eau', ['L’eau', 'Le pain', 'Le thé', 'Le lait']),
-  qk('Que veut dire « Aɣrum » ?', 'Aɣrum', 'Le pain', ['Le pain', 'L’eau', 'Le sel', 'Le miel']),
-  qk('Que veut dire « Tigmmi » ?', 'Tigmmi', 'La maison', ['La maison', 'La porte', 'Le village', 'Le jardin']),
+  // Voir un objet et le nommer, plutôt que traduire un mot par un mot : les
+  // scènes de Scenes.jsx ne portent aucune langue et se partagent entre tous
+  // les cours (contrairement à l'audio, qui ne se recycle jamais).
+  image('water', 'Aman', ['Aman', 'Aɣrum', 'Tigmmi']),
+  image('bread', 'Aɣrum', ['Aɣrum', 'Aman', 'Tigmmi']),
+  image('house', 'Tigmmi', ['Tigmmi', 'Aman', 'Aɣrum']),
   match([
     { kab: 'Aman', fr: 'L’eau' },
     { kab: 'Aɣrum', fr: 'Le pain' },
@@ -139,8 +147,10 @@ const shi7 = [
 ]
 
 const shi8 = [
-  qk('Que veut dire « Yan » ?', 'Yan', 'Un', ['Un', 'Deux', 'Trois', 'Cinq']),
-  q('Comment dit-on « Trois » en tachelhit ?', 'Trois', 'Kraḍ', ['Kraḍ', 'Sin', 'Kkuẓ', 'Smmus']),
+  // Le tachelhit garde la série berbère complète (voir l'en-tête) : on peut
+  // donc illustrer les quantités sans emprunter un seul numéral.
+  image('count-1', 'Yan', ['Yan', 'Sin', 'Kraḍ', 'Kkuẓ']),
+  image('count-3', 'Kraḍ', ['Kraḍ', 'Sin', 'Kkuẓ', 'Smmus']),
   match([
     { kab: 'Yan', fr: 'Un' },
     { kab: 'Sin', fr: 'Deux' },
@@ -307,7 +317,7 @@ export const shiUnits = [
     lessons: [
       { id: 'shi1', title: 'Se saluer', icon: '👋', status: 'current' },
       { id: 'shi2', title: 'Oui & non', icon: '✅', status: 'locked' },
-      { id: 'shi3', title: 'Merci', icon: '🙏', status: 'locked' },
+      { id: 'shi3', title: 'Merci', icon: '💐', status: 'locked' },
       { id: 'shi-c1', type: 'chest', title: 'Cadeau', icon: '🎁', status: 'locked' },
       { id: 'shi4', title: 'Ça va ?', icon: '💬', status: 'locked' },
       { id: 'shi5', title: 'Se quitter', icon: '🌙', status: 'locked' },

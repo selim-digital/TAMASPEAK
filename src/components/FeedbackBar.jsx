@@ -3,7 +3,7 @@
  * IMPORTANT: rendered in normal flow ABOVE the action button (never
  * absolutely positioned), so it can't overlap the button.
  */
-export function FeedbackBar({ correct, word, answer }) {
+export function FeedbackBar({ correct, word, answer, reformule }) {
   const showPair = word && word !== answer // évite « X » = X sur les questions sans mot source
   return (
     <div
@@ -29,6 +29,12 @@ export function FeedbackBar({ correct, word, answer }) {
           </>
         )}
       </div>
+      {/* Quand un personnage portait l'énoncé, c'est lui qui reprend la main.
+          Il REFORMULE — il ne juge pas : l'exercice a déjà dit que c'était
+          raté, et on n'ajoute pas de la honte à un adulte qui apprend. */}
+      {!correct && reformule && (
+        <div className="mt-1.5 text-[11.5px] font-semibold italic text-ink-soft">{reformule}</div>
+      )}
     </div>
   )
 }

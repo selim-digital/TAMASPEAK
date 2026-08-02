@@ -36,5 +36,25 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true })
   }
 
+  /**
+   * DELETE — effacer l'instantané, en gardant le compte.
+   *
+   * Il manquait, et son absence produisait un bug que Selim a vécu : effacer
+   * sa progression EN LOCAL ne servait à rien. La fusion est max/union et ne
+   * connaît pas la notion d'effacement ; à la connexion suivante, le GET
+   * ci-dessus rendait l'ancien instantané et `mergeStores` le réinstallait.
+   * Le zéro était donc silencieusement annulé — l'utilisateur croit avoir
+   * tout effacé et retrouve tout.
+   *
+   * C'est aussi la sortie de secours quand quelqu'un veut repartir à zéro
+   * sans supprimer son compte : cela ne demande aucun email de confirmation,
+   * puisque rien n'est détruit d'autre que ses propres données de
+   * progression, et qu'il faut déjà être connecté pour arriver ici.
+   */
+  if (req.method === 'DELETE') {
+    await sql()`DELETE FROM progress_snapshots WHERE user_id = ${userId}`
+    return res.status(200).json({ ok: true })
+  }
+
   return res.status(405).json({ error: 'méthode non autorisée' })
 }

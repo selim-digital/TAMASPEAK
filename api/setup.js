@@ -16,7 +16,37 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { serverReady, notConfigured } from './_lib/db.js'
+import { sansVisages, contientVisage } from './_lib/texte.js'
 import { Pool } from '@neondatabase/serverless'
+
+/**
+ * Règle maison : aucun emoji à visage, même dans le texte déjà déposé par
+ * les utilisateurs (feedbacks, demandes de mots). Le filtre est appliqué
+ * à l'écriture depuis toujours-maintenant ; ce nettoyage rattrape ce qui
+ * est entré AVANT. Idempotent comme le reste : rien à nettoyer → no-op.
+ */
+async function purgerVisages(pool) {
+  let nettoyes = 0
+  const { rows: fbs } = await pool.query(
+    `SELECT id, message FROM feedbacks WHERE message IS NOT NULL`,
+  )
+  for (const f of fbs) {
+    if (!contientVisage(f.message)) continue
+    await pool.query(`UPDATE feedbacks SET message = $1 WHERE id = $2`, [sansVisages(f.message), f.id])
+    nettoyes++
+  }
+  const { rows: dms } = await pool.query(`SELECT id, texte, sens FROM demandes_audio`)
+  for (const d of dms) {
+    if (!contientVisage(d.texte) && !contientVisage(d.sens)) continue
+    await pool.query(`UPDATE demandes_audio SET texte = $1, sens = $2 WHERE id = $3`, [
+      sansVisages(d.texte),
+      sansVisages(d.sens),
+      d.id,
+    ])
+    nettoyes++
+  }
+  return nettoyes
+}
 
 let dernier = 0
 
@@ -39,11 +69,12 @@ export default async function handler(req, res) {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL })
   try {
     await pool.query(sql)
+    const visagesNettoyes = await purgerVisages(pool)
     const { rows } = await pool.query(
       `SELECT table_name FROM information_schema.tables
        WHERE table_schema = 'public' ORDER BY table_name`,
     )
-    return res.status(200).json({ ok: true, tables: rows.map((r) => r.table_name) })
+    return res.status(200).json({ ok: true, tables: rows.map((r) => r.table_name), visagesNettoyes })
   } catch (e) {
     return res.status(500).json({ error: String(e?.message || e).slice(0, 300) })
   } finally {
