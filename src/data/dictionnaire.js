@@ -163,32 +163,57 @@ function entreesDe(course) {
   return [...vues.values()]
 }
 
-/** Toutes les entrées, tous cours confondus, dans l'ordre d'affichage. */
-export const ENTREES = ORDRE_LANGUES.filter((id) => COURSES[id]).flatMap((id) =>
+/**
+ * Les entrées telles que les LEÇONS les donnent. C'est la base, elle ne
+ * change jamais : la couche de corrections se pose dessus, elle ne l'écrase
+ * pas — un retour en arrière doit toujours être possible.
+ */
+const EMBARQUEES = ORDRE_LANGUES.filter((id) => COURSES[id]).flatMap((id) =>
   entreesDe(COURSES[id]).sort((a, b) => a.mot.localeCompare(b.mot, 'fr')),
 )
 
-const PAR_ID = new Map(ENTREES.map((e) => [e.id, e]))
+/**
+ * Les entrées EN VIGUEUR — base seule, ou base + corrections publiées.
+ *
+ * `let` et non `const` : les modules qui les importent voient la mise à jour
+ * (liaison vivante d'ESM) dès qu'une couche est posée. Rien n'est rechargé,
+ * rien n'est recopié.
+ */
+export let ENTREES = EMBARQUEES
+export let STATS = []
+export let VEDETTES = []
 
-/** Index noyau de sens → entrées, pour les synonymes et les cousins. */
-const PAR_NOYAU = new Map()
-for (const e of ENTREES) {
-  for (const n of e.noyaux) {
-    if (!PAR_NOYAU.has(n)) PAR_NOYAU.set(n, [])
-    PAR_NOYAU.get(n).push(e)
+let PAR_ID = new Map()
+let PAR_NOYAU = new Map() // noyau de sens → entrées, pour synonymes et cousins
+
+/** (Re)construit les index à partir d'une liste d'entrées. */
+function indexer(entrees) {
+  ENTREES = entrees
+  PAR_ID = new Map(entrees.map((e) => [e.id, e]))
+  PAR_NOYAU = new Map()
+  for (const e of entrees) {
+    for (const n of e.noyaux) {
+      if (!PAR_NOYAU.has(n)) PAR_NOYAU.set(n, [])
+      PAR_NOYAU.get(n).push(e)
+    }
   }
+  STATS = ORDRE_LANGUES.filter((id) => COURSES[id]).map((id) => ({
+    lang: id,
+    nom: COURSES[id].name,
+    autonym: COURSES[id].autonym,
+    accent: COURSES[id].accent,
+    total: entrees.filter((e) => e.lang === id).length,
+  }))
+  VEDETTES = entrees
+    .filter((e) => e.lang === 'kab' && e.categorie === 'mot')
+    .map((e) => ({ e, n: cousins(e).length }))
+    .sort((a, b) => b.n - a.n || a.e.mot.localeCompare(b.e.mot, 'fr'))
+    .slice(0, 12)
+    .map((x) => x.e)
+  return ENTREES
 }
 
 export const entree = (id) => PAR_ID.get(id) || null
-
-/** Combien d'entrées par cours — affiché en tête du dictionnaire. */
-export const STATS = ORDRE_LANGUES.filter((id) => COURSES[id]).map((id) => ({
-  lang: id,
-  nom: COURSES[id].name,
-  autonym: COURSES[id].autonym,
-  accent: COURSES[id].accent,
-  total: ENTREES.filter((e) => e.lang === id).length,
-}))
 
 /* ------------------------------------------------------------------ */
 /* Liens : synonymes et cousins                                        */
@@ -279,9 +304,143 @@ export function chercher(q, { lang, limite = 60 } = {}) {
   return notes.slice(0, limite).map((n) => n.e)
 }
 
-/** Quelques entrées à montrer quand la recherche est vide — les plus reliées. */
-export const VEDETTES = ENTREES.filter((e) => e.lang === 'kab' && e.categorie === 'mot')
-  .map((e) => ({ e, n: cousins(e).length }))
-  .sort((a, b) => b.n - a.n || a.e.mot.localeCompare(b.e.mot, 'fr'))
-  .slice(0, 12)
-  .map((x) => x.e)
+/* ------------------------------------------------------------------ */
+/* La couche de corrections publiées                                   */
+/*                                                                      */
+/* Le dictionnaire voyage dans le bundle — c'est ce qui le rend         */
+/* consultable dans le métro. Mais un mot relu et corrigé au backoffice */
+/* restait faux jusqu'au déploiement suivant : la relecture d'un        */
+/* locuteur natif n'atteignait personne. On pose donc PAR-DESSUS le peu */
+/* qui a bougé (src/lib/dictionnaireLive.js va le chercher).            */
+/*                                                                      */
+/* Pourquoi ici et pas dans le module de transport : corriger un mot    */
+/* périme tout ce qu'on en dérive — la clé de recherche, le tifinagh,   */
+/* le nom du fichier audio, les noyaux de sens qui font les cousins.    */
+/* Ces règles vivent dans ce fichier ; les rejouer ailleurs, ce serait  */
+/* les écrire deux fois, et laisser des entrées corrigées introuvables. */
+/*                                                                      */
+/* CE QUE LA COUCHE NE TOUCHE PAS : les LEÇONS. Une correction change   */
+/* ce que le dictionnaire MONTRE, pas ce que les exercices DEMANDENT —  */
+/* une bonne réponse qui bouge sous les pieds de l'élève casserait sa   */
+/* série. Le report dans src/data/ reste le geste qui corrige le cours. */
+/* ------------------------------------------------------------------ */
+
+const cleCouche = (lang, mot) => `${lang}:${ident(mot)}`
+
+/** Redérive tout ce qui dépend de la forme et du sens — rien ne doit rester périmé. */
+function derive(e, { mot, sens, notes }) {
+  const s = slug(mot)
+  return {
+    ...e,
+    mot,
+    sens,
+    note: notes || e.note || '',
+    cle: cleRecherche(mot),
+    tifinagh: enTifinagh(mot),
+    categorie: categorieDe(mot),
+    audio: s ? (e.lang === 'kab' ? `${s}.mp3` : `${e.lang}/${s}.mp3`) : null,
+    noyaux: [...new Set(sens.map(noyauSens).filter(Boolean))],
+  }
+}
+
+/**
+ * Pose la couche publiée sur le dictionnaire embarqué, et réindexe.
+ *
+ * Trois gestes, et trois seulement : corriger une entrée, ajouter un mot qui
+ * n'est dans aucune leçon, retirer un mot rejeté. Une couche vide rend le
+ * dictionnaire embarqué tel quel — hors-ligne ou serveur muet, on ne retire
+ * jamais à quelqu'un ce qu'il a déjà dans les mains.
+ *
+ * @param {{corrections?:object[], ajouts?:object[], retraits?:object[]}} couche
+ * @returns {object[]} les entrées en vigueur
+ */
+export function appliquerCouche(couche) {
+  const corrections = couche?.corrections || []
+  const ajouts = couche?.ajouts || []
+  const retraits = couche?.retraits || []
+  if (!corrections.length && !ajouts.length && !retraits.length) {
+    // Rien à poser : on revient à la base si une couche traînait.
+    return ENTREES === EMBARQUEES ? ENTREES : indexer(EMBARQUEES)
+  }
+
+  const retires = new Set(retraits.map((r) => cleCouche(r.lang, r.cle)))
+  const parCle = new Map(corrections.map((c) => [cleCouche(c.lang, c.cle), c]))
+  const liste = []
+  const vues = new Set()
+
+  for (const e of EMBARQUEES) {
+    const k = cleCouche(e.lang, e.mot)
+    vues.add(k)
+    if (retires.has(k)) continue
+    const fix = parCle.get(k)
+    if (!fix) {
+      liste.push(e)
+      continue
+    }
+    liste.push({
+      // Publier est un instantané de la fiche relue : la forme ET le sens
+      // qu'avait le relecteur sous les yeux partent ensemble. Un sens vide,
+      // en revanche, n'efface pas la traduction — il n'a rien à dire.
+      ...derive(e, {
+        mot: fix.mot || e.mot,
+        sens: fix.sens?.length ? fix.sens : e.sens,
+        notes: fix.notes,
+      }),
+      corrigee: true,
+    })
+  }
+
+  // Les ajouts ne viennent d'aucune leçon : ni unité, ni leçons, ni audio à
+  // promettre. Le dire par des champs vides vaut mieux que le laisser croire.
+  //
+  // Ils rejoignent LEUR langue, à sa place alphabétique — et non la fin de la
+  // liste : `ENTREES` est groupée par cours, et une recherche vide en rend le
+  // début. Un mot ajouté au tachelhit qui atterrirait après tout le kabyle
+  // serait introuvable autrement qu'en le cherchant par son nom.
+  const nouvelles = []
+  for (const a of ajouts) {
+    const k = cleCouche(a.lang, a.mot)
+    if (vues.has(k) || retires.has(k)) continue
+    vues.add(k)
+    const sens = a.sens || []
+    nouvelles.push({
+      id: `ajout:${k}`,
+      lang: a.lang,
+      langue: COURSES[a.lang]?.name || a.lang,
+      mot: a.mot,
+      sens,
+      cle: cleRecherche(a.mot),
+      categorie: categorieDe(a.mot),
+      unite: null,
+      uniteTitre: null,
+      uniteIndex: 99,
+      lecons: [],
+      tifinagh: enTifinagh(a.mot),
+      emprunt: null,
+      etymologie: null,
+      audio: null,
+      note: a.notes || '',
+      noyaux: [...new Set(sens.map(noyauSens).filter(Boolean))],
+      alias: [],
+      ajoutee: true,
+    })
+  }
+
+  if (!nouvelles.length) return indexer(liste)
+
+  // Réassemblage cours par cours : l'ordre d'affichage du dictionnaire est
+  // ORDRE_LANGUES, puis l'alphabet à l'intérieur de chaque cours.
+  const parLangue = new Map()
+  for (const e of [...liste, ...nouvelles]) {
+    if (!parLangue.has(e.lang)) parLangue.set(e.lang, [])
+    parLangue.get(e.lang).push(e)
+  }
+  const ordonnees = [...ORDRE_LANGUES, ...parLangue.keys()]
+    .filter((l, i, t) => t.indexOf(l) === i && parLangue.has(l))
+    .flatMap((l) => parLangue.get(l).sort((a, b) => a.mot.localeCompare(b.mot, 'fr')))
+  return indexer(ordonnees)
+}
+
+// Le premier index, une fois toutes les fonctions définies (`indexer` appelle
+// `cousins` pour les vedettes — plus haut, il buterait sur `memeSens`).
+indexer(EMBARQUEES)

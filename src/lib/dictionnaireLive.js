@@ -1,5 +1,5 @@
 /**
- * Les corrections publiées, posées par-dessus le dictionnaire embarqué.
+ * Le TRANSPORT des corrections publiées — aller les chercher, les garder.
  *
  * LE PROBLÈME QUE CE MODULE RÉSOUT. Le dictionnaire de l'app vit dans son
  * bundle (`src/data/dictionnaire.js`) : c'est ce qui le rend consultable dans
@@ -9,50 +9,25 @@
  * qu'un développeur n'avait pas repris son clavier.
  *
  * D'où cette COUCHE : le serveur ne renvoie que ce qui a bougé depuis le
- * dernier déploiement (`/api/sync?r=dictionnaire`), et l'app la pose sur le
- * contenu qu'elle porte déjà. Trois gestes, et trois seulement :
+ * dernier déploiement (`/api/sync?r=dictionnaire`) — corrections, ajouts,
+ * retraits. Elle est mise en cache dans `localStorage` : au deuxième
+ * lancement, même sans réseau, les corrections sont déjà là.
  *
- *   • CORRIGER — une entrée du bundle prend la forme et le sens relus ;
- *   • AJOUTER  — un mot qui n'est dans aucune leçon entre au dictionnaire ;
- *   • RETIRER  — un mot rejeté disparaît, sans attendre un déploiement.
+ * CE MODULE NE FAIT QUE LE TRANSPORT. C'est `data/dictionnaire.js`
+ * (`appliquerCouche`) qui la POSE : corriger un mot périme tout ce qu'on en
+ * dérive — clé de recherche, tifinagh, nom du fichier audio, noyaux de sens
+ * qui font les cousins — et ces règles vivent là-bas. Les rejouer ici, ce
+ * serait les écrire deux fois, et laisser des entrées corrigées introuvables.
  *
- * CE QU'IL NE FAIT PAS, et ne doit pas faire :
- *   • toucher aux LEÇONS. Une correction change ce que le dictionnaire
- *     MONTRE, pas ce que les exercices demandent — un exercice dont la
- *     bonne réponse change sous les pieds de l'élève casserait sa série.
- *     Le report dans `src/data/` reste le geste qui corrige le cours.
- *   • bloquer quoi que ce soit. Hors-ligne, serveur muet, réponse
- *     illisible : on garde le contenu embarqué et on se tait. Un
- *     dictionnaire qui refuse de s'ouvrir parce que le réseau manque
- *     serait pire que celui qui montre un mot d'avant-hier.
- *
- * La couche est mise en cache dans `localStorage` : au deuxième lancement,
- * même sans réseau, les corrections sont déjà là.
+ * IL NE BLOQUE JAMAIS RIEN. Hors-ligne, serveur muet, réponse illisible : on
+ * rend la dernière couche connue, ou rien, et le dictionnaire embarqué fait
+ * le travail. Un dictionnaire qui refuserait de s'ouvrir faute de réseau
+ * serait pire que celui qui montre un mot d'avant-hier.
  */
 import { lireJson, ecrireJson } from './storage.js'
 
 const CLE = 'tama-speak:dico-corrections'
 const VIDE = { version: null, corrections: [], ajouts: [], retraits: [] }
-
-/**
- * L'identité d'une forme — la même règle que `data/dictionnaire.js` (`ident`) :
- * casse, espaces et ponctuation finale seulement. Surtout PAS les
- * diacritiques : ⵣ et ⵥ, ⵜ et ⵟ sont des lettres distinctes, et les confondre
- * ferait appliquer à l'une la correction de l'autre.
- */
-const ident = (mot) =>
-  String(mot || '')
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[?!.…]+$/, '')
-    .trim()
-
-const cle = (lang, mot) => `${lang}:${ident(mot)}`
-
-/* ------------------------------------------------------------------ */
-/* Chargement                                                          */
-/* ------------------------------------------------------------------ */
 
 let couche = null // la couche en mémoire, une fois lue
 
@@ -92,72 +67,7 @@ export async function chargerCorrections() {
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Application                                                         */
-/* ------------------------------------------------------------------ */
-
-/**
- * Pose la couche sur une liste d'entrées de dictionnaire.
- *
- * Les entrées ajoutées reçoivent `ajoutee: true` et les corrigées
- * `corrigee: true` : l'écran peut le dire, et il le doit — une correction
- * venue d'un locuteur mérite d'être signalée, pas glissée en douce.
- *
- * @param {object[]} entrees les entrées embarquées (data/dictionnaire.js)
- * @param {object}   [c]     la couche ; celle en cache par défaut
- */
-export function appliquerCorrections(entrees, c = coucheEnCache()) {
-  if (!c || (!c.corrections.length && !c.ajouts.length && !c.retraits.length)) return entrees
-
-  const retires = new Set(c.retraits.map((r) => cle(r.lang, r.cle)))
-  const parCle = new Map(c.corrections.map((x) => [cle(x.lang, x.cle), x]))
-
-  const sortie = []
-  const vues = new Set()
-  for (const e of entrees) {
-    const k = cle(e.lang, e.mot)
-    vues.add(k)
-    if (retires.has(k)) continue
-    const fix = parCle.get(k)
-    if (!fix) {
-      sortie.push(e)
-      continue
-    }
-    sortie.push({
-      ...e,
-      mot: fix.mot || e.mot,
-      sens: fix.sens?.length ? fix.sens : e.sens,
-      note: fix.notes || e.note || '',
-      corrigee: true,
-    })
-  }
-
-  // Les ajouts arrivent en bout de liste, avec le strict minimum : ils ne
-  // viennent d'aucune leçon, donc ni unité, ni leçons, ni audio à promettre.
-  for (const a of c.ajouts) {
-    const k = cle(a.lang, a.mot)
-    if (vues.has(k) || retires.has(k)) continue
-    vues.add(k)
-    sortie.push({
-      id: `ajout:${k}`,
-      cle: ident(a.mot),
-      lang: a.lang,
-      mot: a.mot,
-      sens: a.sens || [],
-      note: a.notes || '',
-      categorie: String(a.mot).trim().includes(' ') ? 'expression' : 'mot',
-      unite: null,
-      lecons: [],
-      noyaux: [],
-      alias: [],
-      audio: null,
-      ajoutee: true,
-    })
-  }
-  return sortie
-}
-
 /** Combien de corrections sont en ligne — pour l'afficher en tête d'écran. */
 export function compteCorrections(c = coucheEnCache()) {
-  return (c?.corrections.length || 0) + (c?.ajouts.length || 0) + (c?.retraits.length || 0)
+  return (c?.corrections?.length || 0) + (c?.ajouts?.length || 0) + (c?.retraits?.length || 0)
 }

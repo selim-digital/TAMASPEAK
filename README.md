@@ -298,10 +298,26 @@ republier · atelier*.
 
 Côté app, `GET /api/sync?r=dictionnaire` renvoie **la seule couche de
 corrections** — publique, anonyme, mise en cache cinq minutes au bord de
-Vercel. `src/lib/dictionnaireLive.js` la pose par-dessus le dictionnaire
-embarqué et la garde dans `localStorage` : au deuxième lancement, les
-corrections sont là même sans réseau. Hors-ligne, serveur muet ou réponse
-illisible, on garde le contenu embarqué et on se tait.
+Vercel. `src/lib/dictionnaireLive.js` va la chercher et la garde dans
+`localStorage` (au deuxième lancement, les corrections sont là même sans
+réseau) ; `appliquerCouche()` dans `src/data/dictionnaire.js` la **pose**.
+
+La pose est là, et pas dans le module de transport, pour une raison : corriger
+un mot périme tout ce qu'on en dérive — clé de recherche, tifinagh, nom du
+fichier audio, noyaux de sens qui font les cousins. Ces règles vivent dans
+`dictionnaire.js` ; les rejouer ailleurs, ce serait les écrire deux fois et
+laisser des entrées corrigées **introuvables à la recherche**. Une entrée
+publiée est donc cherchable sous sa nouvelle forme, comptée dans `STATS`, et
+reliée à ses cousins par son nouveau sens.
+
+L'écran le dit : « *N relus par des locuteurs* » en tête du dictionnaire, et la
+fiche d'un mot corrigé porte « *relu par un locuteur* » (« *ajouté par un
+locuteur* » pour une entrée qui n'est dans aucune leçon). Une correction est le
+travail de quelqu'un, pas une mise à jour silencieuse.
+
+Hors-ligne, serveur muet ou réponse illisible : on garde le contenu embarqué et
+on se tait — un dictionnaire qui refuserait de s'ouvrir faute de réseau serait
+pire que celui qui montre un mot d'avant-hier.
 
 > **Les leçons ne bougent pas.** Une correction change ce que le dictionnaire
 > *montre*, pas ce que les exercices *demandent* — un exercice dont la bonne
