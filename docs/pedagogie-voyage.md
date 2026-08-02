@@ -53,9 +53,11 @@ plat.
   paysage ou ce que l'élève vient de faire. Le même `cheer` est même rendu
   sous *chaque* unité ouverte (`PathScreen.jsx:285`).
 
-**Le mot du comité narration, qui résume tout :** « retrouver un personnage »
-suppose une condition que l'app n'a jamais posée — *il faut d'abord l'avoir
-quitté*. Aujourd'hui personne ne part et personne n'attend.
+**Ce qui manque tient en un mot : la récurrence.** « Retrouver un personnage »
+suppose de l'avoir déjà croisé au même endroit, dans le même rôle, plusieurs
+fois. Or `cheerFor` est un tirage : le personnage qui t'encourage aujourd'hui
+n'est pas celui d'hier, et aucun d'eux n'a jamais dit une phrase que tu devais
+comprendre. Ce ne sont pas des personnages, ce sont des vignettes en rotation.
 
 ---
 
@@ -140,42 +142,67 @@ l'apprentissage.
 
 ## 4. Palier 2 — l'armature narrative du voyage
 
+> **Décision de Selim, qui commande tout ce qui suit.** L'élève doit vivre une
+> aventure à travers les sections, en traversant plusieurs paysages,
+> **accompagné des mêmes personnages du début à la fin**. Le comité narration
+> avait proposé l'inverse — une famille qui reste au village et un hôte
+> différent à chaque région, le moteur étant l'éloignement. Cette version est
+> écartée. Ce qui suit est l'armature corrigée.
+
 ### La prémisse
 
-Tu apprends la langue chez toi, dans ta région. Puis tu pars. Chaque région
-traversée parle une langue cousine de la tienne : parfois tu comprends,
-parfois presque, parfois plus du tout. Le voyage sert à vérifier **jusqu'où ta
-langue porte**. Tu rapportes de chaque étape un mot, donné par quelqu'un.
+Tu ne pars pas seul, et tu ne pars pas de rien : **la famille voyage avec
+toi**. Les six d'`Family.jsx` plus Akermus forment une troupe qui traverse les
+onze paysages du premier au dernier. Le décor change, les compagnons non.
 
-**Le moteur dramatique n'est ni une quête ni un danger : c'est
-l'éloignement.** La famille ne voyage pas, elle reste. Plus tu avances, plus
-les nouvelles du village arrivent tard — et c'est ça qui tient : on veut
-rentrer. Le dernier paysage, le Tassili, n'a pas d'hôte : des gravures sur la
-paroi, personne pour te traduire. Tu lis seul. Puis tu rentres, et tu parles.
+Chaque région traversée parle une langue cousine de la tienne : parfois tu
+comprends, parfois presque, parfois plus du tout. Le voyage sert à vérifier
+**jusqu'où ta langue porte** — et la troupe est là pour que cette épreuve ne
+soit jamais solitaire.
 
-### Le problème de l'ordre variable, et sa solution
+**Le moteur dramatique n'est ni une quête ni un danger : c'est le
+compagnonnage.** Ce qui attache l'élève, ce n'est pas le manque, c'est
+**l'habitude** — retrouver les mêmes voix, savoir qui va dire quoi, reconnaître
+Aqcic à sa façon de poser une question avant même de lire son nom. C'est
+exactement le ressort de Duolingo : neuf personnages qui reviennent, qu'on
+finit par connaître. Et l'habitude est précisément ce qui fait revenir un
+utilisateur demain.
+
+Le voyage n'est pas non plus une fuite : à mesure qu'on avance, **la troupe
+apprend en même temps que toi**. Aqcic se trompe et se corrige, Setti reconnaît
+un mot qu'elle croyait perdu, Jeddi retrouve un chemin qu'il avait fait jeune.
+Le dernier paysage, le Tassili, n'a personne pour traduire : des gravures sur
+la paroi, et vous êtes sept à les regarder. Ce que tu sais lire, tu le lis à
+voix haute — pour eux.
+
+### Le problème de l'ordre variable, résolu par la troupe
 
 `journeyFor()` fait partir chaque langue de chez elle, puis déroule l'ordre
-fixe. Un récit linéaire est donc **impossible**. Solution en trois couches,
-dont deux seulement sont ordonnées :
+fixe : le tachelhit commence au Ksar, le kabyle au Djurdjura. Un récit accroché
+à la **géographie** serait donc impossible à écrire.
 
-- **Couche A — l'arc de l'élève.** Attachée à l'*index d'unité*, jamais au
-  paysage : départ (u1–u2), éloignement (u3–u8), retour (u9–u13). Identique
-  pour les cinq langues. C'est elle qui progresse.
-- **Couche B — les escales.** Chaque paysage est une **vignette close**,
-  écrite pour fonctionner en position 2 comme en position 9. Règle d'écriture
-  absolue : **jamais de référence ordinale.** Interdits : « après le Rif »,
-  « déjà quatre régions ». Autorisés : « un jour de marche », « plus loin ».
-- **Couche C — chez soi.** L'étape 1 est toujours la région de la langue :
-  cinq ouvertures sur mesure, plus un texte de rechange pour cette même région
-  quand un *autre* cours la traverse en route.
+**La troupe résout cela d'elle-même.** Si la continuité est portée par les
+personnages et non par les régions, l'ordre des paysages n'a plus d'importance
+narrative. Le fil, c'est que Setti et Aqcic sont toujours là. Les paysages
+redeviennent ce qu'ils sont — un décor qui change, la preuve visible qu'on
+avance.
 
-**La continuité malgré tout : le carnet.** Une seule variable de liaison —
-`dernierMot { mot, région, hôte }` — qui existe déjà sous la forme du lexique.
-Chaque escale s'ouvre en citant le dernier mot reçu, quel qu'il soit :
-« *Tu arrives avec {mot}, qu'on t'a donné à {région}. Ici on ne le dit pas
-comme ça.* » Une phrase générée, onze escales indépendantes, et l'impression
-d'un fil continu dans n'importe quel ordre.
+Deux règles d'écriture suffisent alors, au lieu des trois couches qu'exigeait
+la version précédente :
+
+1. **L'arc est attaché à l'index d'unité, jamais au paysage.** Treize étapes,
+   identiques pour les cinq langues : on part (u1–u2), on s'enhardit (u3–u8),
+   on va loin (u9–u13). C'est la troupe qui progresse, pas la carte.
+2. **Aucune référence ordinale dans un texte d'escale.** Interdits : « après le
+   Rif », « déjà quatre régions ». Autorisés : « plus loin », « le lendemain ».
+   Chaque escale doit tenir en position 2 comme en position 9.
+
+**Le carnet, lui, reste** — et il existe déjà : `addToLexique`
+(`progress.js:175`) enregistre un mot *avec le nom de qui l'a dit*. C'est le
+carnet de voyage, écrit avant qu'on en ait besoin. Chaque escale peut s'ouvrir
+en citant le dernier mot reçu : « *Tu arrives avec {mot}. Ici, on ne le dit pas
+comme ça.* » Une phrase générée, onze escales indépendantes, un fil continu
+dans n'importe quel ordre.
 
 ### Le ton, en trois règles
 
@@ -183,44 +210,75 @@ d'un fil continu dans n'importe quel ordre.
 de « majestueux », pas de « millénaire », pas de « âme ». On dit ce qui se
 passe. Trois à six phrases par fragment : c'est une app, pas un roman.
 
-**Arrivée — Djurdjura, cours de kabyle**
+**Départ — Djurdjura, cours de kabyle**
 
-> Le car te laisse au col, une heure avant le village. La crête tient encore
+> Le car vous laisse au col, une heure avant le village. La crête tient encore
 > un peu de neige ; en bas, les terrasses d'oliviers descendent jusqu'à la
-> route. Ici, on ne te demandera pas d'où tu viens. On attendra de voir si tu
-> sais dire bonjour.
+> route. Jeddi est déjà en train de marcher. Setti compte les sacs. Ici, on ne
+> vous demandera pas d'où vous venez — on attendra de voir si tu sais dire
+> bonjour.
 
 **Ouverture — Unité 1, Azul**
 
 > Azul, c'est bonjour, et c'est un peu plus : la main ouverte qu'on montre
-> avant d'arriver. Ferroudja greffe depuis l'aube et ne lèvera pas la tête
-> tant que tu n'auras pas parlé. Cinq leçons. De quoi entrer quelque part.
+> avant d'arriver. Yemma te fait répéter deux fois avant de frapper à la porte.
+> Aqcic, lui, a déjà frappé. Cinq leçons. De quoi entrer quelque part.
 
 **Fin d'unité 1**
 
-> Tu as dit azul, et on t'a répondu. Ferroudja te donne un mot pour la route :
-> celui qu'on lance dans le dos de quelqu'un qui s'en va. Ce soir, Yemma a
-> fait savoir au village que tu avais commencé. Un mot dans le carnet.
+> Tu as dit azul, et on t'a répondu. Ferroudja, qui greffe des oliviers depuis
+> l'aube, te donne un mot pour la route : celui qu'on lance dans le dos de
+> quelqu'un qui s'en va. Setti le répète pour elle-même, deux fois. Elle ne
+> l'avait pas entendu depuis longtemps. Un mot dans le carnet.
 
 **Escale type — M'zab, en position quelconque**
 
-> Tu arrives avec le mot qu'on t'a donné plus haut. Ici, il se dit autrement :
-> Brahim l'entend, hésite, puis rit. Il fabrique des jarres dont la contenance
-> sert à partager l'eau entre les jardins — se tromper d'un mot, chez lui, se
-> paie en litres. Il veut que tu comptes avant de boire.
+> Vous arrivez avec le mot qu'on vous a donné plus loin. Ici, il se dit
+> autrement : Brahim l'entend, hésite, puis rit. Il fabrique des jarres dont la
+> contenance sert à partager l'eau entre les jardins — se tromper d'un mot,
+> chez lui, se paie en litres. Baba veut comprendre le calcul avant de boire.
+> Aqcic a déjà bu.
+
+**Note de mise en scène.** Les fragments citent **un ou deux compagnons à la
+fois**, jamais les six. La troupe est permanente dans l'histoire, pas à
+l'écran : c'est ce qui la rend tenable sur un téléphone (voir « la règle de
+mise en scène » plus bas).
 
 ### Le casting
 
-**Permanents.** *Akermus* : le seul qui marche avec toi. Il ne commente pas,
-il **doute** — il propose la mauvaise forme et se corrige, ce qui autorise
-l'élève à se tromper. *La famille* : elle ne voyage jamais, elle arrive par
-**messages**, un à chaque fin d'unité, dans l'ordre de l'arc et non au hasard.
-Six voix, six registres, jamais interchangeables — c'est la fin du `cheerFor`
-aléatoire.
+**La troupe — permanente, du premier paysage au dernier.** Sept présences, sept
+registres, jamais interchangeables. C'est la fin du `cheerFor` aléatoire : on ne
+tire plus un personnage au hasard, on sait qui parle et pourquoi.
 
-**Hôtes régionaux** — un par paysage. Chacun a un **métier daté d'aujourd'hui**
-et, sur recommandation du comité culturel, **un rapport ambivalent à sa
-langue** :
+| Compagnon | Ce qu'il est dans le voyage | Ce qu'il porte dans la langue |
+| --- | --- | --- |
+| **Akermus** | celui qui doute tout haut | la forme fausse, puis la bonne |
+| **Aqcic** | il arrive toujours le premier | les questions |
+| **Taqcict** | elle compte, elle liste, elle retient | énumérations, nombres |
+| **Yemma** | elle fait répéter avant de frapper | salutations, accueil, formules |
+| **Baba** | il veut comprendre avant d'agir | impératifs, explications |
+| **Setti** | elle reconnaît des mots qu'elle croyait perdus | mots anciens, bénédictions d'usage |
+| **Jeddi** | il a déjà fait ce chemin, autrement | directions, conseils, le passé |
+
+**Ce qui les fait exister, et c'est le point le plus important :** ils
+**apprennent avec l'élève**. Aqcic se trompe et se corrige ; Setti retrouve un
+mot ; Baba demande une explication que l'élève vient d'obtenir. Un compagnon
+qui sait déjà tout n'est pas un compagnon, c'est un professeur — et l'app en a
+déjà un, c'est le moteur de leçon.
+
+**La règle de mise en scène — permanent dans l'histoire, pas à l'écran.** La
+troupe est constante, mais **on n'en montre qu'un ou deux à la fois** : celui
+que la scène appelle. Six silhouettes en permanence sur un téléphone seraient
+illisibles, et le comité game design alerterait sur l'encombrement vertical.
+Duolingo tient neuf personnages récurrents en n'en affichant qu'un ou deux par
+exercice. Même règle ici : le casting est permanent, le cadrage tourne.
+
+**Hôtes régionaux — des rencontres, pas des porteurs de récit.** Un par
+paysage, le temps d'une étape. Ils donnent la couleur locale et **un mot pour
+le carnet**, puis la troupe repart. C'est ce qui permet de garder toute la
+richesse régionale sans repayer une amnésie tous les cinq leçons. Chacun a un
+**métier daté d'aujourd'hui** et, sur recommandation du comité culturel, **un
+rapport ambivalent à sa langue** :
 
 | Paysage | Hôte | Métier | Apporte |
 | --- | --- | --- | --- |
@@ -239,6 +297,9 @@ langue** :
 **Ce qui les tient debout : chacun se trompe sur ta langue une fois, et tu le
 corriges.** Un hôte qu'on ne peut jamais corriger est un décor.
 
+Le Tassili, dernière étape, n'a volontairement pas d'hôte : la paroi gravée, et
+la troupe autour. Personne pour traduire. C'est l'élève qui lit.
+
 Le comité culturel ajoute une figure qu'il tient pour la meilleure de toutes :
 **une grand-mère qui refuse d'enseigner sa langue**, parce qu'elle l'associe à
 la pauvreté. Elle vaut mille sages du désert — et elle touche au vrai sujet
@@ -252,15 +313,16 @@ l'affichage : silhouette 40 px (sans visage, règle intacte) + nom en gras +
 phrase entre guillemets. Zéro nouvel écran — c'est la mise en page de
 `FamilyCheer`, réduite.
 
-**L'attribution n'est pas cosmétique, elle est grammaticale.** Chaque
-personnage porte une forme : Aqcic les questions ; Baba et Jeddi les
-impératifs ; Yemma les salutations et l'accueil ; Setti les mots anciens et les
-bénédictions d'usage ; Taqcict les énumérations ; Akermus la forme fausse puis
-la bonne. Les hôtes portent le lexique de leur métier.
+**L'attribution n'est pas cosmétique, elle est grammaticale.** Chaque compagnon
+porte la forme qui lui est assignée dans le tableau ci-dessus, et il la porte
+**pendant tout le voyage** — c'est ce qui le rend reconnaissable. Une question
+en amazigh, c'est Aqcic ; une bénédiction d'usage, c'est Setti. Au bout de trois
+unités, l'élève sait qui va parler avant de lire le nom. Les hôtes, eux,
+portent le lexique de leur métier, le temps de leur étape.
 
 Deux règles : un mot isolé n'a pas de locuteur (une phrase sur trois environ,
 sinon le procédé s'use) ; et **sur erreur, le personnage reformule, il ne juge
-pas** — « Nedjma le redit plus lentement ».
+pas** — « Setti le redit plus lentement ».
 
 *Ce que ça change à la mémorisation :* une phrase associée à une source stable
 acquiert un indice de rappel supplémentaire (qui / où). En révision, on peut
@@ -539,11 +601,19 @@ un mot) :
 C'est le « basique mais efficace » demandé, sur les cinq langues, sans risque
 de contenu. La première session change de nature pour un coût très faible.
 
+**Le point 5 est aussi la première brique de la troupe** : dès qu'un énoncé est
+attribué à Setti ou à Aqcic *de façon stable*, la récurrence commence — et
+c'est elle qui manque aujourd'hui (§1). On peut donc poser le compagnonnage
+avant d'écrire une seule ligne de récit, sur les cinq langues, sans validation
+de locuteur : il suffit d'assigner à chaque compagnon la forme grammaticale
+qu'il portera pour toujours (tableau du §4) et de s'y tenir.
+
 **Ensuite, et dans cet ordre :**
 
 6. Corriger l'itinéraire des langues marocaines et ajouter le Souss (§5).
-7. Écrire l'unité 1 narrative en kabyle **avec un locuteur**, la faire valider,
-   la publier en bêta.
+7. Écrire l'unité 1 narrative en kabyle **avec un locuteur** — la troupe au
+   départ du Djurdjura, Ferroudja en rencontre —, la faire valider, la publier
+   en bêta.
 8. La mémoire par item et la révision générée — le plus gros chantier
    technique, et celui qui fait tenir l'app sur la durée.
 
