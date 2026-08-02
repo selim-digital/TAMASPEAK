@@ -8,22 +8,73 @@
 import { qcm, listen, match, image, culture, sentence } from './exercises.js'
 
 // -------- Unité 1 — Salutations --------
+//
+// Cette unité a été RÉORDONNÉE (palier 1) sur trois principes :
+//
+//   1. Une PHRASE dès la leçon 1. « Azul fell-ak », « Aql-i labas »,
+//      « Ansuf yes-k » existaient déjà dans ce cours — mais en leçon 17, soit
+//      trois quarts d'heure de jeu plus loin. Aucun mot n'est inventé ici :
+//      les énoncés sont remontés là où ils servent.
+//   2. Des énoncés SITUATIONNELS plutôt que métalinguistiques. « On te dit X,
+//      que réponds-tu ? » au lieu de « Que signifie X ? ». Le patron vient du
+//      cours de tarifit (courses/rif.js), où il avait été inventé — il
+//      manquait au kabyle, qui est pourtant le cours vaisseau.
+//   3. Un LOCUTEUR sur les énoncés, jamais sur le vocabulaire isolé. Yemma
+//      accueille et salue, Aqcic demande, Baba explique, Taqcict énumère,
+//      Setti porte les mots anciens. Toujours les mêmes : c'est la constance
+//      qui les rend reconnaissables.
 const l1 = [
   qcm('kab-to-fr', 'Que signifie ?', 'Azul', 'Bonjour', ['Bonjour', 'Merci', 'Au revoir', 'Bienvenue']),
-  qcm('kab-to-fr', 'Que signifie ?', 'Azul fell-ak', 'Bonjour à toi', ['Bonjour à toi', 'Merci beaucoup', 'À demain', 'Comment vas-tu ?']),
-  qcm('fr-to-kab', 'Comment dit-on « Bonjour » ?', 'Bonjour', 'Azul', ['Azul', 'Tanemmirt', 'Ar tufat', 'Ansuf']),
+  // La première phrase de tout le cours, dès le deuxième exercice — en `qcm`
+  // et non en `sentence` : `sentence` cache le texte tant qu'on n'a pas
+  // répondu, ce qui est trop rude au deuxième écran d'une vie d'apprenant. Ici
+  // la phrase se voit ET s'entend. Elle reviendra en écoute seule plus tard.
+  qcm(
+    'kab-to-fr',
+    'Yemma te salue. Que dit-elle ?',
+    'Azul fell-ak',
+    'Bonjour à toi',
+    ['Bonjour à toi', 'Merci beaucoup', 'À demain', 'Comment vas-tu ?'],
+    true,
+    'yemma',
+  ),
+  qcm(
+    'fr-to-kab',
+    'Yemma entre et te salue. Que réponds-tu ?',
+    'Bonjour à toi',
+    'Azul fell-ak',
+    ['Azul fell-ak', 'Tanemmirt', 'Ar tufat', 'Ansuf'],
+    false,
+    'yemma',
+  ),
   qcm('kab-to-fr', 'Que signifie ?', 'Ansuf', 'Bienvenue', ['Bienvenue', 'Merci', 'Oui', 'Bonjour']),
 ]
 const l2 = [
   qcm('kab-to-fr', 'Que signifie ?', 'Tanemmirt', 'Merci', ['Merci', 'Bonjour', 'Non', 'Bienvenue']),
-  qcm('fr-to-kab', 'Comment dit-on « Merci » ?', 'Merci', 'Tanemmirt', ['Azul', 'Tanemmirt', 'Ala', 'Labas']),
+  qcm(
+    'fr-to-kab',
+    'Setti te tend un verre de thé. Que dis-tu ?',
+    'Merci',
+    'Tanemmirt',
+    ['Tanemmirt', 'Azul', 'Ala', 'Labas'],
+    false,
+    'setti',
+  ),
   listen('Ih', 'Oui', ['Oui', 'Non', 'Merci', 'Bonjour']),
   qcm('kab-to-fr', 'Que signifie ?', 'Ala', 'Non', ['Bonjour', 'Non', 'Oui', 'Au revoir']),
 ]
 const l3 = [
-  qcm('fr-to-kab', 'Comment dit-on « Oui » ?', 'Oui', 'Ih', ['Ih', 'Ala', 'Azul', 'Ar tufat']),
+  qcm(
+    'fr-to-kab',
+    'Aqcic te demande si tu viens. Tu es d’accord — que dis-tu ?',
+    'Oui',
+    'Ih',
+    ['Ih', 'Ala', 'Azul', 'Ar tufat'],
+    false,
+    'aqcic',
+  ),
   qcm('fr-to-kab', 'Comment dit-on « Non » ?', 'Non', 'Ala', ['Ansuf', 'Ala', 'Ih', 'Tanemmirt']),
-  listen('Labas ?', 'Ça va ?', ['Ça va ?', 'Merci', 'À demain', 'Bienvenue']),
+  listen('Labas ?', 'Ça va ?', ['Ça va ?', 'Merci', 'À demain', 'Bienvenue'], 'aqcic'),
   match([
     { kab: 'Azul', fr: 'Bonjour' },
     { kab: 'Tanemmirt', fr: 'Merci' },
@@ -32,19 +83,37 @@ const l3 = [
 ]
 const l4 = [
   qcm('kab-to-fr', 'Que signifie ?', 'Labas', 'Ça va (bien)', ['Ça va (bien)', 'Non', 'Bienvenue', 'À demain']),
-  qcm('fr-to-kab', 'Comment dit-on « Ça va ? » ?', 'Ça va ?', 'Labas ?', ['Labas ?', 'Azul', 'Tanemmirt', 'Ala']),
-  listen('Azul fell-ak', 'Bonjour à toi', ['Bonjour à toi', 'Merci', 'À demain', 'Oui']),
+  // Une vraie paire de dialogue : on te demande, tu réponds par une phrase.
+  qcm(
+    'fr-to-kab',
+    'On te demande « Labas ? ». Que réponds-tu ?',
+    'Je vais bien',
+    'Aql-i labas',
+    ['Aql-i labas', 'Ar tufat', 'Ansuf yes-k', 'Ala'],
+    false,
+    'baba',
+  ),
+  sentence('Aql-i labas', 'Je vais bien', ['Je vais bien', 'Au revoir', 'Merci beaucoup', 'Bonjour'], 'baba'),
   qcm('fr-to-kab', 'Comment dit-on « Bienvenue » ?', 'Bienvenue', 'Ansuf', ['Ansuf', 'Ih', 'Ar tufat', 'Labas']),
 ]
 const l5 = [
   qcm('kab-to-fr', 'Que signifie ?', 'Ar tufat', 'À demain', ['À demain', 'Bonjour', 'Merci', 'Oui']),
-  qcm('fr-to-kab', 'Comment dit-on « À demain » ?', 'À demain', 'Ar tufat', ['Ar tufat', 'Azul', 'Ansuf', 'Ih']),
+  sentence('Ansuf yes-k', 'Bienvenue à toi', ['Bienvenue à toi', 'Bonjour', 'Merci beaucoup', 'À demain'], 'yemma'),
+  qcm(
+    'fr-to-kab',
+    'Quelqu’un arrive chez toi. Tu l’accueilles — que dis-tu ?',
+    'Bienvenue à toi',
+    'Ansuf yes-k',
+    ['Ansuf yes-k', 'Ar tufat', 'Aql-i labas', 'Ala'],
+    false,
+    'yemma',
+  ),
   match([
     { kab: 'Ih', fr: 'Oui' },
     { kab: 'Ala', fr: 'Non' },
     { kab: 'Ansuf', fr: 'Bienvenue' },
   ]),
-  qcm('kab-to-fr', 'Que signifie ?', 'Azul', 'Bonjour', ['Bonjour', 'Bienvenue', 'Non', 'Merci']),
+  qcm('fr-to-kab', 'Tu t’en vas, et tu reviendras demain. Que dis-tu ?', 'À demain', 'Ar tufat', ['Ar tufat', 'Azul', 'Ansuf', 'Ih'], false, 'jeddi'),
 ]
 
 // -------- Unité 2 — Réponses & politesse (révision + associations) --------

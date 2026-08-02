@@ -1,4 +1,5 @@
 import { LANGUAGES, DEFAULT_LANG } from './languages.js'
+import { SENS_SCENE } from './exercises.js'
 import { units as kabUnits } from './units.js'
 import { byLesson as kabLessons } from './lessons.js'
 import { rifUnits, rifLessons } from './courses/rif.js'
@@ -47,13 +48,20 @@ function makeCourse(lang, units, byLesson) {
               const paires =
                 ex.type === 'match'
                   ? ex.pairs.map((p) => ({ mot: p.kab, sens: p.fr }))
-                  : ex.word
-                    ? [
-                        ex.kind === 'fr-to-kab'
-                          ? { mot: ex.answer, sens: ex.word }
-                          : { mot: ex.word, sens: ex.answer },
-                      ]
-                    : []
+                  : // Un exercice `image` n'a pas de `word` : le dessin tient
+                    // lieu d'énoncé et le mot amazigh est la RÉPONSE. Sans ce
+                    // cas, un mot enseigné seulement par l'image sortirait
+                    // d'ici — et personne ne serait jamais invité à
+                    // l'enregistrer. Le dessin le rendrait muet.
+                    ex.type === 'image'
+                    ? [{ mot: ex.answer, sens: SENS_SCENE[ex.scene] || '' }]
+                    : ex.word
+                      ? [
+                          ex.kind === 'fr-to-kab'
+                            ? { mot: ex.answer, sens: ex.word }
+                            : { mot: ex.word, sens: ex.answer },
+                        ]
+                      : []
               for (const p of paires) {
                 if (!p.mot || vus.has(p.mot)) continue
                 vus.add(p.mot)

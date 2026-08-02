@@ -198,3 +198,28 @@ export function cheerFor(count = 0) {
   const member = FAMILY[count % FAMILY.length]
   return { member, message: member.cheers[Math.floor(count / FAMILY.length) % member.cheers.length] }
 }
+
+/**
+ * Le personnage qui porte un énoncé (champ `qui` des exercices).
+ *
+ * Rend `null` sur un identifiant inconnu plutôt que de lever : une faute de
+ * frappe dans une donnée de cours doit retirer la bulle, jamais casser la
+ * leçon en cours.
+ */
+export const findMember = (id) => (id ? FAMILY.find((m) => m.id === id) || null : null)
+
+/**
+ * Ce que chacun dit quand l'élève se trompe SUR SA phrase.
+ *
+ * Règle : le personnage REFORMULE, il ne juge pas. Aucune de ces répliques ne
+ * dit « faux », « raté » ni « attention » — l'exercice a déjà signalé
+ * l'erreur, le personnage est là pour qu'on réessaie sans honte.
+ */
+export const REFORMULE = {
+  aqcic: 'Aqcic repose la question, moins vite.',
+  taqcict: 'Taqcict recommence depuis le début.',
+  yemma: 'Yemma le redit, en articulant.',
+  baba: 'Baba l’explique autrement.',
+  setti: 'Setti le répète comme on le disait chez elle.',
+  jeddi: 'Jeddi le redit plus lentement.',
+}

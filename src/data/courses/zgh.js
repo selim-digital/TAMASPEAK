@@ -57,6 +57,7 @@ const zgh1 = [
     'Le tifinagh s’écrit…',
     'De gauche à droite',
     ['De gauche à droite', 'De droite à gauche', 'De haut en bas', 'En spirale'],
+    'tifinagh',
   ),
 ]
 
@@ -86,10 +87,14 @@ const zgh3 = [
 const zgh4 = [
   // ⵣ : le yaz, emblème du drapeau amazigh — bouclage avec le logo de l'app.
   qk('Quelle lettre latine correspond à ⵣ ?', 'ⵣ', 'z', ['z', 's', 'c', 'x']),
+  // Le drapeau est montré, pas seulement nommé : `culture()` accepte une
+  // scène depuis toujours, ce cours ne s'en servait pas. Aucun contenu n'est
+  // touché — on ajoute l'illustration à la question qui existait déjà.
   culture(
     'La lettre ⵣ (yaz) est aussi…',
     'Le symbole du drapeau amazigh',
     ['Le symbole du drapeau amazigh', 'Un chiffre', 'Un signe de ponctuation', 'Une lettre arabe'],
+    'flag',
   ),
   qk('Lis ce mot : ⴰⵣⵓⵍ', 'ⴰⵣⵓⵍ', 'azul — salut', ['azul — salut', 'aluz', 'azlu', 'zalu']),
   match([

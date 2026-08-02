@@ -450,15 +450,14 @@ export default function App() {
 
   function finishOnboarding({ lang, level, reason, dailyGoalXp, contact }) {
     const langId = lang || store.lang
-    setStore((s) => {
-      const next = {
-        ...s,
-        lang: langId,
-        profile: s.profile || { reason, dailyGoalXp },
-      }
-      const langProgress = progressOf(next, getCourse(langId))
-      return withProgress(next, langId, { ...langProgress, level })
-    })
+    const nouveauCours = getCourse(langId)
+
+    // Le store d'après, calculé ICI plutôt que dans le seul updater : on en a
+    // besoin tout de suite pour savoir sur quelle leçon ouvrir.
+    const base = { ...store, lang: langId, profile: store.profile || { reason, dailyGoalXp } }
+    const progressLangue = { ...progressOf(base, nouveauCours), level }
+    setStore(withProgress(base, langId, progressLangue))
+
     // L'opt-in email choisi à l'étape « reste en contact » part au serveur —
     // c'est l'interrupteur que le cron des relances consulte. Envoi en
     // arrière-plan : un échec réseau ne bloque pas l'entrée dans l'app.
@@ -466,6 +465,29 @@ export default function App() {
       setEmailPrefs({ relances: true, resumeHebdo: contact === 'tout' })
     }
     setPendingLang(null)
+
+    // On finit l'onboarding DANS une leçon, pas sur le tableau de bord.
+    // Atterrir sur « Aujourd'hui » signifiait finir de répondre à des
+    // questions devant un objectif à 0/20 et une série à 0 — un écran qui ne
+    // prouve rien et qui demande encore un tap avant le premier mot amazigh.
+    //
+    // On lit les statuts de la PROGRESSION, jamais le statut statique des
+    // données de cours : sinon quelqu'un qui reprend une langue déjà
+    // entamée serait renvoyé à la leçon 1.
+    const depart = nouveauCours.orderedNodes.find(
+      (n) => n.type !== 'chest' && progressLangue.statuses[n.id] === 'current',
+    )
+    // Verrou d'abonnement : une langue reprise loin dans le parcours peut
+    // pointer sur une unité fermée. Le doute profite à l'élève (uniteOuverte
+    // rend `true` tant que le serveur n'a pas dit non), mais s'il a dit non,
+    // on n'ouvre pas une leçon pour la refermer aussitôt.
+    const rang = depart ? nouveauCours.units.findIndex((u) => u.lessons.some((l) => l.id === depart.id)) : -1
+    if (depart && (rang < 0 || uniteOuverteIci(rang))) {
+      setActiveLesson(depart)
+      setLessonExercises(avecQuizFin(nouveauCours, progressLangue, depart.id))
+      setScreen(ECRANS.LECON)
+      return
+    }
     setScreen(ECRANS.AUJOURDHUI)
   }
 
