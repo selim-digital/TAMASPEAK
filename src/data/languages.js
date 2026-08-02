@@ -51,6 +51,12 @@ export const LANGUAGES = [
     // ------------------------------------------------------------------
     id: 'kab-beta',
     beta: true,
+    // La langue RÉELLE derrière le parcours. C'est du kabyle : ses
+    // enregistrements, ses voix de locuteurs et ses fichiers de synthèse sont
+    // ceux du kabyle, et doivent être cherchés là-bas. Sans cela, la bêta
+    // irait lire un dossier `audio/kab-beta/` qui n'existe pas — le parcours
+    // serait MUET alors qu'il enseigne exactement les mêmes mots.
+    base: 'kab',
     name: 'Kabyle — Le voyage',
     autonym: 'Taqbaylit',
     region: 'Version d’essai',
@@ -119,3 +125,17 @@ export const findLanguage = (id) => LANGUAGES.find((l) => l.id === id) || LANGUA
 export const LANGUES_STABLES = LANGUAGES.filter((l) => !l.beta)
 
 export const estBeta = (id) => !!findLanguage(id)?.beta
+
+/**
+ * La langue réelle derrière un identifiant de cours.
+ *
+ * Un parcours d'essai n'est pas une nouvelle langue : « kab-beta » enseigne
+ * du kabyle. Tout ce qui touche au SON doit donc passer par ici — les
+ * enregistrements natifs, les voix contribuées et la synthèse vivent sous
+ * l'identifiant de la vraie langue, jamais sous celui du parcours.
+ *
+ * On garde volontairement une fonction plutôt qu'un remplacement à la
+ * source : la progression, elle, DOIT rester séparée (c'est tout l'intérêt
+ * d'un parcours parallèle). Seul l'audio se partage.
+ */
+export const langueDeBase = (id) => findLanguage(id)?.base || id || DEFAULT_LANG

@@ -13,6 +13,7 @@
 
 import { slug } from './slug.js'
 import { voiceUrl } from './speakerVoice.js'
+import { langueDeBase } from '../data/languages.js'
 
 export { slug }
 
@@ -20,16 +21,22 @@ export { slug }
  * Chemin d'un enregistrement natif.
  * Les langues ajoutées après le kabyle rangent leurs mp3 dans un
  * sous-dossier `audio/<lang>/` ; le kabyle garde `audio/` (historique).
+ *
+ * On passe par `langueDeBase` : un parcours d'essai n'est pas une langue.
+ * « kab-beta » enseigne du kabyle et doit lire les mp3 du kabyle — sinon il
+ * chercherait un dossier qui n'existe pas et serait muet.
  */
 export function audioUrl(word, lang) {
   const base = import.meta.env.BASE_URL || '/'
-  const dir = !lang || lang === 'kab' ? 'audio' : `audio/${lang}`
+  const l = langueDeBase(lang)
+  const dir = !l || l === 'kab' ? 'audio' : `audio/${l}`
   return `${base}${dir}/${slug(word)}.mp3`
 }
 
 export function synthUrl(word, lang) {
   const base = import.meta.env.BASE_URL || '/'
-  const dir = !lang || lang === 'kab' ? 'audio/synth' : `audio/${lang}/synth`
+  const l = langueDeBase(lang)
+  const dir = !l || l === 'kab' ? 'audio/synth' : `audio/${l}/synth`
   return `${base}${dir}/${slug(word)}.mp3`
 }
 

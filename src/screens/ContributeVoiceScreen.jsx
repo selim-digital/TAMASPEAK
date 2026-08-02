@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { sfx } from '../lib/sfx.js'
 import { playWord } from '../lib/audio.js'
+import { langueDeBase } from '../data/languages.js'
 import { shareText } from '../lib/share.js'
 import {
   canRecord,
@@ -77,7 +78,9 @@ export function ContributeVoiceScreen({ course, onBack }) {
   useEffect(() => {
     listVoices()
       .then((all) => {
-        const dansLaLangue = all.filter((v) => v.lang === course.id)
+        // Les voix sont classées par LANGUE, pas par parcours : un parcours
+        // d'essai partage les enregistrements de la langue qu'il enseigne.
+        const dansLaLangue = all.filter((v) => v.lang === langueDeBase(course.id))
         setVoices(new Map(dansLaLangue.map((v) => [v.id, v])))
         const dernier = dansLaLangue[dansLaLangue.length - 1]
         if (dernier?.speaker) setSpeaker(dernier.speaker)
@@ -182,7 +185,7 @@ export function ContributeVoiceScreen({ course, onBack }) {
     if (!f) return
     try {
       const { ajoutes } = await importVoices(f)
-      const all = (await listVoices()).filter((v) => v.lang === course.id)
+      const all = (await listVoices()).filter((v) => v.lang === langueDeBase(course.id))
       setVoices(new Map(all.map((v) => [v.id, v])))
       flash(`${ajoutes} enregistrement${ajoutes > 1 ? 's' : ''} ajouté${ajoutes > 1 ? 's' : ''}.`)
       sfx.complete()
