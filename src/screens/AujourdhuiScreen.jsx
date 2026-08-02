@@ -142,6 +142,7 @@ export function AujourdhuiScreen({
   onQuiz,
   onHistoire,
   onTifinagh,
+  onDictionnaire,
   onNotifs,
   onProfile,
   onLanguages,
@@ -286,6 +287,32 @@ export function AujourdhuiScreen({
             <span className="text-[12px] font-extrabold">Tifinagh</span>
           </button>
         </div>
+
+        {/* Le dictionnaire — la seule vue qui traverse les cinq langues d'un
+            coup. Sa propre ligne : c'est une porte, pas un raccourci de plus.
+            La recherche s'ouvre à tout le monde ; seule la fiche complète
+            demande l'abonnement (voir entreeDicoOuverte). */}
+        <button
+          type="button"
+          onClick={onDictionnaire}
+          className="mt-2 flex w-full items-center gap-2.5 rounded-2xl border border-line bg-cream px-3 py-2.5 text-left transition-transform active:scale-[0.98]"
+        >
+          <span className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-turquoise-deep text-white" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="10.5" cy="10.5" r="6" />
+              <path d="M15 15l4.5 4.5" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-extrabold">Dictionnaire</span>
+            <span className="block truncate text-[9.5px] font-bold text-ink-soft">
+              Un mot, et ce qu’il devient dans les cinq langues
+            </span>
+          </span>
+          <span className="flex-none text-[13px] font-extrabold text-ink-soft" aria-hidden="true">
+            ›
+          </span>
+        </button>
 
         {verrouActif(abonnement) && (
           <button

@@ -562,10 +562,123 @@ const l45 = [
   culture('« Azul, amek telliḍ ? » — que demande-t-on ?', 'Comment tu vas', ['Comment tu vas', 'Où tu habites', 'Ton prénom', 'L’heure qu’il est']),
 ]
 
+// -------- Unité 14 — Au travail (axeddim) --------
+// Deux mots pour « travail », et c'est le sujet même de l'unité : « axeddim »
+// (racine arabe xdm, ce qu'on dit tous les jours) et « tawuri » (amazigh,
+// donné par Dallet « fonction, rôle, travail »). L'app enseigne les deux et
+// dit lequel vient d'où — la modale des emprunts fait le reste.
+const l46 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Axeddim', 'Le travail', ['Le travail', 'Le marché', 'La maison', 'Le jour']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Axeddam', 'Le travailleur', ['Le travailleur', 'Le travail', 'Le voisin', 'Le père']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Tawuri', 'Le travail (mot amazigh)', ['Le travail (mot amazigh)', 'La porte', 'La parole', 'Le champ']),
+  culture('« Axeddim » et « tawuri » veulent dire « travail ». Lequel est amazigh ?', 'Tawuri', ['Tawuri', 'Axeddim', 'Les deux', 'Aucun des deux']),
+  match([
+    { kab: 'Axeddim', fr: 'Le travail' },
+    { kab: 'Axeddam', fr: 'Le travailleur' },
+    { kab: 'Tawuri', fr: 'Le travail (mot amazigh)' },
+  ]),
+]
+const l47 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Aselmad', 'L’enseignant', ['L’enseignant', 'L’élève', 'Le médecin', 'Le paysan']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Anelmad', 'L’élève', ['L’élève', 'L’enseignant', 'L’enfant', 'Le frère']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Amejjay', 'Le médecin', ['Le médecin', 'Le forgeron', 'Le paysan', 'Le marchand']),
+  qcm('fr-to-kab', 'Comment dit-on « Le paysan » ?', 'Le paysan', 'Afellaḥ', ['Afellaḥ', 'Amejjay', 'Aselmad', 'Axeddam']),
+  match([
+    { kab: 'Aselmad', fr: 'L’enseignant' },
+    { kab: 'Anelmad', fr: 'L’élève' },
+    { kab: 'Amejjay', fr: 'Le médecin' },
+    { kab: 'Amekraz', fr: 'Le laboureur' },
+  ]),
+]
+const l48 = [
+  sentence('Anda txeddmeḍ ?', 'Où travailles-tu ?', ['Où travailles-tu ?', 'Que fais-tu ?', 'Où habites-tu ?', 'Quand pars-tu ?']),
+  sentence('Xeddmeɣ deg wexxam', 'Je travaille à la maison', ['Je travaille à la maison', 'Je vais au marché', 'Je rentre ce soir', 'Je ne comprends pas']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Tanarit', 'Le bureau', ['Le bureau', 'L’atelier', 'L’école', 'La boutique']),
+  qcm('fr-to-kab', 'Comment dit-on « Le marché » ?', 'Le marché', 'Ssuq', ['Ssuq', 'Tanarit', 'Axxam', 'Taddart']),
+]
+const l49 = [
+  // La tiwizi : l'entraide où le village travaille ensemble, chacun à son
+  // tour — le mot amazigh du travail collectif, encore vivant.
+  culture('La tiwizi, c’est…', 'L’entraide collective au village', [
+    'L’entraide collective au village',
+    'Le salaire du mois',
+    'Le repos du vendredi',
+    'Le marché du dimanche',
+  ]),
+  match([
+    { kab: 'Tiwizi', fr: 'L’entraide' },
+    { kab: 'Axeddim', fr: 'Le travail' },
+    { kab: 'Afellaḥ', fr: 'Le paysan' },
+    { kab: 'Tanarit', fr: 'Le bureau' },
+  ]),
+  qcm('fr-to-kab', 'Comment dit-on « L’enseignant » ?', 'L’enseignant', 'Aselmad', ['Aselmad', 'Anelmad', 'Amejjay', 'Amekraz']),
+  sentence('Anda txeddmeḍ ?', 'Où travailles-tu ?', ['Où travailles-tu ?', 'Comment vas-tu ?', 'Que veux-tu ?', 'Qui es-tu ?']),
+]
+
+// -------- Unité 15 — Au sport (addal) --------
+// « Addal » est un néologisme de l'Amawal (1974) : il n'a pas d'ancêtre au
+// village, et le cours le dit. « Takurt » (balle) et « tazzla » (course),
+// eux, sont de vieux mots kabyles — le sport moderne s'est construit dessus.
+const l50 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Addal', 'Le sport', ['Le sport', 'Le jeu', 'La course', 'Le travail']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Takurt', 'Le ballon', ['Le ballon', 'Le pied', 'Le jeu', 'La main']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Urar', 'Le jeu', ['Le jeu', 'Le sport', 'Le ballon', 'La course']),
+  culture('« Addal » (le sport) est un mot…', 'Créé au XXᵉ siècle', [
+    'Créé au XXᵉ siècle',
+    'Emprunté à l’arabe',
+    'Emprunté au français',
+    'Aussi vieux que le kabyle',
+  ]),
+  match([
+    { kab: 'Addal', fr: 'Le sport' },
+    { kab: 'Takurt', fr: 'Le ballon' },
+    { kab: 'Urar', fr: 'Le jeu' },
+  ]),
+]
+const l51 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Tazzla', 'La course', ['La course', 'Le saut', 'La marche', 'Le jeu']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Azzel !', 'Cours !', ['Cours !', 'Saute !', 'Viens !', 'Arrête !']),
+  listen('Tazzla', 'La course', ['La course', 'Le ballon', 'Le sport', 'Le jeu']),
+  qcm('fr-to-kab', 'Comment dit-on « Nage ! » ?', 'Nage !', 'Ɛumm !', ['Ɛumm !', 'Azzel !', 'As-d !', 'Ṛuḥ !']),
+  match([
+    { kab: 'Tazzla', fr: 'La course' },
+    { kab: 'Azzel !', fr: 'Cours !' },
+    { kab: 'Aḍar', fr: 'Le pied' },
+  ]),
+]
+const l52 = [
+  qcm('kab-to-fr', 'Que signifie ?', 'Arrac', 'Les enfants', ['Les enfants', 'Les hommes', 'Les amis', 'Les voisins']),
+  qcm('kab-to-fr', 'Que signifie ?', 'Ilemẓi', 'Le jeune homme', ['Le jeune homme', 'La jeune fille', 'Le vieil homme', 'L’enfant']),
+  qcm('fr-to-kab', 'Comment dit-on « La jeune fille » ?', 'La jeune fille', 'Tilemẓit', ['Tilemẓit', 'Ilemẓi', 'Taqcict', 'Tameṭṭut']),
+  culture('« Takurt » (le ballon) est un mot…', 'Kabyle', ['Kabyle', 'Arabe', 'Français', 'Espagnol']),
+  match([
+    { kab: 'Arrac', fr: 'Les enfants' },
+    { kab: 'Ilemẓi', fr: 'Le jeune homme' },
+    { kab: 'Tilemẓit', fr: 'La jeune fille' },
+  ]),
+]
+const l53 = [
+  match([
+    { kab: 'Addal', fr: 'Le sport' },
+    { kab: 'Takurt', fr: 'Le ballon' },
+    { kab: 'Tazzla', fr: 'La course' },
+    { kab: 'Urar', fr: 'Le jeu' },
+  ]),
+  qcm('fr-to-kab', 'Comment dit-on « Le sport » ?', 'Le sport', 'Addal', ['Addal', 'Urar', 'Takurt', 'Tazzla']),
+  listen('Takurt', 'Le ballon', ['Le ballon', 'La course', 'Le pied', 'Le jeu']),
+  culture('Les deux mots « addal » et « tawuri » ont en commun…', 'D’être amazighs, pas empruntés', [
+    'D’être amazighs, pas empruntés',
+    'D’être arabes',
+    'D’être des noms de villages',
+    'De vouloir dire la même chose',
+  ]),
+]
+
 export const byLesson = {
   l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17,
   l18, l19, l20, l21, l22, l23, l24, l25, l26, l27, l28, l29, l30, l31, l32, l33, l34, l35,
   l36, l37, l38, l39, l40, l41, l42, l43, l44, l45,
+  l46, l47, l48, l49, l50, l51, l52, l53,
 }
 
 export function getExercises(lessonId) {

@@ -16,6 +16,7 @@ import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.
 import { DuoScreen } from './screens/DuoScreen.jsx'
 import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
+import { DictionnaireScreen } from './screens/DictionnaireScreen.jsx'
 import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
@@ -36,6 +37,7 @@ import { AccountScreen } from './screens/AccountScreen.jsx'
 import { AbonnementScreen } from './screens/AbonnementScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
 import { etatAbonnement, uniteOuverte, rejoindreFamille, oublierAbonnement } from './lib/abonnement.js'
+import { oublierEmprunts } from './lib/emprunts.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl, contentDigest } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -756,6 +758,7 @@ export default function App() {
               onQuiz={() => setScreen(ECRANS.QUIZ)}
               onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
+              onDictionnaire={() => setScreen(ECRANS.DICTIONNAIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
               onProfile={() => setScreen(ECRANS.PROFIL)}
               onLanguages={() => setScreen(ECRANS.LANGUES)}
@@ -805,6 +808,9 @@ export default function App() {
               onFamille={() => setScreen(ECRANS.FAMILLE)}
               onResetLang={(langId) => {
                 // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
+                // Les modales d'emprunt partent avec : qui recommence le cours
+                // doit retrouver ses explications, pas un parcours muet.
+                oublierEmprunts(langId)
                 setStore((s) => {
                   const apres = resetLanguage(s, langId)
                   pushStore(apres)
@@ -952,6 +958,14 @@ export default function App() {
           )}
 
           {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.AUJOURDHUI)} />}
+
+          {screen === ECRANS.DICTIONNAIRE && (
+            <DictionnaireScreen
+              abonnement={abonnement}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
 
           {screen === ECRANS.JEUX && (
             <JeuxScreen

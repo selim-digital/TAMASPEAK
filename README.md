@@ -9,16 +9,101 @@ gardant sa propre progression :
 
 | Cours | Autonyme | Région | Contenu |
 | --- | --- | --- | --- |
-| Kabyle | Taqbaylit | Kabylie · Algérie | 10 unités, 35 leçons |
-| Tachelhit | Tacelḥit | Souss & Anti-Atlas · Maroc | 2 unités, 9 leçons |
-| Tarifit | Tarifit | Rif · Maroc | 2 unités, 9 leçons |
-| Tamazight (Atlas) | Tamaziɣt | Maroc central · Moyen Atlas | 2 unités, 9 leçons |
-| Amazighe standard | Tamaziɣt tanawayt | Norme officielle · tifinagh | 2 unités, 11 leçons |
+| Kabyle | Taqbaylit | Kabylie · Algérie | 15 unités, 53 leçons |
+| Tachelhit | Tacelḥit | Souss & Anti-Atlas · Maroc | 4 unités, 17 leçons |
+| Tarifit | Tarifit | Rif · Maroc | 4 unités, 17 leçons |
+| Tamazight (Atlas) | Tamaziɣt | Maroc central · Moyen Atlas | 4 unités, 17 leçons |
+| Amazighe standard | Tamaziɣt tanawayt | Norme officielle · tifinagh | 4 unités, 19 leçons |
+
+Les deux dernières unités de **chaque** cours sont **« Au travail »** et
+**« Au sport »** : ce sont les domaines où l'amazigh moderne emprunte le plus,
+et où le contraste entre le mot d'usage et le mot du fonds amazigh
+(lxedmet / tawuri, ryaḍa / addal, lkuṛa / takurt) s'enseigne le mieux.
 
 > **Le contenu linguistique est PROVISOIRE** et doit être validé par des
 > locuteurs natifs avant diffusion large. Chaque cours cite ses sources en tête
 > de son fichier (`src/data/courses/*.js`) et signale explicitement ce qui est
 > néologisme militant, emprunt arabe d'usage courant ou forme contestée.
+
+### Le lexique, et les emprunts à l'arabe
+
+```bash
+npm run gen:lexique   # → lexique.csv + lexique.md (les 5 cours, 268 entrées)
+npm run gen:audio     # → public/audio/manifest.json + content-review.csv (kabyle)
+```
+
+`lexique.md` est la **fiche de validation complète** : tout ce que l'app fait
+dire, langue par langue, avec le nom du fichier audio attendu. Elle est
+dérivée du contenu réel des cours — jamais tenue à la main, sinon elle
+divergerait dès la leçon suivante.
+
+Les expressions empruntées sont recensées dans `src/data/emprunts.js` — 58 à
+l'arabe, une à l'espagnol (`simana`, la semaine, entrée au Rif par Melilla).
+Quand l'élève **valide la bonne réponse** sur l'une d'elles, une modale lui
+donne le mot amazigh plus classique quand il en existe un (azul, tanemmirt,
+tawuri, addal…) — et dit, toujours, que **les deux sont justes** : l'arabe est
+présent depuis des siècles dans les régions et la culture amazighes. Trois
+garde-fous tiennent ce fichier honnête :
+
+- pas de « mot classique » inventé pour combler une case (`ssuq` n'a pas de
+  remplaçant vivant, et le dire vaut mieux que fabriquer) ;
+- les formules qui nomment Dieu (`Lla yɛawn`, `Qqim g lman`…) sont **hors du
+  registre** — ce sont des bénédictions, pas des choix de vocabulaire ;
+- ce dont l'origine est discutée attend dans `A_TRANCHER`, affiché nulle part.
+
+La modale s'affiche **une fois par mot et par langue** (`src/lib/emprunts.js`) :
+sinon, au troisième passage, on ferme sans lire.
+
+## Le dictionnaire
+
+La vue en travers des cinq cours — celle qu'aucune leçon ne peut donner.
+Chercher « eau » et voir `aman` identique du Rif au Souss ; chercher « maison »
+et voir `axxam`, `tigmmi`, `taddart` se partager le territoire ; chercher
+« travail » et voir l'emprunt et le mot du fonds côte à côte.
+
+**Il ne tient aucune liste à lui.** `src/data/dictionnaire.js` dérive ses
+entrées du contenu réel des leçons — le même module sert le moteur de
+recherche de l'app *et* `npm run gen:lexique`. Une seconde liste tenue à la
+main aurait divergé dès la leçon suivante, et un dictionnaire qui ment sur ce
+que l'app enseigne ne vaut rien.
+
+| Couche | Fichier | Sûreté |
+| --- | --- | --- |
+| Entrées (mot, sens, unité, leçons) | dérivées des exercices | ce sont des faits |
+| Liens (synonymes, cousins entre langues) | calculés sur le noyau du sens français | mécanique, vérifiable |
+| Étymologie (origine, racine, note) | `src/data/etymologies.js`, **écrit à la main** | **à valider** |
+
+Le tifinagh est indexé sous sa forme latine (`src/lib/translit.js`) : taper
+« azul » trouve ⴰⵣⵓⵍ, taper « adar » trouve `aḍar`. La conversion inverse
+n'existe pas volontairement — le schwa ne s'écrit pas en norme IRCAM, et une
+translittération mécanique fabriquerait des mots faux.
+
+Quand les sources se contredisent, l'entrée porte `discute: true` et l'écran
+l'affiche. Quand l'étymologie n'est pas encore écrite, la fiche ne se tait
+pas non plus : elle affiche « **l'origine de ce mot n'est pas encore écrite,
+elle sera ajoutée après validation** » et porte la pastille « origine à
+préciser ». Un bloc absent laisserait croire que la question ne se pose pas ;
+c'est la case qui est vide, pas le mot.
+
+`npm run gen:lexique` produit la section **« Étymologies — la couche écrite à
+la main »** de `lexique.md` : chaque note avec les formes qu'elle couvre, sa
+racine, les cours concernés, une colonne « discuté » et une case à cocher.
+C'est la liste à valider — et elle groupe par NOTE, pas par mot : « aman » est
+le même mot du Rif au Souss, il se valide une fois.
+
+### Ce qui est payant, et ce qui ne l'est pas
+
+**La recherche n'est jamais verrouillée.** Sans abonnement on voit toujours le
+mot, sa langue et son sens : cacher jusqu'à l'existence des mots ferait un
+dictionnaire inutilisable, donc invendable. C'est la **fiche** — origine,
+racine, synonymes, correspondances dans les quatre autres langues — qui
+demande l'abonnement.
+
+Et la règle des unités libres s'applique telle quelle (`entreeDicoOuverte`
+délègue à `uniteOuverte`) : **les mots de la première unité de chaque cours
+ont leur fiche ouverte pour toujours**. Ce qui était gratuit le reste. Comme
+partout, on ne verrouille que sur un **refus explicite du serveur** —
+hors-ligne, panne ou boutique fermée laissent tout ouvert.
 
 ## Démarrer
 
@@ -257,11 +342,15 @@ src/
     courses/*.js     contenu par langue (+ sources en commentaire)
     units.js         unités du cours de kabyle
     lessons.js       exercices du cours de kabyle
+    emprunts.js      les mots venus de l'arabe + le mot amazigh classique
+    dictionnaire.js  les 5 cours réunis : entrées, cousins, recherche
+    etymologies.js   origines & racines, écrites à la main — à valider
     journey.js       les 11 paysages ; le voyage part de « chez » la langue
     badges.js        badges dérivés de la progression
   lib/
     progress.js      store multi-langues + migration, localStorage
     audio.js         natif → synthèse → voix du navigateur
+    translit.js      tifinagh → latin, et la clé de recherche du dictionnaire
     challenge.js     défi entre amis par graine (sans serveur)
     share.js         cartes de partage, Web Share + presse-papiers
     sfx.js           sons de jeu synthétisés (WebAudio, aucun fichier)
@@ -270,6 +359,7 @@ src/
 scripts/
   gen-icons.mjs      icônes PWA générées (rasterizer maison, sans dépendance)
   gen-audio-manifest.mjs
+  gen-lexique.mjs    lexique.csv + lexique.md — les 5 cours, fiche de validation
 ```
 
 ```
