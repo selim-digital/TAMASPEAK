@@ -199,6 +199,15 @@ async function lexiqueGet(req, res) {
   const lignes = await sql()`
     SELECT l.id, l.lang, l.cle, l.terme, l.sens, l.notes, l.categorie, l.source,
            l.unite, l.lecons, l.rang, l.statut, l.valide_par, l.valide_le, l.updated_at,
+           l.publie_terme, l.publie_sens, l.publie_statut, l.publie_le,
+           -- « Ce qui est en ligne est-il à jour ? » — calculé par la base
+           -- plutôt que deviné par la page : c'est la même comparaison que
+           -- celle qui décide ce que publie ?r=publier, au même endroit.
+           (l.publie_le IS NOT NULL
+            AND l.publie_statut IS NOT DISTINCT FROM l.statut
+            AND l.publie_terme  IS NOT DISTINCT FROM l.terme
+            AND l.publie_sens   IS NOT DISTINCT FROM l.sens
+            AND l.publie_notes  IS NOT DISTINCT FROM l.notes) AS a_jour,
            COALESCE(
              json_agg(json_build_object(
                'voix', a.voix, 'locuteur', a.locuteur,
@@ -240,7 +249,14 @@ async function lexiqueGet(req, res) {
            COUNT(*) FILTER (WHERE statut = 'valide')::int        AS valides,
            COUNT(*) FILTER (WHERE statut = 'a-revoir')::int      AS a_revoir,
            COUNT(*) FILTER (WHERE statut = 'rejete')::int        AS rejetes,
-           COUNT(*) FILTER (WHERE categorie = 'expression')::int AS expressions
+           COUNT(*) FILTER (WHERE categorie = 'expression')::int AS expressions,
+           COUNT(*) FILTER (WHERE publie_le IS NOT NULL)::int     AS publiees,
+           COUNT(*) FILTER (WHERE statut IN ('valide', 'rejete') AND (
+             publie_le IS NULL
+             OR publie_statut IS DISTINCT FROM statut
+             OR publie_terme  IS DISTINCT FROM terme
+             OR publie_sens   IS DISTINCT FROM sens
+             OR publie_notes  IS DISTINCT FROM notes))::int       AS a_publier
     FROM lexique WHERE (${lang}::text IS NULL OR lang = ${lang})`
 
   const parVoix = await sql()`
@@ -393,6 +409,76 @@ async function lexiqueDelete(req, res) {
   return res.status(200).json({ ok: true })
 }
 
+/* ------------------------------------------------------------------ */
+/* ?r=publier — l'étape qui fait sortir le travail.                     */
+/*                                                                      */
+/* Valider ne suffit pas : tant que la correction dort en base, l'app    */
+/* enseigne toujours l'ancienne forme. Publier est un ACTE DÉLIBÉRÉ —    */
+/* on relit, on valide, PUIS on publie, et on voit d'abord ce qui part.  */
+/*                                                                      */
+/* Ce qui est publiable : une entrée VALIDÉE dont la forme diffère de    */
+/* celle déjà en ligne, ou REJETÉE (elle disparaîtra du dictionnaire).   */
+/* Ni « à valider » ni « à revoir » ne sortent jamais : un doute n'a     */
+/* rien à faire chez les élèves.                                        */
+/* ------------------------------------------------------------------ */
+
+const AUX_ELEVES = ['valide', 'rejete']
+
+/** Les entrées qui attendent de sortir — la liste qu'on relit avant le clic. */
+const enAttenteDePublication = () => sql()`
+  SELECT id, lang, cle, terme, sens, notes, categorie, statut, source, unite,
+         publie_terme, publie_sens, publie_statut, publie_le
+  FROM lexique
+  WHERE statut IN ('valide', 'rejete')
+    AND (publie_le IS NULL
+         OR publie_statut IS DISTINCT FROM statut
+         OR publie_terme  IS DISTINCT FROM terme
+         OR publie_sens   IS DISTINCT FROM sens
+         OR publie_notes  IS DISTINCT FROM notes)
+  ORDER BY lang, rang, terme
+  LIMIT 2000`
+
+async function publier(req, res, session) {
+  if (req.method === 'GET') {
+    const attente = await enAttenteDePublication()
+    const [enLigne] = await sql()`
+      SELECT COUNT(*)::int AS total,
+             COUNT(*) FILTER (WHERE publie_statut = 'rejete')::int AS retires,
+             MAX(publie_le) AS derniere
+      FROM lexique WHERE publie_le IS NOT NULL`
+    return res.status(200).json({ attente, enLigne })
+  }
+
+  if (req.method !== 'POST') return res.status(405).json({ error: 'méthode non autorisée' })
+
+  // Une publication ciblée (`ids`) ou tout ce qui attend. Le tout-ou-partie
+  // compte : on publie parfois une correction urgente sans embarquer le
+  // reste d'une séance de relecture encore en cours.
+  const ids = Array.isArray(req.body?.ids)
+    ? req.body.ids.map(Number).filter((n) => Number.isInteger(n) && n > 0)
+    : null
+  if (ids && !ids.length) return res.status(400).json({ error: 'aucune entrée à publier' })
+
+  const lignes = await sql()`
+    UPDATE lexique SET
+      publie_terme  = terme,
+      publie_sens   = sens,
+      publie_notes  = notes,
+      publie_statut = statut,
+      publie_le     = NOW(),
+      publie_par    = ${session.user.email}
+    WHERE statut IN ('valide', 'rejete')
+      AND (${ids}::bigint[] IS NULL OR id = ANY(${ids}::bigint[]))
+      AND (publie_le IS NULL
+           OR publie_statut IS DISTINCT FROM statut
+           OR publie_terme  IS DISTINCT FROM terme
+           OR publie_sens   IS DISTINCT FROM sens
+           OR publie_notes  IS DISTINCT FROM notes)
+    RETURNING id, lang, terme, statut`
+
+  return res.status(200).json({ ok: true, publiees: lignes.length, entrees: lignes })
+}
+
 async function lexique(req, res, session) {
   if (req.method === 'GET') return lexiqueGet(req, res)
   if (req.method === 'POST') return lexiquePost(req, res, session)
@@ -490,12 +576,14 @@ export default async function handler(req, res) {
     return revenus(res)
   }
   if (r === 'feedbacks') return feedbacks(req, res)
-  if (r === 'lexique' || r === 'voix') {
-    // Les deux tables de l'atelier sont les dernières arrivées du schéma :
-    // sur une base installée avant le backoffice de contenu, elles n'existent
-    // pas encore. Même filet que pour les abonnements.
+  if (r === 'lexique' || r === 'voix' || r === 'publier') {
+    // Les tables de l'atelier sont les dernières arrivées du schéma : sur une
+    // base installée avant le backoffice de contenu, elles n'existent pas
+    // encore. Même filet que pour les abonnements.
     await assurerSchema()
-    return r === 'lexique' ? lexique(req, res, session) : voixRoute(req, res, session)
+    if (r === 'lexique') return lexique(req, res, session)
+    if (r === 'voix') return voixRoute(req, res, session)
+    return publier(req, res, session)
   }
 
   return res.status(404).json({ error: 'route inconnue' })

@@ -359,6 +359,37 @@ CREATE UNIQUE INDEX IF NOT EXISTS lexique_audio_unique
   ON lexique_audio (lexique_id, voix);
 
 -- ------------------------------------------------------------------
+-- LA PUBLICATION — le pont entre l'atelier et le dictionnaire en ligne.
+--
+-- Valider ne suffit pas : tant que la correction dort en base, l'app
+-- continue d'enseigner l'ancienne forme. Publier est le geste QUI LA FAIT
+-- SORTIR — un acte délibéré, jamais l'effet de bord d'une frappe au
+-- clavier. On relit, on valide, PUIS on publie.
+--
+-- Ces colonnes sont un INSTANTANÉ, pas un miroir : ce qui est en ligne est
+-- exactement ce qui a été relu au moment du clic. Sans elles, une frappe
+-- malheureuse d'après-publication partirait chez les élèves sans que
+-- personne l'ait décidé. L'écart entre `terme` et `publie_terme` est
+-- précisément « ce qui attend d'être publié », et le backoffice le montre.
+--
+-- Ajoutées après coup (l'atelier existait déjà) : ALTER idempotent, comme
+-- partout ici — une base déjà installée se met à jour toute seule.
+-- ------------------------------------------------------------------
+
+ALTER TABLE lexique ADD COLUMN IF NOT EXISTS publie_terme TEXT;
+ALTER TABLE lexique ADD COLUMN IF NOT EXISTS publie_sens TEXT;
+ALTER TABLE lexique ADD COLUMN IF NOT EXISTS publie_notes TEXT;
+-- Le statut publié porte les RETRAITS : une entrée publiée « rejetée »
+-- disparaît du dictionnaire en ligne. C'est le seul moyen de faire oublier
+-- un mot faux sans attendre un déploiement.
+ALTER TABLE lexique ADD COLUMN IF NOT EXISTS publie_statut TEXT;
+ALTER TABLE lexique ADD COLUMN IF NOT EXISTS publie_le TIMESTAMPTZ;
+ALTER TABLE lexique ADD COLUMN IF NOT EXISTS publie_par TEXT;
+
+-- L'index qui sert la route publique : elle ne lit QUE ce qui est publié.
+CREATE INDEX IF NOT EXISTS lexique_publie ON lexique (publie_le) WHERE publie_le IS NOT NULL;
+
+-- ------------------------------------------------------------------
 -- ABONNEMENTS — la monétisation.
 --
 -- Règle qui gouverne ces trois tables : STRIPE FAIT FOI. On ne recopie ici

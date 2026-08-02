@@ -186,6 +186,43 @@ listes :
 | **À valider** | Les mots et expressions que personne n'a encore relus. Un locuteur natif valide, corrige, pose un doute (« à revoir ») ou rejette — en écoutant les prises, sur la même fiche. |
 | **Dictionnaire** | Tout le contenu, **entièrement modifiable** : forme retenue, français, notes, type, statut. On peut aussi ajouter une entrée qui n'est dans aucune leçon, et exporter la sélection en CSV pour l'envoyer à un relecteur. |
 
+### Publier — l'étape qui fait sortir le travail
+
+Valider ne suffisait pas : tant que la correction dormait en base, l'app
+continuait d'enseigner l'ancienne forme, et la relecture d'un locuteur natif
+n'atteignait personne avant le déploiement suivant. **Publier** est le geste qui
+la fait sortir — délibéré, jamais l'effet de bord d'une frappe au clavier.
+
+Le panneau en tête de l'onglet « À valider » montre, ligne à ligne, **ce qui va
+partir et ce que les élèves ont sous les yeux aujourd'hui**. Trois gestes
+sortent, et trois seulement :
+
+| Geste | Effet dans le dictionnaire en ligne |
+| --- | --- |
+| **correction** | l'entrée prend la forme et le sens relus |
+| **ajout** | un mot qui n'est dans aucune leçon entre au dictionnaire |
+| **retrait** | une entrée rejetée disparaît, sans attendre un déploiement |
+
+Ni « à valider » ni « à revoir » ne sortent jamais : un doute n'a rien à faire
+chez les élèves. Les colonnes `publie_*` sont un **instantané** de l'entrée au
+moment du clic, pas un miroir de la table — sans quoi une frappe malheureuse
+d'après-publication partirait sans que personne l'ait décidée. L'écart entre
+`terme` et `publie_terme` est exactement « ce qui attend d'être publié », et la
+colonne « En ligne » le dit sur chaque entrée : *en ligne · à publier · à
+republier · atelier*.
+
+Côté app, `GET /api/sync?r=dictionnaire` renvoie **la seule couche de
+corrections** — publique, anonyme, mise en cache cinq minutes au bord de
+Vercel. `src/lib/dictionnaireLive.js` la pose par-dessus le dictionnaire
+embarqué et la garde dans `localStorage` : au deuxième lancement, les
+corrections sont là même sans réseau. Hors-ligne, serveur muet ou réponse
+illisible, on garde le contenu embarqué et on se tait.
+
+> **Les leçons ne bougent pas.** Une correction change ce que le dictionnaire
+> *montre*, pas ce que les exercices *demandent* — un exercice dont la bonne
+> réponse changerait sous les pieds de l'élève casserait sa série. Pour
+> corriger le cours lui-même, le report dans `src/data/` reste le geste.
+
 ### La règle qui gouverne tout cela
 
 **`src/data/` reste la source de vérité.** L'app embarque son contenu — c'est
@@ -242,9 +279,11 @@ api/
   distance.js        cercle, défis, demandes de voix (?r=…)
   _lib/stripe.js     client REST Stripe + vérification de signature, sans SDK
   _lib/lexique.js    l'atelier du contenu — ensemencement depuis src/data/
+  sync.js            progression (privée) + ?r=dictionnaire (corrections publiées)
 src/
   data/tarifs.js     zones, prix, pays — source de vérité partagée app/serveur
   lib/abonnement.js  client de la caisse + le verrou (`uniteOuverte`)
+  lib/dictionnaireLive.js  la couche de corrections, posée sur le bundle
   screens/AbonnementScreen.jsx
 public/admin.html    le backoffice, en HTML nu, hors du bundle des élèves
 ```

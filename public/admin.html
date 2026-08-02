@@ -580,6 +580,21 @@ const optionsLangues = [['', 'Toutes les langues'], ...Object.entries(LANGUES)]
 
 const pastille = (statut) => el('span', { class: `puce ${statut}` }, STATUTS[statut] || statut)
 
+/**
+ * Où en est cette entrée VIS-À-VIS DES ÉLÈVES — la question que le statut ne
+ * répond pas. « Validé » dit qu'un locuteur a tranché ; « en ligne » dit que
+ * sa décision est arrivée jusqu'aux téléphones. Les deux se confondaient, et
+ * c'est précisément la confusion qui laissait un mot corrigé rester faux.
+ */
+function pastillePublication(e) {
+  if (e.a_jour) return el('span', { class: 'puce valide', title: `Publié le ${new Date(e.publie_le).toLocaleString('fr-FR')}` }, 'en ligne')
+  if (e.publie_le)
+    return el('span', { class: 'puce a-revoir', title: 'La version en ligne date d’avant cette correction.' }, 'à republier')
+  if (e.statut === 'valide' || e.statut === 'rejete')
+    return el('span', { class: 'puce a-revoir', title: 'Validé, mais jamais publié — les élèves ne l’ont pas.' }, 'à publier')
+  return el('span', { class: 'puce a-valider', title: 'Ni validé ni publié.' }, 'atelier')
+}
+
 /** La liste affichée : filtres serveur déjà appliqués, recherche en local. */
 function visibles() {
   const q = LEX.q.trim().toLowerCase()
@@ -1062,6 +1077,7 @@ async function vueValidation() {
           el('span', { class: 'mot' }, e.terme),
           pastille(e.statut),
           el('span', { class: 'puce ' + (e.source === 'ajout' ? 'ajout' : 'dictionnaire') }, e.source),
+          pastillePublication(e),
           el('span', { class: 'muet' }, LANGUES[e.lang] || e.lang),
           e.unite ? el('span', { class: 'muet' }, e.unite) : null,
           e.lecons ? el('span', { class: 'muet' }, `leçons ${e.lecons}`) : null,
@@ -1130,9 +1146,11 @@ async function vueValidation() {
 
     el('div', { class: 'note', style: 'margin:10px 0 16px' },
       'Le contenu linguistique de l’app est PROVISOIRE tant qu’un locuteur natif ne l’a pas relu. ' +
-      'Valider dit « la forme et le sens sont justes » ; corriger réécrit la forme retenue — ' +
-      'l’ancienne reste affichée en rouge tant qu’elle n’a pas été reportée dans src/data/, ' +
-      'seul endroit qui atteigne les téléphones.'),
+      'Valider dit « la forme et le sens sont justes » ; corriger réécrit la forme retenue. ' +
+      'Une fois validée, une entrée attend d’être PUBLIÉE : c’est le geste qui la fait sortir ' +
+      'jusqu’au dictionnaire en ligne.'),
+
+    await panneauPublication(refaire),
 
     el('h2', {}, 'Les entrées'),
     filtres({ champs: ['lang', 'statut', 'categorie'], refaire, redessiner: dessiner }),
@@ -1141,6 +1159,107 @@ async function vueValidation() {
 
   dessiner()
   return [bloc]
+}
+
+/* ------------------------------------------------------------------ */
+/* L'ÉTAPE DE PUBLICATION — ce qui fait sortir le travail               */
+/*                                                                      */
+/* Valider ne suffit pas : tant que la correction dort en base, l'app    */
+/* enseigne l'ancienne forme. Publier est un acte délibéré — et on voit  */
+/* d'abord, ligne à ligne, ce qui va partir. Aucun envoi à l'aveugle.    */
+/* ------------------------------------------------------------------ */
+
+async function panneauPublication(refaire) {
+  const bloc = el('div', { class: 'encart' })
+
+  const rendre = async () => {
+    bloc.textContent = ''
+    let d
+    try {
+      d = await api('publier')
+    } catch (e) {
+      bloc.append(el('p', { class: 'muet' }, `Publication indisponible — ${e.message}`))
+      return
+    }
+    const attente = d.attente || []
+    const enLigne = d.enLigne || {}
+
+    const entete = el('div',
+      { style: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap' },
+      el('div', {},
+        el('div', { style: 'font-size:15px;font-weight:800' },
+          attente.length
+            ? `${nombre(attente.length)} correction(s) prêtes à publier`
+            : 'Tout ce qui est validé est en ligne.'),
+        el('div', { class: 'note', style: 'margin-top:2px' },
+          enLigne.derniere
+            ? `${nombre(enLigne.total)} entrée(s) en ligne, dont ${nombre(enLigne.retires)} retirée(s) — ` +
+              `dernière publication le ${new Date(enLigne.derniere).toLocaleString('fr-FR')}.`
+            : 'Rien n’a encore été publié : le dictionnaire en ligne montre le contenu du dernier déploiement.')),
+      el('span', { class: 'pousse', style: 'margin-left:auto' }),
+      attente.length
+        ? el('button', {
+            class: 'bouton fort',
+            onclick: async (ev) => {
+              const b = ev.target
+              b.disabled = true
+              b.textContent = 'Publication…'
+              try {
+                const res = await ecrire('publier', 'POST', {})
+                signaler(`${res.publiees} correction(s) publiées — en ligne d’ici quelques minutes.`, true)
+                refaire()
+              } catch (err) {
+                signaler(err.message)
+                b.disabled = false
+                b.textContent = '↑ Publier'
+              }
+            },
+          }, '↑ Publier')
+        : null,
+    )
+    bloc.append(entete)
+
+    if (!attente.length) return
+
+    // Ce qui va partir, ligne à ligne. La colonne « en ligne » montre ce que
+    // les élèves voient AUJOURD'HUI : sans elle, publier serait un pari.
+    bloc.append(
+      el('div', { class: 'defiler', style: 'margin-top:12px' },
+        el('table', {},
+          el('thead', {},
+            el('tr', {},
+              el('th', {}, 'Langue'),
+              el('th', {}, 'Ce qui partira'),
+              el('th', {}, 'Français'),
+              el('th', {}, 'En ligne aujourd’hui'),
+              el('th', {}, 'Geste'))),
+          el('tbody', {}, attente.map((e) =>
+            el('tr', {},
+              el('td', { class: 'muet' }, LANGUES[e.lang] || e.lang),
+              el('td', { style: 'font-weight:800' },
+                e.statut === 'rejete' ? el('s', {}, e.terme) : e.terme),
+              el('td', {}, e.sens || el('span', { class: 'muet' }, '—')),
+              el('td', { class: 'muet' },
+                !e.publie_le
+                  ? el('span', { class: 'puce a-valider' }, e.cle ? 'contenu embarqué' : 'absente')
+                  : `${e.publie_terme}${e.publie_sens ? ` — ${e.publie_sens}` : ''}`),
+              el('td', {},
+                el('span', { class: `puce ${e.statut === 'rejete' ? 'rejete' : 'valide'}` },
+                  e.statut === 'rejete'
+                    ? 'retrait'
+                    : !e.publie_le
+                      ? (e.cle ? 'correction' : 'ajout')
+                      : 'mise à jour'))))))),
+      el('div', { class: 'note' },
+        'Publier pose une COUCHE par-dessus le contenu embarqué de l’app : le dictionnaire en ligne ' +
+        'montre la forme relue en quelques minutes, sans déploiement. Les LEÇONS ne bougent pas — ' +
+        'un exercice dont la bonne réponse changerait sous les pieds de l’élève casserait sa série. ' +
+        'Pour corriger le cours lui-même, il faut toujours reporter dans src/data/.'),
+    )
+  }
+
+  await rendre()
+  return bloc
 }
 
 /* ------------------------------------------------------------------ */
@@ -1269,6 +1388,7 @@ async function vueDictionnaire() {
       el('td', { class: 'muet' }, e.unite || '—'),
       el('td', { style: 'min-width:118px' }, categorie),
       el('td', { style: 'min-width:118px' }, statut),
+      el('td', {}, pastillePublication(e)),
       el('td', {}, resumeVoix(e)),
       el('td', { class: 'actions' }, supprimer),
     )
@@ -1299,6 +1419,7 @@ async function vueDictionnaire() {
               el('th', {}, 'Unité'),
               el('th', {}, 'Type'),
               el('th', {}, 'Statut'),
+              el('th', { title: 'Ce que les élèves ont réellement sous les yeux' }, 'En ligne'),
               el('th', { title: 'Femme · Homme · enfant Fille · enfant Garçon' }, 'Voix'),
               el('th', {}, ''))),
           el('tbody', {}, lignes.map(ligne)))),
@@ -1310,8 +1431,9 @@ async function vueDictionnaire() {
     el('h2', {}, 'Le dictionnaire'),
     el('div', { class: 'grille' },
       carte(r.entrees, 'Entrées'),
-      carte(r.expressions, 'Expressions', 'le reste sont des mots'),
       carte(r.valides, 'Validées'),
+      carte(r.publiees, 'En ligne', 'vues par les élèves'),
+      carte(r.a_publier, 'À publier', 'validées, pas encore sorties'),
       carte(r.completes, 'Enregistrées', 'les quatre voix')),
 
     el('div', { class: 'note', style: 'margin:10px 0 16px' },
