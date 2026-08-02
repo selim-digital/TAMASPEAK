@@ -274,6 +274,91 @@ CREATE INDEX IF NOT EXISTS defis_adversaire ON defis (adversaire, created_at DES
 ALTER TABLE notifications ADD COLUMN IF NOT EXISTS data JSONB;
 
 -- ------------------------------------------------------------------
+-- LE LEXIQUE — l'atelier du contenu : valider, corriger, enregistrer.
+--
+-- Ces deux tables servent le BACKOFFICE (public/admin.html), pas l'app.
+-- L'app continue de lire son contenu dans `src/data/courses/*.js` : c'est
+-- ce qui la rend hors-ligne, et cela ne change pas.
+--
+-- Règle qui gouverne la table : LE CONTENU SÈME, L'ATELIER TRAVAILLE.
+--   • `cle`   = le terme TEL QU'IL EST DANS LE COURS. Il ne bouge jamais :
+--               c'est lui qui relie la ligne au contenu de l'app, donc au
+--               nom de fichier audio (slug) et aux exercices.
+--   • `terme` = la forme RETENUE après relecture. C'est elle qu'on édite.
+--     Quand `terme` diffère de `cle`, on lit la correction d'un coup d'œil,
+--     et on sait qu'il reste à la reporter dans le fichier du cours.
+--
+-- L'ensemencement (api/_lib/lexique.js) est idempotent et n'écrase JAMAIS
+-- une édition humaine : il insère ce qui manque, complète un `sens` vide,
+-- et se tait sur le reste. Une entrée peut aussi être créée à la main
+-- (`source = 'ajout'`) — le dictionnaire n'est pas prisonnier des leçons.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS lexique (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  lang TEXT NOT NULL,          -- kab | rif | shi | tzm | zgh (jamais 'kab-beta')
+  cle TEXT,                    -- terme d'origine dans le cours ; NULL si ajout manuel
+  terme TEXT NOT NULL,         -- la forme retenue — ÉDITABLE
+  sens TEXT,                   -- le français — ÉDITABLE
+  notes TEXT,                  -- variante régionale, registre, doute du relecteur
+  categorie TEXT NOT NULL DEFAULT 'mot',    -- 'mot' | 'expression' | 'lettre'
+  source TEXT NOT NULL DEFAULT 'cours',
+    -- 'dictionnaire' : semé depuis src/data/dictionnaire.js (la référence)
+    -- 'cours'        : semé depuis course.vocabulary(), à défaut de dictionnaire
+    -- 'ajout'        : créé à la main au backoffice — n'est dans aucun cours
+  unite TEXT,                  -- d'où ça vient dans le parcours (contexte du relecteur)
+  lecons TEXT,                 -- les leçons où le terme apparaît ('l1 l4 …')
+  rang INT NOT NULL DEFAULT 0, -- ordre du parcours : la liste se lit comme le cours
+  statut TEXT NOT NULL DEFAULT 'a-valider',
+    -- 'a-valider' : personne n'a encore relu
+    -- 'valide'    : un locuteur natif confirme la forme et le sens
+    -- 'a-revoir'  : un doute est posé (voir `notes`) — ni validé ni jeté
+    -- 'rejete'    : à retirer du cours ; reste en base pour ne pas
+    --               ressusciter au prochain ensemencement
+  valide_par TEXT,             -- l'email de l'admin qui a tranché
+  valide_le TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT lexique_terme_len CHECK (char_length(terme) BETWEEN 1 AND 120),
+  CONSTRAINT lexique_sens_len CHECK (char_length(sens) <= 200),
+  CONSTRAINT lexique_notes_len CHECK (char_length(notes) <= 1000)
+);
+
+-- Une seule ligne par terme de cours : c'est ce qui rend l'ensemencement
+-- rejouable à chaque ouverture du backoffice sans jamais dupliquer.
+CREATE UNIQUE INDEX IF NOT EXISTS lexique_cle_unique
+  ON lexique (lang, cle) WHERE cle IS NOT NULL;
+CREATE INDEX IF NOT EXISTS lexique_lang_statut ON lexique (lang, statut);
+CREATE INDEX IF NOT EXISTS lexique_ordre ON lexique (lang, rang, terme);
+
+-- Les QUATRE VOIX. Un mot n'est pas dit pareil par une grand-mère et par un
+-- enfant, et un enfant qui apprend a besoin d'entendre une voix d'enfant :
+-- on collecte donc les quatre, et une entrée n'est sonore pour de bon que
+-- lorsqu'elle les a toutes.
+--
+-- L'audio dort en base64, plafonné (~500 Ko binaire) comme `demandes_audio` :
+-- quelques secondes de voix compressée pèsent 30 à 80 Ko. Même règle morale
+-- que partout ailleurs dans ce projet — AUCUNE IA, AUCUNE reconstitution de
+-- voix : on garde le fichier tel quel, attribué à son auteur et effaçable.
+CREATE TABLE IF NOT EXISTS lexique_audio (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  lexique_id BIGINT NOT NULL REFERENCES lexique(id) ON DELETE CASCADE,
+  voix TEXT NOT NULL,          -- 'femme' | 'homme' | 'fille' | 'garcon'
+  audio_b64 TEXT NOT NULL,
+  audio_type TEXT NOT NULL DEFAULT 'audio/webm',
+  locuteur TEXT,               -- qui a prêté sa voix (attribution, pas pistage)
+  depose_par TEXT,             -- l'email de l'admin qui a déposé le fichier
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT lexique_audio_len CHECK (char_length(audio_b64) <= 800000),
+  CONSTRAINT lexique_audio_voix CHECK (voix IN ('femme', 'homme', 'fille', 'garcon'))
+);
+
+-- Une prise par voix et par entrée : ré-enregistrer REMPLACE (UPSERT).
+-- Garder l'historique des prises ratées ne servirait personne.
+CREATE UNIQUE INDEX IF NOT EXISTS lexique_audio_unique
+  ON lexique_audio (lexique_id, voix);
+
+-- ------------------------------------------------------------------
 -- ABONNEMENTS — la monétisation.
 --
 -- Règle qui gouverne ces trois tables : STRIPE FAIT FOI. On ne recopie ici

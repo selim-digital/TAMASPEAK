@@ -100,6 +100,90 @@
   .message b { color: var(--ink); }
   .muet { color: var(--ink-soft); font-size: 12px; }
   svg.courbe { width: 100%; height: 120px; display: block; }
+
+  /* ---------------------------------------------------------------- */
+  /* L'atelier du contenu — dictionnaire, validation, enregistrements. */
+  /* Les tableaux y sont larges (sept colonnes éditables) : la page     */
+  /* s'élargit sur ces vues-là seulement, pour ne pas changer la mise   */
+  /* en page des chiffres, qui se lisent mieux serrés.                  */
+  /* ---------------------------------------------------------------- */
+  .wrap.large { max-width: 1360px; }
+
+  .filtres { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .filtres select, .filtres input {
+    font-family: inherit; font-size: 13px; padding: 6px 10px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px; background: var(--cream);
+  }
+  .filtres input[type="search"] { min-width: 190px; }
+  .filtres .pousse { margin-left: auto; }
+
+  .bouton {
+    border: 1px solid var(--line); background: var(--cream); color: var(--ink-soft);
+    border-radius: 9px; padding: 6px 12px; font-size: 12.5px; font-weight: 800;
+    cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block;
+  }
+  .bouton.fort { background: var(--turquoise); border-color: var(--turquoise); color: #fff; }
+  .bouton.doux { background: var(--sand); }
+  .bouton[disabled] { opacity: .45; cursor: default; }
+
+  /* Édition en place : le champ ne se signale qu'au survol. Une grille de
+     deux cents rectangles blancs serait illisible ; ici on lit d'abord le
+     contenu, et l'outil apparaît quand la souris s'en approche. */
+  td input, td select, td textarea {
+    width: 100%; font-family: inherit; font-size: 13px; padding: 5px 7px; color: var(--ink);
+    border: 1px solid transparent; border-radius: 7px; background: transparent;
+  }
+  td input:hover, td select:hover, td textarea:hover { border-color: var(--line); }
+  td input:focus, td select:focus, td textarea:focus {
+    border-color: var(--turquoise); background: var(--sand); outline: none;
+  }
+  td.kab input { font-weight: 800; font-size: 14.5px; }
+  tr.enregistre > td { animation: flash 1.1s ease; }
+  @keyframes flash { from { background: rgba(60,194,107,.28); } to { background: transparent; } }
+  tr.rejete > td:not(.actions) { opacity: .5; }
+
+  .puce.valide { background: rgba(60,194,107,.16); color: #227a45; }
+  .puce.a-valider { background: var(--sand-2); color: var(--ink-soft); }
+  .puce.a-revoir { background: rgba(240,180,41,.2); color: #8a6300; }
+  .puce.rejete { background: rgba(255,111,97,.16); color: #b0362b; }
+  .puce.cours, .puce.dictionnaire { background: rgba(16,196,168,.14); color: var(--turquoise-deep); }
+  .puce.ajout { background: rgba(255,111,97,.14); color: #b0362b; }
+
+  /* Les quatre voix — une cellule par voix, deux états : prise faite
+     (verte, on écoute) ou prise à faire (on enregistre ou on dépose). */
+  .voixcell { display: flex; gap: 3px; align-items: center; }
+  .mini {
+    border: 1px solid var(--line); background: var(--sand); color: var(--ink-soft);
+    border-radius: 7px; min-width: 27px; height: 27px; display: grid; place-items: center;
+    cursor: pointer; font-size: 12px; padding: 0 5px; font-family: inherit; text-decoration: none;
+  }
+  .mini.plein { background: rgba(60,194,107,.16); border-color: rgba(60,194,107,.45); color: #227a45; }
+  .mini.rec { background: var(--coral); border-color: var(--coral); color: #fff; animation: pulse 1s infinite; }
+  .mini[disabled] { opacity: .4; cursor: default; }
+  @keyframes pulse { 50% { opacity: .5; } }
+  .mini input[type="file"] { display: none; }
+
+  /* Une entrée à valider — assez grande pour qu'on la lise vraiment. */
+  .entree { background: var(--cream); border: 1px solid var(--line); border-radius: 16px;
+            padding: 14px 16px; margin-bottom: 10px; }
+  .entree .tete { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .entree .mot { font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+  .entree .champs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  @media (max-width: 720px) { .entree .champs { grid-template-columns: 1fr; } }
+  .entree .champs label { font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+                          letter-spacing: .06em; color: var(--ink-soft); display: block; margin-bottom: 3px; }
+  .entree .champs input {
+    width: 100%; font-family: inherit; font-size: 14px; padding: 7px 9px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px; background: var(--sand);
+  }
+  .entree .champs input:focus { border-color: var(--turquoise); outline: none; }
+  .entree .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+
+  .avert { background: rgba(255,111,97,.1); border: 1px solid rgba(255,111,97,.35);
+           color: #b0362b; border-radius: 12px; padding: 10px 13px; font-size: 12.5px;
+           margin-bottom: 12px; }
+  .encart { background: var(--cream); border: 1px solid var(--line); border-radius: 16px;
+            padding: 14px 16px; margin-bottom: 14px; }
 </style>
 </head>
 <body>
@@ -116,6 +200,9 @@
     <button role="tab" data-vue="usage" aria-selected="true">Usage</button>
     <button role="tab" data-vue="abonnements" aria-selected="false">Abonnements</button>
     <button role="tab" data-vue="retours" aria-selected="false">Retours</button>
+    <button role="tab" data-vue="enregistrements" aria-selected="false">Enregistrements</button>
+    <button role="tab" data-vue="validation" aria-selected="false">À valider</button>
+    <button role="tab" data-vue="dictionnaire" aria-selected="false">Dictionnaire</button>
   </nav>
 
   <main id="vue"><div class="message">· · ·</div></main>
@@ -150,13 +237,41 @@ const nombre = (n) => (n ?? 0).toLocaleString('fr-FR')
 const pourcent = (a, b) => (b ? Math.round((a / b) * 100) : 0)
 const jour = (d) => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
 
-async function api(route, options) {
-  const r = await fetch(`/api/admin?r=${route}`, { credentials: 'include', ...options })
+/** L'adresse d'une route du tableau de bord, avec ses paramètres. */
+function adresse(route, params) {
+  const u = new URL('/api/admin', location.origin)
+  u.searchParams.set('r', route)
+  for (const [k, v] of Object.entries(params || {})) if (v) u.searchParams.set(k, v)
+  return u
+}
+
+async function api(route, { params, ...options } = {}) {
+  const r = await fetch(adresse(route, params), { credentials: 'include', ...options })
   if (r.status === 403) throw new Error('403')
   if (r.status === 503) throw new Error('503')
-  if (!r.ok) throw new Error(String(r.status))
+  if (!r.ok) {
+    // Le serveur explique ses refus (« entrée venue du contenu », « format non
+    // accepté ») : les remplacer par un numéro perdrait ce qui aide à agir.
+    let quoi = String(r.status)
+    try {
+      const j = await r.json()
+      quoi = [j.error, j.detail].filter(Boolean).join(' — ') || quoi
+    } catch {
+      /* réponse non JSON : le numéro fera l'affaire */
+    }
+    throw new Error(quoi)
+  }
   return r.json()
 }
+
+/** Écriture JSON (POST/PATCH) — le corps est toujours du JSON ici. */
+const ecrire = (route, method, corps, params) =>
+  api(route, {
+    method,
+    params,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(corps),
+  })
 
 const carte = (valeur, etiquette, note) =>
   el('div', { class: 'carte' },
@@ -370,15 +485,888 @@ async function vueRetours() {
 }
 
 /* ------------------------------------------------------------------ */
+/* L'ATELIER DU CONTENU                                                 */
+/*                                                                      */
+/* Trois onglets, UNE seule liste derrière : ce sont trois regards sur   */
+/* le même contenu, pas trois contenus.                                 */
+/*   • Enregistrements — ce qu'il reste à dire, voix par voix ;         */
+/*   • À valider       — ce que personne n'a encore relu ;              */
+/*   • Dictionnaire    — tout, et tout modifiable.                      */
+/*                                                                      */
+/* Le contenu vient de `src/data/` (dictionnaire, ou vocabulaire des    */
+/* cours à défaut) et y retourne : ce qu'on corrige ici doit être        */
+/* reporté dans les fichiers du cours pour atteindre les téléphones.     */
+/* La colonne « du cours » montre l'écart tant que ce n'est pas fait.    */
+/* ------------------------------------------------------------------ */
+
+const VOIX = [
+  { id: 'femme', label: 'Femme', court: 'Fem' },
+  { id: 'homme', label: 'Homme', court: 'Hom' },
+  { id: 'fille', label: 'Enfant fille', court: 'Fille' },
+  { id: 'garcon', label: 'Enfant garçon', court: 'Garçon' },
+]
+
+const STATUTS = {
+  'a-valider': 'à valider',
+  valide: 'validé',
+  'a-revoir': 'à revoir',
+  rejete: 'rejeté',
+}
+
+const CATEGORIES = { mot: 'mot', expression: 'expression', lettre: 'lettre' }
+
+/** Extension de fichier par format — pour que le téléchargement s'ouvre. */
+const EXT = {
+  'audio/webm': 'webm', 'audio/webm;codecs=opus': 'webm',
+  'audio/ogg': 'ogg', 'audio/ogg;codecs=opus': 'ogg',
+  'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/mpeg': 'mp3',
+  'audio/aac': 'aac', 'audio/wav': 'wav', 'audio/x-wav': 'wav',
+}
+
+/** Un fichier reçu par messagerie n'annonce pas toujours son type. */
+const TYPE_PAR_EXT = {
+  mp3: 'audio/mpeg', m4a: 'audio/mp4', mp4: 'audio/mp4', aac: 'audio/aac',
+  wav: 'audio/wav', ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', webm: 'audio/webm',
+}
+
+/** ~600 Ko binaires — le plafond du serveur, en clair pour l'utilisateur. */
+const TAILLE_MAX = 590_000
+
+const LEX = {
+  lang: '',
+  statut: '',
+  categorie: '',
+  manque: '',
+  q: '',
+  vue: null, // l'onglet de contenu affiché, pour ne pas hériter de ses filtres
+  data: null,
+  // Qui prête sa voix. Retenu d'une entrée à l'autre : on enregistre une
+  // série de mots avec la même personne, pas un mot avec dix personnes.
+  locuteur: localStorage.getItem('tama-locuteur') || '',
+}
+
+/* ------------------------------------------------------------------ */
+/* Petits outils partagés                                              */
+/* ------------------------------------------------------------------ */
+
+let motTuile = null
+function signaler(texte, ok = false) {
+  motTuile?.remove()
+  motTuile = el(
+    'div',
+    {
+      style:
+        'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;' +
+        'padding:10px 18px;border-radius:999px;font-size:13px;font-weight:800;color:#fff;' +
+        'max-width:90vw;box-shadow:0 6px 20px rgba(0,0,0,.18);' +
+        `background:${ok ? 'var(--vert)' : 'var(--coral)'}`,
+    },
+    texte,
+  )
+  document.body.append(motTuile)
+  const n = motTuile
+  setTimeout(() => n.remove(), 4200)
+}
+
+function selecteur(valeur, options, onChange, titre) {
+  const s = el('select', { title: titre || '', onchange: (e) => onChange(e.target.value) })
+  for (const [v, label] of options) {
+    s.append(el('option', { value: v, selected: v === valeur || undefined }, label))
+  }
+  return s
+}
+
+const optionsLangues = [['', 'Toutes les langues'], ...Object.entries(LANGUES)]
+
+const pastille = (statut) => el('span', { class: `puce ${statut}` }, STATUTS[statut] || statut)
+
+/** La liste affichée : filtres serveur déjà appliqués, recherche en local. */
+function visibles() {
+  const q = LEX.q.trim().toLowerCase()
+  const tout = LEX.data?.entrees || []
+  if (!q) return tout
+  return tout.filter((e) =>
+    `${e.terme} ${e.sens || ''} ${e.notes || ''} ${e.cle || ''}`.toLowerCase().includes(q),
+  )
+}
+
+/**
+ * Chaque onglet ouvre sur SA tâche : « à enregistrer » sur ce qui manque,
+ * « à valider » sur ce que personne n'a relu, le dictionnaire sur tout.
+ * Ces réglages-là ne se transmettent donc pas d'un onglet à l'autre — sinon
+ * le dictionnaire s'ouvrirait mystérieusement amputé. La LANGUE et la
+ * RECHERCHE, elles, suivent : on travaille sur un cours à la fois.
+ */
+function ouvrir(nom, defauts) {
+  if (LEX.vue !== nom) Object.assign(LEX, { statut: '', manque: '' }, defauts)
+  LEX.vue = nom
+}
+
+async function chargerLexique(extra) {
+  LEX.data = await api('lexique', {
+    params: {
+      lang: LEX.lang,
+      statut: LEX.statut,
+      categorie: LEX.categorie,
+      manque: LEX.manque,
+      ...extra,
+    },
+  })
+  return LEX.data
+}
+
+/**
+ * La barre de filtres. `refaire` recharge depuis le serveur (les filtres qui
+ * changent la SÉLECTION) ; `redessiner` ne réécrit que la liste (la
+ * recherche, purement locale — sinon chaque frappe perdrait le curseur).
+ */
+function filtres({ champs, refaire, redessiner, apres }) {
+  const barre = el('div', { class: 'filtres' })
+  const mis = new Set(champs)
+
+  if (mis.has('lang'))
+    barre.append(selecteur(LEX.lang, optionsLangues, (v) => ((LEX.lang = v), refaire())))
+
+  if (mis.has('statut'))
+    barre.append(
+      selecteur(
+        LEX.statut,
+        [['', 'Tous les statuts'], ...Object.entries(STATUTS)],
+        (v) => ((LEX.statut = v), refaire()),
+      ),
+    )
+
+  if (mis.has('categorie'))
+    barre.append(
+      selecteur(
+        LEX.categorie,
+        [['', 'Mots et expressions'], ...Object.entries(CATEGORIES).map(([k, v]) => [k, `${v}s`])],
+        (v) => ((LEX.categorie = v), refaire()),
+      ),
+    )
+
+  if (mis.has('manque'))
+    barre.append(
+      selecteur(
+        LEX.manque,
+        [
+          ['', 'Toutes les entrées'],
+          ['toute', 'Où il manque une voix'],
+          ...VOIX.map((v) => [v.id, `Sans voix ${v.label.toLowerCase()}`]),
+        ],
+        (v) => ((LEX.manque = v), refaire()),
+        'Ne montrer que ce qui reste à enregistrer',
+      ),
+    )
+
+  const cherche = el('input', {
+    type: 'search',
+    placeholder: 'Chercher un mot, un sens…',
+    value: LEX.q,
+    oninput: (e) => {
+      LEX.q = e.target.value
+      redessiner()
+    },
+  })
+  barre.append(cherche)
+
+  if (apres) barre.append(...apres)
+  barre.append(
+    el('span', { class: 'pousse' }),
+    el('button', { class: 'bouton', onclick: refaire }, '↻ Rafraîchir'),
+  )
+  return barre
+}
+
+/* ------------------------------------------------------------------ */
+/* Le son — écouter, enregistrer, déposer                              */
+/* ------------------------------------------------------------------ */
+
+let lecture = null
+function jouer(url) {
+  lecture?.pause()
+  lecture = new Audio(url)
+  lecture.play().catch(() => signaler('Lecture impossible.'))
+}
+
+const enBase64 = (blob) =>
+  new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => resolve(String(r.result).split(',')[1] || '')
+    r.onerror = () => reject(r.error)
+    r.readAsDataURL(blob)
+  })
+
+/** Safari ne connaît pas webm — même négociation que src/lib/speakerVoice.js. */
+const FORMATS = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac']
+const formatDispo = () => {
+  if (typeof MediaRecorder === 'undefined') return null
+  return FORMATS.find((t) => {
+    try {
+      return MediaRecorder.isTypeSupported(t)
+    } catch {
+      return false
+    }
+  })
+}
+const peutEnregistrer = () =>
+  !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined' && !!formatDispo()
+
+/** Une seule prise à la fois : deux micros ouverts ne servent personne. */
+let prise = null
+
+async function demarrerPrise() {
+  const type = formatDispo()
+  const flux = await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true },
+  })
+  const rec = new MediaRecorder(flux, { mimeType: type })
+  const morceaux = []
+  rec.ondataavailable = (e) => e.data?.size && morceaux.push(e.data)
+  rec.start(200)
+  const fini = new Promise((resolve) => {
+    rec.onstop = () => {
+      flux.getTracks().forEach((t) => t.stop())
+      resolve(new Blob(morceaux, { type }))
+    }
+  })
+  return {
+    type,
+    arreter: () => {
+      if (rec.state === 'recording') rec.stop()
+      return fini
+    },
+  }
+}
+
+/**
+ * Une case de voix : soit la prise existe (on l'écoute, on la télécharge, on
+ * l'efface), soit elle manque (on enregistre au micro, ou on dépose le vocal
+ * reçu par messagerie — c'est ainsi que sont arrivés les 24 mp3 kabyles).
+ */
+function celluleVoix(e, voixId, quandChange) {
+  const n = el('div', { class: 'voixcell' })
+  const laPrise = () => (e.voix || []).find((v) => v.voix === voixId) || null
+
+  const poser = async (b64, type) => {
+    await ecrire('voix', 'POST', {
+      id: e.id,
+      voix: voixId,
+      audio: b64,
+      type,
+      locuteur: LEX.locuteur,
+    })
+    e.voix = [
+      ...(e.voix || []).filter((v) => v.voix !== voixId),
+      { voix: voixId, locuteur: LEX.locuteur, type, at: new Date().toISOString() },
+    ]
+    rendre()
+    quandChange?.()
+  }
+
+  const deposerFichier = async (fichier) => {
+    if (!fichier) return
+    if (fichier.size > TAILLE_MAX)
+      return signaler(
+        `Fichier trop lourd (${Math.round(fichier.size / 1024)} Ko) — quelques secondes suffisent.`,
+      )
+    const ext = (fichier.name.split('.').pop() || '').toLowerCase()
+    const type = EXT[fichier.type] ? fichier.type : TYPE_PAR_EXT[ext]
+    if (!type) return signaler(`Format inconnu (${fichier.type || ext || '?'}).`)
+    try {
+      await poser(await enBase64(fichier), type)
+      signaler(`« ${e.terme} » — voix ${voixId} déposée.`, true)
+    } catch (err) {
+      signaler(err.message)
+    }
+  }
+
+  const basculerMicro = async (bouton) => {
+    // Une prise en cours ailleurs se termine d'abord : le micro est unique.
+    if (prise && prise.cellule !== n) {
+      await prise.arreter().catch(() => {})
+      prise = null
+    }
+    if (prise) {
+      const p = prise
+      prise = null
+      bouton.classList.remove('rec')
+      bouton.textContent = '…'
+      try {
+        const blob = await p.arreter()
+        if (blob.size > TAILLE_MAX) return signaler('Prise trop longue — recommence plus court.')
+        await poser(await enBase64(blob), p.type)
+        signaler(`« ${e.terme} » — voix ${voixId} enregistrée.`, true)
+      } catch (err) {
+        signaler(err.message)
+        rendre()
+      }
+      return
+    }
+    try {
+      prise = { ...(await demarrerPrise()), cellule: n }
+      bouton.classList.add('rec')
+      bouton.textContent = '⏹'
+    } catch {
+      signaler('Micro refusé — autorise-le dans le navigateur.')
+    }
+  }
+
+  const effacer = async () => {
+    if (!confirm(`Effacer la voix ${voixId} de « ${e.terme} » ?`)) return
+    try {
+      await api('voix', { method: 'DELETE', params: { id: e.id, voix: voixId } })
+      e.voix = (e.voix || []).filter((v) => v.voix !== voixId)
+      rendre()
+      quandChange?.()
+    } catch (err) {
+      signaler(err.message)
+    }
+  }
+
+  function rendre() {
+    n.textContent = ''
+    const a = laPrise()
+    if (a) {
+      const url = adresse('voix', { id: e.id, voix: voixId })
+      n.append(
+        el(
+          'button',
+          {
+            class: 'mini plein',
+            title: `Écouter — ${a.locuteur || 'locuteur non nommé'}`,
+            onclick: () => jouer(url),
+          },
+          '▶',
+        ),
+        el(
+          'a',
+          {
+            class: 'mini',
+            href: url,
+            download: `${e.slug || 'audio'}-${voixId}.${EXT[a.type] || 'webm'}`,
+            title: 'Télécharger le fichier',
+          },
+          '⬇',
+        ),
+        el('button', { class: 'mini', title: 'Effacer cette prise', onclick: effacer }, '✕'),
+      )
+      return
+    }
+    const micro = el(
+      'button',
+      {
+        class: 'mini',
+        disabled: !peutEnregistrer() || undefined,
+        title: peutEnregistrer() ? 'Enregistrer au micro' : 'Micro indisponible sur ce navigateur',
+      },
+      '🎙',
+    )
+    micro.addEventListener('click', () => basculerMicro(micro))
+    const fichier = el('input', {
+      type: 'file',
+      accept: 'audio/*',
+      onchange: (ev) => {
+        deposerFichier(ev.target.files?.[0])
+        ev.target.value = ''
+      },
+    })
+    n.append(micro, el('label', { class: 'mini', title: 'Déposer un fichier reçu' }, '⬆', fichier))
+  }
+
+  rendre()
+  return n
+}
+
+/**
+ * Les quatre voix en RACCOURCI — quatre pastilles nommées, lisibles d'un
+ * coup d'œil. La grille du dictionnaire compte déjà sept colonnes
+ * modifiables : y loger seize boutons de micro rendrait la colonne muette,
+ * chaque bouton étant indiscernable du voisin. On y montre donc l'état, et
+ * l'enregistrement se fait dans l'onglet qui porte son nom.
+ */
+function resumeVoix(e) {
+  const n = el('div', { class: 'voixcell' })
+  for (const v of VOIX) {
+    const a = (e.voix || []).find((x) => x.voix === v.id)
+    n.append(
+      a
+        ? el('button', {
+            class: 'mini plein',
+            title: `${v.label} — ${a.locuteur || 'locuteur non nommé'} · écouter`,
+            onclick: () => jouer(adresse('voix', { id: e.id, voix: v.id })),
+          }, v.court)
+        : el('span', { class: 'mini', title: `${v.label} — à enregistrer (onglet Enregistrements)` }, v.court),
+    )
+  }
+  return n
+}
+
+/* ------------------------------------------------------------------ */
+/* Modifier une entrée — l'écriture partagée par les trois vues        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Enregistre une correction. Le serveur ne modifie que les champs envoyés :
+ * on n'envoie donc que ce qui a bougé, et un champ vidé (chaîne vide) EFFACE
+ * — sans quoi une note posée par erreur ne se retirerait jamais.
+ */
+async function corriger(e, champs, noeud) {
+  try {
+    const { entree } = await ecrire('lexique', 'PATCH', { id: e.id, ...champs })
+    Object.assign(e, entree)
+    if (noeud) {
+      noeud.classList.remove('enregistre')
+      void noeud.offsetWidth // relance l'animation même sur deux saisies de suite
+      noeud.classList.add('enregistre')
+    }
+    return true
+  } catch (err) {
+    signaler(err.message)
+    return false
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Vue « Enregistrements » — ce qu'il reste à dire, voix par voix       */
+/* ------------------------------------------------------------------ */
+
+async function vueEnregistrements() {
+  // On montre ce qui MANQUE : c'est une liste de travail, pas un catalogue.
+  ouvrir('enregistrements', { manque: 'toute' })
+  await chargerLexique()
+
+  const bloc = el('div', {})
+  const liste = el('div', {})
+
+  const nomLocuteur = el('input', {
+    type: 'text',
+    placeholder: 'Qui prête sa voix (facultatif)',
+    value: LEX.locuteur,
+    title: 'Attribué à chaque prise déposée — jamais un pistage, une signature.',
+    oninput: (e) => {
+      LEX.locuteur = e.target.value.trim()
+      localStorage.setItem('tama-locuteur', LEX.locuteur)
+    },
+  })
+
+  const refaire = () => afficher('enregistrements')
+
+  function dessiner() {
+    const lignes = visibles()
+    liste.textContent = ''
+    if (!lignes.length) {
+      liste.append(
+        el('p', { class: 'muet' }, 'Rien ici — tout est enregistré, ou le filtre est trop serré.'),
+      )
+      return
+    }
+    liste.append(
+      el('div', { class: 'defiler' },
+        el('table', {},
+          el('thead', {},
+            el('tr', {},
+              el('th', {}, 'Terme'),
+              el('th', {}, 'Français'),
+              el('th', {}, 'Unité'),
+              ...VOIX.map((v) => el('th', {}, v.label)))),
+          el('tbody', {}, lignes.map((e) => {
+            const tr = el('tr', {})
+            tr.append(
+              el('td', { class: 'kab', style: 'font-weight:800' }, e.terme),
+              el('td', {}, e.sens || el('span', { class: 'muet' }, '—')),
+              el('td', { class: 'muet' }, e.unite || '—'),
+              ...VOIX.map((v) => el('td', {}, celluleVoix(e, v.id))),
+            )
+            return tr
+          })))),
+    )
+  }
+
+  const r = LEX.data.resume || {}
+  const total = r.entrees || 0
+
+  bloc.append(
+    el('h2', {}, 'Les quatre voix'),
+    el('div', { class: 'grille' },
+      ...VOIX.map((v) =>
+        carte((r.parVoix || {})[v.id] || 0, `Voix ${v.label.toLowerCase()}`, `sur ${nombre(total)}`)),
+      carte(r.completes || 0, 'Entrées complètes', 'les quatre voix réunies')),
+
+    el('div', { class: 'note', style: 'margin:10px 0 16px' },
+      'Un mot n’est pas dit pareil par une grand-mère et par un enfant, et un enfant qui apprend a ' +
+      'besoin d’entendre une voix d’enfant : on collecte les quatre. Enregistre au micro (🎙) ou ' +
+      'dépose le vocal reçu (⬆) — c’est ainsi que sont arrivés les 24 enregistrements kabyles ' +
+      'actuels. Rien n’est reconstitué ni corrigé : la voix est gardée telle quelle, attribuée, ' +
+      'et effaçable. Pour la faire entendre dans l’app, télécharge le fichier (⬇) et range-le ' +
+      'dans public/audio/ — le déploiement suivant la joue.'),
+
+    el('h2', {}, 'À enregistrer'),
+    filtres({
+      champs: ['lang', 'manque', 'categorie'],
+      refaire,
+      redessiner: dessiner,
+      apres: [nomLocuteur],
+    }),
+    liste,
+  )
+
+  dessiner()
+  return [bloc]
+}
+
+/* ------------------------------------------------------------------ */
+/* Vue « À valider » — la relecture par un locuteur natif              */
+/* ------------------------------------------------------------------ */
+
+async function vueValidation() {
+  ouvrir('validation', { statut: 'a-valider' })
+  await chargerLexique()
+
+  const bloc = el('div', {})
+  const liste = el('div', {})
+  const refaire = () => afficher('validation')
+
+  /** Une entrée en grand : on la lit, on l'écoute, on tranche. */
+  function fiche(e) {
+    const n = el('div', { class: 'entree' })
+    const champ = (cle, label, valeur) => {
+      const input = el('input', { type: 'text', value: valeur || '' })
+      input.addEventListener('change', () => corriger(e, { [cle]: input.value }, n))
+      return el('div', {}, el('label', {}, label), input)
+    }
+
+    const trancher = async (statut) => {
+      if (await corriger(e, { statut }, n)) {
+        e.statut = statut
+        // La liste est filtrée sur un statut : une entrée qui change de camp
+        // s'en va. On la retire à la main plutôt que de tout recharger — le
+        // travail se fait à la chaîne, une recharge par mot serait pénible.
+        if (LEX.statut && LEX.statut !== statut) {
+          n.style.transition = 'opacity .25s'
+          n.style.opacity = '0'
+          setTimeout(() => n.remove(), 250)
+        } else {
+          rendreTete()
+        }
+      }
+    }
+
+    const tete = el('div', { class: 'tete' })
+    const rendreTete = () => {
+      tete.textContent = ''
+      // `append` écrirait « null » en toutes lettres pour une branche vide,
+      // là où `el()` sait les ignorer : on filtre avant de poser.
+      tete.append(
+        ...[
+          el('span', { class: 'mot' }, e.terme),
+          pastille(e.statut),
+          el('span', { class: 'puce ' + (e.source === 'ajout' ? 'ajout' : 'dictionnaire') }, e.source),
+          el('span', { class: 'muet' }, LANGUES[e.lang] || e.lang),
+          e.unite ? el('span', { class: 'muet' }, e.unite) : null,
+          e.lecons ? el('span', { class: 'muet' }, `leçons ${e.lecons}`) : null,
+          // L'écart entre la forme du cours et la forme retenue : ce qui reste
+          // à reporter dans src/data/ pour que l'app dise enfin la bonne chose.
+          e.cle && e.cle !== e.terme
+            ? el('span', { class: 'puce rejete' }, `dans le cours : ${e.cle}`)
+            : null,
+          e.valide_par ? el('span', { class: 'muet' }, `par ${e.valide_par}`) : null,
+        ].filter(Boolean),
+      )
+    }
+    rendreTete()
+
+    const sons = el('div', { class: 'actions', style: 'margin-top:10px' })
+    for (const v of VOIX) {
+      sons.append(
+        el('span', { class: 'muet', style: 'min-width:88px' }, v.label),
+        celluleVoix(e, v.id),
+      )
+    }
+
+    n.append(
+      tete,
+      el('div', { class: 'champs' },
+        champ('terme', 'Forme retenue', e.terme),
+        champ('sens', 'Français', e.sens),
+        el('div', { style: 'grid-column:1/-1' },
+          el('label', {}, 'Notes — variante régionale, registre, doute'),
+          (() => {
+            const i = el('input', { type: 'text', value: e.notes || '' })
+            i.addEventListener('change', () => corriger(e, { notes: i.value }, n))
+            return i
+          })())),
+      el('div', { class: 'actions' },
+        el('button', { class: 'bouton fort', onclick: () => trancher('valide') }, '✓ Valider'),
+        el('button', { class: 'bouton', onclick: () => trancher('a-revoir') }, '? À revoir'),
+        el('button', { class: 'bouton', onclick: () => trancher('rejete') }, '✕ Rejeter'),
+        e.statut !== 'a-valider'
+          ? el('button', { class: 'bouton doux', onclick: () => trancher('a-valider') }, '↺ Rouvrir')
+          : null),
+      el('div', { class: 'muet', style: 'margin-top:12px' }, 'Écouter avant de trancher :'),
+      sons,
+    )
+    return n
+  }
+
+  function dessiner() {
+    const lignes = visibles()
+    liste.textContent = ''
+    if (!lignes.length) {
+      liste.append(el('p', { class: 'muet' }, 'Rien à relire ici. 🎉'))
+      return
+    }
+    liste.append(...lignes.map(fiche))
+  }
+
+  const r = LEX.data.resume || {}
+  bloc.append(
+    el('h2', {}, 'Où en est la relecture'),
+    el('div', { class: 'grille' },
+      carte(r.a_valider, 'À valider'),
+      carte(r.valides, 'Validées'),
+      carte(r.a_revoir, 'À revoir', 'un doute est posé'),
+      carte(r.rejetes, 'Rejetées', 'à retirer du cours')),
+
+    el('div', { class: 'note', style: 'margin:10px 0 16px' },
+      'Le contenu linguistique de l’app est PROVISOIRE tant qu’un locuteur natif ne l’a pas relu. ' +
+      'Valider dit « la forme et le sens sont justes » ; corriger réécrit la forme retenue — ' +
+      'l’ancienne reste affichée en rouge tant qu’elle n’a pas été reportée dans src/data/, ' +
+      'seul endroit qui atteigne les téléphones.'),
+
+    el('h2', {}, 'Les entrées'),
+    filtres({ champs: ['lang', 'statut', 'categorie'], refaire, redessiner: dessiner }),
+    liste,
+  )
+
+  dessiner()
+  return [bloc]
+}
+
+/* ------------------------------------------------------------------ */
+/* Vue « Dictionnaire » — tout le contenu, et tout modifiable          */
+/* ------------------------------------------------------------------ */
+
+async function vueDictionnaire() {
+  ouvrir('dictionnaire')
+  await chargerLexique()
+
+  const bloc = el('div', {})
+  const liste = el('div', {})
+  const refaire = () => afficher('dictionnaire')
+
+  /* --- Ajouter une entrée qui n'est dans aucune leçon --- */
+  const ajout = el('div', { class: 'encart', style: 'display:none' })
+  const champsAjout = {}
+  const champAjout = (cle, placeholder, large) => {
+    champsAjout[cle] = el('input', {
+      type: 'text',
+      placeholder,
+      style: `font-family:inherit;font-size:13.5px;padding:7px 9px;border:1px solid var(--line);
+              border-radius:9px;background:var(--sand);color:var(--ink);${large ? 'flex:1' : ''}`,
+    })
+    return champsAjout[cle]
+  }
+  const langAjout = selecteur(LEX.lang || 'kab', Object.entries(LANGUES), () => {})
+  ajout.append(
+    el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;align-items:center' },
+      langAjout,
+      champAjout('terme', 'Le mot ou l’expression', true),
+      champAjout('sens', 'Ce que ça veut dire', true)),
+    el('div', { style: 'display:flex;gap:8px;margin-top:8px;align-items:center' },
+      champAjout('notes', 'Notes (source, variante, registre)', true),
+      el('button', {
+        class: 'bouton fort',
+        onclick: async () => {
+          const terme = champsAjout.terme.value.trim()
+          if (!terme) return signaler('Il faut au moins un mot.')
+          try {
+            await ecrire('lexique', 'POST', {
+              lang: langAjout.value,
+              terme,
+              sens: champsAjout.sens.value.trim(),
+              notes: champsAjout.notes.value.trim(),
+            })
+            signaler(`« ${terme} » ajouté au dictionnaire.`, true)
+            refaire()
+          } catch (err) {
+            signaler(err.message)
+          }
+        },
+      }, 'Ajouter')),
+    el('div', { class: 'note' },
+      'Une entrée ajoutée ici n’est dans aucune leçon : elle sert à préparer du contenu, ' +
+      'ou à garder un mot rapporté par un locuteur. Elle est la seule qu’on puisse supprimer — ' +
+      'un mot venu d’une leçon reviendrait au chargement suivant, il se marque « rejeté ».'),
+  )
+
+  const boutonAjout = el('button', {
+    class: 'bouton',
+    onclick: () => {
+      ajout.style.display = ajout.style.display === 'none' ? 'block' : 'none'
+    },
+  }, '+ Ajouter')
+
+  const exportCsv = el('a', {
+    class: 'bouton',
+    href: adresse('lexique', {
+      lang: LEX.lang, statut: LEX.statut, categorie: LEX.categorie, manque: LEX.manque, format: 'csv',
+    }),
+    title: 'La sélection courante, en tableur — la fiche qu’on envoie à un relecteur',
+  }, '⬇ CSV')
+
+  /** Une ligne entièrement modifiable : chaque champ s'enregistre en le quittant. */
+  function ligne(e) {
+    const tr = el('tr', { class: e.statut === 'rejete' ? 'rejete' : undefined })
+
+    const texte = (cle, valeur, gras) => {
+      const i = el('input', { type: 'text', value: valeur || '' })
+      i.addEventListener('change', async () => {
+        if (await corriger(e, { [cle]: i.value }, tr)) i.value = e[cle] || ''
+      })
+      return el('td', { class: gras ? 'kab' : undefined }, i)
+    }
+
+    const statut = selecteur(e.statut, Object.entries(STATUTS), async (v) => {
+      if (await corriger(e, { statut: v }, tr)) tr.classList.toggle('rejete', v === 'rejete')
+    })
+
+    const categorie = selecteur(e.categorie, Object.entries(CATEGORIES), (v) =>
+      corriger(e, { categorie: v }, tr),
+    )
+
+    const supprimer = el('button', {
+      class: 'mini',
+      title:
+        e.source === 'ajout'
+          ? 'Supprimer cette entrée'
+          : 'Impossible : ce mot est dans une leçon. Marque-le « rejeté ».',
+      disabled: e.source !== 'ajout' || undefined,
+      onclick: async () => {
+        if (!confirm(`Supprimer « ${e.terme} » du dictionnaire ?`)) return
+        try {
+          await api('lexique', { method: 'DELETE', params: { id: e.id } })
+          tr.remove()
+        } catch (err) {
+          signaler(err.message)
+        }
+      },
+    }, '🗑')
+
+    tr.append(
+      el('td', { class: 'muet' }, LANGUES[e.lang] || e.lang),
+      texte('terme', e.terme, true),
+      // La forme du cours, en clair quand elle diffère : c'est la liste des
+      // corrections qu'il reste à reporter dans src/data/.
+      el('td', { class: 'muet' },
+        !e.cle
+          ? el('span', { class: 'puce ajout' }, 'ajout')
+          : e.cle === e.terme
+            ? '—'
+            : el('span', { class: 'puce rejete' }, e.cle)),
+      texte('sens', e.sens),
+      texte('notes', e.notes),
+      el('td', { class: 'muet' }, e.unite || '—'),
+      el('td', { style: 'min-width:118px' }, categorie),
+      el('td', { style: 'min-width:118px' }, statut),
+      el('td', {}, resumeVoix(e)),
+      el('td', { class: 'actions' }, supprimer),
+    )
+    return tr
+  }
+
+  function dessiner() {
+    const lignes = visibles()
+    liste.textContent = ''
+    liste.append(
+      el('div', { class: 'note', style: 'margin-bottom:8px' },
+        `${nombre(lignes.length)} entrée(s) affichée(s). Chaque champ s’enregistre en le quittant.`),
+    )
+    if (!lignes.length) {
+      liste.append(el('p', { class: 'muet' }, 'Rien ne correspond.'))
+      return
+    }
+    liste.append(
+      el('div', { class: 'defiler' },
+        el('table', {},
+          el('thead', {},
+            el('tr', {},
+              el('th', {}, 'Langue'),
+              el('th', {}, 'Terme retenu'),
+              el('th', {}, 'Du cours'),
+              el('th', {}, 'Français'),
+              el('th', {}, 'Notes'),
+              el('th', {}, 'Unité'),
+              el('th', {}, 'Type'),
+              el('th', {}, 'Statut'),
+              el('th', { title: 'Femme · Homme · enfant Fille · enfant Garçon' }, 'Voix'),
+              el('th', {}, ''))),
+          el('tbody', {}, lignes.map(ligne)))),
+    )
+  }
+
+  const r = LEX.data.resume || {}
+  bloc.append(
+    el('h2', {}, 'Le dictionnaire'),
+    el('div', { class: 'grille' },
+      carte(r.entrees, 'Entrées'),
+      carte(r.expressions, 'Expressions', 'le reste sont des mots'),
+      carte(r.valides, 'Validées'),
+      carte(r.completes, 'Enregistrées', 'les quatre voix')),
+
+    el('div', { class: 'note', style: 'margin:10px 0 16px' },
+      LEX.data.semeDepuis === 'dictionnaire'
+        ? 'Contenu tiré de src/data/dictionnaire.js — la base cherchable des cinq cours.'
+        : 'Contenu tiré du vocabulaire des cours (src/data/courses/*.js). Le dictionnaire ' +
+          'n’est pas encore présent : dès qu’il arrivera, il prendra le relais tout seul.'),
+
+    el('div', { class: 'avert' },
+      'Ce qu’on corrige ici ne descend PAS tout seul dans les téléphones. L’app embarque son ' +
+      'contenu depuis src/data/ — c’est ce qui la rend hors-ligne. Cet écran est l’atelier : ' +
+      'on y relit, on y enregistre, puis on reporte les corrections dans les fichiers du cours. ' +
+      'La colonne « du cours » liste précisément ce qui reste à reporter.'),
+
+    filtres({
+      champs: ['lang', 'statut', 'categorie', 'manque'],
+      refaire,
+      redessiner: dessiner,
+      apres: [boutonAjout, exportCsv],
+    }),
+    ajout,
+    liste,
+  )
+
+  dessiner()
+  return [bloc]
+}
+
+/* ------------------------------------------------------------------ */
 /* Aiguillage                                                           */
 /* ------------------------------------------------------------------ */
 
-const VUES = { usage: vueUsage, abonnements: vueAbonnements, retours: vueRetours }
+const VUES = {
+  usage: vueUsage,
+  abonnements: vueAbonnements,
+  retours: vueRetours,
+  enregistrements: vueEnregistrements,
+  validation: vueValidation,
+  dictionnaire: vueDictionnaire,
+}
+
+/** Les vues de contenu ont besoin de largeur ; les chiffres se lisent serrés. */
+const LARGES = new Set(['enregistrements', 'validation', 'dictionnaire'])
+
+let vueCourante = 'usage'
 
 async function afficher(nom) {
   for (const b of document.querySelectorAll('#onglets button')) {
     b.setAttribute('aria-selected', String(b.dataset.vue === nom))
   }
+  vueCourante = nom
+  document.querySelector('.wrap').classList.toggle('large', LARGES.has(nom))
+  // Changer d'onglet en pleine prise couperait le micro sans rien en faire.
+  prise?.arreter().catch(() => {})
+  prise = null
   vue.textContent = ''
   vue.append(el('div', { class: 'message' }, '· · ·'))
   try {

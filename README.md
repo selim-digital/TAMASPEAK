@@ -173,6 +173,42 @@ son compte et sa progression ; seul l'accès est partagé. Le titulaire peut
 retirer quelqu'un, un membre peut partir de lui-même, et une résiliation libère
 les places.
 
+## Le backoffice — valider le contenu, enregistrer les voix
+
+`/admin.html`, réservé aux adresses listées dans `ADMIN_EMAILS`. Aux trois
+onglets de chiffres (usage, abonnements, retours) s'en ajoutent trois qui
+travaillent le **contenu** — trois regards sur une même liste, jamais trois
+listes :
+
+| Onglet | Ce qu'on y fait |
+| --- | --- |
+| **Enregistrements** | La liste de ce qu'il reste à dire, avec **quatre voix par entrée** — femme, homme, enfant fille, enfant garçon. On enregistre au micro depuis la page, ou l'on dépose le vocal reçu par messagerie. |
+| **À valider** | Les mots et expressions que personne n'a encore relus. Un locuteur natif valide, corrige, pose un doute (« à revoir ») ou rejette — en écoutant les prises, sur la même fiche. |
+| **Dictionnaire** | Tout le contenu, **entièrement modifiable** : forme retenue, français, notes, type, statut. On peut aussi ajouter une entrée qui n'est dans aucune leçon, et exporter la sélection en CSV pour l'envoyer à un relecteur. |
+
+### La règle qui gouverne tout cela
+
+**`src/data/` reste la source de vérité.** L'app embarque son contenu — c'est
+ce qui la rend hors-ligne — et une base de données ne peut pas le lui reprendre
+sans lui reprendre le hors-ligne. Le backoffice est donc un **atelier**, pas un
+second contenu : il ensemence sa table depuis `src/data/dictionnaire.js` (ou,
+tant qu'il n'est pas là, depuis le vocabulaire des cours), on y relit et on y
+enregistre, puis **on reporte les corrections dans les fichiers du cours**. La
+colonne « du cours » affiche en rouge, entrée par entrée, l'écart qui reste à
+reporter : la liste de ce travail ne se perd pas.
+
+L'ensemencement est rejoué à chaque ouverture, en une seule requête. Il est
+idempotent et **n'écrase jamais une main humaine** : il ajoute ce qui manque,
+complète un sens vide, et se tait sur le reste. Un mot ajouté à une leçon
+apparaît donc dans « à valider » sans qu'on ait rien à lancer.
+
+Les quatre voix vivent dans `lexique_audio`, en base64, une prise par voix
+(ré-enregistrer remplace). Même règle morale que partout ailleurs ici —
+**aucune IA, aucune reconstitution, aucune notation** : la voix est gardée
+telle quelle, attribuée à qui l'a prêtée, et effaçable d'un clic. Pour la faire
+entendre dans l'app, on télécharge le fichier (le nom proposé est déjà le bon,
+`<slug>-<voix>`) et on le range dans `public/audio/`.
+
 ## Architecture
 
 ```
@@ -202,13 +238,15 @@ scripts/
 ```
 api/
   billing.js         abonnements — caisse, portail, pack famille, webhook Stripe
-  admin.js           tableau de bord (?r=stats|feedbacks|revenus)
+  admin.js           tableau de bord (?r=stats|feedbacks|revenus|lexique|voix)
   distance.js        cercle, défis, demandes de voix (?r=…)
   _lib/stripe.js     client REST Stripe + vérification de signature, sans SDK
+  _lib/lexique.js    l'atelier du contenu — ensemencement depuis src/data/
 src/
   data/tarifs.js     zones, prix, pays — source de vérité partagée app/serveur
   lib/abonnement.js  client de la caisse + le verrou (`uniteOuverte`)
   screens/AbonnementScreen.jsx
+public/admin.html    le backoffice, en HTML nu, hors du bundle des élèves
 ```
 
 > **Le plafond de douze fonctions.** Le plan Vercel Hobby n'accepte que douze
@@ -239,7 +277,11 @@ src/
 
 ## Reste à faire
 
-- Validation du vocabulaire et des enregistrements par des locuteurs natifs
+- Validation du vocabulaire et des enregistrements par des locuteurs natifs —
+  l'outil existe (voir « Le backoffice » ci-dessus), le travail reste à faire
+- Faire entendre les quatre voix dans l'app : aujourd'hui la couche audio
+  (`src/lib/audio.js`) ne connaît qu'un enregistrement par mot, et le
+  backoffice n'exporte donc qu'un fichier à ranger à la main
 - Comptes et synchronisation (Supabase) — la couche `lib/progress.js` est isolée
   pour être remplaçable
 - Étoffer les cours autres que le kabyle
