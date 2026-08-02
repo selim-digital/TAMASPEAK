@@ -28,7 +28,7 @@ import { faitPour } from './data/faits.js'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, syncStore, pushStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
+import { track, flushEvents, syncStore, pushStore, wipeRemoteStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
 import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDemandes } from './lib/distance.js'
 import { CercleScreen } from './screens/CercleScreen.jsx'
 import { EnregistrerScreen } from './screens/EnregistrerScreen.jsx'
@@ -106,6 +106,9 @@ if (AUTH_ERREUR || COMPTE_SUPPRIME) {
       localStorage.removeItem('tama-speak:events-queue')
       localStorage.removeItem('tama-speak:feedback-queue')
       localStorage.removeItem('tama-speak:abonnement')
+      // La demande de suppression est allée au bout : le rappel n'a plus lieu
+      // d'être (voir screens/AccountScreen.jsx).
+      localStorage.removeItem('tama-speak:suppression-demandee')
     } catch {
       /* stockage indisponible */
     }
@@ -678,6 +681,10 @@ export default function App() {
   }
 
   function handleReset() {
+    // Le serveur AUSSI, sinon le zéro ne tient pas : la fusion est max/union
+    // et réinstallerait l'ancien état à la connexion suivante. C'est le bug
+    // vécu par Selim — tout effacer, et tout retrouver.
+    wipeRemoteStore()
     setStore(resetStore())
     setPendingLang(null)
     setScreen(ECRANS.ACCUEIL)

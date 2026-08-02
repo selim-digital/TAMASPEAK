@@ -270,6 +270,17 @@ const l17 = [
 ]
 
 // -------- Unité 5 — Les nombres --------
+//
+// NOTE D'USAGE, demandée par Selim, et c'est la même honnêteté que celle des
+// autres cours : la série berbère (yiwen, sin, kraḍ, kkuẓ, semmus) s'enseigne,
+// mais le kabyle COURANT compte en arabe au-delà de deux ou trois. Le cours de
+// tarifit le disait déjà de sa propre langue (courses/rif.js) et le tachelhit
+// signale l'inverse — sa série tient mieux. Le kabyle ne disait rien, ce qui
+// laissait croire que la série scolaire est ce qu'on entend au marché.
+//
+// On enseigne donc la série ET son usage réel. Ne pas transformer cela en
+// leçon de morale sur l'emprunt : une langue qui emprunte est une langue
+// vivante, et c'est aussi ce que dit l'app ailleurs.
 const l18 = [
   image('count-1', 'Yiwen', ['Yiwen', 'Sin', 'Kraḍ', 'Kkuẓ']),
   image('count-2', 'Sin', ['Sin', 'Yiwen', 'Semmus', 'Kraḍ']),
@@ -295,6 +306,17 @@ const l20 = [
     { kab: 'Yiwen', fr: 'Un' },
   ]),
   image('count-3', 'Kraḍ', ['Kraḍ', 'Semmus', 'Sin', 'Kkuẓ']),
+  // La note d'usage, dite à l'élève et pas seulement au relecteur du code.
+  culture(
+    'Au marché, en Kabylie, on compte le plus souvent…',
+    'En arabe au-delà de deux ou trois',
+    [
+      'En arabe au-delà de deux ou trois',
+      'Toujours en kabyle',
+      'Toujours en français',
+      'On ne compte pas à voix haute',
+    ],
+  ),
 ]
 
 // -------- Unité 6 — Les couleurs --------

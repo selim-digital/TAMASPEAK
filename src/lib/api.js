@@ -273,6 +273,23 @@ export async function pushStore(store) {
   }
 }
 
+/**
+ * Efface l'instantané serveur, en gardant le compte.
+ *
+ * Sans cet appel, effacer sa progression en local ne servait à rien : la
+ * fusion est max/union et ne connaît pas l'effacement, donc la connexion
+ * suivante réinstallait l'ancien état. Toute remise à zéro doit passer par
+ * ici, sinon elle est annulée dans le dos de l'utilisateur.
+ */
+export async function wipeRemoteStore() {
+  try {
+    const r = await fetch('/api/sync', { method: 'DELETE', credentials: 'include' })
+    return r.ok && isApi(r)
+  } catch {
+    return false
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Préférences email — l'interrupteur des relances                      */
 /* ------------------------------------------------------------------ */

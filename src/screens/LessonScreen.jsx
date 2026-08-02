@@ -82,11 +82,15 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [answered, setAnswered] = useState(false)
-  // Pas de cœurs : la règle est posée dans data/economy.js et elle vaut aussi
-  // pour l'affichage. Un compteur de vies qui descend sans jamais rien couper
-  // était le pire des trois mondes — il inquiétait le débutant, ne motivait
-  // personne, et apprenait que les signaux de l'app sont du décor. On compte
-  // désormais ce qui SERT : les mots à revoir, qui reviennent au quiz de fin.
+  // Les cœurs restent (choix de Selim). Ils sont DÉCORATIFS et doivent le
+  // rester : rien ne se passe à zéro, la leçon continue. C'est ce qui les rend
+  // compatibles avec la règle de data/economy.js — « aucune de ces valeurs ne
+  // doit servir à INTERROMPRE une session en cours ». Ne jamais les brancher
+  // sur une interruption, un mur ou un achat : ce serait enfreindre la règle,
+  // pas l'étendre.
+  const [hearts, setHearts] = useState(5)
+  // Ce qu'on compte VRAIMENT pour l'apprentissage, à côté : les mots ratés,
+  // qui reviennent au quiz de fin de leçon.
   const [aRevoir, setARevoir] = useState(0)
   const [correctCount, setCorrectCount] = useState(0)
   const [combo, setCombo] = useState(0)
@@ -143,6 +147,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
   }
   function markWrong() {
     setCombo(0)
+    setHearts((h) => Math.max(0, h - 1))
     setARevoir((n) => n + 1)
     setShakeKey((k) => k + 1)
     sfx.wrong()
@@ -169,7 +174,7 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
 
   function goNext() {
     if (isLast) {
-      onFinish?.({ correct: correctCount, total, aRevoir, perfect: correctCount === total })
+      onFinish?.({ correct: correctCount, total, hearts, aRevoir, perfect: correctCount === total })
       return
     }
     setIndex((i) => i + 1)
@@ -204,17 +209,20 @@ export function LessonScreen({ exercises, lang, onExit, onFinish }) {
         <div className="h-3 flex-1 overflow-hidden rounded-full bg-sand-2">
           <div className="h-full rounded-full bg-turquoise transition-[width] duration-300" style={{ width: `${progress}%` }} />
         </div>
-        {/* Ni cœur ni vie : le nombre de mots à revoir, en encre douce. On
-            informe, on ne menace pas — et ces mots-là reviendront au quiz de
-            fin de leçon. Rien ne s'affiche tant qu'il n'y a rien à revoir. */}
-        {aRevoir > 0 && (
-          <div
-            key={shakeKey}
-            className={`flex items-center gap-1 text-[11.5px] font-bold text-ink-soft ${shakeKey ? 'animate-shake' : ''}`}
-          >
-            <span aria-hidden="true">↺</span> {aRevoir} à revoir
-          </div>
-        )}
+        {/* Les cœurs, et à côté le nombre de mots à revoir — celui-ci ne
+            s'affiche que s'il y a quelque chose à revoir, et en encre douce :
+            il informe, il ne menace pas. Ces mots-là reviendront au quiz de
+            fin de leçon. */}
+        <div key={shakeKey} className={`flex items-center gap-2 ${shakeKey ? 'animate-shake' : ''}`}>
+          {aRevoir > 0 && (
+            <span className="flex items-center gap-1 text-[11px] font-bold text-ink-soft">
+              <span aria-hidden="true">↺</span> {aRevoir}
+            </span>
+          )}
+          <span className="flex items-center gap-1 text-sm font-extrabold text-coral">
+            <span aria-hidden="true">♥</span> {hearts}
+          </span>
+        </div>
       </div>
 
       <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 pt-4">
