@@ -270,34 +270,24 @@ que de la reconnaissance.
 
 ---
 
-## 5. La décision qui reste à prendre : comment on voyage
+## 5. Le voyage est virtuel — et deux défauts de `journey.js`
 
-**C'est le seul vrai désaccord entre les comités, et il faut le trancher avant
-d'écrire une ligne de récit.**
+**Une objection écartée par Selim, et elle méritait de l'être.** Le comité
+culturel avait soulevé que la frontière Algérie–Maroc est fermée depuis 1994 et
+qu'un personnage marchant de Kabylie au Rif serait invraisemblable. L'objection
+suppose un récit de voyage réaliste. Or ce n'en est pas un : **l'élève traverse
+les pays amazighs virtuellement, à travers les leçons**. `journey.js` fait déjà
+exactement cela — une unité, un paysage en toile de fond. Personne ne prétend
+marcher, donc il n'y a pas de frontière à franchir.
 
-Le comité narration écrit un voyageur qui se déplace physiquement d'une région
-à l'autre. Le comité culturel objecte, et l'objection est solide : **la
-frontière Algérie–Maroc est fermée depuis 1994**, les relations diplomatiques
-rompues depuis 2021. Un personnage qui marche de la Kabylie au Rif est une
-impossibilité que tout utilisateur maghrébin verra en trois secondes, et qui
-décrédibilisera l'ensemble.
+C'est même ce qui rend l'armature du §4 plus simple qu'elle n'en avait l'air :
+il n'y a pas de fiction de voyageur à construire. **Le seul qui progresse, c'est
+l'élève lui-même**, et les paysages sont le décor de sa progression. Les trois
+couches (arc / escales / chez soi) et le dispositif du « dernier mot reçu »
+tiennent tels quels — ils n'ont jamais eu besoin d'un personnage qui marche.
 
-Trois sorties honnêtes :
-
-- **(a) Le voyage passe par la mer et la diaspora** — Marseille, Bruxelles,
-  Amsterdam. C'est *vrai*, et c'est là que vivent beaucoup des utilisateurs.
-- **(b) Un récit-cadre non réaliste assumé** — un carnet, des lettres, une
-  carte qu'on déplie. On ne prétend pas voyager.
-- **(c) Plusieurs voyageurs qui se répondent d'un pays à l'autre sans jamais se
-  rencontrer.**
-
-Le comité culturel recommande **(c)** : narrativement la plus riche,
-politiquement la plus propre. Je partage cet avis, avec une nuance — **(b) et
-(c) se combinent bien** : le carnet circule, les voyageurs y écrivent chacun
-leur tour. Cela préserve exactement le dispositif du « dernier mot reçu » qui
-résout le problème de l'ordre variable.
-
-**Il faut aussi trancher deux défauts structurels de `journey.js` :**
+Ce qui reste à trancher est d'un autre ordre : **deux défauts structurels de
+`journey.js`**, réels indépendamment du cadrage narratif.
 
 1. **L'itinéraire est faux pour les langues marocaines.** Un apprenant de
    tachelhit fait Ksar → **Kabylie** → côte kabyle → Rif → Haut Atlas. Il
@@ -551,11 +541,10 @@ de contenu. La première session change de nature pour un coût très faible.
 
 **Ensuite, et dans cet ordre :**
 
-6. Trancher la question du voyage (§5) — c'est bloquant pour tout le récit.
-7. Corriger l'itinéraire des langues marocaines et ajouter le Souss.
-8. Écrire l'unité 1 narrative en kabyle **avec un locuteur**, la faire valider,
+6. Corriger l'itinéraire des langues marocaines et ajouter le Souss (§5).
+7. Écrire l'unité 1 narrative en kabyle **avec un locuteur**, la faire valider,
    la publier en bêta.
-9. La mémoire par item et la révision générée — le plus gros chantier
+8. La mémoire par item et la révision générée — le plus gros chantier
    technique, et celui qui fait tenir l'app sur la durée.
 
 **Une remarque des comités, qu'il vaut la peine de reprendre telle quelle :**
