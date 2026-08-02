@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { TopBar } from '../components/TopBar.jsx'
 import { LessonNode } from '../components/LessonNode.jsx'
 import { landOf } from '../data/journey.js'
-import { cheerFor } from '../components/mascots/Family.jsx'
+import { recitDe } from '../data/voyage.js'
+import { cheerFor, FAMILY } from '../components/mascots/Family.jsx'
 import { sfx } from '../lib/sfx.js'
 import { Avatar } from '../components/Avatar.jsx'
 
@@ -105,6 +106,62 @@ function progressOf(unit) {
   const lessons = unit.lessons.filter((l) => l.type !== 'chest')
   if (!lessons.length) return 0
   return lessons.filter((l) => l.status === 'done').length / lessons.length
+}
+
+/**
+ * L'ÉTAPE DU VOYAGE — parcours bêta seulement.
+ *
+ * Trois choses, dans cet ordre : qui accompagne, ce qui se passe ici, et qui
+ * on rencontre. Le texte d'escale ne fait JAMAIS référence à un rang (« après
+ * le Rif », « déjà quatre régions ») — l'ordre des paysages change selon la
+ * langue étudiée, et c'est la troupe qui porte le fil, pas la carte.
+ *
+ * Aux grandes étapes, Setti et Jeddi reparaissent. Leur venue EST le signal
+ * du seuil : pas besoin d'un écran « niveau supérieur » pour l'annoncer.
+ */
+function EtapeVoyage({ unitIndex, land, memeLieu = false }) {
+  const { seuil, escale, hote, presents } = recitDe(unitIndex, land.id)
+  // Le voyage compte onze paysages pour treize unités : `landOf` s'arrête sur
+  // le dernier, et les unités qui suivent se jouent donc au MÊME endroit.
+  // On n'y rejoue ni l'arrivée ni la présentation de l'hôte — on n'arrive pas
+  // deux fois quelque part. Le seuil, lui, reste : c'est l'arc, pas le lieu.
+  const arrivee = memeLieu ? null : escale
+  const rencontre = memeLieu ? null : hote
+  if (!arrivee && !seuil) return null
+  const gens = presents.map((id) => FAMILY.find((m) => m.id === id)).filter(Boolean)
+
+  return (
+    <div className="animate-rise mb-1.5 mt-2 rounded-2xl border border-line bg-cream px-3 py-2.5">
+      {/* La troupe. Silhouettes seules, en petit : on montre QUI est là, on
+          ne rejoue pas la galerie des personnages. */}
+      <div className="flex items-end gap-0.5" aria-label={`Avec toi : ${gens.map((g) => g.name).join(', ')}`}>
+        {gens.map((m) => (
+          <span key={m.id} className="fam-anim flex-none" aria-hidden="true">
+            <m.Comp height={34} />
+          </span>
+        ))}
+      </div>
+
+      {seuil && (
+        <>
+          <div className="mt-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-coral-dark">
+            {seuil.titre}
+          </div>
+          <p className="mt-0.5 text-[11.5px] leading-relaxed text-ink">{seuil.texte}</p>
+        </>
+      )}
+
+      {arrivee && (
+        <p className={`text-[11.5px] leading-relaxed text-ink-soft ${seuil ? 'mt-1.5' : 'mt-1'}`}>{arrivee}</p>
+      )}
+
+      {rencontre && (
+        <p className="mt-1.5 text-[10.5px] leading-snug text-ink-soft">
+          <b className="text-turquoise-deep">{rencontre.nom}</b> — {rencontre.metier}.
+        </p>
+      )}
+    </div>
+  )
 }
 
 /** Un membre de la famille encourage l'élève près de sa leçon en cours
@@ -282,6 +339,17 @@ export function PathScreen({
             return (
               <div key={unit.id} className="relative mb-2">
                 <UnitBanner unit={unit} land={land} progress={progress} />
+                {/* Le récit ne s'affiche que sur le parcours bêta, et
+                    uniquement sur les unités ouvertes : raconter une étape
+                    qu'on ne peut pas jouer serait une vitrine, pas une
+                    histoire. */}
+                {course?.beta && ouverte && (
+                  <EtapeVoyage
+                    unitIndex={unitIndex}
+                    land={land}
+                    memeLieu={unitIndex > 0 && landOf(unitIndex - 1, course?.land).id === land.id}
+                  />
+                )}
                 {hasCurrent && <FamilyCheer cheer={cheer} onOpen={onFamily} />}
                 {/* Les nœuds d'une unité verrouillée ne sont pas rendus du
                     tout (plutôt que masqués) : le placement automatique à

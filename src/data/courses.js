@@ -105,6 +105,13 @@ const byId = (id) => LANGUAGES.find((l) => l.id === id)
  */
 export const COURSES = {
   kab: makeCourse(byId('kab'), kabUnits, kabLessons),
+  // Le parcours bêta : MÊMES unités, MÊMES exercices que le kabyle. Seul le
+  // récit qui les entoure change (data/voyage.js, lu par l'écran du chemin).
+  // Partager les données plutôt que les recopier est délibéré — une copie
+  // divergerait au premier correctif, et l'app enseignerait deux kabyles.
+  // Les identifiants de leçon sont donc identiques : sans danger, la
+  // progression étant rangée par langue (lib/progress.js, byLang).
+  'kab-beta': makeCourse(byId('kab-beta'), kabUnits, kabLessons),
   rif: makeCourse(byId('rif'), rifUnits, rifLessons),
   shi: makeCourse(byId('shi'), shiUnits, shiLessons),
   tzm: makeCourse(byId('tzm'), tzmUnits, tzmLessons),

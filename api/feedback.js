@@ -13,8 +13,10 @@ import { sessionOf } from './_lib/auth.js'
 import { sansVisages } from './_lib/texte.js'
 
 const MOODS = new Set(['love', 'good', 'meh', 'bad'])
-const CATS = new Set(['idee', 'bug', 'contenu', 'autre'])
-const LANGS = new Set(['kab', 'rif', 'shi', 'tzm', 'zgh'])
+// 'beta' : les retours sur le parcours raconté, isolables des autres — c'est
+// le troisième des trois chiffres qui décideront de l'étendre ou non.
+const CATS = new Set(['idee', 'bug', 'contenu', 'beta', 'autre'])
+const LANGS = new Set(['kab', 'kab-beta', 'rif', 'shi', 'tzm', 'zgh'])
 
 const seen = new Map() // ip -> [timestamps]
 function tooMany(ip) {

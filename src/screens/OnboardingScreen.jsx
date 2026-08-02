@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { FamilyCarousel } from '../components/mascots/FamilyCarousel.jsx'
-import { LANGUAGES, findLanguage } from '../data/languages.js'
+// LANGUES_STABLES et non LANGUAGES : les parcours bêta ne s'offrent pas à
+// quelqu'un qui découvre l'app. On y entre depuis « Mes langues », en connaissance
+// de cause (voir data/languages.js, garde-fou n° 2).
+import { LANGUES_STABLES, findLanguage } from '../data/languages.js'
 import { hasCourse } from '../data/courses.js'
 import { LAND_BY_ID } from '../data/journey.js'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
@@ -69,7 +72,7 @@ const DAILY_STEP = {
 function LangStep({ selected, onSelect }) {
   return (
     <div className="mt-5 flex flex-col gap-2.5">
-      {LANGUAGES.map((lang) => {
+      {LANGUES_STABLES.map((lang) => {
         const active = selected === lang.id
         const ready = hasCourse(lang.id)
         return (
