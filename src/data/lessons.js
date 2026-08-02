@@ -29,9 +29,24 @@ const l1 = [
   // et non en `sentence` : `sentence` cache le texte tant qu'on n'a pas
   // répondu, ce qui est trop rude au deuxième écran d'une vie d'apprenant. Ici
   // la phrase se voit ET s'entend. Elle reviendra en écoute seule plus tard.
+  //
+  // LE GENRE DU DESTINATAIRE — signalé par Selim, et c'est la première vraie
+  // leçon de grammaire amazighe qu'on puisse faire produire : on ne salue pas
+  // un homme et une femme avec les mêmes mots. `fell-ak` s'adresse à un
+  // homme, `fell-am` à une femme. Le français n'a pas cela.
+  //
+  // La version précédente disait « Yemma te salue, que réponds-tu ? →
+  // Azul fell-ak » : on répondait à une FEMME au masculin. Faux. Et le piège
+  // était structurel — tant que le destinataire est « toi », l'app ignore le
+  // genre de l'élève et aucune des deux formes n'est justifiable.
+  //
+  // D'où le choix de mise en scène : c'est TOUJOURS Yemma qui parle, et ce
+  // qui change est la personne qu'elle salue. Aqcic puis Taqcict — deux
+  // destinataires dont le genre est connu, un seul locuteur, et le contraste
+  // saute aux yeux.
   qcm(
     'kab-to-fr',
-    'Yemma te salue. Que dit-elle ?',
+    'Yemma salue Aqcic, le garçon. Que dit-elle ?',
     'Azul fell-ak',
     'Bonjour à toi',
     ['Bonjour à toi', 'Merci beaucoup', 'À demain', 'Comment vas-tu ?'],
@@ -40,10 +55,10 @@ const l1 = [
   ),
   qcm(
     'fr-to-kab',
-    'Yemma entre et te salue. Que réponds-tu ?',
-    'Bonjour à toi',
-    'Azul fell-ak',
-    ['Azul fell-ak', 'Tanemmirt', 'Ar tufat', 'Ansuf'],
+    'Maintenant Yemma salue Taqcict, la fille. Que dit-elle ?',
+    'Bonjour à toi (à une femme)',
+    'Azul fell-am',
+    ['Azul fell-am', 'Azul fell-ak', 'Ansuf', 'Tanemmirt'],
     false,
     'yemma',
   ),
@@ -98,10 +113,19 @@ const l4 = [
 ]
 const l5 = [
   qcm('kab-to-fr', 'Que signifie ?', 'Ar tufat', 'À demain', ['À demain', 'Bonjour', 'Merci', 'Oui']),
+  // Même règle de genre qu'en l1 : `yes-k` s'adresse à un HOMME. On nomme
+  // donc qui arrive, au lieu d'écrire « quelqu'un » — un destinataire sans
+  // genre rendrait la forme injustifiable.
+  //
+  // Le féminin `yes-m` n'est PAS enseigné ici, volontairement : Selim a
+  // confirmé `fell-am`, pas `yes-m`. La symétrie le rend probable, mais
+  // probable n'est pas attesté, et la règle de la maison est de ne jamais
+  // publier une forme construite par analogie. À faire trancher, puis à
+  // ajouter en face de `yes-k` comme la paire fell-ak / fell-am.
   sentence('Ansuf yes-k', 'Bienvenue à toi', ['Bienvenue à toi', 'Bonjour', 'Merci beaucoup', 'À demain'], 'yemma'),
   qcm(
     'fr-to-kab',
-    'Quelqu’un arrive chez toi. Tu l’accueilles — que dis-tu ?',
+    'Jeddi arrive chez toi. Tu l’accueilles — que dis-tu ?',
     'Bienvenue à toi',
     'Ansuf yes-k',
     ['Ansuf yes-k', 'Ar tufat', 'Aql-i labas', 'Ala'],
