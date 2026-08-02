@@ -116,6 +116,7 @@
     <button role="tab" data-vue="usage" aria-selected="true">Usage</button>
     <button role="tab" data-vue="abonnements" aria-selected="false">Abonnements</button>
     <button role="tab" data-vue="retours" aria-selected="false">Retours</button>
+    <button role="tab" data-vue="contenu" aria-selected="false">Contenu</button>
   </nav>
 
   <main id="vue"><div class="message">· · ·</div></main>
@@ -384,7 +385,67 @@ async function vueRetours() {
 /* Aiguillage                                                           */
 /* ------------------------------------------------------------------ */
 
-const VUES = { usage: vueUsage, abonnements: vueAbonnements, retours: vueRetours }
+/* ------------------------------------------------------------------ */
+/* Vue « Contenu » — l'état de ce qu'on enseigne, et ce qui attend     */
+/* une décision. Le seul onglet qui ne parle pas des élèves.           */
+/* ------------------------------------------------------------------ */
+
+async function vueContenu() {
+  const d = await api('contenu')
+  const emp = d.emprunts || {}
+  const origines = Object.entries(emp.parOrigine || {})
+    .map(([o, n]) => `${n} ${o}`)
+    .join(' · ')
+
+  return [
+    el('h2', {}, 'Le dictionnaire'),
+    el('div', { class: 'grille' },
+      carte(d.total, 'Mots en tout'),
+      carte(d.enseignes, 'Enseignés par une leçon', 'Ce sont eux, et eux seuls, qu’un locuteur enregistre.'),
+      carte(d.etendus, 'Dictionnaire seul', 'Pas encore dans le parcours — les candidats leçon.'),
+      carte(emp.total, 'Emprunts', origines)),
+
+    el('h2', {}, 'Par cours'),
+    el('div', { class: 'defiler' }, el('table', {},
+      el('thead', {}, el('tr', {},
+        el('th', {}, 'Cours'), el('th', { class: 'n' }, 'Mots'),
+        el('th', { class: 'n' }, 'Enseignés'), el('th', { class: 'n' }, 'Dico seul'),
+        el('th', { class: 'n' }, 'Emprunts'), el('th', { class: 'n' }, 'Étymologies'),
+        el('th', { class: 'n' }, 'Discutées'), el('th', { class: 'n' }, 'Sans origine'))),
+      el('tbody', {}, (d.langues || []).map((l) =>
+        el('tr', {},
+          el('td', {}, l.nom),
+          el('td', { class: 'n' }, nombre(l.total)),
+          el('td', { class: 'n' }, nombre(l.enseignes)),
+          el('td', { class: 'n' }, nombre(l.etendus)),
+          el('td', { class: 'n' }, nombre(l.emprunts)),
+          el('td', { class: 'n' }, nombre(l.etymologies)),
+          el('td', { class: 'n' }, nombre(l.discutees)),
+          el('td', { class: 'n' }, nombre(l.sansEtymo))))))),
+    el('div', { class: 'note' },
+      '« Discutées » : les sources ne s’accordent pas — l’app le dit à l’élève. ' +
+      '« Sans origine » : l’étymologie n’est pas encore écrite, la fiche affiche qu’elle viendra.'),
+
+    el('h2', {}, `En attente d’une décision — ${nombre((d.aTrancher || []).length)}`),
+    (d.aTrancher || []).length
+      ? el('div', { class: 'defiler' }, el('table', {},
+          el('thead', {}, el('tr', {},
+            el('th', {}, 'Cours'), el('th', {}, 'Expression'),
+            el('th', {}, 'Français'), el('th', {}, 'Pourquoi'))),
+          el('tbody', {}, d.aTrancher.map((e) =>
+            el('tr', {},
+              el('td', {}, e.nom),
+              el('td', {}, e.mot),
+              el('td', {}, e.sens),
+              el('td', {}, e.raison))))))
+      : el('div', { class: 'message' }, 'Rien en attente.'),
+    el('div', { class: 'note' },
+      'Ces expressions n’affichent AUCUNE modale dans l’app tant qu’elles ne sont pas tranchées : ' +
+      'origine discutée par les sources, ou formule qui nomme Dieu — on ne propose pas de remplacer une bénédiction.'),
+  ]
+}
+
+const VUES = { usage: vueUsage, abonnements: vueAbonnements, retours: vueRetours, contenu: vueContenu }
 
 async function afficher(nom) {
   for (const b of document.querySelectorAll('#onglets button')) {

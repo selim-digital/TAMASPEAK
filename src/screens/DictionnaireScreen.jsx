@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
-import { chercher, cousins, synonymes, entree, STATS, VEDETTES, ORIGINES } from '../data/dictionnaire.js'
+import { chercher, cousins, synonymes, entree, STATS, VEDETTES, ORIGINES, TYPES } from '../data/dictionnaire.js'
 import { SOURCES } from '../data/emprunts.js'
 import { versLatin } from '../lib/translit.js'
 import { entreeDicoOuverte } from '../lib/abonnement.js'
@@ -115,7 +115,9 @@ function Fiche({ e, onMot }) {
   const syn = synonymes(e)
   // Silence par défaut : seul le kabyle est enregistré, et une contribution
   // de locuteur rend audible n'importe quelle langue (voir lib/audio.js).
-  const sonore = e.audio && (e.lang === 'kab' || hasVoice(e.lang, e.mot))
+  // Un mot du lot étendu n'a pas de fichier attendu — sauf si un proche a
+  // justement enregistré le sien, auquel cas il faut le faire entendre.
+  const sonore = e.enseigne ? e.audio && (e.lang === 'kab' || hasVoice(e.lang, e.mot)) : hasVoice(e.lang, e.mot)
 
   return (
     <>
@@ -129,7 +131,21 @@ function Fiche({ e, onMot }) {
             <span className="rounded-full bg-sand-2 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-ink-soft">
               {e.langue}
             </span>
+            {/* Nature du mot, quand on la connaît : nom masculin, verbe… Le
+                genre se lit sur la forme amazighe (ta—t = féminin), il n'est
+                donc pas deviné (voir data/lexique/index.js). */}
+            {e.type && (
+              <span className="rounded-full bg-sand-2 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-ink-soft">
+                {TYPES[e.type] || e.type}
+                {e.genre === 'm' ? ' m.' : e.genre === 'f' ? ' f.' : ''}
+              </span>
+            )}
             <Origine etymologie={e.etymologie} />
+            {!e.enseigne && (
+              <span className="rounded-full bg-coral/12 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-coral-dark">
+                Pas encore dans les leçons
+              </span>
+            )}
           </div>
         </div>
         {sonore && (
@@ -159,6 +175,12 @@ function Fiche({ e, onMot }) {
           ))}
         </ul>
       </Bloc>
+
+      {e.noteLot && e.noteLot !== e.etymologie?.note && (
+        <Bloc titre="À savoir">
+          <p className="text-[12.5px] leading-relaxed text-ink">{e.noteLot}</p>
+        </Bloc>
+      )}
 
       <Bloc titre={e.etymologie?.racine ? `Origine · racine ${e.etymologie.racine}` : 'Origine'}>
         {e.etymologie?.note ? (
@@ -236,11 +258,19 @@ function Fiche({ e, onMot }) {
         </Bloc>
       )}
 
-      <Bloc titre="Où on l’apprend">
-        <p className="text-[12.5px] text-ink">
-          {e.unite} — {e.uniteTitre}
-          <span className="text-ink-soft"> · leçons {e.lecons.join(', ')}</span>
-        </p>
+      <Bloc titre={e.enseigne ? 'Où on l’apprend' : 'Dans les leçons'}>
+        {e.enseigne ? (
+          <p className="text-[12.5px] text-ink">
+            {e.unite} — {e.uniteTitre}
+            <span className="text-ink-soft"> · leçons {e.lecons.join(', ')}</span>
+          </p>
+        ) : (
+          <p className="text-[12.5px] leading-relaxed text-ink-soft">
+            Pas encore. Ce mot est au dictionnaire, aucune leçon ne l’enseigne pour l’instant — il
+            n’a donc pas d’enregistrement, et il entrera dans le parcours quand une unité en aura
+            besoin.
+          </p>
+        )}
       </Bloc>
     </>
   )

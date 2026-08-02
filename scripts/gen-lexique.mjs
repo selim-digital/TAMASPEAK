@@ -25,7 +25,7 @@ import { dirname, join } from 'node:path'
 import { COURSES } from '../src/data/courses.js'
 import { EMPRUNTS, A_TRANCHER } from '../src/data/emprunts.js'
 import { ORIGINES } from '../src/data/etymologies.js'
-import { ENTREES, ORDRE_LANGUES, STATS } from '../src/data/dictionnaire.js'
+import { ENTREES, ORDRE_LANGUES, STATS, THEMES } from '../src/data/dictionnaire.js'
 import { cleRecherche } from '../src/lib/translit.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -52,11 +52,23 @@ const ligne = (e) => ({
   lecons: e.lecons.join(' '),
 })
 
+/**
+ * LA FICHE D'ENREGISTREMENT NE LISTE QUE CE QUE LES LEÇONS FONT DIRE.
+ *
+ * Le dictionnaire contient désormais aussi le lot étendu (data/lexique/) :
+ * des mots qu'aucune leçon n'enseigne. Les verser ici ferait passer la fiche
+ * de 271 à plus de 500 entrées, dont l'app ne jouerait pas la moitié — le
+ * locuteur enregistrerait pour rien, et abandonnerait sans doute avant. Ils
+ * ont leur propre section, plus bas, comme candidats.
+ */
+const ENSEIGNES = ENTREES.filter((e) => e.enseigne)
+const ETENDUS = ENTREES.filter((e) => !e.enseigne)
+
 const parLangue = ORDRE_LANGUES.filter((id) => COURSES[id]).map((id) => ({
   course: COURSES[id],
-  lignes: ENTREES.filter((e) => e.lang === id).map(ligne),
+  lignes: ENSEIGNES.filter((e) => e.lang === id).map(ligne),
 }))
-const total = ENTREES.length
+const total = ENSEIGNES.length
 
 /* ---------------- lexique.csv ---------------- */
 const esc = (s) => `"${String(s ?? '').replace(/"/g, '""')}"`
@@ -125,6 +137,38 @@ for (const { course, lignes } of parLangue) {
   md.push('')
 }
 
+/* ---------------- dictionnaire étendu & candidats leçon ---------------- */
+if (ETENDUS.length) {
+  md.push('## Dictionnaire étendu — les candidats leçon')
+  md.push('')
+  md.push(
+    `> ${ETENDUS.length} mots que le dictionnaire connaît et qu'**aucune leçon n'enseigne encore** (\`src/data/lexique/\`). Ils ne sont PAS à enregistrer : ils n'auront de fichier audio que le jour où une unité les reprendra. C'est ici qu'on pioche pour écrire la suite du parcours, plutôt que d'inventer.`,
+  )
+  md.push('')
+  for (const id of ORDRE_LANGUES) {
+    const liste = ETENDUS.filter((e) => e.lang === id)
+    if (!liste.length) continue
+    md.push(`### ${COURSES[id].name} (${liste.length})`)
+    md.push('')
+    // Rangés par thème : c'est ainsi qu'on écrit une unité, pas par ordre
+    // alphabétique.
+    const parTheme = new Map()
+    for (const e of liste) {
+      const t = e.theme || 'autres'
+      if (!parTheme.has(t)) parTheme.set(t, [])
+      parTheme.get(t).push(e)
+    }
+    md.push('| Thème | Mots | Nombre |')
+    md.push('| --- | --- | ---: |')
+    for (const [t, mots] of parTheme) {
+      md.push(
+        `| ${cellule(THEMES[t] || t)} | ${cellule(mots.map((m) => m.mot).join(' · '))} | ${mots.length} |`,
+      )
+    }
+    md.push('')
+  }
+}
+
 /* ---------------- étymologies ---------------- */
 // Une même note sert souvent plusieurs cours — « aman » est le même mot du Rif
 // au Souss. On regroupe donc par NOTE, pas par mot : Selim valide une fois ce
@@ -173,12 +217,25 @@ if (sansEtymo.length) {
     'Le dictionnaire affiche pour ces entrées : « L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur ou un linguiste, bi-idniLlah. »',
   )
   md.push('')
-  md.push('| Forme | Cours | Français |')
-  md.push('| --- | --- | --- |')
-  for (const e of sansEtymo) {
-    md.push(`| **${cellule(e.mot)}** | ${e.lang} | ${cellule(e.sens.join(' / ')) || '—'} |`)
+  // Compact et rangé par thème : c'est une liste de travail, pas un tableau
+  // à lire ligne à ligne. Une entrée par mot ferait des centaines de lignes
+  // que personne n'ouvrirait.
+  for (const id of ORDRE_LANGUES) {
+    const liste = sansEtymo.filter((e) => e.lang === id)
+    if (!liste.length) continue
+    md.push(`**${COURSES[id].name}** (${liste.length})`)
+    md.push('')
+    const parTheme = new Map()
+    for (const e of liste) {
+      const t = e.enseigne ? 'enseignés' : e.theme || 'autres'
+      if (!parTheme.has(t)) parTheme.set(t, [])
+      parTheme.get(t).push(e.mot)
+    }
+    for (const [t, mots] of parTheme) {
+      md.push(`- *${cellule(THEMES[t] || t)}* — ${cellule(mots.join(' · '))}`)
+    }
+    md.push('')
   }
-  md.push('')
 }
 
 md.push('## Emprunts — les modales du cours')
@@ -212,8 +269,10 @@ md.push('')
 writeFileSync(join(root, 'lexique.md'), md.join('\n'))
 
 const nbEmprunts = Object.values(EMPRUNTS).reduce((n, l) => n + l.length, 0)
-console.log(`OK — ${total} entrées, ${nbEmprunts} emprunts affichés, ${A_TRANCHER.length} en attente.`)
+console.log(`OK — fiche d'enregistrement : ${total} entrées enseignées.`)
+console.log(`     dictionnaire : ${ENTREES.length} entrées, dont ${ETENDUS.length} pas encore enseignées.`)
 for (const s of STATS) console.log(`  ${s.nom.padEnd(20)} ${s.total}`)
+console.log(`  ${nbEmprunts} emprunts affichés, ${A_TRANCHER.length} en attente de décision.`)
 console.log(
   `  ${parEtymo.size} étymologies écrites, ${sansEtymo.length} entrées sans (« sera ajoutée plus tard » dans l'app).`,
 )

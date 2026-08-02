@@ -32,6 +32,63 @@ import { LANGUAGES } from '../src/data/languages.js'
 const nomDuCours = (id) => LANGUAGES.find((l) => l.id === id)?.name || id
 
 /* ------------------------------------------------------------------ */
+/* ?r=contenu — l'état du contenu, sans toucher la base                 */
+/*                                                                      */
+/* Le seul tableau qui ne parle pas des élèves mais de ce qu'on leur    */
+/* enseigne : combien de mots, combien viennent des leçons, combien du  */
+/* dictionnaire étendu, combien d'étymologies écrites, et surtout ce    */
+/* qui ATTEND une décision. C'est le suivi de validation, jusqu'ici     */
+/* lisible seulement dans lexique.md, donc seulement sur un ordinateur. */
+/*                                                                      */
+/* Aucune requête SQL ici : tout se calcule depuis src/data, qui est du */
+/* code. La route reste derrière le contrôle admin comme les autres —   */
+/* ce n'est pas secret, mais le tableau de bord est un tout.            */
+/* ------------------------------------------------------------------ */
+
+async function contenu(res) {
+  // Import différé : ces modules tirent tout le contenu des cours. Les
+  // charger à froid pour un appel `?r=stats` serait payer sans rien devoir.
+  const [{ ENTREES, ORDRE_LANGUES }, { EMPRUNTS, A_TRANCHER }] = await Promise.all([
+    import('../src/data/dictionnaire.js'),
+    import('../src/data/emprunts.js'),
+  ])
+
+  const langues = ORDRE_LANGUES.map((lang) => {
+    const l = ENTREES.filter((e) => e.lang === lang)
+    const avecEtymo = l.filter((e) => e.etymologie)
+    return {
+      lang,
+      nom: nomDuCours(lang),
+      total: l.length,
+      enseignes: l.filter((e) => e.enseigne).length,
+      etendus: l.filter((e) => !e.enseigne).length,
+      expressions: l.filter((e) => e.categorie === 'expression').length,
+      emprunts: l.filter((e) => e.emprunt).length,
+      etymologies: avecEtymo.length,
+      discutees: avecEtymo.filter((e) => e.etymologie.discute).length,
+      sansEtymo: l.length - avecEtymo.length,
+    }
+  })
+
+  const tousEmprunts = Object.values(EMPRUNTS).flat()
+  const parOrigine = {}
+  for (const e of tousEmprunts) {
+    const o = e.origine || 'arabe'
+    parOrigine[o] = (parOrigine[o] || 0) + 1
+  }
+
+  return res.status(200).json({
+    total: ENTREES.length,
+    enseignes: ENTREES.filter((e) => e.enseigne).length,
+    etendus: ENTREES.filter((e) => !e.enseigne).length,
+    langues,
+    emprunts: { total: tousEmprunts.length, parOrigine },
+    // Ce qui attend Selim : les expressions dont l'origine n'est pas tranchée.
+    aTrancher: A_TRANCHER.map((e) => ({ lang: e.lang, nom: nomDuCours(e.lang), mot: e.mot, sens: e.sens, raison: e.raison })),
+  })
+}
+
+/* ------------------------------------------------------------------ */
 /* ?r=stats — les chiffres qui disent si l'app apprend réellement       */
 /* quelque chose à quelqu'un, pas les chiffres qui flattent.            */
 /* ------------------------------------------------------------------ */
@@ -182,6 +239,10 @@ export default async function handler(req, res) {
     return revenus(res)
   }
   if (r === 'feedbacks') return feedbacks(req, res)
+  if (r === 'contenu') {
+    if (req.method !== 'GET') return res.status(405).json({ error: 'méthode non autorisée' })
+    return contenu(res)
+  }
 
   return res.status(404).json({ error: 'route inconnue' })
 }

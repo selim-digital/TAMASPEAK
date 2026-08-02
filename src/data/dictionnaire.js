@@ -26,10 +26,11 @@ import { COURSES } from './courses.js'
 import { LANGUAGES } from './languages.js'
 import { EMPRUNTS } from './emprunts.js'
 import { etymologieDe, ORIGINES } from './etymologies.js'
+import { lexiqueEtendu, THEMES, TYPES } from './lexique/index.js'
 import { cleRecherche, enTifinagh } from '../lib/translit.js'
 import { slug } from '../lib/slug.js'
 
-export { ORIGINES }
+export { ORIGINES, THEMES, TYPES }
 
 /**
  * L'ordre d'affichage des cours — le kabyle d'abord, il porte le plus de
@@ -149,6 +150,7 @@ function entreesDe(course) {
               uniteTitre: unit.title,
               uniteIndex,
               lecons: [],
+              enseigne: true,
               tifinagh: enTifinagh(mot),
             })
           }
@@ -159,6 +161,47 @@ function entreesDe(course) {
       }
     }
   })
+
+  // Le lot étendu (data/lexique/) vient PAR-DESSUS, jamais à côté : un mot
+  // déjà enseigné garde son unité et ses leçons, et gagne seulement ce que le
+  // lot apporte de plus (type, genre, thème). Sans cette fusion, « aḍar »
+  // apparaîtrait deux fois dans les résultats — une fois comme leçon, une
+  // fois comme entrée de dictionnaire. C'est le même mot.
+  for (const brut of lexiqueEtendu(course.id)) {
+    const id = ident(brut.mot)
+    const cle = cleRecherche(brut.mot)
+    if (!id || !cle) continue
+    const deja = vues.get(id)
+    if (deja) {
+      deja.type = brut.type
+      deja.genre = brut.genre
+      deja.theme = brut.theme
+      if (brut.note && !deja.noteLot) deja.noteLot = brut.note
+      for (const s of brut.sens) if (!deja.sens.includes(s)) deja.sens.push(s)
+      continue
+    }
+    vues.set(id, {
+      id: `${course.id}:${id}`,
+      cle,
+      lang: course.id,
+      langue: course.name,
+      mot: brut.mot,
+      sens: [...brut.sens],
+      categorie: categorieDe(brut.mot),
+      type: brut.type,
+      genre: brut.genre,
+      theme: brut.theme,
+      noteLot: brut.note,
+      // Aucune unité, donc aucune unité libre — c'est ce qui met ces mots
+      // derrière l'abonnement (voir entreeDicoOuverte).
+      unite: null,
+      uniteTitre: null,
+      uniteIndex: null,
+      lecons: [],
+      enseigne: false,
+      tifinagh: enTifinagh(brut.mot),
+    })
+  }
 
   // Un « sens » qui est lui-même un mot du cours n'est pas une traduction :
   // c'est le mot de l'énoncé qui a débordé (« Uř » = « Uř »).
@@ -174,7 +217,13 @@ function entreesDe(course) {
     e.etymologie = etymologieDe(e.cle, e.lang, e.mot)
     // Le tifinagh ne se translittère pas en nom de fichier — et le cours
     // d'amazighe standard n'a de toute façon pas d'audio (voir courses/zgh.js).
-    const s = slug(e.mot)
+    //
+    // Un mot du lot étendu n'a PAS de fichier attendu : la fiche
+    // d'enregistrement liste ce que les leçons font dire, et trois cents mots
+    // de plus à lire décourageraient le locuteur pour un son que l'app ne
+    // jouerait nulle part. Le jour où l'un d'eux entre dans une leçon, il
+    // gagne son fichier comme les autres — automatiquement.
+    const s = e.enseigne ? slug(e.mot) : ''
     e.audio = s ? (e.lang === 'kab' ? `${s}.mp3` : `${e.lang}/${s}.mp3`) : null
     e.noyaux = [...new Set(e.sens.map(noyauSens).filter(Boolean))]
     // Les autres façons de chercher ce mot — aujourd'hui le nom des lettres
