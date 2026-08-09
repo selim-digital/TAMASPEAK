@@ -16,23 +16,29 @@ import { ContributeVoiceScreen, MicIcon } from './screens/ContributeVoiceScreen.
 import { DuoScreen } from './screens/DuoScreen.jsx'
 import { MissionScreen } from './screens/MissionScreen.jsx'
 import { TifinaghScreen } from './screens/TifinaghScreen.jsx'
+import { DictionnaireScreen } from './screens/DictionnaireScreen.jsx'
 import { NotificationsScreen } from './screens/NotificationsScreen.jsx'
 import { JeuxScreen } from './screens/JeuxScreen.jsx'
 import { MemoryScreen } from './screens/MemoryScreen.jsx'
 import { MotsCroisesScreen } from './screens/MotsCroisesScreen.jsx'
 import { QuizScreen } from './screens/QuizScreen.jsx'
+import { AujourdhuiScreen } from './screens/AujourdhuiScreen.jsx'
+import { TabBar } from './components/TabBar.jsx'
 import { FaitCard } from './components/FaitCard.jsx'
 import { faitPour } from './data/faits.js'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, syncStore, pushStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
+import { track, flushEvents, syncStore, pushStore, wipeRemoteStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
 import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDemandes, partieMemory } from './lib/distance.js'
 import { MemoryLiveScreen } from './screens/MemoryLiveScreen.jsx'
 import { CercleScreen } from './screens/CercleScreen.jsx'
 import { EnregistrerScreen } from './screens/EnregistrerScreen.jsx'
 import { AccountScreen } from './screens/AccountScreen.jsx'
+import { AbonnementScreen } from './screens/AbonnementScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
+import { etatAbonnement, uniteOuverte, rejoindreFamille, oublierAbonnement } from './lib/abonnement.js'
+import { oublierEmprunts } from './lib/emprunts.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl, contentDigest } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
 import { LogoLockup } from './components/Logo.jsx'
@@ -77,7 +83,19 @@ const COMPTE_SUPPRIME = PARAMS_RETOUR.has('compte-supprime')
 // Un lien d'invitation au cercle (…/?cercle=CODE) : mémorisé ici, honoré
 // une fois la session confirmée (il faut être connecté pour rejoindre).
 const CERCLE_CODE = PARAMS_RETOUR.get('cercle')
-if (CERCLE_CODE) window.history.replaceState(null, '', window.location.pathname)
+// Une place de pack famille (…/?famille=CODE) — même mécanique.
+const FAMILLE_CODE = PARAMS_RETOUR.get('famille')
+// Le retour de la caisse Stripe : 'ok' | 'annule' | 'retour' (portail).
+const ABONNEMENT_RETOUR = PARAMS_RETOUR.get('abonnement')
+if (CERCLE_CODE || FAMILLE_CODE || ABONNEMENT_RETOUR) {
+  window.history.replaceState(null, '', window.location.pathname)
+}
+if (ABONNEMENT_RETOUR) {
+  // Le verdict en cache date d'AVANT le paiement : le garder ferait afficher
+  // « pas abonné » à quelqu'un qui vient de payer, le temps que le webhook
+  // arrive. On force une relecture au serveur.
+  oublierAbonnement()
+}
 if (AUTH_ERREUR || COMPTE_SUPPRIME) {
   window.history.replaceState(null, '', window.location.pathname)
   if (COMPTE_SUPPRIME) {
@@ -90,6 +108,10 @@ if (AUTH_ERREUR || COMPTE_SUPPRIME) {
       localStorage.removeItem('tama-speak:v3')
       localStorage.removeItem('tama-speak:events-queue')
       localStorage.removeItem('tama-speak:feedback-queue')
+      localStorage.removeItem('tama-speak:abonnement')
+      // La demande de suppression est allée au bout : le rappel n'a plus lieu
+      // d'être (voir screens/AccountScreen.jsx).
+      localStorage.removeItem('tama-speak:suppression-demandee')
     } catch {
       /* stockage indisponible */
     }
@@ -156,6 +178,14 @@ export default function App() {
   // Le wording de l'écran compte suit l'intention ('creer' | 'connexion') :
   // le flux est le même derrière, mais l'utilisateur doit reconnaître son cas.
   const [compteIntention, setCompteIntention] = useState('creer')
+  /**
+   * L'abonnement. `undefined` = pas encore su, `null` = serveur muet.
+   * DANS LES DEUX CAS ON N'IMPOSE RIEN : le verrou (uniteOuverte) n'existe
+   * que sur un « non » explicite du serveur — même règle que la session.
+   */
+  const [abonnement, setAbonnement] = useState(undefined)
+  // Résultat du lien d'invitation au pack famille, affiché sur l'accueil.
+  const [familleInfo, setFamilleInfo] = useState(null)
 
   useEffect(() => {
     saveStore(store)
@@ -187,8 +217,15 @@ export default function App() {
       if (state === 'authenticated') {
         setUser(u)
         setSessionEtat('connecte')
-        syncStore(loadStore()).then(({ store: fusion, synced }) => {
-          if (synced) setStore(fusion)
+        // L'identifiant du compte est passé à la synchronisation : c'est lui
+        // qui lui permet de reconnaître un store laissé par QUELQU'UN
+        // D'AUTRE et de ne pas le verser dans ce compte-ci.
+        syncStore(loadStore(), u?.id).then(({ store: fusion, synced, remplace }) => {
+          if (!synced) return
+          setStore(fusion)
+          // Changement de personne sur cet appareil : le verdict
+          // d'abonnement en cache était celui du partant.
+          if (remplace) oublierAbonnement()
         })
       } else if (state === 'anonymous') {
         setUser(null)
@@ -224,6 +261,70 @@ export default function App() {
     }
   }, [sessionEtat])
 
+  /**
+   * L'abonnement se relit à chaque changement d'état de session — se
+   * connecter, c'est justement le moment où l'on peut enfin savoir. On le
+   * relit AUSSI au retour de la caisse : le webhook Stripe et la redirection
+   * du navigateur courent en parallèle, et le navigateur gagne souvent.
+   * D'où le second passage, deux secondes plus tard.
+   */
+  const [abonnementTic, setAbonnementTic] = useState(0)
+  const relireAbonnement = () => setAbonnementTic((n) => n + 1)
+  useEffect(() => {
+    if (sessionEtat === 'inconnu') return
+    let vivant = true
+    etatAbonnement().then((e) => vivant && setAbonnement(e))
+    // Le webhook a quelques centaines de millisecondes de retard sur le
+    // retour de Stripe : on redemande une fois, sans insister davantage.
+    const rattrapage =
+      ABONNEMENT_RETOUR === 'ok' && abonnementTic === 0
+        ? setTimeout(() => etatAbonnement().then((e) => vivant && setAbonnement(e)), 2500)
+        : null
+    return () => {
+      vivant = false
+      if (rattrapage) clearTimeout(rattrapage)
+    }
+  }, [sessionEtat, abonnementTic])
+
+  /**
+   * Le retour de la caisse arrive sur l'accueil (Stripe redirige vers la
+   * racine). Le laisser là serait cruel : quelqu'un qui vient de payer doit
+   * voir une confirmation, pas l'écran d'accueil habituel. On l'emmène donc
+   * une fois sur l'écran d'abonnement — une seule fois, d'où le garde-fou.
+   */
+  const retourTraite = useRef(false)
+  useEffect(() => {
+    if (!ABONNEMENT_RETOUR || retourTraite.current || sessionEtat === 'inconnu') return
+    retourTraite.current = true
+    setScreen(ECRANS.ABONNEMENT)
+  }, [sessionEtat])
+
+  // Le lien d'invitation au pack famille : même règle que le cercle, il
+  // s'honore une fois la session confirmée (il faut un compte pour occuper
+  // une place — chacun garde sa progression).
+  useEffect(() => {
+    if (sessionEtat !== 'connecte' || !FAMILLE_CODE) return
+    rejoindreFamille(FAMILLE_CODE).then(({ statut, avec }) => {
+      setFamilleInfo(
+        statut === 'ok'
+          ? `Ta place est prise${avec ? ` dans le pack de ${avec}` : ''} — tous les cours sont ouverts pour toi.`
+          : statut === 'deja'
+            ? 'Cette invitation a déjà servi — tu es peut-être déjà dans le pack.'
+            : statut === 'complet'
+              ? 'Ce pack famille est complet (4 personnes).'
+              : statut === 'inactif'
+                ? 'Ce pack famille n’est pas actif pour le moment.'
+                : statut === 'introuvable'
+                  ? 'Cette invitation ne mène nulle part — demande à ton proche d’en renvoyer une.'
+                  : null,
+      )
+      if (statut === 'ok') {
+        oublierAbonnement()
+        relireAbonnement()
+      }
+    })
+  }, [sessionEtat])
+
   // Le lien d'invitation s'honore dès que la session est confirmée.
   useEffect(() => {
     if (sessionEtat !== 'connecte' || !CERCLE_CODE) return
@@ -256,8 +357,9 @@ export default function App() {
   faitVisibleRef.current = !!faitAffiche
   useEffect(() => {
     const CALMES = new Set([
-      ECRANS.CHEMIN, ECRANS.PROFIL, ECRANS.CERCLE, ECRANS.LANGUES, ECRANS.TROPHEES,
-      ECRANS.JEUX, ECRANS.MISSIONS, ECRANS.HISTOIRE, ECRANS.FAMILLE, ECRANS.LECON_FINIE,
+      ECRANS.AUJOURDHUI, ECRANS.CHEMIN, ECRANS.PROFIL, ECRANS.CERCLE, ECRANS.LANGUES,
+      ECRANS.TROPHEES, ECRANS.JEUX, ECRANS.MISSIONS, ECRANS.HISTOIRE, ECRANS.FAMILLE,
+      ECRANS.LECON_FINIE,
     ])
     const intervalle = setInterval(() => {
       if (!CALMES.has(screenRef.current) || faitVisibleRef.current) return
@@ -301,6 +403,31 @@ export default function App() {
   const unitsWithStatuses = course.units.map((u) => applyStatuses(u, progress.statuses))
   const canChallenge = challengeAvailable(progress)
 
+  /**
+   * La leçon en cours — LE geste du jour (bouton « Continuer » de l'écran
+   * Aujourd'hui et du chemin). Un coffre disponible passe avant : il se
+   * réclame en un geste et débloque la suite.
+   */
+  const leconCourante = (() => {
+    const node = course.orderedNodes.find((n) => {
+      const st = progress.statuses[n.id]
+      return n.type === 'chest' ? st === 'available' : st === 'current'
+    })
+    return node ? { node, unit: course.unitOfLesson(node.id) } : null
+  })()
+
+  /**
+   * Refonte C : la barre d'onglets est masquée pendant les flux immersifs
+   * (leçon, duel, micro, récompenses…) — on ne sort pas d'une leçon par
+   * accident — et avant l'entrée dans l'app (accueil, onboarding, compte).
+   */
+  const SANS_BARRE = new Set([
+    ECRANS.ACCUEIL, ECRANS.ONBOARDING, ECRANS.COMPTE, ECRANS.LECON,
+    ECRANS.LECON_FINIE, ECRANS.COFFRE, ECRANS.UNITE_FINIE, ECRANS.DEFI,
+    ECRANS.DEFI_FINI, ECRANS.DUEL_INTRO, ECRANS.DUEL, ECRANS.DUEL_RESULTAT,
+    ECRANS.DUO, ECRANS.ENREGISTRER,
+  ])
+
   /** Entrer dans l'app depuis l'accueil, selon l'état de session. */
   function demarrer() {
     // Règles du comité : connecté, optimiste ou hors-ligne → on entre.
@@ -313,7 +440,7 @@ export default function App() {
     } else if (sessionEtat === 'inconnu') {
       setDepartEnAttente(true)
     } else {
-      setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+      setScreen(hasProfile(store) ? ECRANS.AUJOURDHUI : ECRANS.ONBOARDING)
     }
   }
 
@@ -338,15 +465,14 @@ export default function App() {
 
   function finishOnboarding({ lang, level, reason, dailyGoalXp, contact }) {
     const langId = lang || store.lang
-    setStore((s) => {
-      const next = {
-        ...s,
-        lang: langId,
-        profile: s.profile || { reason, dailyGoalXp },
-      }
-      const langProgress = progressOf(next, getCourse(langId))
-      return withProgress(next, langId, { ...langProgress, level })
-    })
+    const nouveauCours = getCourse(langId)
+
+    // Le store d'après, calculé ICI plutôt que dans le seul updater : on en a
+    // besoin tout de suite pour savoir sur quelle leçon ouvrir.
+    const base = { ...store, lang: langId, profile: store.profile || { reason, dailyGoalXp } }
+    const progressLangue = { ...progressOf(base, nouveauCours), level }
+    setStore(withProgress(base, langId, progressLangue))
+
     // L'opt-in email choisi à l'étape « reste en contact » part au serveur —
     // c'est l'interrupteur que le cron des relances consulte. Envoi en
     // arrière-plan : un échec réseau ne bloque pas l'entrée dans l'app.
@@ -354,12 +480,80 @@ export default function App() {
       setEmailPrefs({ relances: true, resumeHebdo: contact === 'tout' })
     }
     setPendingLang(null)
-    setScreen(ECRANS.CHEMIN)
+
+    // On finit l'onboarding DANS une leçon, pas sur le tableau de bord.
+    // Atterrir sur « Aujourd'hui » signifiait finir de répondre à des
+    // questions devant un objectif à 0/20 et une série à 0 — un écran qui ne
+    // prouve rien et qui demande encore un tap avant le premier mot amazigh.
+    //
+    // On lit les statuts de la PROGRESSION, jamais le statut statique des
+    // données de cours : sinon quelqu'un qui reprend une langue déjà
+    // entamée serait renvoyé à la leçon 1.
+    const depart = nouveauCours.orderedNodes.find(
+      (n) => n.type !== 'chest' && progressLangue.statuses[n.id] === 'current',
+    )
+    // Verrou d'abonnement : une langue reprise loin dans le parcours peut
+    // pointer sur une unité fermée. Le doute profite à l'élève (uniteOuverte
+    // rend `true` tant que le serveur n'a pas dit non), mais s'il a dit non,
+    // on n'ouvre pas une leçon pour la refermer aussitôt.
+    const rang = depart ? nouveauCours.units.findIndex((u) => u.lessons.some((l) => l.id === depart.id)) : -1
+    if (depart && (rang < 0 || uniteOuverteIci(rang))) {
+      setActiveLesson(depart)
+      setLessonExercises(avecQuizFin(nouveauCours, progressLangue, depart.id))
+      setScreen(ECRANS.LECON)
+      return
+    }
+    setScreen(ECRANS.AUJOURDHUI)
   }
 
+  /**
+   * Le quiz de fin de leçon (demande de Selim : 3 questions) — de la
+   * RÉVISION, tirée des leçons déjà terminées : la répétition espacée est
+   * ce qui ancre. Première leçon d'une langue : rien à réviser, pas de quiz.
+   */
+  function avecQuizFin(c, p, lessonId) {
+    const base = c.getExercises(lessonId)
+    const pool = c.orderedNodes
+      .filter((n) => n.type !== 'chest' && n.id !== lessonId && p.statuses[n.id] === 'done')
+      .flatMap((n) => c.getExercises(n.id))
+      .filter((ex) => ['qcm', 'listen', 'image', 'culture', 'sentence'].includes(ex.type))
+    if (!pool.length) return base
+    return [...base, ...pickRandom(pool, 3).map((ex) => ({ ...ex, quizFin: true }))]
+  }
+
+  // Figés au lancement : recalculer à chaque rendu retirerait le hasard du
+  // quiz de fin sous les pieds de l'élève.
+  const [lessonExercises, setLessonExercises] = useState([])
+
+  /**
+   * Le verrou d'abonnement, en un seul endroit — l'unité de rang `i` du cours
+   * en cours est-elle ouverte ? Rend `true` tant que le serveur n'a pas dit
+   * « non » (hors-ligne, panne, boutique fermée) : voir lib/abonnement.js.
+   */
+  const uniteOuverteIci = (i) => uniteOuverte(i, abonnement)
+
   function startLesson(node) {
+    // Deuxième garde, après celle du chemin : une leçon ne s'ouvre jamais
+    // sans passer par ici (défis, liens, reprises…).
+    const unit = course.unitOfLesson(node.id)
+    const rang = course.units.findIndex((u) => u.id === unit?.id)
+    if (rang >= 0 && !uniteOuverteIci(rang)) {
+      setScreen(ECRANS.ABONNEMENT)
+      return
+    }
     setActiveLesson(node)
+    setLessonExercises(avecQuizFin(course, progress, node.id))
     setScreen(ECRANS.LECON)
+  }
+
+  /** « Continuer » depuis Aujourd'hui : leçon → jouer, coffre → ouvrir. */
+  function continuerParcours(node) {
+    if (node.type === 'chest') {
+      setActiveChest(node)
+      setScreen(ECRANS.COFFRE)
+    } else {
+      startLesson(node)
+    }
   }
 
   function finishLesson(result) {
@@ -456,8 +650,16 @@ export default function App() {
     setScreen(ECRANS.DUEL_INTRO)
   }
 
-  /** Toucher une notification du cercle : on mène directement à l'action. */
+  /**
+   * Toucher une notification : on mène DIRECTEMENT à l'action (demande de
+   * Selim — aucune carte morte). Les locales portent leur écran de
+   * destination (`ecran`) ; celles du cercle portent de quoi agir (`data`).
+   */
   async function ouvrirNotifServeur(n) {
+    if (n.ecran) {
+      setScreen(n.ecran)
+      return
+    }
     if (n.kind === 'demande-audio' && n.data?.demandeId) {
       const d = await mesDemandes()
       const demande = d?.recues?.find((x) => x.id === n.data.demandeId)
@@ -499,6 +701,10 @@ export default function App() {
   }
 
   function handleReset() {
+    // Le serveur AUSSI, sinon le zéro ne tient pas : la fusion est max/union
+    // et réinstallerait l'ancien état à la connexion suivante. C'est le bug
+    // vécu par Selim — tout effacer, et tout retrouver.
+    wipeRemoteStore()
     setStore(resetStore())
     setPendingLang(null)
     setScreen(ECRANS.ACCUEIL)
@@ -530,7 +736,7 @@ export default function App() {
               info={
                 compteSupprime
                   ? 'Ton compte et tes données ont été supprimés — tu repars de zéro. Ansuf, quand tu veux !'
-                  : cercleInfo
+                  : familleInfo || cercleInfo
               }
               onStart={demarrer}
               onLogin={() => {
@@ -549,6 +755,36 @@ export default function App() {
             <OnboardingScreen hasProfile={hasProfile(store)} presetLang={pendingLang} onFinish={finishOnboarding} />
           )}
 
+          {screen === ECRANS.AUJOURDHUI && (
+            <AujourdhuiScreen
+              course={course}
+              name={user?.name || store.profile?.name}
+              avatar={store.profile?.avatar}
+              notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
+              xpTodayValue={xpToday(progress)}
+              dailyGoalXp={store.profile?.dailyGoalXp}
+              streak={progress.streak}
+              leconCourante={leconCourante}
+              canChallenge={canChallenge}
+              fait={faitPour(Math.max((store.faitIndex || 1) - 1, 0))}
+              recitsLusCount={(progress.recitsLus || []).length}
+              suggestions={notifsServ.filter((n) => !n.lue && ['demande-audio', 'defi'].includes(n.kind)).slice(0, 2)}
+              abonnement={abonnement}
+              onContinuer={continuerParcours}
+              onChemin={() => setScreen(ECRANS.CHEMIN)}
+              onChallenge={startChallenge}
+              onQuiz={() => setScreen(ECRANS.QUIZ)}
+              onHistoire={() => setScreen(ECRANS.HISTOIRE)}
+              onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
+              onDictionnaire={() => setScreen(ECRANS.DICTIONNAIRE)}
+              onNotifs={() => setScreen(ECRANS.NOTIFS)}
+              onProfile={() => setScreen(ECRANS.PROFIL)}
+              onLanguages={() => setScreen(ECRANS.LANGUES)}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              onOuvrirNotif={ouvrirNotifServeur}
+            />
+          )}
+
           {screen === ECRANS.CHEMIN && (
             <PathScreen
               course={course}
@@ -556,29 +792,20 @@ export default function App() {
               xp={progress.xp}
               gems={progress.gems}
               streak={progress.streak}
-              xpTodayValue={xpToday(progress)}
-              dailyGoalXp={store.profile?.dailyGoalXp}
               cheerCount={lessonsDone(course, progress)}
-              canChallenge={canChallenge}
+              leconCourante={leconCourante}
               onSelectLesson={startLesson}
               onOpenChest={(node) => {
                 setActiveChest(node)
                 setScreen(ECRANS.COFFRE)
               }}
-              onChallenge={startChallenge}
-              onTrophies={() => setScreen(ECRANS.TROPHEES)}
               onFamily={() => setScreen(ECRANS.FAMILLE)}
               onLanguages={() => setScreen(ECRANS.LANGUES)}
               onProfile={() => setScreen(ECRANS.PROFIL)}
-              onDuo={() => setScreen(ECRANS.DUO)}
-              onMissions={() => setScreen(ECRANS.MISSIONS)}
-              onJeux={() => setScreen(ECRANS.JEUX)}
-              onTifinagh={() => setScreen(ECRANS.TIFINAGH)}
-              onHistoire={() => setScreen(ECRANS.HISTOIRE)}
               onNotifs={() => setScreen(ECRANS.NOTIFS)}
-              onCercle={() => setScreen(ECRANS.CERCLE)}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              uniteOuverte={uniteOuverteIci}
               notifCount={nonLues(store, course, progress).length + notifsServ.filter((n) => !n.lue).length}
-              lexiqueCount={lexiqueSize(progress)}
               avatar={store.profile?.avatar}
             />
           )}
@@ -592,21 +819,40 @@ export default function App() {
                 setCompteObligatoire(false)
                 setScreen(ECRANS.COMPTE)
               }}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              abonnement={abonnement}
               onFeedback={() => setScreen(ECRANS.FEEDBACK)}
+              onTrophees={() => setScreen(ECRANS.TROPHEES)}
+              onFamille={() => setScreen(ECRANS.FAMILLE)}
               onResetLang={(langId) => {
                 // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
+                // Les modales d'emprunt partent avec : qui recommence le cours
+                // doit retrouver ses explications, pas un parcours muet.
+                oublierEmprunts(langId)
                 setStore((s) => {
                   const apres = resetLanguage(s, langId)
                   pushStore(apres)
                   return apres
                 })
               }}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
           )}
 
           {screen === ECRANS.FEEDBACK && (
             <FeedbackScreen lang={course.id} onBack={() => setScreen(ECRANS.PROFIL)} />
+          )}
+
+          {screen === ECRANS.ABONNEMENT && (
+            <AbonnementScreen
+              retour={ABONNEMENT_RETOUR}
+              onBack={() => {
+                // Revenir de l'écran d'abonnement relit l'état : on a pu
+                // rejoindre un pack famille ou résilier entre-temps.
+                relireAbonnement()
+                setScreen(ECRANS.PROFIL)
+              }}
+            />
           )}
 
           {screen === ECRANS.COMPTE && (
@@ -624,7 +870,7 @@ export default function App() {
                   setScreen(ECRANS.PROFIL)
                 } else if (user) {
                   // Connexion faite (l'écran avance tout seul) : on entre.
-                  setScreen(hasProfile(store) ? ECRANS.CHEMIN : ECRANS.ONBOARDING)
+                  setScreen(hasProfile(store) ? ECRANS.AUJOURDHUI : ECRANS.ONBOARDING)
                 } else {
                   // Retour sans connexion : l'accueil, toujours verrouillé.
                   setScreen(ECRANS.ACCUEIL)
@@ -641,7 +887,7 @@ export default function App() {
               onStart={() => setScreen(ECRANS.DUEL)}
               onCancel={() => {
                 setDuel(null)
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.AUJOURDHUI)
               }}
             />
           )}
@@ -651,7 +897,7 @@ export default function App() {
               course={duelCourse}
               duel={duel}
               onFinishDuel={finishDuel}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.JEUX)}
             />
           )}
 
@@ -660,7 +906,7 @@ export default function App() {
               course={duelCourse}
               duel={duel}
               onFinishDuel={finishDuel}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.JEUX)}
             />
           )}
 
@@ -682,19 +928,19 @@ export default function App() {
               avatar={store.profile?.avatar}
               onDone={() => {
                 setDuel(null)
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.AUJOURDHUI)
               }}
             />
           )}
 
           {screen === ECRANS.LANGUES && (
-            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <LanguagesScreen store={store} onPick={pickLanguage} onBack={() => setScreen(ECRANS.AUJOURDHUI)} />
           )}
 
           {screen === ECRANS.FAMILLE && (
             <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-5 text-center">
               <div className="mb-2 flex items-center gap-3 text-left">
-                <button type="button" onClick={() => setScreen(ECRANS.CHEMIN)} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
+                <button type="button" onClick={() => setScreen(ECRANS.PROFIL)} aria-label="Retour" className="text-xl font-extrabold text-ink-soft">
                   ←
                 </button>
                 <h2 className="text-lg font-extrabold">La famille</h2>
@@ -722,14 +968,22 @@ export default function App() {
           )}
 
           {screen === ECRANS.CONTRIBUER && (
-            <ContributeVoiceScreen course={course} onBack={() => setScreen(ECRANS.FAMILLE)} />
+            <ContributeVoiceScreen course={course} onBack={() => setScreen(ECRANS.CERCLE)} />
           )}
 
           {screen === ECRANS.DUO && (
-            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <DuoScreen course={course} joueurParDefaut={store.profile} onBack={() => setScreen(ECRANS.JEUX)} />
           )}
 
-          {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.CHEMIN)} />}
+          {screen === ECRANS.TIFINAGH && <TifinaghScreen onBack={() => setScreen(ECRANS.AUJOURDHUI)} />}
+
+          {screen === ECRANS.DICTIONNAIRE && (
+            <DictionnaireScreen
+              abonnement={abonnement}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              onBack={() => setScreen(ECRANS.CHEMIN)}
+            />
+          )}
 
           {screen === ECRANS.JEUX && (
             <JeuxScreen
@@ -741,14 +995,18 @@ export default function App() {
               onMotsDuel={startMotsDuel}
               onCercle={() => setScreen(ECRANS.CERCLE)}
               onQuiz={() => setScreen(ECRANS.QUIZ)}
+              onDuo={() => setScreen(ECRANS.DUO)}
+              abonnement={abonnement}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
               faitIndex={store.faitIndex || 0}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
           )}
 
           {screen === ECRANS.QUIZ && (
             <QuizScreen
               faitIndex={store.faitIndex || 0}
+              recitsLus={progress.recitsLus || []}
               onRecompense={(xp) => {
                 setProgress((p) => recordQuiz(p, xp))
                 track('quiz_done', { lang: course.id, xp })
@@ -793,7 +1051,7 @@ export default function App() {
               onBack={() => {
                 // Le badge serveur tombe localement aussi (le POST est parti).
                 setNotifsServ((ns) => ns.map((n) => ({ ...n, lue: true })))
-                setScreen(ECRANS.CHEMIN)
+                setScreen(ECRANS.AUJOURDHUI)
               }}
             />
           )}
@@ -807,11 +1065,13 @@ export default function App() {
                 setPartieLive(p)
                 setScreen(ECRANS.MEMORY_LIVE)
               }}
+              onMissions={() => setScreen(ECRANS.MISSIONS)}
+              onContribuer={() => setScreen(ECRANS.CONTRIBUER)}
               onEnregistrer={(d) => {
                 setDemandeActive(d)
                 setScreen(ECRANS.ENREGISTRER)
               }}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.AUJOURDHUI)}
             />
           )}
 
@@ -841,7 +1101,7 @@ export default function App() {
           )}
 
           {screen === ECRANS.HISTOIRE && (
-            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.AUJOURDHUI)} />
           )}
 
           {screen === ECRANS.MISSIONS && (
@@ -850,13 +1110,13 @@ export default function App() {
               progress={progress}
               profile={store.profile}
               onSave={setProgress}
-              onBack={() => setScreen(ECRANS.CHEMIN)}
+              onBack={() => setScreen(ECRANS.CERCLE)}
             />
           )}
 
           {screen === ECRANS.LECON && (
             <LessonScreen
-              exercises={course.getExercises(activeLesson?.id)}
+              exercises={lessonExercises.length ? lessonExercises : course.getExercises(activeLesson?.id)}
               lang={course.id}
               onExit={() => setScreen(ECRANS.CHEMIN)}
               onFinish={finishLesson}
@@ -921,8 +1181,12 @@ export default function App() {
           )}
 
           {screen === ECRANS.TROPHEES && (
-            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen(ECRANS.CHEMIN)} />
+            <TrophiesScreen course={course} progress={progress} onBack={() => setScreen(ECRANS.PROFIL)} />
           )}
+          {/* Refonte C : la barre d'onglets — cinq familles sous le pouce,
+              masquée pendant les flux immersifs (leçon, duel, micro…). */}
+          {!SANS_BARRE.has(screen) && <TabBar ecran={screen} onGo={setScreen} />}
+
           {/* La respiration : posée par-dessus l'écran calme du moment. */}
           <FaitCard
             fait={faitAffiche}

@@ -11,6 +11,7 @@
  */
 export const ECRANS = Object.freeze({
   ACCUEIL: 'welcome',
+  AUJOURDHUI: 'aujourdhui',
   ONBOARDING: 'onboarding',
   CHEMIN: 'path',
   LECON: 'lesson',
@@ -41,4 +42,6 @@ export const ECRANS = Object.freeze({
   CERCLE: 'cercle',
   ENREGISTRER: 'enregistrer',
   MEMORY_LIVE: 'memorylive',
+  ABONNEMENT: 'abonnement',
+  DICTIONNAIRE: 'dictionnaire',
 })

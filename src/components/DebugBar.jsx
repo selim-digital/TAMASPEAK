@@ -15,6 +15,7 @@ const RACCOURCIS = [
   [ECRANS.ACCUEIL, 'Accueil'],
   [ECRANS.CHEMIN, 'Chemin'],
   [ECRANS.LANGUES, 'Langues'],
+  [ECRANS.ABONNEMENT, 'Abonnement'],
 ]
 
 export function DebugBar({ screen, onGo, onReset }) {

@@ -27,7 +27,12 @@ const TYPES = new Set([
   'duel_played',
   'duel_won',
 ])
-const LANGS = new Set(['kab', 'rif', 'shi', 'tzm', 'zgh'])
+// 'kab-beta' est le parcours d'essai raconté : il compte comme une langue à
+// part entière ICI, et c'est tout l'intérêt — ?r=stats calcule alors ses
+// cohortes J1/J7/J30 séparément de celles du cours de kabyle ordinaire.
+// Sans cette entrée, ses événements seraient jetés en silence et la bêta
+// serait invérifiable.
+const LANGS = new Set(['kab', 'kab-beta', 'rif', 'shi', 'tzm', 'zgh'])
 const MAX_BATCH = 100
 const WEEK_MS = 7 * 24 * 3600 * 1000
 

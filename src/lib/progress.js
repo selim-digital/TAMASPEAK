@@ -1,5 +1,5 @@
 import { DEFAULT_LANG } from '../data/languages.js'
-import { lireJson, ecrireJson, effacer } from './storage.js'
+import { lire, ecrire, lireJson, ecrireJson, effacer } from './storage.js'
 
 /**
  * Persistance de la progression. Le stockage lui-même est dans
@@ -273,7 +273,58 @@ export const saveStore = (store) => ecrireJson(KEY, store)
 export function resetStore() {
   effacer(KEY)
   effacer(LEGACY_KEY)
+  effacer(OWNER_KEY)
   return defaultStore()
+}
+
+/* ------------------------------------------------------------------ */
+/* À QUI APPARTIENT LA PROGRESSION POSÉE SUR CET APPAREIL              */
+/*                                                                      */
+/* La fusion max/union ne perd jamais rien — c'est sa raison d'être, et */
+/* c'est aussi ce qui la rend AVEUGLE : elle unit deux progressions     */
+/* sans se demander si elles sont de la même personne. Sur un téléphone */
+/* où quelqu'un se déconnecte et où quelqu'un d'autre se connecte, elle */
+/* versait donc la progression du premier dans le compte du second — et */
+/* la réécrivait sur le serveur, définitivement.                        */
+/*                                                                      */
+/* D'où cette étiquette : le store local porte l'identifiant du compte  */
+/* avec lequel il a été réconcilié pour la dernière fois. Trois cas, et */
+/* trois seulement :                                                    */
+/*                                                                      */
+/*   • PAS D'ÉTIQUETTE — personne ne s'est jamais connecté ici. C'est   */
+/*     le cas « j'ai joué sans compte, puis j'en ai créé un » : on      */
+/*     fusionne, et il ne doit surtout pas cesser de marcher.           */
+/*   • MÊME COMPTE — un autre appareil, une autre session : on fusionne.*/
+/*   • AUTRE COMPTE — on ne fusionne PAS. L'arrivant reçoit SA          */
+/*     progression, telle que le serveur la connaît.                    */
+/*                                                                      */
+/* Ce que l'étiquette ne fait pas : effacer à la déconnexion. Se        */
+/* déconnecter ne doit pas vider l'appareil — l'écran du compte le      */
+/* promet en toutes lettres. C'est l'arrivée de QUELQU'UN D'AUTRE qui   */
+/* écarte les données, pas le départ.                                   */
+/* ------------------------------------------------------------------ */
+
+const OWNER_KEY = 'tama-speak:store-owner'
+
+/** L'identifiant du compte à qui appartient le store local, ou null. */
+export const storeOwner = () => lire(OWNER_KEY)
+
+/**
+ * Marque le store comme appartenant à ce compte. À n'appeler QU'APRÈS une
+ * réconciliation réussie avec le serveur : étiqueter sans avoir réconcilié
+ * reviendrait à attribuer à l'arrivant les données de celui qui part.
+ */
+export const setStoreOwner = (userId) =>
+  userId ? ecrire(OWNER_KEY, String(userId)) : effacer(OWNER_KEY)
+
+/**
+ * Le store local est-il celui d'un AUTRE compte que celui qui se connecte ?
+ * Sans étiquette (jamais connecté ici), la réponse est non : ces données
+ * n'appartiennent à personne d'autre, elles sont à qui arrive.
+ */
+export function storeEtranger(userId) {
+  const proprietaire = storeOwner()
+  return !!userId && !!proprietaire && proprietaire !== String(userId)
 }
 
 /** Progression de la langue demandée (créée à la volée si absente). */

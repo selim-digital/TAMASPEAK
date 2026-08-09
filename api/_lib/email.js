@@ -33,13 +33,20 @@ const UNSUB_URL = process.env.UNSUB_URL || 'https://tamaspeak.com/api/unsubscrib
 /**
  * Garde-fou de quota (audit) : compteur EN BASE — déterministe et partagé
  * entre instances, contrairement au limiteur mémoire qui a causé deux
- * pannes. 5 envois/jour par adresse (personne n'a besoin de plus de codes),
- * 80/jour au total (marge de 20 sous le plafond Resend, pour que la
- * connexion par code reste vivante même si les relances dérapent).
+ * pannes. Plafonds PAR NATURE d'email (leçon vécue par Selim : ses tests
+ * du jour avaient épuisé un plafond unique de 5, et l'email de
+ * confirmation de SUPPRESSION DE COMPTE — un droit RGPD — était refusé
+ * en silence) :
+ *   • marketing (relances, hebdo) : 5/jour par adresse — personne n'a
+ *     besoin de plus de rappels ;
+ *   • transactionnel (codes, lien magique, suppression) : 15/jour par
+ *     adresse — un jour de tests ou de tentatives ne doit jamais bloquer
+ *     la connexion ni l'exercice d'un droit ;
+ *   • 80/jour au total (marge de 20 sous le plafond Resend).
  * En cas de doute (base injoignable), on LAISSE PASSER : rater une relance
  * est bénin, bloquer une connexion ne l'est pas.
  */
-async function quotaOk(to) {
+async function quotaOk(to, marketing) {
   try {
     const { serverReady, sql } = await import('./db.js')
     if (!serverReady()) return true
@@ -47,7 +54,7 @@ async function quotaOk(to) {
       INSERT INTO email_quota (day, email, n) VALUES (CURRENT_DATE, ${to.toLowerCase()}, 1)
       ON CONFLICT (day, email) DO UPDATE SET n = email_quota.n + 1
       RETURNING n`
-    if ((ligne?.n || 0) > 5) return false
+    if ((ligne?.n || 0) > (marketing ? 5 : 15)) return false
     const [total] = await sql()`
       SELECT COALESCE(SUM(n), 0)::int AS t FROM email_quota WHERE day = CURRENT_DATE`
     return (total?.t || 0) <= 80
@@ -57,10 +64,25 @@ async function quotaOk(to) {
   }
 }
 
+/** Trace anonyme de chaque tentative (gabarit + statut, JAMAIS l'adresse). */
+async function journaliser(template, statut) {
+  try {
+    const { serverReady, sql } = await import('./db.js')
+    if (!serverReady()) return
+    await sql()`INSERT INTO journal_emails (template, statut) VALUES (${template}, ${String(statut).slice(0, 200)})`
+  } catch {
+    /* le journal est un bonus — jamais bloquant */
+  }
+}
+
 export async function sendEmail({ to, subject, template, data = {}, marketing = false }) {
-  if (!emailReady()) return false
-  if (!(await quotaOk(to))) {
+  if (!emailReady()) {
+    await journaliser(template, 'refus: RESEND_API_KEY absente')
+    return false
+  }
+  if (!(await quotaOk(to, marketing))) {
     console.error(`[tama] quota email atteint — envoi refusé vers ${to} (${template})`)
+    await journaliser(template, 'refus-quota')
     return false
   }
   const { Resend } = await import('resend')
@@ -83,7 +105,9 @@ export async function sendEmail({ to, subject, template, data = {}, marketing = 
   })
   if (error) {
     console.error('[tama] échec email', template, error?.message || error)
+    await journaliser(template, `erreur: ${error?.message || error}`)
     return false
   }
+  await journaliser(template, 'envoye')
   return true
 }

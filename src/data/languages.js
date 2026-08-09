@@ -26,6 +26,47 @@ export const LANGUAGES = [
     blurb: 'Les montagnes du Djurdjura, la mer à Bgayet.',
   },
   {
+    // ------------------------------------------------------------------
+    // LE PARCOURS BÊTA — un cours À PART, jamais un remplacement.
+    //
+    // Décision de Selim, sans ambiguïté : c'est un parcours PARALLÈLE,
+    // estampillé bêta, proposé à qui veut le tester. Le cours de kabyle
+    // ordinaire (`kab`) reste intact et reste le défaut ; personne ne doit
+    // s'y retrouver sans l'avoir choisi. Quatre garde-fous en découlent :
+    //
+    //   1. Aucun basculement automatique — on n'y entre que par un tap
+    //      délibéré depuis « Mes langues ».
+    //   2. `beta: true` l'exclut de l'onboarding : un nouvel inscrit
+    //      commence toujours par le cours ordinaire.
+    //   3. On en sort sans rien perdre — le store est multi-langues, les
+    //      deux progressions ne se touchent pas.
+    //   4. Ce n'est pas un argument de vente : on ne verrouille pas du
+    //      contenu qu'on annonce soi-même comme non stabilisé.
+    //
+    // Le CONTENU LINGUISTIQUE est exactement celui du cours de kabyle —
+    // mêmes mots, mêmes phrases, mêmes sources. Ce qui change est le récit
+    // qui l'entoure (data/voyage.js). Écrire des répliques amazighes pour
+    // les hôtes demanderait deux locuteurs natifs (docs/pedagogie-voyage.md,
+    // §8) : tant qu'ils n'ont pas relu, on n'invente rien.
+    // ------------------------------------------------------------------
+    id: 'kab-beta',
+    beta: true,
+    // La langue RÉELLE derrière le parcours. C'est du kabyle : ses
+    // enregistrements, ses voix de locuteurs et ses fichiers de synthèse sont
+    // ceux du kabyle, et doivent être cherchés là-bas. Sans cela, la bêta
+    // irait lire un dossier `audio/kab-beta/` qui n'existe pas — le parcours
+    // serait MUET alors qu'il enseigne exactement les mêmes mots.
+    base: 'kab',
+    name: 'Kabyle — Le voyage',
+    autonym: 'Taqbaylit',
+    region: 'Version d’essai',
+    land: 'kmont',
+    accent: '#10C4A8',
+    accentDeep: '#0a7a69',
+    blurb: 'Une histoire, des personnages qu’on retrouve, et onze paysages.',
+    note: 'Version d’essai : même contenu que le cours de kabyle, mais raconté. Ta progression y est séparée, et le cours de kabyle ordinaire n’y touche pas. Dis-nous ce que tu en penses — c’est fait pour ça.',
+  },
+  {
     id: 'shi',
     name: 'Tachelhit',
     autonym: 'Tacelḥit',
@@ -73,3 +114,28 @@ export const LANGUAGES = [
 export const DEFAULT_LANG = 'kab'
 
 export const findLanguage = (id) => LANGUAGES.find((l) => l.id === id) || LANGUAGES[0]
+
+/**
+ * Les langues proposées à l'ONBOARDING — les bêtas en sont exclues.
+ *
+ * C'est le garde-fou n° 2 : un nouvel inscrit commence toujours par un cours
+ * stabilisé. La bêta ne se découvre que depuis « Mes langues », par un choix
+ * explicite de quelqu'un qui est déjà dans l'app.
+ */
+export const LANGUES_STABLES = LANGUAGES.filter((l) => !l.beta)
+
+export const estBeta = (id) => !!findLanguage(id)?.beta
+
+/**
+ * La langue réelle derrière un identifiant de cours.
+ *
+ * Un parcours d'essai n'est pas une nouvelle langue : « kab-beta » enseigne
+ * du kabyle. Tout ce qui touche au SON doit donc passer par ici — les
+ * enregistrements natifs, les voix contribuées et la synthèse vivent sous
+ * l'identifiant de la vraie langue, jamais sous celui du parcours.
+ *
+ * On garde volontairement une fonction plutôt qu'un remplacement à la
+ * source : la progression, elle, DOIT rester séparée (c'est tout l'intérêt
+ * d'un parcours parallèle). Seul l'audio se partage.
+ */
+export const langueDeBase = (id) => findLanguage(id)?.base || id || DEFAULT_LANG

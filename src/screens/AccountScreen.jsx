@@ -12,7 +12,40 @@ import {
   signOut,
   deleteAccount,
   syncStore,
+  wipeRemoteStore,
 } from '../lib/api.js'
+
+/**
+ * La suppression demandée mais PAS ENCORE CONFIRMÉE.
+ *
+ * Nos comptes n'ont pas de mot de passe : la preuve d'identité est la boîte
+ * mail, donc l'effacement réel n'a lieu qu'au clic dans l'email. Tant que ce
+ * clic n'a pas eu lieu, LE COMPTE EXISTE ENCORE — et comme la progression se
+ * resynchronise à la connexion, on retrouve tout. C'est très exactement ce
+ * que Selim a vécu : « j'ai supprimé mon compte et je me retrouve avec mes
+ * anciennes données ».
+ *
+ * Le défaut n'était pas dans la suppression, il était dans le SILENCE : un
+ * message de cinq secondes, puis plus aucune trace au lancement suivant. On
+ * garde donc la demande localement, et l'écran la rappelle tant qu'elle n'est
+ * pas allée au bout.
+ */
+const CLE_SUPPR = 'tama-speak:suppression-demandee'
+const lireSuppr = () => {
+  try {
+    return localStorage.getItem(CLE_SUPPR) || null
+  } catch {
+    return null
+  }
+}
+const noterSuppr = (v) => {
+  try {
+    v ? localStorage.setItem(CLE_SUPPR, v) : localStorage.removeItem(CLE_SUPPR)
+  } catch {
+    /* stockage indisponible : on se passe du rappel, rien de cassé */
+  }
+}
+import { oublierAbonnement } from '../lib/abonnement.js'
 
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -44,6 +77,9 @@ export function AccountScreen({
   const [envoi, setEnvoi] = useState(null) // null | 'encours' | 'envoye' | 'verif' | 'erreur'
   const [flash, setFlash] = useState(null)
   const [confirmerSuppr, setConfirmerSuppr] = useState(false)
+  // Une suppression demandée et jamais confirmée (horodatage ISO, ou null).
+  const [supprDemandee, setSupprDemandee] = useState(lireSuppr)
+  const [zeroEnCours, setZeroEnCours] = useState(false)
   const [googleEnCours, setGoogleEnCours] = useState(false)
 
   useEffect(() => {
@@ -104,11 +140,19 @@ export function AccountScreen({
       setEtat('connecte')
       setEnvoi(null)
       sfx.correct()
-      // La promesse tenue : fusion max/union — rien ne se perd, jamais.
-      const { store: fusion, synced } = await syncStore(store)
+      // Fusion max/union — rien ne se perd, jamais… SAUF si le store posé
+      // sur cet appareil appartient à un autre compte : on ne verse pas la
+      // progression du partant dans celui qui arrive (voir syncStore).
+      const { store: fusion, synced, remplace } = await syncStore(store, u?.id)
       if (synced) onStoreMerged(fusion)
+      if (remplace) oublierAbonnement()
       onSession?.(u)
-      note('Connecté ! Ta progression est maintenant sauvegardée.', 3200)
+      note(
+        remplace
+          ? 'Connecté ! Voici ta progression — celle du compte précédent est restée sur son compte.'
+          : 'Connecté ! Ta progression est maintenant sauvegardée.',
+        3800,
+      )
     } else {
       setEnvoi('envoye')
       note(r === 'wrong' ? 'Code faux ou expiré — vérifie, ou renvoie un code.' : 'Vérification impossible — réessaie.')
@@ -117,7 +161,7 @@ export function AccountScreen({
 
   async function synchroniser() {
     sfx.click()
-    const { store: fusion, synced } = await syncStore(store)
+    const { store: fusion, synced } = await syncStore(store, user?.id)
     if (synced) {
       onStoreMerged(fusion)
       note('Progression synchronisée.')
@@ -154,6 +198,9 @@ export function AccountScreen({
     setEtat('deconnecte')
     setEnvoi(null)
     setConfirmerSuppr(false)
+    // Le verdict d'abonnement en cache appartenait à la personne qui part :
+    // sur un téléphone partagé, le suivant ne doit pas en hériter.
+    oublierAbonnement()
     onSession?.(null)
     note('Déconnecté. Ta progression locale reste sur cet appareil.')
   }
@@ -164,9 +211,15 @@ export function AccountScreen({
     if (r === 'email-envoye') {
       // Sans mot de passe, la preuve d'identité c'est la boîte mail : la
       // suppression réelle se fait au clic dans l'email de confirmation.
+      // On INSCRIT la demande : sans cela, l'utilisateur repart en croyant
+      // son compte effacé et le retrouve intact au lancement suivant.
+      noterSuppr(new Date().toISOString())
+      setSupprDemandee(lireSuppr())
       setConfirmerSuppr(false)
       note('Un email de confirmation vient de partir — la suppression se fait en cliquant dedans.', 5000)
     } else if (r === 'supprime') {
+      noterSuppr(null)
+      setSupprDemandee(null)
       setUser(null)
       setEtat('deconnecte')
       setConfirmerSuppr(false)
@@ -378,6 +431,71 @@ export function AccountScreen({
                 <Button variant="neutral" onClick={deconnecter}>
                   Se déconnecter
                 </Button>
+              </div>
+            )}
+
+            {/* Une suppression demandée et jamais confirmée. Elle DOIT se voir :
+                tant que l'email n'est pas cliqué, le compte existe, la
+                progression se resynchronise, et on croit avoir tout effacé
+                alors que tout revient. */}
+            {supprDemandee && (
+              <div className="mt-6 rounded-2xl border-2 border-coral/50 bg-coral/10 px-4 py-3">
+                <div className="text-[11.5px] font-extrabold text-coral-dark">
+                  Suppression en attente de confirmation
+                </div>
+                <p className="mt-1 text-[10.5px] leading-snug text-ink-soft">
+                  Tu as demandé la suppression le{' '}
+                  <b className="text-ink">
+                    {new Date(supprDemandee).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                  </b>
+                  , mais elle n’est pas allée au bout : <b className="text-ink">ton compte existe encore</b>.
+                  Il faut cliquer le lien dans l’email reçu — sans ce clic, ta progression revient à
+                  chaque connexion.
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={supprimer}
+                    className="rounded-xl bg-coral px-3 py-2 text-[11.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)]"
+                  >
+                    Renvoyer l’email
+                  </button>
+                  {/* La sortie de secours : effacer ses données sans passer par
+                      l'email. Ce n'est PAS la suppression du compte — on le dit
+                      — mais cela répond au besoin réel « je veux repartir de
+                      zéro », tout de suite et sans dépendre d'une boîte mail. */}
+                  <button
+                    type="button"
+                    disabled={zeroEnCours}
+                    onClick={async () => {
+                      sfx.click()
+                      setZeroEnCours(true)
+                      const ok = await wipeRemoteStore()
+                      setZeroEnCours(false)
+                      note(
+                        ok
+                          ? 'Progression en ligne effacée. Ton compte, lui, existe toujours.'
+                          : 'Effacement impossible pour l’instant — réessaie quand tu as du réseau.',
+                        4000,
+                      )
+                    }}
+                    className="rounded-xl border-2 border-line bg-cream px-3 py-2 text-[11.5px] font-extrabold text-ink-soft disabled:opacity-60"
+                  >
+                    {zeroEnCours ? 'Effacement…' : 'Effacer ma progression en ligne'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sfx.click()
+                      noterSuppr(null)
+                      setSupprDemandee(null)
+                      note('Demande de suppression annulée.')
+                    }}
+                    className="rounded-xl px-2 py-2 text-[11px] font-bold text-ink-soft underline"
+                  >
+                    J’ai changé d’avis
+                  </button>
+                </div>
               </div>
             )}
 

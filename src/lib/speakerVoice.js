@@ -22,6 +22,7 @@
  * en arrière-plan, d'où la sauvegarde du tampon partiel.
  */
 import { slug } from './slug.js'
+import { langueDeBase } from '../data/languages.js'
 
 const DB = 'tama-speak-voix'
 const STORE = 'enregistrements'
@@ -59,8 +60,13 @@ function tx(mode, fn) {
   )
 }
 
-/** Clé d'un enregistrement : une contribution par mot et par langue. */
-export const voiceKey = (lang, word) => `${lang || 'kab'}:${slug(word)}`
+/**
+ * Clé d'un enregistrement : une contribution par mot et par LANGUE — pas par
+ * parcours. Une voix enregistrée pour le kabyle doit s'entendre aussi dans le
+ * parcours d'essai, qui enseigne les mêmes mots : d'où `langueDeBase`. Sans
+ * elle, chaque locuteur devrait enregistrer deux fois le même mot.
+ */
+export const voiceKey = (lang, word) => `${langueDeBase(lang)}:${slug(word)}`
 
 /* ------------------------------------------------------------------ */
 /* Lecture / écriture                                                   */
@@ -69,8 +75,13 @@ export const voiceKey = (lang, word) => `${lang || 'kab'}:${slug(word)}`
 /** Enregistre (ou remplace) la contribution d'un locuteur pour un mot. */
 export async function saveVoice({ lang, word, blob, speaker }) {
   const id = voiceKey(lang, word)
+  // On classe sous la LANGUE, jamais sous le parcours : la clé passe déjà par
+  // langueDeBase, et un champ `lang` qui dirait « kab-beta » se retrouverait
+  // en désaccord avec elle — les écrans qui filtrent par langue ne
+  // verraient plus l'enregistrement qu'ils viennent d'écrire.
+  const langue = langueDeBase(lang)
   await tx('readwrite', (s) =>
-    s.put({ id, lang, word, speaker: speaker || '', blob, type: blob.type, at: new Date().toISOString() }),
+    s.put({ id, lang: langue, word, speaker: speaker || '', blob, type: blob.type, at: new Date().toISOString() }),
   )
   index?.add(id)
   bust(id)
@@ -165,7 +176,8 @@ const base64ToBlob = (b64, type) => {
 
 /** Emballe les contributions d'une langue en un fichier téléchargeable. */
 export async function exportVoices(lang) {
-  const all = (await listVoices()).filter((v) => !lang || v.lang === lang)
+  const langue = lang ? langueDeBase(lang) : null
+  const all = (await listVoices()).filter((v) => !langue || v.lang === langue)
   if (!all.length) return null
   const items = await Promise.all(
     all.map(async (v) => ({

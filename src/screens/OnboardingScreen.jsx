@@ -2,9 +2,15 @@ import { useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { FamilyCarousel } from '../components/mascots/FamilyCarousel.jsx'
-import { LANGUAGES, findLanguage } from '../data/languages.js'
+// LANGUES_STABLES et non LANGUAGES : les parcours bêta ne s'offrent pas à
+// quelqu'un qui découvre l'app. On y entre depuis « Mes langues », en connaissance
+// de cause (voir data/languages.js, garde-fou n° 2).
+import { LANGUES_STABLES, findLanguage } from '../data/languages.js'
 import { hasCourse } from '../data/courses.js'
 import { LAND_BY_ID } from '../data/journey.js'
+import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
+import { YazMark } from '../components/Logo.jsx'
+import { ONGLETS } from '../components/TabBar.jsx'
 import { sfx } from '../lib/sfx.js'
 
 /**
@@ -66,7 +72,7 @@ const DAILY_STEP = {
 function LangStep({ selected, onSelect }) {
   return (
     <div className="mt-5 flex flex-col gap-2.5">
-      {LANGUAGES.map((lang) => {
+      {LANGUES_STABLES.map((lang) => {
         const active = selected === lang.id
         const ready = hasCourse(lang.id)
         return (
@@ -118,18 +124,114 @@ const DIAPOS = [
   {
     id: 'ensemble',
     etat: 'curious',
-    titre: 'On apprend ensemble',
+    titre: 'On apprend en famille',
     texte:
-      'Joue à deux sur un seul téléphone, pars en mission poser une question à un proche, et rapporte ses mots dans ton lexique — chaque famille a son parler, et le tien compte.',
+      'Invite tes proches dans ton cercle : défiez-vous à distance, chacun sur son téléphone — et demande-leur d’enregistrer un mot avec leur voix : c’est elle que tu entendras dans tes leçons.',
   },
   {
     id: 'tresors',
     etat: 'idle',
     titre: 'Écris, découvre, collectionne',
     texte:
-      'Trace le tifinagh au doigt, traverse l’histoire amazighe, et ouvre des coffres : couscous, bijoux, monuments… Toute une culture t’attend sur le chemin.',
+      'Trace le tifinagh au doigt, traverse l’histoire amazighe — des origines à aujourd’hui —, réponds aux quiz et ouvre des coffres : toute une culture t’attend.',
+  },
+  {
+    id: 'navigation',
+    etat: 'celebrate',
+    titre: 'Tout est sous ton pouce',
+    texte:
+      'En bas de l’écran : Aujourd’hui pour ta leçon du jour, le Chemin pour voir le voyage, les Jeux, ton Cercle — et Moi pour tout ce qui est à toi.',
   },
 ]
+
+/**
+ * Le visuel de chaque diapo (demande de Selim : MONTRER ce qui est décrit).
+ * Tout est composé avec les pièces déjà dessinées de l'app — paysages,
+ * tabzimt, barre d'onglets — pour que la promesse ressemble au produit.
+ */
+function VisuelDiapo({ id }) {
+  if (id === 'mission') {
+    // Les terres amazighes : trois paysages du voyage, Akermus devant.
+    return (
+      <div className="relative mx-auto w-fit">
+        <div className="flex gap-1.5">
+          {['kmont', 'dunes', 'rif'].map((land, i) => (
+            <img
+              key={land}
+              src={LAND_BY_ID[land]}
+              alt=""
+              className={`h-16 w-20 rounded-xl border-2 border-white object-cover shadow-md ${i === 1 ? '-mt-2' : 'mt-1'}`}
+            />
+          ))}
+        </div>
+        <div className="-mt-8">
+          <Akermus height={96} state="celebrate" />
+        </div>
+      </div>
+    )
+  }
+
+  if (id === 'ensemble') {
+    // Deux téléphones reliés — le cercle : un défi part, une voix revient.
+    const Tel = ({ pastille }) => (
+      <div className="flex h-24 w-14 flex-col items-center justify-center gap-1 rounded-xl border-2 border-ink/20 bg-white shadow-md">
+        <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-turquoise to-turquoise-dark text-white">
+          <YazMark size={18} />
+        </span>
+        <span className="text-[13px]" aria-hidden="true">{pastille}</span>
+      </div>
+    )
+    return (
+      <div className="mx-auto flex w-fit items-center gap-2">
+        <Tel pastille="⚔️" />
+        <svg width="46" height="24" viewBox="0 0 46 24" aria-hidden="true" className="text-turquoise">
+          <path d="M2 8 C 16 0, 30 0, 44 8" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeDasharray="1 6" />
+          <path d="M44 16 C 30 24, 16 24, 2 16" fill="none" stroke="var(--color-coral)" strokeWidth="2.4" strokeLinecap="round" strokeDasharray="1 6" />
+          <path d="M40 4l5 4-6 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 20l-5-4 6-2" fill="none" stroke="var(--color-coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <Tel pastille="🎙️" />
+      </div>
+    )
+  }
+
+  if (id === 'tresors') {
+    // Écrire (ⵣ), découvrir (un récit sur son paysage), collectionner (tabzimt).
+    return (
+      <div className="mx-auto flex w-fit items-end gap-2">
+        <span className="tifinagh grid h-16 w-16 place-items-center rounded-2xl border-2 border-line bg-white text-[34px] font-extrabold text-turquoise-deep shadow-md">
+          ⵣ
+        </span>
+        <span className="relative -mt-2 block h-[72px] w-[72px] overflow-hidden rounded-2xl border-2 border-white shadow-md">
+          <img src={LAND_BY_ID.tassili} alt="" className="h-full w-full object-cover" />
+          <span className="absolute inset-x-0 bottom-0 bg-ink/60 py-0.5 text-center text-[8px] font-extrabold uppercase tracking-wide text-white">
+            Histoire
+          </span>
+        </span>
+        <span className="grid h-16 w-16 place-items-center rounded-2xl border-2 border-line bg-white shadow-md">
+          <Tabzimt size={44} />
+        </span>
+      </div>
+    )
+  }
+
+  // 'navigation' : la vraie barre d'onglets, en miniature inerte.
+  return (
+    <div className="mx-auto w-[250px] rounded-2xl border-2 border-ink/15 bg-white p-1.5 shadow-md">
+      <div className="flex">
+        {ONGLETS.map((o, i) => (
+          <span
+            key={o.id}
+            className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 ${i === 0 ? 'bg-turquoise/10 text-turquoise-deep' : 'text-ink-soft'}`}
+          >
+            <span className="grid h-5 scale-90 place-items-center">{o.icone}</span>
+            <span className={`text-[7.5px] ${i === 0 ? 'font-extrabold' : 'font-bold'}`}>{o.label}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function Presentation({ onDone }) {
   const [i, setI] = useState(0)
@@ -137,8 +239,10 @@ function Presentation({ onDone }) {
   const derniere = i === DIAPOS.length - 1
   return (
     <div className="animate-enter flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-10 pb-5 text-center bg-[radial-gradient(130%_80%_at_50%_6%,rgba(16,196,168,0.15),var(--color-cream)_60%)]">
-      <div key={d.id} className="animate-pop-in mx-auto">
-        <Akermus height={150} state={d.etat} float={d.etat === 'idle'} />
+      {/* Chaque diapo MONTRE ce qu'elle raconte (demande de Selim) —
+          composé avec les pièces déjà dessinées de l'app. */}
+      <div key={d.id} className="animate-pop-in mx-auto flex min-h-[120px] items-center">
+        <VisuelDiapo id={d.id} />
       </div>
       <h2 key={`t-${d.id}`} className="animate-rise mt-4 text-[21px] font-extrabold leading-tight">{d.titre}</h2>
       <p key={`p-${d.id}`} className="animate-rise mx-auto mt-2 max-w-[300px] text-[13px] leading-snug text-ink-soft">

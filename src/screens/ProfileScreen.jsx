@@ -7,7 +7,8 @@ import { COURSES } from '../data/courses.js'
 import { globalStats, setIdentity } from '../lib/progress.js'
 import { shareText, profileShare } from '../lib/share.js'
 import { getEmailPrefs, setEmailPrefs } from '../lib/api.js'
-import { sfx } from '../lib/sfx.js'
+import { abonnementReel } from '../lib/abonnement.js'
+import { sfx, isSfxOn, setSfxOn } from '../lib/sfx.js'
 
 function Tile({ icon, value, label }) {
   return (
@@ -112,13 +113,88 @@ function EmailPrefs() {
  * Aucune donnée ne quitte l'appareil : le partage passe par la feuille de
  * partage du système ou le presse-papiers, jamais par un serveur.
  */
-export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, onResetLang, onBack }) {
+/**
+ * L'abonnement, vu du profil : une seule ligne, qui dit l'état sans jargon.
+ * Elle n'apparaît pas si la boutique n'est pas ouverte (pas de clé Stripe) ni
+ * si le serveur est muet — on ne propose pas de payer ce qu'on ne peut pas
+ * encaisser.
+ */
+function LigneAbonnement({ etat, onOuvrir }) {
+  if (!etat || !etat.paiementOuvert) return null
+  // `abonnementReel` et non `etat.abonne` : en mode test (ou boutique
+  // fermée) l'accès est ouvert sans que personne n'ait payé — annoncer
+  // « Abonnement actif » serait promettre une facture qui n'existe pas.
+  const abonne = abonnementReel(etat)
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        sfx.click()
+        onOuvrir()
+      }}
+      className={`mt-6 flex w-full items-center gap-3 rounded-2xl border-2 px-3.5 py-3 text-left ${
+        abonne ? 'border-line bg-cream' : 'border-turquoise/40 bg-turquoise/5'
+      }`}
+    >
+      <span
+        className={`grid h-10 w-10 flex-none place-items-center rounded-full ${
+          abonne ? 'bg-turquoise text-white' : 'bg-turquoise/15 text-turquoise-deep'
+        }`}
+        aria-hidden="true"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          {abonne ? <path d="M4 12.5l5.5 5.5L20 6.5" /> : <path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z" />}
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[13px] font-extrabold">
+          {abonne
+            ? etat.via === 'famille'
+              ? 'Pack famille — tu en fais partie'
+              : etat.statut === 'essai'
+                ? 'Essai gratuit en cours'
+                : 'Abonnement actif'
+            : 'Ouvrir tous les cours'}
+        </span>
+        <span className="block text-[10.5px] leading-snug text-ink-soft">
+          {abonne
+            ? 'Voir, gérer, ou inviter tes proches.'
+            : `À partir de ${etat.tarifs?.solo?.parMois || '—'}, résiliable en un clic.`}
+        </span>
+      </span>
+      <span className="flex-none text-[13px] font-extrabold text-ink-soft">›</span>
+    </button>
+  )
+}
+
+export function ProfileScreen({
+  store,
+  onSave,
+  onDuel,
+  onAccount,
+  onAbonnement,
+  abonnement,
+  onFeedback,
+  onTrophees,
+  onFamille,
+  onResetLang,
+  onBack,
+}) {
   const [resetEnCours, setResetEnCours] = useState(null) // langId en attente de confirmation
   const profile = store.profile || {}
   const [name, setName] = useState(profile.name || '')
   const [avatar, setAvatar] = useState(profile.avatar || 'akermus')
   const [picking, setPicking] = useState(false)
   const [flash, setFlash] = useState(null)
+  // Le réglage du son — rapatrié du chemin par la refonte C : c'est un
+  // réglage, il vit avec « Moi », pas dans la rangée d'action primaire.
+  const [soundOn, setSoundOn] = useState(isSfxOn)
+  function toggleSound() {
+    const next = !soundOn
+    setSfxOn(next)
+    setSoundOn(next)
+    if (next) sfx.click()
+  }
 
   const stats = globalStats(store, COURSES)
   const dirty = name !== (profile.name || '') || avatar !== (profile.avatar || 'akermus')
@@ -280,9 +356,53 @@ export function ProfileScreen({ store, onSave, onDuel, onAccount, onFeedback, on
           </div>
         )}
 
+        <LigneAbonnement etat={abonnement} onOuvrir={onAbonnement} />
+
         <EmailPrefs />
 
-        <div className="mt-6 flex flex-col gap-2">
+        {/* Refonte C : le hub « Moi » — trophées et famille y trouvent leur
+            porte, avec le réglage du son. */}
+        <div className="mt-5 flex gap-2">
+          <button
+            type="button"
+            onClick={onTrophees}
+            className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-line bg-cream py-2.5 text-[12px] font-extrabold transition-transform active:scale-[0.98]"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 4h12v4a6 6 0 0 1-12 0zM9 20h6M12 14v6" />
+            </svg>
+            Trophées
+          </button>
+          <button
+            type="button"
+            onClick={onFamille}
+            className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-line bg-cream py-2.5 text-[12px] font-extrabold transition-transform active:scale-[0.98]"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3.5 L20.5 12 L12 20.5 L3.5 12 Z" />
+              <circle cx="12" cy="12" r="2.6" />
+            </svg>
+            La famille
+          </button>
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-label={soundOn ? 'Couper les sons' : 'Activer les sons'}
+            aria-pressed={soundOn}
+            className={`grid flex-none place-items-center rounded-2xl border border-line px-3 transition ${soundOn ? 'bg-cream text-turquoise-deep' : 'bg-sand-2 text-ink-soft'}`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4 9v6h4l5 5V4L8 9H4z" />
+              {soundOn ? (
+                <path d="M16 8c1.5 1.2 1.5 6.8 0 8M18.5 6c2.5 2 2.5 10 0 12" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+              ) : (
+                <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        <div className="mt-3 flex flex-col gap-2">
           <Button variant="primary" onClick={onDuel}>
             Défier un ami
           </Button>

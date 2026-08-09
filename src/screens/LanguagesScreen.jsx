@@ -69,11 +69,21 @@ export function LanguagesScreen({ store, onPick, onBack }) {
                       </div>
                       <div className="text-[9.5px] font-bold uppercase tracking-[0.12em] opacity-90">{lang.region}</div>
                     </div>
-                    {isActive && (
-                      <span className="rounded-full bg-white/90 px-2 py-0.5 text-[9.5px] font-extrabold" style={{ color: lang.accentDeep }}>
-                        EN COURS
-                      </span>
-                    )}
+                    <span className="flex flex-none items-center gap-1.5">
+                      {/* Le mot BÊTA se voit SUR la carte, pas seulement dans
+                          un écran de détail : on n'embarque personne dans une
+                          version d'essai sans le lui dire en face. */}
+                      {lang.beta && (
+                        <span className="rounded-full bg-coral px-2 py-0.5 text-[9.5px] font-extrabold text-white">
+                          BÊTA
+                        </span>
+                      )}
+                      {isActive && (
+                        <span className="rounded-full bg-white/90 px-2 py-0.5 text-[9.5px] font-extrabold" style={{ color: lang.accentDeep }}>
+                          EN COURS
+                        </span>
+                      )}
+                    </span>
                   </div>
                 </div>
 
@@ -105,7 +115,7 @@ export function LanguagesScreen({ store, onPick, onBack }) {
                         className="flex-none text-[11.5px] font-extrabold"
                         style={{ color: ready ? lang.accentDeep : 'var(--color-ink-soft)' }}
                       >
-                        {ready ? 'Commencer →' : 'Bientôt'}
+                        {!ready ? 'Bientôt' : lang.beta ? 'Essayer →' : 'Commencer →'}
                       </span>
                     </div>
                   )}

@@ -17,6 +17,7 @@ import { sessionOf } from './_lib/auth.js'
 // JavaScript pur, Vercel les embarque sans rien demander.
 import { pairesMemoire, cartesMemoire } from '../src/lib/jeux.js'
 import { getCourse } from '../src/data/courses.js'
+import { sansVisages } from './_lib/texte.js'
 
 /** Code court à partager (invitation, défi) — lisible, sans ambiguïté O/0. */
 function codeCourt(n = 8) {
@@ -150,8 +151,8 @@ async function demandesPost(req, res, me) {
 
   if (action === 'creer') {
     const pour = String(req.body?.pour || '')
-    const texte = String(req.body?.texte || '').trim().slice(0, 120)
-    const sens = String(req.body?.sens || '').trim().slice(0, 120)
+    const texte = sansVisages(String(req.body?.texte || '').trim().slice(0, 120))
+    const sens = sansVisages(String(req.body?.sens || '').trim().slice(0, 120))
     const lang = String(req.body?.lang || '').slice(0, 8)
     if (!pour || !texte) return res.status(400).json({ error: 'demande incomplète' })
     if (!(await sontRelies(me.id, pour))) return res.status(403).json({ error: 'pas dans le cercle' })

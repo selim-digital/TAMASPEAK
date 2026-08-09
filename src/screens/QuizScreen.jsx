@@ -3,6 +3,7 @@ import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 import { FAITS, faitsVus } from '../data/faits.js'
+import { RECITS } from '../data/history.js'
 import { JEUX } from '../data/economy.js'
 import { sfx } from '../lib/sfx.js'
 
@@ -27,11 +28,23 @@ const melange = (arr) => {
   return a
 }
 
-/** Tire n questions : les faits déjà VUS d'abord, complétés si besoin. */
-function tirerQuestions(faitIndex, n) {
-  const vus = melange(faitsVus(faitIndex))
-  const restants = melange(FAITS.filter((f) => !vus.includes(f)))
-  return [...vus, ...restants].slice(0, n).map((f) => ({
+/**
+ * Tire n questions. Le panier : les faits déjà VUS (cartes croisées en
+ * naviguant) + les questions des récits d'histoire déjà LUS — lire
+ * l'Histoire enrichit littéralement le quiz. Complété par des faits
+ * encore inconnus si le panier est court (le retour pédagogique après
+ * chaque réponse fait qu'on apprend alors en jouant).
+ */
+function tirerQuestions(faitIndex, recitsLus, n) {
+  const recits = RECITS.filter((r) => recitsLus.includes(r.id)).map((r) => ({
+    cat: 'histoire',
+    texte: r.texte[r.texte.length - 1],
+    question: r.question,
+  }))
+  const panier = melange([...faitsVus(faitIndex), ...recits])
+  const dejaVu = new Set(panier.map((f) => f.question.prompt))
+  const restants = melange(FAITS.filter((f) => !dejaVu.has(f.question.prompt)))
+  return [...panier, ...restants].slice(0, n).map((f) => ({
     ...f.question,
     faitTexte: f.texte,
     cat: f.cat,
@@ -39,16 +52,21 @@ function tirerQuestions(faitIndex, n) {
   }))
 }
 
-export function QuizScreen({ faitIndex = 0, onRecompense, onBack }) {
-  const [mode, setMode] = useState(null) // null | 'solo' | 'duo'
+export function QuizScreen({ faitIndex = 0, recitsLus = [], onRecompense, onBack }) {
+  const [mode, setMode] = useState(null) // null | 'solo' | 'grand' | 'duo'
   const [tour, setTour] = useState(0)
   const [choix, setChoix] = useState(null) // réponse sélectionnée (feedback affiché)
   const [scores, setScores] = useState([0, 0]) // [solo] ou [J1, J2]
   const [fini, setFini] = useState(false)
 
-  // Solo : 6 questions. Duo : 8, alternées — chacun 4, jamais les mêmes
-  // (voir le voisin répondre donnerait la réponse).
-  const questions = useMemo(() => (mode ? tirerQuestions(faitIndex, mode === 'duo' ? 8 : 6) : []), [mode, faitIndex])
+  // Solo : 6 questions ; grande partie : 12. Duo : 8, alternées — chacun 4,
+  // jamais les mêmes (voir le voisin répondre donnerait la réponse).
+  const TAILLES = { solo: 6, grand: 12, duo: 8 }
+  const questions = useMemo(
+    () => (mode ? tirerQuestions(faitIndex, recitsLus, TAILLES[mode]) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [mode, faitIndex],
+  )
 
   const joueur = mode === 'duo' ? tour % 2 : 0
   const q = questions[tour]
@@ -99,14 +117,18 @@ export function QuizScreen({ faitIndex = 0, onRecompense, onBack }) {
           l’écran <b className="text-ink">Histoire</b>.
         </p>
         <p className="mt-2 rounded-xl bg-sand px-3 py-2 text-[10.5px] leading-snug text-ink-soft">
-          {faitIndex > 0
-            ? `Tu as déjà croisé ${Math.min(faitIndex, FAITS.length)} fait${faitIndex > 1 ? 's' : ''} sur ${FAITS.length}.`
-            : 'Aucune carte croisée pour l’instant — le quiz t’apprendra en jouant.'}
+          {faitIndex > 0 || recitsLus.length > 0
+            ? `Dans ton panier : ${Math.min(faitIndex, FAITS.length)} fait${faitIndex > 1 ? 's' : ''} croisé${faitIndex > 1 ? 's' : ''} sur ${FAITS.length}` +
+              (recitsLus.length > 0 ? ` et ${recitsLus.length} récit${recitsLus.length > 1 ? 's' : ''} d’histoire lu${recitsLus.length > 1 ? 's' : ''}.` : '.')
+            : 'Rien de croisé pour l’instant — le quiz t’apprendra en jouant.'}
         </p>
         <div className="min-h-4 flex-1" />
         <div className="flex w-full flex-col gap-2">
           <Button variant="primary" onClick={() => { sfx.click(); setMode('solo') }}>
             Jouer en solo — 6 questions
+          </Button>
+          <Button variant="neutral" onClick={() => { sfx.click(); setMode('grand') }}>
+            Grande partie — 12 questions
           </Button>
           <Button variant="neutral" onClick={() => { sfx.click(); setMode('duo') }}>
             À deux sur ce téléphone — 4 questions chacun

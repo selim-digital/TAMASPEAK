@@ -11,6 +11,7 @@
  * un acquis. Jamais de reproche, jamais de « tu nous manques ».
  */
 import { xpToday } from './progress.js'
+import { ECRANS } from '../data/screens.js'
 
 const aujourdhui = () => new Date().toISOString().slice(0, 10)
 const hier = () => new Date(Date.now() - 86400000).toISOString().slice(0, 10)
@@ -25,19 +26,25 @@ const NOUVEAUTES = [
     id: 'nv-tifinagh',
     kind: 'nouveaute',
     title: 'Écrire le tifinagh ⵣ',
-    body: 'Trace les 33 lettres au doigt — puis des mots entiers. Bouton ⵣ sur le chemin.',
+    body: 'Trace les 33 lettres au doigt — puis des mots entiers.',
+    ecran: ECRANS.TIFINAGH,
+    action: 'Essayer →',
   },
   {
     id: 'nv-adeux',
     kind: 'nouveaute',
     title: 'Apprendre à deux',
     body: 'Un seul téléphone, deux joueurs qui alternent. Parfait entre parent et enfant.',
+    ecran: ECRANS.DUO,
+    action: 'Jouer →',
   },
   {
     id: 'nv-missions',
     kind: 'nouveaute',
     title: 'Les missions',
     body: 'Va poser une question à quelqu’un qui parle, et rapporte le mot dans ton lexique.',
+    ecran: ECRANS.MISSIONS,
+    action: 'Voir les missions →',
   },
 ]
 
@@ -57,6 +64,8 @@ export function notificationsPour(store, course, progress) {
       kind: 'serie',
       title: `Ta série de ${progress.streak} jours t'attend 🔥`,
       body: `Une leçon de ${course.name} aujourd'hui, et elle continue.`,
+      ecran: ECRANS.CHEMIN,
+      action: 'Continuer ma leçon →',
     })
   }
 
@@ -67,6 +76,8 @@ export function notificationsPour(store, course, progress) {
       kind: 'objectif',
       title: `Plus que ${goal - gagne} XP aujourd'hui`,
       body: 'Une petite leçon et l’objectif du jour est à toi.',
+      ecran: ECRANS.CHEMIN,
+      action: 'Y aller →',
     })
   }
 

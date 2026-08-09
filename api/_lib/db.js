@@ -52,6 +52,10 @@ export async function assurerSchema() {
     await sql()`SELECT 1 FROM cercle_liens LIMIT 0`
     await sql()`SELECT 1 FROM defis LIMIT 0`
     await sql()`SELECT 1 FROM memory_parties LIMIT 0`
+    await sql()`SELECT 1 FROM abonnements LIMIT 0`
+    await sql()`SELECT 1 FROM famille_membres LIMIT 0`
+    await sql()`SELECT publie_le FROM lexique LIMIT 0`
+    await sql()`SELECT 1 FROM lexique_audio LIMIT 0`
     schemaVerifie = true
     return
   } catch {

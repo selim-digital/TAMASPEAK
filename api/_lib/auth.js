@@ -69,7 +69,43 @@ export function auth() {
             template: 'confirmer-suppression',
             data: { name: user.name, url },
           })
-          if (!ok) console.log(`[tama] lien de suppression pour ${user.email} : ${url}`)
+          if (!ok) {
+            // Vécu par Selim : l'email refusé (quota) laissait l'app dire
+            // « email envoyé » — un mensonge sur un droit RGPD. On échoue
+            // FRANCHEMENT : le client affichera « réessaie », pas « vérifie
+            // ta boîte ». Le lien reste en log pour un dépannage manuel.
+            console.log(`[tama] lien de suppression pour ${user.email} : ${url}`)
+            throw new Error('email de confirmation refusé (quota ou panne Resend)')
+          }
+        },
+        /**
+         * AVANT d'effacer : arrêter l'abonnement Stripe.
+         *
+         * La cascade SQL fait disparaître la ligne `abonnements`, donc le
+         * lien vers Stripe — et l'abonnement, lui, continuerait de débiter
+         * une carte pour un compte qui n'existe plus, sans que personne
+         * puisse encore le résilier depuis l'app. C'est le pire scénario de
+         * facturation qui soit ; il se règle ici, tant que la ligne existe.
+         *
+         * Résiliation IMMÉDIATE et non « à la fin de la période » : la
+         * personne a demandé l'effacement, pas un préavis.
+         */
+        beforeDelete: async (user) => {
+          try {
+            const { serverReady, sql } = await import('./db.js')
+            const { stripe, stripeReady } = await import('./stripe.js')
+            if (!serverReady() || !stripeReady()) return
+            const [a] = await sql()`
+              SELECT stripe_subscription FROM abonnements WHERE user_id = ${user.id}`
+            if (a?.stripe_subscription) {
+              await stripe(`subscriptions/${a.stripe_subscription}`, { method: 'DELETE' })
+            }
+          } catch (e) {
+            // On ne BLOQUE PAS la suppression du compte pour autant : le
+            // droit à l'effacement prime. L'échec est bruyant dans les
+            // journaux pour être rattrapé à la main chez Stripe.
+            console.error('[tama] résiliation Stripe avant suppression :', e?.message)
+          }
         },
         afterDelete: async (user) => {
           // La cascade SQL purge les tables liées ; le compteur de quota est

@@ -1,4 +1,5 @@
 import { LANGUAGES, DEFAULT_LANG } from './languages.js'
+import { SENS_SCENE } from './exercises.js'
 import { units as kabUnits } from './units.js'
 import { byLesson as kabLessons } from './lessons.js'
 import { rifUnits, rifLessons } from './courses/rif.js'
@@ -47,13 +48,20 @@ function makeCourse(lang, units, byLesson) {
               const paires =
                 ex.type === 'match'
                   ? ex.pairs.map((p) => ({ mot: p.kab, sens: p.fr }))
-                  : ex.word
-                    ? [
-                        ex.kind === 'fr-to-kab'
-                          ? { mot: ex.answer, sens: ex.word }
-                          : { mot: ex.word, sens: ex.answer },
-                      ]
-                    : []
+                  : // Un exercice `image` n'a pas de `word` : le dessin tient
+                    // lieu d'énoncé et le mot amazigh est la RÉPONSE. Sans ce
+                    // cas, un mot enseigné seulement par l'image sortirait
+                    // d'ici — et personne ne serait jamais invité à
+                    // l'enregistrer. Le dessin le rendrait muet.
+                    ex.type === 'image'
+                    ? [{ mot: ex.answer, sens: SENS_SCENE[ex.scene] || '' }]
+                    : ex.word
+                      ? [
+                          ex.kind === 'fr-to-kab'
+                            ? { mot: ex.answer, sens: ex.word }
+                            : { mot: ex.word, sens: ex.answer },
+                        ]
+                      : []
               for (const p of paires) {
                 if (!p.mot || vus.has(p.mot)) continue
                 vus.add(p.mot)
@@ -97,6 +105,13 @@ const byId = (id) => LANGUAGES.find((l) => l.id === id)
  */
 export const COURSES = {
   kab: makeCourse(byId('kab'), kabUnits, kabLessons),
+  // Le parcours bêta : MÊMES unités, MÊMES exercices que le kabyle. Seul le
+  // récit qui les entoure change (data/voyage.js, lu par l'écran du chemin).
+  // Partager les données plutôt que les recopier est délibéré — une copie
+  // divergerait au premier correctif, et l'app enseignerait deux kabyles.
+  // Les identifiants de leçon sont donc identiques : sans danger, la
+  // progression étant rangée par langue (lib/progress.js, byLang).
+  'kab-beta': makeCourse(byId('kab-beta'), kabUnits, kabLessons),
   rif: makeCourse(byId('rif'), rifUnits, rifLessons),
   shi: makeCourse(byId('shi'), shiUnits, shiLessons),
   tzm: makeCourse(byId('tzm'), tzmUnits, tzmLessons),

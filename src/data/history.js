@@ -18,8 +18,12 @@
  *   • Berber Spring (conférence de Mammeri interdite le 10 mars 1980)
  *   • Tamazight (Maroc officielle le 29 juillet 2011 ; Algérie nationale en
  *     2002, officielle le 7 février 2016)
- *   • Yennayer (12 janvier ; calendrier fixé par Ammar Negadi en 1980, an 1 =
- *     943 av. J.-C. ; férié en Algérie depuis 2018, au Maroc depuis 2023)
+ *   • Yennayer (12 janvier en Algérie ; calendrier fixé par Ammar Negadi en
+ *     1980, an 1 = 950 av. J.-C. — la datation ANCIENNE de l'avènement de
+ *     Chachnaq ; l'égyptologie moderne le place vers 943, d'où l'écart entre
+ *     le récit chachnaq (943) et le comput (2026+950=2976, cohérent avec le
+ *     fait an-amazigh) ; férié en Algérie depuis 2018, décidé au Maroc en
+ *     2023 pour un premier férié en janvier 2024)
  *   • Shoshenq I (Meshwesh, XXIIᵉ dynastie, v. 943 av. J.-C., « Shishak »)
  *   • Juba II (roi de Maurétanie, Caesarea/Cherchell, Cléopâtre Séléné ;
  *     fils Ptolémée tué en 40, annexion romaine)
@@ -32,6 +36,30 @@
  *     morte en 1863)
  *   • Abd el-Krim / Rif War (Anoual juillet 1921, république du Rif,
  *     reddition 1926)
+ *   • Battle of Bougafer (Aït Atta, Assou Oubasslam, févr.–mars 1933,
+ *     reddition négociée — condition : jamais sous le Glaoui)
+ *   • Kaocen revolt (Aïr, siège d'Agadez déc. 1916 – mars 1917, Kaocen
+ *     tué à Mourzouk en 1919)
+ *   • Conquest of the Canary Islands (1402–1496 ; First Battle of
+ *     Acentejo « La Matanza », mai 1494, mencey Bencomo)
+ *   • Madghacen (mausolée royal numide, ~IIIᵉ s. av. J.-C.) ; oracle
+ *     d'Amon à Siwa consulté par Alexandre en 331 av. J.-C.
+ *   • Christianity in Africa : Tertullien (~155–220), Cyprien (†258),
+ *     papes Victor Iᵉʳ / Miltiade / Gélase Iᵉʳ ; donatisme (IVᵉ s.)
+ *   • El Ghriba (Djerba) ; tribus judaïsées d'Ibn Khaldoun présentées
+ *     comme DÉBATTUES ; départs massifs années 1950–60
+ *   • Kairouan 670 (Uqba) ; imamat rustamide de Tahert 761–909, héritage
+ *     ibadite au Mzab / Djerba / Nefoussa
+ *   • Origines : continuité génétique nord-africaine depuis le Paléolithique
+ *     (études de Taforalt, ~15 000 ans) ; généalogies orientales médiévales
+ *     présentées comme LÉGENDES ; Libu/Meshwesh/Tehenu dans les sources
+ *     égyptiennes dès le XIIIᵉ s. av. J.-C. ; « Libye » < Libu
+ *   • Langues : branche berbère de l'afro-asiatique ; proto-berbère commun
+ *     jugé relativement récent par les linguistes ; inscriptions
+ *     libyco-berbères > 2 500 ans ; répartition kabyle/tachelhit/tarifit/
+ *     tamazight/chaoui + tamasheq + zenaga (Mauritanie) + siwi (Égypte)
+ *   • Aujourd'hui : diaspora (Europe, Amérique du Nord) ; chaînes TV
+ *     tamazight (Algérie 2009, Maroc 2010) ; tifinagh dans Unicode (2005)
  *
  * ⚠️ UN CHIFFRE ÉCARTÉ VOLONTAIREMENT. Les articles du « Printemps berbère »
  * (1980) et du « Printemps noir » (2001) annoncent tous deux 128 morts : c'est
@@ -51,6 +79,27 @@
  */
 export const RECITS = [
   {
+    id: 'origines',
+    epoque: 'Aux origines',
+    titre: 'D’où viennent les Amazighs ?',
+    land: 'tassili',
+    texte: [
+      'La réponse de la science est simple et belle : de nulle part ailleurs. Les Amazighs descendent pour l’essentiel des populations qui peuplent l’Afrique du Nord depuis la préhistoire — les squelettes de Taforalt, au Maroc, en témoignent sur plus de quinze mille ans.',
+      'Les chroniqueurs du Moyen Âge leur cherchaient des ancêtres au Yémen ou en Palestine : de belles légendes de généalogistes, que rien n’appuie. Ce peuple n’est pas arrivé en Afrique du Nord — il en est.',
+      'Les plus vieux témoins écrits viennent d’Égypte : dès le XIIIᵉ siècle avant notre ère, les pharaons nomment leurs voisins de l’ouest — Libu, Meshwesh, Tehenu. C’est du nom des Libu que les Grecs feront la « Libye » : la terre des ancêtres des Amazighs.',
+    ],
+    question: {
+      prompt: 'Que dit la science sur l’origine des Amazighs ?',
+      answer: 'Ils descendent des populations d’Afrique du Nord depuis la préhistoire',
+      choices: [
+        'Ils descendent des populations d’Afrique du Nord depuis la préhistoire',
+        'Ils sont arrivés du Yémen au Moyen Âge',
+        'Ils descendent des Romains',
+        'On n’en sait rien du tout',
+      ],
+    },
+  },
+  {
     id: 'tassili',
     epoque: 'Il y a 12 000 ans',
     titre: 'Les images du Sahara',
@@ -68,6 +117,27 @@ export const RECITS = [
         'Des scènes de guerre entre royaumes',
         'Des cartes du désert actuel',
         'Des textes en tifinagh',
+      ],
+    },
+  },
+  {
+    id: 'langues-origines',
+    epoque: 'Des millénaires',
+    titre: 'La famille des langues berbères',
+    land: 'hoggar',
+    texte: [
+      'Le berbère forme sa propre branche de la grande famille afro-asiatique — aux côtés de l’égyptien ancien et des langues sémitiques, mais distinct de toutes. Ses racines en Afrique du Nord se comptent en millénaires.',
+      'D’une langue mère — le proto-berbère — sont sorties les sœurs d’aujourd’hui : kabyle, tachelhit, tarifit, tamazight de l’Atlas, chaoui au nord ; tamasheq des Touaregs au Sahara ; zenaga en Mauritanie ; et jusqu’au siwi d’Égypte. Leur parenté est si nette que les linguistes jugent leur ancêtre commun relativement récent.',
+      'Leur écriture aussi vient de loin : les inscriptions libyco-berbères gravées sur les pierres d’Afrique du Nord ont plus de deux mille cinq cents ans — et le tifinagh que tu traces dans l’app en descend en droite ligne.',
+    ],
+    question: {
+      prompt: 'D’où viennent les langues berbères actuelles ?',
+      answer: 'D’une langue mère commune, le proto-berbère',
+      choices: [
+        'D’une langue mère commune, le proto-berbère',
+        'De l’arabe ancien',
+        'Du latin d’Afrique',
+        'Chacune a une origine sans lien avec les autres',
       ],
     },
   },
@@ -130,6 +200,22 @@ export const RECITS = [
     },
   },
   {
+    id: 'croyances',
+    epoque: 'Antiquité',
+    titre: 'Les croyances d’avant',
+    land: 'oasis',
+    texte: [
+      'Avant les religions du Livre, les Amazighs honoraient leurs morts et leurs ancêtres : les rois numides dorment sous d’immenses tombeaux de pierre, comme le Madghacen, élevé il y a plus de deux mille deux cents ans.',
+      'Sources, montagnes et grottes étaient tenues pour sacrées. À l’oasis de Siwa, le sanctuaire d’Amon était si renommé qu’Alexandre le Grand lui-même vint consulter son oracle, en 331 avant notre ère.',
+      'De ce vieux fonds, il reste des traces dans les coutumes — les rites de l’eau, les fêtes agraires comme Yennayer — passées depuis dans d’autres cadres. Les peuples gardent longtemps la mémoire de leurs gestes.',
+    ],
+    question: {
+      prompt: 'Qui vint consulter l’oracle d’Amon à Siwa en 331 av. J.-C. ?',
+      answer: 'Alexandre le Grand',
+      choices: ['Alexandre le Grand', 'Jules César', 'Hannibal', 'Massinissa'],
+    },
+  },
+  {
     id: 'juba',
     epoque: 'Ier siècle av.–ap. J.-C.',
     titre: 'Juba II, le roi savant',
@@ -148,6 +234,22 @@ export const RECITS = [
         'La fille de Massinissa',
         'Une reine de Carthage',
       ],
+    },
+  },
+  {
+    id: 'christianisme',
+    epoque: 'IIᵉ–Vᵉ siècle',
+    titre: 'L’Afrique chrétienne',
+    land: 'kcote',
+    texte: [
+      'Dès le IIᵉ siècle, le christianisme s’enracine en Afrique du Nord — au point d’en faire l’un des cœurs du monde chrétien ancien. Tertullien, de Carthage, est le premier grand auteur chrétien de langue latine.',
+      'Cyprien, évêque de Carthage, y meurt martyr en 258. Et trois papes de Rome sont venus de cette terre : Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ — des Africains à la tête de l’Église.',
+      'Au IVᵉ siècle, la Numidie s’enflamme même pour sa propre église dissidente, le donatisme, majoritaire dans les campagnes — contre laquelle Augustin, un autre enfant du pays, bataillera toute sa vie.',
+    ],
+    question: {
+      prompt: 'Combien de papes sont venus d’Afrique du Nord ?',
+      answer: 'Trois — Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ',
+      choices: ['Trois — Victor Iᵉʳ, Miltiade et Gélase Iᵉʳ', 'Aucun', 'Un seul', 'Sept'],
     },
   },
   {
@@ -183,6 +285,22 @@ export const RECITS = [
     },
   },
   {
+    id: 'juifs',
+    epoque: 'Antiquité – XXᵉ siècle',
+    titre: 'Les Juifs d’Afrique du Nord',
+    land: 'mzab',
+    texte: [
+      'La présence juive en Afrique du Nord a plus de deux mille ans : des communautés y vivaient déjà à l’époque romaine, et la synagogue de la Ghriba, à Djerba, passe pour l’une des plus anciennes traditions juives d’Afrique.',
+      'Pendant des siècles, des communautés juives ont vécu au milieu des Amazighs — dans l’Atlas, le Souss, le Mzab — parlant les mêmes langues, au point qu’on a parlé de judéo-berbère. Ibn Khaldoun évoque même des tribus berbères judaïsées, ce que les historiens discutent encore.',
+      'Aux XIXᵉ et XXᵉ siècles, ces communautés comptaient des centaines de milliers de personnes. Presque toutes sont parties dans les années 1950 et 1960 — une page de deux millénaires qui s’est tournée en une génération.',
+    ],
+    question: {
+      prompt: 'Où se trouve la synagogue de la Ghriba ?',
+      answer: 'À Djerba, en Tunisie',
+      choices: ['À Djerba, en Tunisie', 'À Fès', 'À Alger', 'À Marrakech'],
+    },
+  },
+  {
     id: 'kusayla',
     epoque: 'VIIᵉ siècle',
     titre: 'Kusayla',
@@ -210,13 +328,29 @@ export const RECITS = [
     land: 'aures',
     texte: [
       'Après Kusayla, la résistance se rassemble autour d’une femme : Dihya, que les chroniques arabes appellent al-Kahina, « la devineresse ».',
-      'Elle règne sur les Aurès, et son autorité porte jusqu’à l’oasis de Ghadamès. En 698, à Meskiana, elle bat le général Hassan ibn al-Nu‘man, qui doit se replier cinq ans durant.',
-      'Elle meurt en 703 dans les Aurès. Presque tout le reste est discuté : sa tribu — les Lūwāta pour l’un, les Jarawa pour Ibn Khaldoun —, sa religion, son âge. Ce qui est certain, c’est qu’elle a commandé, gagné, et qu’on s’en souvient encore.',
+      'Elle règne sur les Aurès, et son autorité porte jusqu’à l’oasis de Ghadamès. Vers 698, à Meskiana, elle bat le général Hassan ibn al-Nu‘man, qui doit se replier plusieurs années durant.',
+      'Elle meurt vers 703 dans les Aurès. Presque tout le reste est discuté : sa tribu — les Lūwāta pour l’un, les Jarawa pour Ibn Khaldoun —, sa religion, son âge. Ce qui est certain, c’est qu’elle a commandé, gagné, et qu’on s’en souvient encore.',
     ],
     question: {
       prompt: 'Sur quelle région Dihya régnait-elle ?',
       answer: 'Les Aurès',
       choices: ['Les Aurès', 'Le Rif', 'Le Hoggar', 'La vallée du M’zab'],
+    },
+  },
+  {
+    id: 'islamisation',
+    epoque: 'VIIᵉ–IXᵉ siècle',
+    titre: 'L’islam s’enracine',
+    land: 'ksar',
+    texte: [
+      'L’islam arrive au VIIᵉ siècle : en 670, Uqba ibn Nafi fonde Kairouan, qui deviendra l’une des grandes villes du monde musulman. Les débuts sont une histoire de batailles — Kusayla, Dihya — mais la suite est tout autre.',
+      'Car les Amazighs ne se contentent pas d’embrasser l’islam : ils en deviennent des porteurs majeurs. Tariq ouvre al-Andalus, et plus tard deux empires amazighs — Almoravides et Almohades — porteront l’islam de la Mauritanie à l’Espagne.',
+      'Certains choisissent des voies propres : dès 761, l’imamat ibadite de Tahert rayonne sur le Maghreb central ; son héritage vit encore au Mzab, à Djerba et au djebel Nefoussa. Aujourd’hui, l’islam est la religion de l’immense majorité des Imazighen.',
+    ],
+    question: {
+      prompt: 'Quelle ville Uqba ibn Nafi fonde-t-il en 670 ?',
+      answer: 'Kairouan',
+      choices: ['Kairouan', 'Fès', 'Tlemcen', 'Marrakech'],
     },
   },
   {
@@ -299,6 +433,27 @@ export const RECITS = [
     },
   },
   {
+    id: 'canaries',
+    epoque: '1402–1496',
+    titre: 'Les Guanches face à la Castille',
+    land: 'kcote',
+    texte: [
+      'Aux îles Canaries vivaient les Guanches, un peuple de langue berbère. Quand la conquête castillane commence, en 1402, ils n’ont ni fer, ni chevaux, ni navires — et ils vont pourtant tenir près d’un siècle.',
+      'En mai 1494, dans le ravin d’Acentejo, à Tenerife, les hommes du mencey Bencomo écrasent le corps expéditionnaire espagnol : « La Matanza », le massacre — l’une des pires défaites de la Castille de tout le siècle.',
+      'Tenerife ne tombe qu’en 1496, à bout de forces et décimée par les épidémies. Quatre-vingt-quatorze ans pour conquérir sept îles : la résistance guanche est l’une des plus longues opposées à une conquête européenne.',
+    ],
+    question: {
+      prompt: 'Que se passe-t-il à Acentejo en 1494 ?',
+      answer: 'Les Guanches écrasent les Espagnols — « La Matanza »',
+      choices: [
+        'Les Guanches écrasent les Espagnols — « La Matanza »',
+        'Les Espagnols achèvent la conquête',
+        'Un traité de paix est signé',
+        'Une épidémie frappe les deux camps',
+      ],
+    },
+  },
+  {
     id: 'fatma',
     epoque: '1850–1863',
     titre: 'Lalla Fatma n’Soumer',
@@ -317,6 +472,22 @@ export const RECITS = [
         'La conquête romaine',
         'La conquête ottomane',
       ],
+    },
+  },
+  {
+    id: 'kaocen',
+    epoque: '1916–1917',
+    titre: 'Kaocen, la révolte du désert',
+    land: 'hoggar',
+    texte: [
+      'En décembre 1916, en pleine guerre mondiale, le Touareg Kaocen ag Mohammed soulève l’Aïr contre la France. Ses cavaliers prennent le contrôle du massif et assiègent Agadez, dans l’actuel Niger.',
+      'Le siège tient trois mois : la garnison n’est dégagée qu’en mars 1917 par une colonne venue de loin. La répression qui suit est terrible, et pousse des communautés touarègues entières à l’exil.',
+      'Kaocen poursuit la lutte vers le nord ; il est tué en 1919 à Mourzouk. Sa révolte reste, pour les Touaregs, le grand soulèvement contre la colonisation.',
+    ],
+    question: {
+      prompt: 'Quelle ville Kaocen assiège-t-il trois mois durant en 1916-1917 ?',
+      answer: 'Agadez',
+      choices: ['Agadez', 'Tombouctou', 'Tamanrasset', 'Ghadamès'],
     },
   },
   {
@@ -341,6 +512,22 @@ export const RECITS = [
     },
   },
   {
+    id: 'aitatta',
+    epoque: '1933',
+    titre: 'Bougafer — les Aït Atta',
+    land: 'atlas',
+    texte: [
+      'Dernier grand bastion libre du Maroc : le djebel Saghro, terre de la confédération des Aït Atta. En février 1933, menés par Assou Oubasslam, un millier de combattants s’y retranchent avec leurs familles.',
+      'Face à eux, des dizaines de milliers de soldats, l’artillerie et l’aviation. Sur les crêtes de Bougafer, les assauts se brisent pendant plus d’un mois, au prix de pertes très lourdes des deux côtés.',
+      'À bout de vivres et d’eau, Assou Oubasslam négocie fin mars une reddition honorable — dont cette condition restée célèbre : les Aït Atta ne seraient jamais gouvernés par le Glaoui, le pacha honni. Vaincus, mais debout.',
+    ],
+    question: {
+      prompt: 'Qui mena la résistance des Aït Atta à Bougafer en 1933 ?',
+      answer: 'Assou Oubasslam',
+      choices: ['Assou Oubasslam', 'Abd el-Krim', 'Kaocen', 'Moha ou Hammou'],
+    },
+  },
+  {
     id: 'printemps',
     epoque: '1980',
     titre: 'Le Printemps berbère',
@@ -356,7 +543,7 @@ export const RECITS = [
       choices: [
         'L’interdiction d’une conférence de Mouloud Mammeri',
         'La fermeture d’une école kabyle',
-        'L’arrestation d’un chanteur',
+        'L’interdiction d’un journal',
         'Une réforme de l’alphabet',
       ],
     },
@@ -383,14 +570,35 @@ export const RECITS = [
     titre: 'Yennayer, le nouvel an',
     land: 'oasis',
     texte: [
-      'Yennayer se fête le 12 janvier. C’est le premier jour de l’année amazighe, héritée du calendrier agraire — le 1ᵉʳ janvier julien, décalé de treize jours sur notre calendrier.',
-      'Le comput des années est récent : c’est Ammar Negadi qui le fixe en 1980, en prenant pour an 1 l’année 943 avant notre ère, celle où le Meshwesh Chachnaq monte sur le trône d’Égypte.',
-      'L’Algérie en fait un jour férié à partir de 2018, le Maroc à partir de 2023. Une fête de village est devenue une fête d’État — en deux générations.',
+      'Yennayer est le premier jour de l’année amazighe, héritée du calendrier agraire julien. On le fête le 12 janvier en Algérie — le 13 ou le 14 selon les régions et le strict décalage du vieux calendrier.',
+      'Le comput des années est récent : c’est Ammar Negadi qui le fixe en 1980, en prenant pour an 1 l’année 950 avant notre ère — celle que l’on donnait alors à l’avènement du Meshwesh Chachnaq sur le trône d’Égypte.',
+      'L’Algérie en fait un jour férié à partir de 2018 ; le Maroc le décide en 2023, pour un premier Yennayer férié en janvier 2024. Une fête de village est devenue une fête d’État — en deux générations.',
     ],
     question: {
       prompt: 'À quelle date se fête Yennayer ?',
       answer: 'Le 12 janvier',
       choices: ['Le 12 janvier', 'Le 1ᵉʳ janvier', 'Le 20 avril', 'Le 21 mars'],
+    },
+  },
+  {
+    id: 'aujourdhui',
+    epoque: 'Ass-a — aujourd’hui',
+    titre: 'Les Berbères d’aujourd’hui',
+    land: 'kmont',
+    texte: [
+      'Des dizaines de millions de personnes parlent aujourd’hui une langue amazighe — du Maroc à l’Égypte, du Rif au Sahel. Et une diaspora immense vit en Europe et en Amérique du Nord : à Paris, Bruxelles, Amsterdam ou Montréal, on entend le kabyle et le tachelhit dans la rue.',
+      'La langue est entrée là où on ne l’attendait plus : dans les constitutions, à l’école, à la télévision — des chaînes émettent en tamazight en Algérie comme au Maroc — et sur les téléphones, où le tifinagh s’écrit comme n’importe quel alphabet.',
+      'Surtout, une génération entière fait le chemin du retour : des petits-enfants réapprennent la langue que leurs grands-parents n’ont pas pu transmettre. Toi qui apprends sur cette app, tu es exactement cette histoire-là — et c’est elle qui continue.',
+    ],
+    question: {
+      prompt: 'Où vit aujourd’hui une importante diaspora amazighe ?',
+      answer: 'En Europe et en Amérique du Nord',
+      choices: [
+        'En Europe et en Amérique du Nord',
+        'Uniquement au Maghreb',
+        'En Asie de l’Est',
+        'Il n’y a pas de diaspora',
+      ],
     },
   },
 ]

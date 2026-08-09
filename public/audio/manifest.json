@@ -7,6 +7,20 @@
     "lessons": "l22 l23"
   },
   {
+    "id": "adar",
+    "kab": "Aḍar",
+    "fr": "Pied",
+    "file": "adar.mp3",
+    "lessons": "l36 l38 l51"
+  },
+  {
+    "id": "addal",
+    "kab": "Addal",
+    "fr": "Le sport",
+    "file": "addal.mp3",
+    "lessons": "l50 l53"
+  },
+  {
     "id": "adfel",
     "kab": "Adfel",
     "fr": "Neige",
@@ -26,6 +40,20 @@
     "fr": "Vent",
     "file": "adu.mp3",
     "lessons": "l28 l29"
+  },
+  {
+    "id": "afellah",
+    "kab": "Afellaḥ",
+    "fr": "Le paysan",
+    "file": "afellah.mp3",
+    "lessons": "l47 l49"
+  },
+  {
+    "id": "afus",
+    "kab": "Afus",
+    "fr": "Main",
+    "file": "afus.mp3",
+    "lessons": "l36 l38 l45"
   },
   {
     "id": "ageffur",
@@ -63,11 +91,46 @@
     "lessons": "l13 l17"
   },
   {
+    "id": "amejjay",
+    "kab": "Amejjay",
+    "fr": "Le médecin",
+    "file": "amejjay.mp3",
+    "lessons": "l47"
+  },
+  {
+    "id": "amekraz",
+    "kab": "Amekraz",
+    "fr": "Le laboureur",
+    "file": "amekraz.mp3",
+    "lessons": "l47"
+  },
+  {
     "id": "amellal",
     "kab": "Amellal",
     "fr": "Blanc",
     "file": "amellal.mp3",
     "lessons": "l22 l23"
+  },
+  {
+    "id": "anda-tellid",
+    "kab": "Anda telliḍ ?",
+    "fr": "Où es-tu ?",
+    "file": "anda-tellid.mp3",
+    "lessons": "l44"
+  },
+  {
+    "id": "anda-txeddmed",
+    "kab": "Anda txeddmeḍ ?",
+    "fr": "Où travailles-tu ?",
+    "file": "anda-txeddmed.mp3",
+    "lessons": "l48 l49"
+  },
+  {
+    "id": "anelmad",
+    "kab": "Anelmad",
+    "fr": "L’élève",
+    "file": "anelmad.mp3",
+    "lessons": "l47"
   },
   {
     "id": "ansuf",
@@ -84,6 +147,20 @@
     "lessons": "l16"
   },
   {
+    "id": "aqcic",
+    "kab": "Aqcic",
+    "fr": "Garçon",
+    "file": "aqcic.mp3",
+    "lessons": "l37 l38"
+  },
+  {
+    "id": "aqerruy",
+    "kab": "Aqerruy",
+    "fr": "Tête",
+    "file": "aqerruy.mp3",
+    "lessons": "l36 l38"
+  },
+  {
     "id": "aql-i-labas",
     "kab": "Aql-i labas",
     "fr": "Je vais bien",
@@ -98,11 +175,53 @@
     "lessons": "l3 l5 l7 l9"
   },
   {
+    "id": "argaz",
+    "kab": "Argaz",
+    "fr": "Homme",
+    "file": "argaz.mp3",
+    "lessons": "l37 l38"
+  },
+  {
+    "id": "arrac",
+    "kab": "Arrac",
+    "fr": "Les enfants",
+    "file": "arrac.mp3",
+    "lessons": "l52"
+  },
+  {
+    "id": "as-d",
+    "kab": "As-d !",
+    "fr": "Viens !",
+    "file": "as-d.mp3",
+    "lessons": "l43 l45"
+  },
+  {
+    "id": "aselmad",
+    "kab": "Aselmad",
+    "fr": "L’enseignant",
+    "file": "aselmad.mp3",
+    "lessons": "l47 l49"
+  },
+  {
     "id": "asigna",
     "kab": "Asigna",
     "fr": "Nuage",
     "file": "asigna.mp3",
     "lessons": "l28 l29"
+  },
+  {
+    "id": "ass",
+    "kab": "Ass",
+    "fr": "Jour",
+    "file": "ass.mp3",
+    "lessons": "l39"
+  },
+  {
+    "id": "ass-a",
+    "kab": "Ass-a",
+    "fr": "Aujourd’hui",
+    "file": "ass-a.mp3",
+    "lessons": "l39 l45"
   },
   {
     "id": "atay",
@@ -117,6 +236,20 @@
     "fr": "Jaune",
     "file": "awragh.mp3",
     "lessons": "l22 l23"
+  },
+  {
+    "id": "axeddam",
+    "kab": "Axeddam",
+    "fr": "Le travailleur",
+    "file": "axeddam.mp3",
+    "lessons": "l46"
+  },
+  {
+    "id": "axeddim",
+    "kab": "Axeddim",
+    "fr": "Le travail",
+    "file": "axeddim.mp3",
+    "lessons": "l46 l49"
   },
   {
     "id": "axxam",
@@ -138,6 +271,13 @@
     "fr": "Vert",
     "file": "azegzaw.mp3",
     "lessons": "l21 l23"
+  },
+  {
+    "id": "azekka",
+    "kab": "Azekka",
+    "fr": "Demain",
+    "file": "azekka.mp3",
+    "lessons": "l41 l45"
   },
   {
     "id": "azemmur",
@@ -168,6 +308,13 @@
     "lessons": "l16"
   },
   {
+    "id": "azzel",
+    "kab": "Azzel !",
+    "fr": "Cours !",
+    "file": "azzel.mp3",
+    "lessons": "l51"
+  },
+  {
     "id": "baba",
     "kab": "Baba",
     "fr": "Père",
@@ -175,11 +322,46 @@
     "lessons": "l14 l15 l17"
   },
   {
+    "id": "d-acu-yagi",
+    "kab": "D acu-yagi ?",
+    "fr": "Qu’est-ce que c’est ?",
+    "file": "d-acu-yagi.mp3",
+    "lessons": "l44"
+  },
+  {
+    "id": "ecc",
+    "kab": "Ečč !",
+    "fr": "Mange !",
+    "file": "ecc.mp3",
+    "lessons": "l43 l45"
+  },
+  {
+    "id": "eumm",
+    "kab": "Ɛumm !",
+    "fr": "Nage !",
+    "file": "eumm.mp3",
+    "lessons": "l51"
+  },
+  {
     "id": "gma",
     "kab": "Gma",
     "fr": "Frère",
     "file": "gma.mp3",
     "lessons": "l14 l15"
+  },
+  {
+    "id": "id",
+    "kab": "Iḍ",
+    "fr": "Nuit",
+    "file": "id.mp3",
+    "lessons": "l39 l40"
+  },
+  {
+    "id": "idelli",
+    "kab": "Iḍelli",
+    "fr": "Hier",
+    "file": "idelli.mp3",
+    "lessons": "l41"
   },
   {
     "id": "idrimen",
@@ -194,6 +376,27 @@
     "fr": "Oui",
     "file": "ih.mp3",
     "lessons": "l2 l3 l5 l6 l9"
+  },
+  {
+    "id": "ilemzi",
+    "kab": "Ilemẓi",
+    "fr": "Le jeune homme",
+    "file": "ilemzi.mp3",
+    "lessons": "l52"
+  },
+  {
+    "id": "kecc",
+    "kab": "Kečč",
+    "fr": "Toi (à un homme)",
+    "file": "kecc.mp3",
+    "lessons": "l42"
+  },
+  {
+    "id": "kemm",
+    "kab": "Kemm",
+    "fr": "Toi (à une femme)",
+    "file": "kemm.mp3",
+    "lessons": "l42"
   },
   {
     "id": "kkuz",
@@ -217,11 +420,67 @@
     "lessons": "l3 l4 l6 l9"
   },
   {
+    "id": "melmi",
+    "kab": "Melmi ?",
+    "fr": "Quand ?",
+    "file": "melmi.mp3",
+    "lessons": "l41"
+  },
+  {
+    "id": "nekk",
+    "kab": "Nekk",
+    "fr": "Moi",
+    "file": "nekk.mp3",
+    "lessons": "l42 l45"
+  },
+  {
+    "id": "netta",
+    "kab": "Netta",
+    "fr": "Lui",
+    "file": "netta.mp3",
+    "lessons": "l42"
+  },
+  {
+    "id": "nettat",
+    "kab": "Nettat",
+    "fr": "Elle",
+    "file": "nettat.mp3",
+    "lessons": "l42"
+  },
+  {
+    "id": "ruh",
+    "kab": "Ṛuḥ !",
+    "fr": "Va ! / Pars !",
+    "file": "ruh.mp3",
+    "lessons": "l43 l45"
+  },
+  {
+    "id": "semmeh-iyi",
+    "kab": "Semmeḥ-iyi",
+    "fr": "Excuse-moi",
+    "file": "semmeh-iyi.mp3",
+    "lessons": "l44"
+  },
+  {
     "id": "semmus",
     "kab": "Semmus",
     "fr": "Cinq",
     "file": "semmus.mp3",
     "lessons": "l19 l20 l35"
+  },
+  {
+    "id": "sew",
+    "kab": "Sew !",
+    "fr": "Bois !",
+    "file": "sew.mp3",
+    "lessons": "l43 l45"
+  },
+  {
+    "id": "sew-atay",
+    "kab": "Sew atay",
+    "fr": "Bois du thé",
+    "file": "sew-atay.mp3",
+    "lessons": "l43"
   },
   {
     "id": "sin",
@@ -235,7 +494,7 @@
     "kab": "Ssuq",
     "fr": "Marché",
     "file": "ssuq.mp3",
-    "lessons": "l24 l25 l26 l35"
+    "lessons": "l24 l25 l26 l35 l48"
   },
   {
     "id": "taddart",
@@ -252,11 +511,39 @@
     "lessons": "l27 l29 l35"
   },
   {
+    "id": "takurt",
+    "kab": "Takurt",
+    "fr": "Le ballon",
+    "file": "takurt.mp3",
+    "lessons": "l50 l53"
+  },
+  {
+    "id": "tameddit",
+    "kab": "Tameddit",
+    "fr": "Le soir",
+    "file": "tameddit.mp3",
+    "lessons": "l40"
+  },
+  {
     "id": "tament",
     "kab": "Tament",
     "fr": "Miel",
     "file": "tament.mp3",
     "lessons": "l25 l26 l35"
+  },
+  {
+    "id": "tamettut",
+    "kab": "Tameṭṭut",
+    "fr": "Femme",
+    "file": "tamettut.mp3",
+    "lessons": "l37 l45"
+  },
+  {
+    "id": "tanarit",
+    "kab": "Tanarit",
+    "fr": "Le bureau",
+    "file": "tanarit.mp3",
+    "lessons": "l48 l49"
   },
   {
     "id": "tanemmirt",
@@ -273,6 +560,27 @@
     "lessons": "l12 l16 l17"
   },
   {
+    "id": "tanezzayt",
+    "kab": "Tanezzayt",
+    "fr": "Le matin",
+    "file": "tanezzayt.mp3",
+    "lessons": "l40"
+  },
+  {
+    "id": "taqcict",
+    "kab": "Taqcict",
+    "fr": "Fille",
+    "file": "taqcict.mp3",
+    "lessons": "l37 l38"
+  },
+  {
+    "id": "tawuri",
+    "kab": "Tawuri",
+    "fr": "Le travail (mot amazigh)",
+    "file": "tawuri.mp3",
+    "lessons": "l46"
+  },
+  {
     "id": "tawwurt",
     "kab": "Tawwurt",
     "fr": "Porte",
@@ -280,11 +588,74 @@
     "lessons": "l10 l12"
   },
   {
+    "id": "tazzla",
+    "kab": "Tazzla",
+    "fr": "La course",
+    "file": "tazzla.mp3",
+    "lessons": "l51 l53"
+  },
+  {
+    "id": "tilemzit",
+    "kab": "Tilemẓit",
+    "fr": "La jeune fille",
+    "file": "tilemzit.mp3",
+    "lessons": "l52"
+  },
+  {
+    "id": "tiwizi",
+    "kab": "Tiwizi",
+    "fr": "L’entraide",
+    "file": "tiwizi.mp3",
+    "lessons": "l49"
+  },
+  {
+    "id": "ttxil-k",
+    "kab": "Ttxil-k",
+    "fr": "S’il te plaît",
+    "file": "ttxil-k.mp3",
+    "lessons": "l44"
+  },
+  {
+    "id": "tura",
+    "kab": "Tura",
+    "fr": "Maintenant",
+    "file": "tura.mp3",
+    "lessons": "l41"
+  },
+  {
+    "id": "ul",
+    "kab": "Ul",
+    "fr": "Cœur",
+    "file": "ul.mp3",
+    "lessons": "l36"
+  },
+  {
+    "id": "ur-fhimegh-ara",
+    "kab": "Ur fhimeɣ ara",
+    "fr": "Je ne comprends pas",
+    "file": "ur-fhimegh-ara.mp3",
+    "lessons": "l44 l45"
+  },
+  {
+    "id": "urar",
+    "kab": "Urar",
+    "fr": "Le jeu",
+    "file": "urar.mp3",
+    "lessons": "l50 l53"
+  },
+  {
     "id": "weltma",
     "kab": "Weltma",
     "fr": "Sœur",
     "file": "weltma.mp3",
     "lessons": "l15"
+  },
+  {
+    "id": "xeddmegh-deg-wexxam",
+    "kab": "Xeddmeɣ deg wexxam",
+    "fr": "Je travaille à la maison",
+    "file": "xeddmegh-deg-wexxam.mp3",
+    "lessons": "l48"
   },
   {
     "id": "yemma",

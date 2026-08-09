@@ -138,8 +138,11 @@ export function LessonNode({ node, offset = 0, onClick, unitProgress = 0 }) {
 
       <button
         type="button"
-        onClick={clickable ? onClick : undefined}
-        disabled={!clickable}
+        // Un nœud VERROUILLÉ répond aussi (signalé par Selim : un tap muet
+        // ressemble à une panne) — le chemin affiche alors un indice. Seuls
+        // les nœuds « terminés » restent inertes.
+        onClick={clickable || node.status === 'locked' ? onClick : undefined}
+        disabled={!clickable && node.status !== 'locked'}
         aria-label={`${node.title || 'Coffre'}${clickable ? '' : node.status === 'locked' ? ' (verrouillé)' : ' (terminé)'}`}
         className={`relative grid aspect-square flex-none place-items-center rounded-full ${
           clickable ? 'animate-bob cursor-pointer' : 'cursor-not-allowed'

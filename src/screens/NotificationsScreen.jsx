@@ -49,9 +49,10 @@ export function NotificationsScreen({ store, course, progress, serveur = [], onA
   }, [])
 
   // Serveur d'abord (des personnes), locales ensuite (des rappels).
+  // TOUT est cliquable (demande de Selim) : chaque carte mène à son action.
   const cartes = [
-    ...serveur.map((n) => ({ ...n, nonLue: !n.lue, action: ACTIONS[n.kind] || null })),
-    ...locales.map((n) => ({ ...n, nonLue: !lues.has(n.id), action: null })),
+    ...serveur.map((n) => ({ ...n, nonLue: !n.lue, action: ACTIONS[n.kind] || 'Voir →' })),
+    ...locales.map((n) => ({ ...n, nonLue: !lues.has(n.id), action: n.action || 'Voir →' })),
   ]
 
   return (
