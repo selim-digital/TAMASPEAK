@@ -297,6 +297,30 @@ partagé, le suivant n'hérite pas des unités ouvertes du précédent.
 > La remise à zéro (écran du compte) écrit un store vierge **sans fusion**
 > (`pushStore`) — c'est la sortie, et la seule.
 
+### Supprimer son compte : un code, jamais un lien
+
+Better Auth confirme la suppression par un lien, et son point d'arrivée
+**exige une session dans le navigateur qui l'ouvre** — sans elle, il répond
+`Failed to get user info`. Or un lien reçu par email n'atterrit presque jamais
+dans le bon contexte : les applications de messagerie ouvrent les liens dans
+**leur propre navigateur intégré**, et sur iOS une PWA installée a un stockage
+séparé de Safari. La confirmation échouait donc précisément pour les gens qui
+utilisent l'app comme elle est faite pour l'être.
+
+C'est exactement le piège déjà contourné pour la **connexion**, et la même
+règle s'applique : *le code se tape dans l'app, on n'en sort jamais*. L'email
+ne transporte plus qu'un **code à six chiffres** ; le jeton de Better Auth,
+lui, ne quitte jamais le serveur (table `suppression_codes`, une heure de
+validité, un seul code vivant par personne, consommé à la lecture). L'app
+poste le code sur `POST /api/auth/suppression` **avec sa propre session**, et
+le serveur passe la main à Better Auth (`POST /delete-user` accepte le jeton) :
+ses garde-fous, ses crochets Stripe et RGPD, sa purge de cookie jouent tels
+quels.
+
+Un code faux et un code expiré donnent volontairement la même réponse —
+distinguer les deux renseignerait qui essaie au hasard. Et un code est lié à
+**son** compte : reçu pour le sien, il ne vaut rien contre un autre.
+
 ### Quand le compte disparaît pendant que l'app est ouverte
 
 Nos comptes n'ont pas de mot de passe : la suppression se confirme **par un

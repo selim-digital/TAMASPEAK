@@ -250,6 +250,35 @@ export async function deleteAccount() {
 /* ------------------------------------------------------------------ */
 
 /**
+ * Confirme la suppression avec le code reçu par email.
+ *
+ * C'EST L'APP QUI APPELLE, avec sa session : le lien de Better Auth, lui,
+ * exigeait une session dans le navigateur qui l'ouvre — et un lien reçu par
+ * email n'y atterrit presque jamais (les messageries ouvrent les liens dans
+ * leur navigateur intégré, et sur iOS une PWA a un stockage séparé de
+ * Safari). D'où le « Failed to get user info » rencontré en vrai. Même
+ * règle que la connexion : le code se tape DANS l'app, on n'en sort jamais.
+ *
+ * @returns {Promise<'supprime'|'code-faux'|'erreur'>}
+ */
+export async function confirmDeleteAccount(code) {
+  try {
+    const r = await fetch('/api/auth/suppression', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ code }),
+    })
+    if (r.ok) return 'supprime'
+    if (!isApi(r)) return 'erreur'
+    // 400 : code faux ou expiré — distinct d'une panne, et dit comme tel.
+    return r.status === 400 ? 'code-faux' : 'erreur'
+  } catch {
+    return 'erreur'
+  }
+}
+
+/**
  * Cycle complet : lire l'instantané serveur, fusionner (max/union — voir
  * mergeStores), réécrire la fusion. Renvoie le store fusionné, ou le store
  * local inchangé si le serveur est injoignable.
