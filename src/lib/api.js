@@ -11,7 +11,7 @@
  * quand le réseau revient. Un 503 (serveur non configuré) vide la file sans
  * réessayer — inutile d'accumuler ce qui ne partira jamais.
  */
-import { mergeStores } from './progress.js'
+import { mergeStores, resetStore, setStoreOwner, storeEtranger } from './progress.js'
 
 const QUEUE_KEY = 'tama-speak:events-queue'
 const QUEUE_MAX = 500
@@ -234,12 +234,40 @@ export async function deleteAccount() {
  * Cycle complet : lire l'instantané serveur, fusionner (max/union — voir
  * mergeStores), réécrire la fusion. Renvoie le store fusionné, ou le store
  * local inchangé si le serveur est injoignable.
+ *
+ * SAUF SI LE STORE LOCAL EST CELUI DE QUELQU'UN D'AUTRE. La fusion ne perd
+ * jamais rien, et c'est précisément ce qui la rend aveugle : elle unissait la
+ * progression de celui qui vient de se déconnecter avec le compte de celui
+ * qui se connecte, puis réécrivait le tout sur le serveur — le second héritait
+ * des leçons, des gemmes et du lexique du premier, définitivement. Sur un
+ * téléphone de famille, c'était la règle plutôt que l'exception.
+ *
+ * On lit donc l'étiquette de propriété (voir progress.js) AVANT de décider :
+ * l'arrivant reçoit sa progression telle que le serveur la connaît, et rien
+ * de celle du partant — qui, elle, reste sur SON instantané serveur et le
+ * retrouvera à sa prochaine connexion.
+ *
+ * @param {object} localStore la progression posée sur cet appareil
+ * @param {string} [userId]   le compte qui se connecte ; absent = on ne sait pas
  */
-export async function syncStore(localStore) {
+export async function syncStore(localStore, userId) {
+  const etranger = storeEtranger(userId)
   try {
     const r = await fetch('/api/sync', { credentials: 'include' })
     if (!r.ok) return { store: localStore, synced: false }
     const { store: remote } = await r.json()
+
+    if (etranger) {
+      // Rien à fusionner et RIEN À RÉÉCRIRE : pousser ici graverait les
+      // données du partant dans le compte de l'arrivant, c'est-à-dire
+      // exactement le dégât qu'on répare. `resetStore()` efface au passage
+      // les données locales du partant — elles sont sur son instantané
+      // serveur, il les retrouvera en se reconnectant.
+      const propre = remote || resetStore()
+      setStoreOwner(userId)
+      return { store: propre, synced: true, remplace: true }
+    }
+
     const merged = mergeStores(localStore, remote)
     const w = await fetch('/api/sync', {
       method: 'POST',
@@ -247,6 +275,10 @@ export async function syncStore(localStore) {
       credentials: 'include',
       body: JSON.stringify({ store: merged }),
     })
+    // L'étiquette ne se pose qu'APRÈS une réconciliation réussie : la poser
+    // sur un échec reviendrait à attribuer à l'arrivant ce qu'il n'a pas
+    // encore vu, et à effacer la trace du vrai propriétaire.
+    if (w.ok) setStoreOwner(userId)
     return { store: merged, synced: w.ok }
   } catch {
     return { store: localStore, synced: false }

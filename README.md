@@ -258,6 +258,45 @@ son compte et sa progression ; seul l'accès est partagé. Le titulaire peut
 retirer quelqu'un, un membre peut partir de lui-même, et une résiliation libère
 les places.
 
+## À qui appartient la progression posée sur un appareil
+
+La synchronisation est une **fusion max/union** : rien ne s'y perd jamais.
+C'est sa raison d'être — et c'était aussi ce qui la rendait aveugle. Elle
+unissait deux progressions sans se demander si elles étaient de la même
+personne. Sur un téléphone où quelqu'un se déconnecte et où quelqu'un d'autre
+se connecte, elle versait donc la progression du partant dans le compte de
+l'arrivant, **puis la réécrivait sur le serveur** : leçons, gemmes, série et
+lexique changeaient de propriétaire, définitivement.
+
+Le store local porte désormais une **étiquette de propriété** — l'identifiant
+du compte avec lequel il a été réconcilié pour la dernière fois
+(`storeOwner()`, `src/lib/progress.js`). Trois cas, et trois seulement :
+
+| État de l'étiquette | Ce qui se passe à la connexion |
+| --- | --- |
+| **absente** | personne ne s'est jamais connecté ici — c'est le cas « j'ai joué sans compte puis j'en ai créé un », **on fusionne** |
+| **même compte** | un autre appareil, une autre session — **on fusionne** |
+| **autre compte** | **on ne fusionne pas** : l'arrivant reçoit sa progression telle que le serveur la connaît, et rien n'est réécrit |
+
+Deux garde-fous, pour que le remède ne soit pas pire que le mal :
+
+- **L'étiquette ne se pose qu'après une réconciliation réussie.** La poser sur
+  un échec réseau reviendrait à attribuer à l'arrivant ce qu'il n'a pas encore
+  vu, et à effacer la trace du vrai propriétaire. Serveur muet ⇒ rien ne bouge.
+- **Se déconnecter ne vide pas l'appareil.** L'écran du compte le promet en
+  toutes lettres, et un joueur sans compte doit garder sa progression. C'est
+  l'arrivée de *quelqu'un d'autre* qui écarte les données, jamais le départ —
+  et elles ne sont pas perdues pour autant, elles restent sur l'instantané
+  serveur de leur propriétaire, qui les retrouve en se reconnectant.
+
+Le verdict d'abonnement en cache est oublié en même temps : sur un téléphone
+partagé, le suivant n'hérite pas des unités ouvertes du précédent.
+
+> **Un compte déjà pollué ne se répare pas tout seul.** La fusion ayant déjà
+> eu lieu, on ne peut plus distinguer dans l'instantané ce qui venait de qui.
+> La remise à zéro (écran du compte) écrit un store vierge **sans fusion**
+> (`pushStore`) — c'est la sortie, et la seule.
+
 ## Le backoffice — valider le contenu, enregistrer les voix
 
 `/admin.html`, réservé aux adresses listées dans `ADMIN_EMAILS`. Aux trois

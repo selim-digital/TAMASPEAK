@@ -140,11 +140,19 @@ export function AccountScreen({
       setEtat('connecte')
       setEnvoi(null)
       sfx.correct()
-      // La promesse tenue : fusion max/union — rien ne se perd, jamais.
-      const { store: fusion, synced } = await syncStore(store)
+      // Fusion max/union — rien ne se perd, jamais… SAUF si le store posé
+      // sur cet appareil appartient à un autre compte : on ne verse pas la
+      // progression du partant dans celui qui arrive (voir syncStore).
+      const { store: fusion, synced, remplace } = await syncStore(store, u?.id)
       if (synced) onStoreMerged(fusion)
+      if (remplace) oublierAbonnement()
       onSession?.(u)
-      note('Connecté ! Ta progression est maintenant sauvegardée.', 3200)
+      note(
+        remplace
+          ? 'Connecté ! Voici ta progression — celle du compte précédent est restée sur son compte.'
+          : 'Connecté ! Ta progression est maintenant sauvegardée.',
+        3800,
+      )
     } else {
       setEnvoi('envoye')
       note(r === 'wrong' ? 'Code faux ou expiré — vérifie, ou renvoie un code.' : 'Vérification impossible — réessaie.')
@@ -153,7 +161,7 @@ export function AccountScreen({
 
   async function synchroniser() {
     sfx.click()
-    const { store: fusion, synced } = await syncStore(store)
+    const { store: fusion, synced } = await syncStore(store, user?.id)
     if (synced) {
       onStoreMerged(fusion)
       note('Progression synchronisée.')

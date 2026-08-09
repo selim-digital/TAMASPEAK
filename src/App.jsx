@@ -214,8 +214,15 @@ export default function App() {
       if (state === 'authenticated') {
         setUser(u)
         setSessionEtat('connecte')
-        syncStore(loadStore()).then(({ store: fusion, synced }) => {
-          if (synced) setStore(fusion)
+        // L'identifiant du compte est passé à la synchronisation : c'est lui
+        // qui lui permet de reconnaître un store laissé par QUELQU'UN
+        // D'AUTRE et de ne pas le verser dans ce compte-ci.
+        syncStore(loadStore(), u?.id).then(({ store: fusion, synced, remplace }) => {
+          if (!synced) return
+          setStore(fusion)
+          // Changement de personne sur cet appareil : le verdict
+          // d'abonnement en cache était celui du partant.
+          if (remplace) oublierAbonnement()
         })
       } else if (state === 'anonymous') {
         setUser(null)
