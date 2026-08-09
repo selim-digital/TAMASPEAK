@@ -32,7 +32,7 @@ import { JEUX } from '../data/economy.js'
 /* ------------------------------------------------------------------ */
 
 /** Dos de carte : tissage de losanges sur fond turquoise profond. */
-function DosCarte() {
+export function DosCarte() {
   return (
     <svg viewBox="0 0 60 80" className="h-full w-full" aria-hidden="true">
       <defs>
@@ -63,7 +63,7 @@ function DosCarte() {
 }
 
 /** Filigrane de losanges derrière le tapis — le motif du chemin. */
-function FiligraneTapis() {
+export function FiligraneTapis() {
   return (
     <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
       <defs>
@@ -77,7 +77,7 @@ function FiligraneTapis() {
 }
 
 /** Étoiles de fin de partie — l'efficacité, jamais une sanction. */
-function Etoiles({ n }) {
+export function Etoiles({ n }) {
   return (
     <div className="flex justify-center gap-1.5" aria-label={`${n} étoile${n > 1 ? 's' : ''} sur 3`}>
       {[0, 1, 2].map((i) => (

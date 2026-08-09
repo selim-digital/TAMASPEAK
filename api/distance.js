@@ -12,6 +12,11 @@
  */
 import { serverReady, notConfigured, sql, assurerSchema } from './_lib/db.js'
 import { sessionOf } from './_lib/auth.js'
+// L'arbitre du Mémory en direct reconstruit le tapis avec LE MÊME code que
+// les téléphones (graine → mêmes cartes) : jeux.js et les cours sont du
+// JavaScript pur, Vercel les embarque sans rien demander.
+import { pairesMemoire, cartesMemoire } from '../src/lib/jeux.js'
+import { getCourse } from '../src/data/courses.js'
 
 /** Code court à partager (invitation, défi) — lisible, sans ambiguïté O/0. */
 function codeCourt(n = 8) {
@@ -353,6 +358,148 @@ async function notifsPost(req, res, me) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Mémory EN DIRECT — au tour par tour, l'arbitre au serveur.           */
+/*                                                                      */
+/* Chacun joue depuis SON téléphone : à ton tour tu retournes deux      */
+/* cartes, l'adversaire les VOIT à son prochain regard (c'est là que    */
+/* sa mémoire travaille), une paire te fait rejouer, un raté passe la   */
+/* main. Le serveur valide tout — tour, indices, paire — en             */
+/* reconstruisant le tapis depuis la graine : aucun score inventé ne    */
+/* peut entrer.                                                        */
+/* ------------------------------------------------------------------ */
+
+/** Le tapis d'une partie, reconstruit à l'identique des téléphones. */
+const tapisDe = (partie) =>
+  cartesMemoire(pairesMemoire(getCourse(partie.lang), partie.paires, partie.seed), partie.seed)
+
+/** La partie, mise en forme pour un joueur (noms compris). */
+async function formerPartie(p, me) {
+  const [autre] = await sql()`
+    SELECT "name" FROM "user" WHERE id = ${p.createur === me.id ? p.adversaire : p.createur}`
+  const etat = p.etat || {}
+  const trouvees = etat.trouvees || {}
+  const miennes = Object.values(trouvees).filter((u) => u === me.id).length
+  return {
+    id: p.id,
+    lang: p.lang,
+    seed: p.seed,
+    paires: p.paires,
+    status: p.status,
+    monTour: p.tour === me.id && p.status === 'ouvert',
+    moi: me.id,
+    avec: autre?.name || '',
+    trouvees, // paireIdx -> userId
+    scores: { moi: miennes, lui: Object.keys(trouvees).length - miennes },
+    dernierCoup: etat.dernierCoup || null,
+  }
+}
+
+async function memoryGet(req, res, me) {
+  const id = Number(req.query.id || 0)
+  if (id) {
+    const [p] = await sql()`
+      SELECT * FROM memory_parties
+      WHERE id = ${id} AND (createur = ${me.id} OR adversaire = ${me.id})`
+    if (!p) return res.status(404).json({ error: 'partie inconnue' })
+    return res.status(200).json({ partie: await formerPartie(p, me) })
+  }
+  // Mes parties : les ouvertes, puis les dernières finies.
+  const lignes = await sql()`
+    SELECT * FROM memory_parties
+    WHERE (createur = ${me.id} OR adversaire = ${me.id})
+    ORDER BY (status = 'ouvert') DESC, updated_at DESC LIMIT 6`
+  const parties = []
+  for (const p of lignes) parties.push(await formerPartie(p, me))
+  return res.status(200).json({ parties })
+}
+
+async function memoryPost(req, res, me) {
+  const { action } = req.body || {}
+
+  if (action === 'creer') {
+    const pour = String(req.body?.pour || '')
+    const lang = String(req.body?.lang || 'kab')
+    const paires = Math.max(4, Math.min(10, Number(req.body?.paires) || 8))
+    if (!(await sontRelies(me.id, pour))) return res.status(403).json({ error: 'pas dans ton cercle' })
+    // Une seule partie ouverte à la fois entre deux mêmes personnes : la
+    // relancer sans fin sèmerait des tapis abandonnés.
+    const [enCours] = await sql()`
+      SELECT id FROM memory_parties WHERE status = 'ouvert'
+        AND ((createur = ${me.id} AND adversaire = ${pour}) OR (createur = ${pour} AND adversaire = ${me.id}))
+      LIMIT 1`
+    if (enCours) {
+      const [p] = await sql()`SELECT * FROM memory_parties WHERE id = ${enCours.id}`
+      return res.status(200).json({ ok: true, partie: await formerPartie(p, me) })
+    }
+    const seed = codeCourt(10)
+    const [p] = await sql()`
+      INSERT INTO memory_parties (createur, adversaire, lang, seed, paires, tour)
+      VALUES (${me.id}, ${pour}, ${lang}, ${seed}, ${paires}, ${me.id})
+      RETURNING *`
+    await notifier(
+      pour,
+      'memory',
+      `${me.name || 'Quelqu’un'} t’attend au Mémory en direct 🃏`,
+      'Chacun son tour, sur vos deux téléphones — le tapis est déjà posé.',
+      { partieId: p.id },
+    )
+    return res.status(200).json({ ok: true, partie: await formerPartie(p, me) })
+  }
+
+  if (action === 'jouer') {
+    const id = Number(req.body?.id || 0)
+    const cartes = Array.isArray(req.body?.cartes) ? req.body.cartes.map(Number) : []
+    const [p] = await sql()`
+      SELECT * FROM memory_parties
+      WHERE id = ${id} AND (createur = ${me.id} OR adversaire = ${me.id})`
+    if (!p) return res.status(404).json({ error: 'partie inconnue' })
+    if (p.status !== 'ouvert') return res.status(409).json({ error: 'partie finie' })
+    if (p.tour !== me.id) return res.status(409).json({ error: 'pas ton tour' })
+
+    const tapis = tapisDe(p)
+    const [a, b] = cartes
+    const etat = p.etat || {}
+    const trouvees = { ...(etat.trouvees || {}) }
+    const valide =
+      Number.isInteger(a) && Number.isInteger(b) && a !== b &&
+      a >= 0 && b >= 0 && a < tapis.length && b < tapis.length &&
+      trouvees[tapis[a].paire] === undefined && trouvees[tapis[b].paire] === undefined
+    if (!valide) return res.status(400).json({ error: 'coup invalide' })
+
+    const paire = tapis[a].paire === tapis[b].paire
+    if (paire) trouvees[tapis[a].paire] = me.id
+    const fini = Object.keys(trouvees).length === p.paires
+    const autre = p.createur === me.id ? p.adversaire : p.createur
+    // Une paire fait rejouer ; un raté passe la main.
+    const tourSuivant = paire ? me.id : autre
+    const nouvelEtat = {
+      trouvees,
+      dernierCoup: { par: me.id, cartes: [a, b], paire },
+    }
+    const [maj] = await sql()`
+      UPDATE memory_parties
+      SET etat = ${JSON.stringify(nouvelEtat)}, tour = ${tourSuivant},
+          status = ${fini ? 'fini' : 'ouvert'}, updated_at = NOW(),
+          finished_at = ${fini ? new Date().toISOString() : null}
+      WHERE id = ${p.id} RETURNING *`
+    if (fini) {
+      const miennes = Object.values(trouvees).filter((u) => u === me.id).length
+      const siennes = p.paires - miennes
+      await notifier(
+        autre,
+        'memory-fini',
+        'Partie de Mémory terminée 🃏',
+        `${miennes} paires contre ${siennes} — le tapis complet est dans le cercle.`,
+        { partieId: p.id },
+      )
+    }
+    return res.status(200).json({ ok: true, partie: await formerPartie(maj, me) })
+  }
+
+  return res.status(400).json({ error: 'action inconnue' })
+}
+
+/* ------------------------------------------------------------------ */
 /* Classement du cercle — semaine, mois, année EN COURS.                */
 /*                                                                      */
 /* Le cercle est fait de liens deux-à-deux : « mon cercle », c'est moi   */
@@ -445,6 +592,7 @@ export default async function handler(req, res) {
     if (r === 'defis') return req.method === 'POST' ? defisPost(req, res, me) : defisGet(req, res, me)
     if (r === 'notifs') return req.method === 'POST' ? notifsPost(req, res, me) : notifsGet(res, me)
     if (r === 'classement') return classementGet(res, me)
+    if (r === 'memory') return req.method === 'POST' ? memoryPost(req, res, me) : memoryGet(req, res, me)
     return res.status(404).json({ error: 'route inconnue' })
   } catch (e) {
     console.error(`[distance:${r}]`, e)

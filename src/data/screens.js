@@ -40,4 +40,5 @@ export const ECRANS = Object.freeze({
   FEEDBACK: 'feedback',
   CERCLE: 'cercle',
   ENREGISTRER: 'enregistrer',
+  MEMORY_LIVE: 'memorylive',
 })

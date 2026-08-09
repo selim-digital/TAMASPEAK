@@ -51,6 +51,7 @@ export async function assurerSchema() {
     await sql()`SELECT palmares FROM email_prefs LIMIT 0`
     await sql()`SELECT 1 FROM cercle_liens LIMIT 0`
     await sql()`SELECT 1 FROM defis LIMIT 0`
+    await sql()`SELECT 1 FROM memory_parties LIMIT 0`
     schemaVerifie = true
     return
   } catch {

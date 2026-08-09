@@ -14,6 +14,8 @@ import {
   audioDemande,
   mesDefis,
   classementCercle,
+  mesPartiesMemory,
+  creerPartieMemory,
 } from '../lib/distance.js'
 
 /**
@@ -181,12 +183,13 @@ function AudioRecu({ demande, onGarde }) {
   )
 }
 
-export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onBack }) {
+export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onOuvrirPartie, onBack }) {
   // null = chargement ; false = serveur muet ; objet = données.
   const [cercle, setCercle] = useState(null)
   const [demandes, setDemandes] = useState({ recues: [], envoyees: [] })
   const [defis, setDefis] = useState([])
   const [classement, setClassement] = useState(null)
+  const [partiesMemory, setPartiesMemory] = useState([])
   const [formPour, setFormPour] = useState(null) // membre auquel on demande un mot
   const [mot, setMot] = useState('')
   const [sens, setSens] = useState('')
@@ -194,11 +197,26 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
   const [retraitEnCours, setRetraitEnCours] = useState(null)
 
   async function recharger() {
-    const [c, d, f, cl] = await Promise.all([monCercle(), mesDemandes(), mesDefis(), classementCercle()])
+    const [c, d, f, cl, pm] = await Promise.all([
+      monCercle(),
+      mesDemandes(),
+      mesDefis(),
+      classementCercle(),
+      mesPartiesMemory(),
+    ])
     setCercle(c || false)
     if (d) setDemandes(d)
     if (f) setDefis(f.defis || [])
     setClassement(cl)
+    if (pm) setPartiesMemory(pm.parties || [])
+  }
+
+  /** Invite un proche à une partie de Mémory en direct — et l'ouvre. */
+  async function lancerMemory(m) {
+    sfx.click()
+    const p = await creerPartieMemory({ pour: m.userId, lang: course.id, paires: 8 })
+    if (!p) return dire('Le serveur ne répond pas — réessaie un peu plus tard.')
+    onOuvrirPartie?.(p)
   }
 
   useEffect(() => {
@@ -320,16 +338,16 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
                   </button>
                 )}
               </div>
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
                     sfx.click()
                     setFormPour(formPour?.userId === m.userId ? null : m)
                   }}
-                  className="flex-1 rounded-xl border border-line bg-cream py-2 text-[11.5px] font-extrabold text-ink transition-transform active:scale-95"
+                  className="flex-1 rounded-xl border border-line bg-cream py-2 text-[11px] font-extrabold text-ink transition-transform active:scale-95"
                 >
-                  🎙 Demander un mot
+                  🎙 Un mot
                 </button>
                 <button
                   type="button"
@@ -337,9 +355,16 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
                     sfx.click()
                     onDefier(m)
                   }}
-                  className="flex-1 rounded-xl border border-coral/40 bg-coral/10 py-2 text-[11.5px] font-extrabold text-coral-dark transition-transform active:scale-95"
+                  className="flex-1 rounded-xl border border-coral/40 bg-coral/10 py-2 text-[11px] font-extrabold text-coral-dark transition-transform active:scale-95"
                 >
-                  ⚔ Défier
+                  ⚔ Défi
+                </button>
+                <button
+                  type="button"
+                  onClick={() => lancerMemory(m)}
+                  className="flex-1 rounded-xl border border-turquoise/40 bg-turquoise/10 py-2 text-[11px] font-extrabold text-turquoise-deep transition-transform active:scale-95"
+                >
+                  🃏 Mémory
                 </button>
               </div>
 
@@ -377,6 +402,56 @@ export function CercleScreen({ course, onDefier, onEnregistrer, onJouerDefi, onB
               Inviter un proche
             </Button>
           </div>
+        )}
+
+        {/* ------------- Mémory en direct ------------- */}
+        {partiesMemory.length > 0 && (
+          <>
+            <div className="mt-6 mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink-soft">
+              Mémory en direct 🃏
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {partiesMemory.map((p) => {
+                const aJouer = p.status === 'ouvert' && p.monTour
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      sfx.click()
+                      onOuvrirPartie?.(p)
+                    }}
+                    className={`flex w-full items-center gap-2.5 rounded-2xl border px-3 py-2 text-left transition-transform active:scale-[0.98] ${
+                      aJouer ? 'border-turquoise/50 bg-turquoise/5' : 'border-line bg-white'
+                    }`}
+                  >
+                    <Initiale name={p.avec} size={30} />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[12px] font-extrabold">{p.avec || 'En face'}</div>
+                      <div className="text-[10px] text-ink-soft">
+                        {p.status === 'fini'
+                          ? p.scores.moi > p.scores.lui
+                            ? `Gagné ${p.scores.moi}–${p.scores.lui} 🎉`
+                            : p.scores.moi < p.scores.lui
+                              ? `Perdu ${p.scores.moi}–${p.scores.lui} — la revanche t’attend`
+                              : `Égalité ${p.scores.moi}–${p.scores.lui} 🤝`
+                          : aJouer
+                            ? 'À toi de retourner deux cartes !'
+                            : `${p.scores.moi}–${p.scores.lui} · au tour de ${p.avec || 'l’autre'}`}
+                      </div>
+                    </div>
+                    <span
+                      className={`flex-none text-[11px] font-extrabold tabular-nums ${
+                        aJouer ? 'text-turquoise-deep' : 'text-ink-soft'
+                      }`}
+                    >
+                      {aJouer ? 'Jouer →' : p.status === 'fini' ? 'Revoir' : '⏳'}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </>
         )}
 
         {/* ------------- classement (semaine · mois · année) ------------- */}
