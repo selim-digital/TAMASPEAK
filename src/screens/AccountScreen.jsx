@@ -29,23 +29,17 @@ import {
  * message de cinq secondes, puis plus aucune trace au lancement suivant. On
  * garde donc la demande localement, et l'écran la rappelle tant qu'elle n'est
  * pas allée au bout.
+ *
+ * L'état lui-même vit dans `lib/tableRase.js` : c'est aussi ce qui permet à
+ * l'app, à son retour au premier plan, de reconnaître que la suppression a
+ * abouti ailleurs — le clic se fait presque toujours dans un autre onglet ou
+ * un autre navigateur que celui où l'app est ouverte.
  */
-const CLE_SUPPR = 'tama-speak:suppression-demandee'
-const lireSuppr = () => {
-  try {
-    return localStorage.getItem(CLE_SUPPR) || null
-  } catch {
-    return null
-  }
-}
-const noterSuppr = (v) => {
-  try {
-    v ? localStorage.setItem(CLE_SUPPR, v) : localStorage.removeItem(CLE_SUPPR)
-  } catch {
-    /* stockage indisponible : on se passe du rappel, rien de cassé */
-  }
-}
 import { oublierAbonnement } from '../lib/abonnement.js'
+import {
+  suppressionDemandee as lireSuppr,
+  noterSuppression as noterSuppr,
+} from '../lib/tableRase.js'
 
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -218,13 +212,16 @@ export function AccountScreen({
       setConfirmerSuppr(false)
       note('Un email de confirmation vient de partir — la suppression se fait en cliquant dedans.', 5000)
     } else if (r === 'supprime') {
-      noterSuppr(null)
-      setSupprDemandee(null)
-      setUser(null)
-      setEtat('deconnecte')
-      setConfirmerSuppr(false)
+      // Effacement immédiat : même sortie que le retour par email. On
+      // RECHARGE vers `?compte-supprime=1` au lieu d'effacer sur place —
+      // l'effet de sauvegarde de l'app réécrirait sinon le store aussitôt
+      // retiré, et la progression reviendrait dans le dos de l'effacement.
       onSession?.(null)
-      note('Compte supprimé. Tes données en ligne sont effacées ; ta progression locale reste à toi.', 4000)
+      note('Compte supprimé. Toutes tes données sont effacées.', 2500)
+      setTimeout(
+        () => window.location.replace(`${import.meta.env.BASE_URL || '/'}?compte-supprime=1`),
+        1200,
+      )
     } else {
       note('La suppression a échoué — réessaie, ou écris-nous via le feedback.')
     }

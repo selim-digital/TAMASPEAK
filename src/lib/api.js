@@ -195,6 +195,25 @@ export async function signOut() {
   } catch {
     /* déjà déconnecté de fait */
   }
+  oublierSession()
+}
+
+/**
+ * Oublie tout ce que CE module garde en local : l'indice de session et les
+ * files d'attente. Les autres modules oublient ce qui leur appartient — voir
+ * `lib/tableRase.js`, qui orchestre l'effacement complet.
+ *
+ * Les files partent avec la session : ce sont les événements et les retours
+ * de la personne qui s'en va, ils n'ont rien à faire dans le compte suivant.
+ */
+export function oublierSession() {
+  try {
+    localStorage.removeItem(HINT_KEY)
+    localStorage.removeItem(QUEUE_KEY)
+    localStorage.removeItem(FEEDBACK_QUEUE)
+  } catch {
+    /* stockage indisponible */
+  }
 }
 
 /**

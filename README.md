@@ -297,6 +297,35 @@ partagé, le suivant n'hérite pas des unités ouvertes du précédent.
 > La remise à zéro (écran du compte) écrit un store vierge **sans fusion**
 > (`pushStore`) — c'est la sortie, et la seule.
 
+### Quand le compte disparaît pendant que l'app est ouverte
+
+Nos comptes n'ont pas de mot de passe : la suppression se confirme **par un
+clic dans un email**, donc presque toujours dans un autre contexte — un autre
+onglet, le navigateur système alors que l'app tourne en PWA (sur iOS les deux
+ont des stockages séparés), parfois un autre appareil. La page restée ouverte,
+elle, ne rechargeait jamais : elle continuait d'afficher le nom et l'email d'un
+compte qui n'existait plus.
+
+L'app revérifie donc sa session **au retour au premier plan**
+(`visibilitychange`) — le moment exact où l'on revient de sa boîte mail. La
+règle anti-boucle tient : on ne dégrade que sur un « anonyme » **explicite** du
+serveur, jamais sur une panne réseau, et la progression locale n'est effacée
+que si une suppression était en cours. Une session simplement expirée fait
+redevenir anonyme, rien de plus.
+
+L'effacement passe par `lib/tableRase.js`, qui ne connaît **aucun nom de clé** :
+il demande à chaque module d'oublier ce qui lui appartient (progression,
+session, files d'attente, verdict d'abonnement, modales d'emprunt). Une liste
+de littéraux recopiée là divergerait au premier renommage, et l'oubli serait
+alors partiel — le pire des états, puisqu'il a l'air complet.
+
+> **Le détail qui a coûté une correction.** Effacer *sur place* ne suffisait
+> pas : l'effet de sauvegarde de React réécrivait le store dans la seconde, et
+> la progression revenait dans le dos de l'effacement. La suppression recharge
+> donc vers `?compte-supprime=1`, où la table rase se fait **au chargement du
+> module**, avant que React ne remonte. C'est le test qui l'a montré, pas le
+> raisonnement.
+
 ## Le backoffice — valider le contenu, enregistrer les voix
 
 `/admin.html`, réservé aux adresses listées dans `ADMIN_EMAILS`. Aux trois
