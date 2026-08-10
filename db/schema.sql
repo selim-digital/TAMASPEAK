@@ -305,6 +305,36 @@ CREATE INDEX IF NOT EXISTS memory_parties_createur ON memory_parties (createur, 
 CREATE INDEX IF NOT EXISTS memory_parties_adversaire ON memory_parties (adversaire, status);
 
 -- ------------------------------------------------------------------
+-- LA SUPPRESSION DE COMPTE, CONFIRMÉE PAR UN CODE — pas par un lien.
+--
+-- Better Auth confirme la suppression par un lien, et son point d'arrivée
+-- EXIGE une session dans le navigateur qui l'ouvre (sans quoi il répond
+-- « Failed to get user info »). Or un lien reçu par email n'atterrit presque
+-- jamais dans le bon contexte : les applications de messagerie ouvrent les
+-- liens dans LEUR propre navigateur intégré, et sur iOS une PWA installée a
+-- un stockage séparé de Safari. La confirmation échouait donc précisément
+-- pour les gens qui utilisent l'app comme elle est faite pour l'être.
+--
+-- C'est exactement le piège déjà contourné pour la CONNEXION, et la même
+-- règle s'applique : LE CODE SE TAPE DANS L'APP, ON N'EN SORT JAMAIS. Cette
+-- table fait le pont entre le code à six chiffres qu'on envoie et le jeton
+-- que Better Auth attend — l'app garde sa session, l'email prouve la boîte.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS suppression_codes (
+  code TEXT PRIMARY KEY,
+  token TEXT NOT NULL,        -- le jeton Better Auth, jamais montré à personne
+  user_id TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Un seul code vivant par personne : demander un nouvel envoi doit invalider
+-- le précédent, sinon un code lu dans un vieil email effacerait un compte
+-- que son propriétaire a entre-temps décidé de garder.
+CREATE UNIQUE INDEX IF NOT EXISTS suppression_codes_user ON suppression_codes (user_id);
+
+-- ------------------------------------------------------------------
 -- LE LEXIQUE — l'atelier du contenu : valider, corriger, enregistrer.
 --
 -- Ces deux tables servent le BACKOFFICE (public/admin.html), pas l'app.

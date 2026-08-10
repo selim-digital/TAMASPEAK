@@ -29,7 +29,18 @@ import { faitPour } from './data/faits.js'
 import { nonLues } from './lib/notifications.js'
 import { HistoryScreen } from './screens/HistoryScreen.jsx'
 import { loadVoiceIndex } from './lib/speakerVoice.js'
-import { track, flushEvents, syncStore, pushStore, wipeRemoteStore, sessionState, sessionHint, setEmailPrefs } from './lib/api.js'
+import {
+  track,
+  flushEvents,
+  syncStore,
+  pushStore,
+  wipeRemoteStore,
+  sessionState,
+  sessionHint,
+  setEmailPrefs,
+  signOut,
+} from './lib/api.js'
+import { tableRase, suppressionDemandee } from './lib/tableRase.js'
 import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDemandes, partieMemory } from './lib/distance.js'
 import { MemoryLiveScreen } from './screens/MemoryLiveScreen.jsx'
 import { CercleScreen } from './screens/CercleScreen.jsx'
@@ -103,18 +114,12 @@ if (AUTH_ERREUR || COMPTE_SUPPRIME) {
     // progression locale (l'ancien choix) faisait revenir l'utilisateur
     // « déjà connu » — sans onboarding, avec « Reprendre » au lieu de
     // « Commencer ». Vécu et corrigé : tout part.
-    try {
-      localStorage.removeItem('tama-speak:session-hint')
-      localStorage.removeItem('tama-speak:v3')
-      localStorage.removeItem('tama-speak:events-queue')
-      localStorage.removeItem('tama-speak:feedback-queue')
-      localStorage.removeItem('tama-speak:abonnement')
-      // La demande de suppression est allée au bout : le rappel n'a plus lieu
-      // d'être (voir screens/AccountScreen.jsx).
-      localStorage.removeItem('tama-speak:suppression-demandee')
-    } catch {
-      /* stockage indisponible */
-    }
+    tableRase()
+    // Et le COOKIE avec. La cascade SQL a bien emporté la session côté
+    // serveur, mais le navigateur gardait son cookie : inerte, et pourtant
+    // suffisant pour qu'un onglet resté ouvert continue de se croire
+    // connecté à un compte qui n'existe plus.
+    signOut()
   }
 }
 
@@ -243,6 +248,53 @@ export default function App() {
     }, 5000)
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  /**
+   * LA SESSION PEUT TOMBER PENDANT QUE L'APP EST OUVERTE — et elle tombe
+   * pour de bon quand le compte est SUPPRIMÉ.
+   *
+   * Nos comptes n'ont pas de mot de passe : la suppression se confirme par un
+   * clic dans un email, donc presque toujours DANS UN AUTRE CONTEXTE — un
+   * autre onglet, le navigateur système alors que l'app tourne en PWA (sur
+   * iOS les deux ont même des stockages séparés), parfois un autre appareil.
+   * La page ouverte, elle, ne rechargeait jamais : elle continuait d'afficher
+   * le nom et l'email d'un compte qui n'existait plus, jusqu'à ce qu'on la
+   * ferme à la main. C'est le bug rapporté.
+   *
+   * On revérifie donc au RETOUR AU PREMIER PLAN — le moment exact où l'on
+   * revient de sa boîte mail. La règle anti-boucle tient : on ne dégrade que
+   * sur un « anonyme » EXPLICITE du serveur, jamais sur une panne réseau.
+   */
+  useEffect(() => {
+    const verifier = async () => {
+      if (document.visibilityState !== 'visible') return
+      const { state, user: u } = await sessionState()
+      if (state === 'authenticated') {
+        setUser(u)
+        setSessionEtat('connecte')
+        return
+      }
+      if (state !== 'anonymous') return // injoignable : on ne décide rien
+      // Le serveur dit « personne ». Si une suppression était en cours, elle
+      // vient d'aboutir : on repart par le chemin du retour d'email.
+      //
+      // Pourquoi RECHARGER vers `?compte-supprime=1` plutôt qu'effacer ici :
+      // l'effacement doit avoir lieu AVANT que React ne remonte. Effacer sur
+      // place laissait l'effet de sauvegarde réécrire aussitôt le store qu'on
+      // venait de retirer — la progression revenait, intacte, dans le dos de
+      // l'effacement. C'est le test qui l'a montré, pas le raisonnement.
+      if (suppressionDemandee()) {
+        window.location.replace(`${import.meta.env.BASE_URL || '/'}?compte-supprime=1`)
+        return
+      }
+      // Sinon la session a simplement expiré ou été révoquée ailleurs : on
+      // redevient anonyme, sans rien effacer. La progression locale reste.
+      setUser(null)
+      setSessionEtat((etat) => (etat === 'connecte' || etat === 'optimiste' ? 'anonyme' : etat))
+    }
+    document.addEventListener('visibilitychange', verifier)
+    return () => document.removeEventListener('visibilitychange', verifier)
   }, [])
 
   // Les notifications du cercle : au moment où la session se confirme, puis

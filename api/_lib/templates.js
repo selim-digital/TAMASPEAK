@@ -95,12 +95,18 @@ const TEMPLATES = {
    * n'ont pas de mot de passe : ce clic est LA preuve que la demande vient
    * bien du titulaire de la boîte mail, pas d'un téléphone volé.
    */
-  'confirmer-suppression': ({ name, url }) =>
+  'confirmer-suppression': ({ name, code }) =>
     shell({
       body:
         h1(`On se quitte${name ? `, ${esc(name)}` : ''} ?`) +
-        p('Tu as demandé la <b>suppression définitive</b> de ton compte Tama Speak. Un appui sur le bouton, et tout ce que le serveur sait de toi est effacé.') +
-        bouton(url, 'Oui, supprimer mon compte') +
+        p(
+          'Tu as demandé la <b>suppression définitive</b> de ton compte Tama Speak. ' +
+            'Retourne dans l’app et tape ce code pour confirmer. Il est valable <b>une heure</b>.',
+        ) +
+        `<p style="margin:18px 0;text-align:center;">
+           <span style="display:inline-block;background:${C.cream};border:2px solid ${C.line};border-radius:14px;
+             padding:14px 22px;font-size:30px;font-weight:800;letter-spacing:8px;color:${C.coral};">${esc(code)}</span>
+         </p>` +
         petit('Si tu n’as rien demandé, ignore simplement cet email — ton compte reste intact.'),
     }),
 

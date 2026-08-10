@@ -11,6 +11,7 @@ import {
   signInWithGoogle,
   signOut,
   deleteAccount,
+  confirmDeleteAccount,
   syncStore,
   wipeRemoteStore,
 } from '../lib/api.js'
@@ -29,23 +30,17 @@ import {
  * message de cinq secondes, puis plus aucune trace au lancement suivant. On
  * garde donc la demande localement, et l'écran la rappelle tant qu'elle n'est
  * pas allée au bout.
+ *
+ * L'état lui-même vit dans `lib/tableRase.js` : c'est aussi ce qui permet à
+ * l'app, à son retour au premier plan, de reconnaître que la suppression a
+ * abouti ailleurs — le clic se fait presque toujours dans un autre onglet ou
+ * un autre navigateur que celui où l'app est ouverte.
  */
-const CLE_SUPPR = 'tama-speak:suppression-demandee'
-const lireSuppr = () => {
-  try {
-    return localStorage.getItem(CLE_SUPPR) || null
-  } catch {
-    return null
-  }
-}
-const noterSuppr = (v) => {
-  try {
-    v ? localStorage.setItem(CLE_SUPPR, v) : localStorage.removeItem(CLE_SUPPR)
-  } catch {
-    /* stockage indisponible : on se passe du rappel, rien de cassé */
-  }
-}
 import { oublierAbonnement } from '../lib/abonnement.js'
+import {
+  suppressionDemandee as lireSuppr,
+  noterSuppression as noterSuppr,
+} from '../lib/tableRase.js'
 
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -79,6 +74,10 @@ export function AccountScreen({
   const [confirmerSuppr, setConfirmerSuppr] = useState(false)
   // Une suppression demandée et jamais confirmée (horodatage ISO, ou null).
   const [supprDemandee, setSupprDemandee] = useState(lireSuppr)
+  // Le code de confirmation reçu par email — tapé DANS l'app, jamais cliqué
+  // depuis la boîte mail (le lien y perd la session, voir api/auth-routes.js).
+  const [codeSuppr, setCodeSuppr] = useState('')
+  const [supprEnCours, setSupprEnCours] = useState(false)
   const [zeroEnCours, setZeroEnCours] = useState(false)
   const [googleEnCours, setGoogleEnCours] = useState(false)
 
@@ -205,6 +204,30 @@ export function AccountScreen({
     note('Déconnecté. Ta progression locale reste sur cet appareil.')
   }
 
+  /** Confirme la suppression avec les six chiffres reçus par email. */
+  async function confirmerSuppressionParCode() {
+    sfx.click()
+    setSupprEnCours(true)
+    const r = await confirmDeleteAccount(codeSuppr.trim())
+    setSupprEnCours(false)
+    if (r === 'supprime') {
+      // Même sortie que partout ailleurs : on RECHARGE vers la table rase,
+      // qui s'exécute avant que React ne remonte — effacer sur place
+      // laisserait l'effet de sauvegarde réécrire le store aussitôt.
+      onSession?.(null)
+      note('Compte supprimé. Toutes tes données sont effacées.', 2500)
+      setTimeout(
+        () => window.location.replace(`${import.meta.env.BASE_URL || '/'}?compte-supprime=1`),
+        1200,
+      )
+    } else if (r === 'code-faux') {
+      setCodeSuppr('')
+      note('Code faux ou expiré — vérifie l’email, ou fais-en renvoyer un.')
+    } else {
+      note('La confirmation a échoué — réessaie dans un instant.')
+    }
+  }
+
   async function supprimer() {
     sfx.click()
     const r = await deleteAccount()
@@ -216,15 +239,18 @@ export function AccountScreen({
       noterSuppr(new Date().toISOString())
       setSupprDemandee(lireSuppr())
       setConfirmerSuppr(false)
-      note('Un email de confirmation vient de partir — la suppression se fait en cliquant dedans.', 5000)
+      note('Un code vient de partir par email — tape-le ci-dessous pour confirmer.', 5000)
     } else if (r === 'supprime') {
-      noterSuppr(null)
-      setSupprDemandee(null)
-      setUser(null)
-      setEtat('deconnecte')
-      setConfirmerSuppr(false)
+      // Effacement immédiat : même sortie que le retour par email. On
+      // RECHARGE vers `?compte-supprime=1` au lieu d'effacer sur place —
+      // l'effet de sauvegarde de l'app réécrirait sinon le store aussitôt
+      // retiré, et la progression reviendrait dans le dos de l'effacement.
       onSession?.(null)
-      note('Compte supprimé. Tes données en ligne sont effacées ; ta progression locale reste à toi.', 4000)
+      note('Compte supprimé. Toutes tes données sont effacées.', 2500)
+      setTimeout(
+        () => window.location.replace(`${import.meta.env.BASE_URL || '/'}?compte-supprime=1`),
+        1200,
+      )
     } else {
       note('La suppression a échoué — réessaie, ou écris-nous via le feedback.')
     }
@@ -449,16 +475,42 @@ export function AccountScreen({
                     {new Date(supprDemandee).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                   </b>
                   , mais elle n’est pas allée au bout : <b className="text-ink">ton compte existe encore</b>.
-                  Il faut cliquer le lien dans l’email reçu — sans ce clic, ta progression revient à
-                  chaque connexion.
+                  Tape ci-dessous le <b className="text-ink">code à 6 chiffres</b> reçu par email —
+                  sans lui, ta progression revient à chaque connexion.
                 </p>
+                {/* Le code se tape ICI, jamais dans la boîte mail : un lien
+                    cliqué depuis un email ouvre le navigateur intégré de la
+                    messagerie, qui n'a pas notre session — le serveur
+                    répondait alors « Failed to get user info ». Même règle
+                    que pour la connexion (voir api/auth-routes.js). */}
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    value={codeSuppr}
+                    onChange={(e) => setCodeSuppr(e.target.value.replace(/\D/g, ''))}
+                    placeholder="000000"
+                    aria-label="Code de confirmation reçu par email"
+                    className="w-[112px] rounded-xl border-2 border-coral/40 bg-white px-3 py-2 text-center text-[15px] font-extrabold tracking-[0.2em] text-ink placeholder:text-ink-soft/40 focus:border-coral focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    disabled={codeSuppr.length !== 6 || supprEnCours}
+                    onClick={confirmerSuppressionParCode}
+                    className="rounded-xl bg-coral px-3 py-2 text-[11.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)] disabled:opacity-40 disabled:shadow-none"
+                  >
+                    {supprEnCours ? 'Suppression…' : 'Confirmer la suppression'}
+                  </button>
+                </div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={supprimer}
-                    className="rounded-xl bg-coral px-3 py-2 text-[11.5px] font-extrabold text-white shadow-[0_3px_0_var(--color-coral-dark)]"
+                    className="rounded-xl border-2 border-coral/40 px-3 py-2 text-[11.5px] font-extrabold text-coral-dark"
                   >
-                    Renvoyer l’email
+                    Renvoyer le code
                   </button>
                   {/* La sortie de secours : effacer ses données sans passer par
                       l'email. Ce n'est PAS la suppression du compte — on le dit

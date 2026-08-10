@@ -297,6 +297,59 @@ partagé, le suivant n'hérite pas des unités ouvertes du précédent.
 > La remise à zéro (écran du compte) écrit un store vierge **sans fusion**
 > (`pushStore`) — c'est la sortie, et la seule.
 
+### Supprimer son compte : un code, jamais un lien
+
+Better Auth confirme la suppression par un lien, et son point d'arrivée
+**exige une session dans le navigateur qui l'ouvre** — sans elle, il répond
+`Failed to get user info`. Or un lien reçu par email n'atterrit presque jamais
+dans le bon contexte : les applications de messagerie ouvrent les liens dans
+**leur propre navigateur intégré**, et sur iOS une PWA installée a un stockage
+séparé de Safari. La confirmation échouait donc précisément pour les gens qui
+utilisent l'app comme elle est faite pour l'être.
+
+C'est exactement le piège déjà contourné pour la **connexion**, et la même
+règle s'applique : *le code se tape dans l'app, on n'en sort jamais*. L'email
+ne transporte plus qu'un **code à six chiffres** ; le jeton de Better Auth,
+lui, ne quitte jamais le serveur (table `suppression_codes`, une heure de
+validité, un seul code vivant par personne, consommé à la lecture). L'app
+poste le code sur `POST /api/auth/suppression` **avec sa propre session**, et
+le serveur passe la main à Better Auth (`POST /delete-user` accepte le jeton) :
+ses garde-fous, ses crochets Stripe et RGPD, sa purge de cookie jouent tels
+quels.
+
+Un code faux et un code expiré donnent volontairement la même réponse —
+distinguer les deux renseignerait qui essaie au hasard. Et un code est lié à
+**son** compte : reçu pour le sien, il ne vaut rien contre un autre.
+
+### Quand le compte disparaît pendant que l'app est ouverte
+
+Nos comptes n'ont pas de mot de passe : la suppression se confirme **par un
+clic dans un email**, donc presque toujours dans un autre contexte — un autre
+onglet, le navigateur système alors que l'app tourne en PWA (sur iOS les deux
+ont des stockages séparés), parfois un autre appareil. La page restée ouverte,
+elle, ne rechargeait jamais : elle continuait d'afficher le nom et l'email d'un
+compte qui n'existait plus.
+
+L'app revérifie donc sa session **au retour au premier plan**
+(`visibilitychange`) — le moment exact où l'on revient de sa boîte mail. La
+règle anti-boucle tient : on ne dégrade que sur un « anonyme » **explicite** du
+serveur, jamais sur une panne réseau, et la progression locale n'est effacée
+que si une suppression était en cours. Une session simplement expirée fait
+redevenir anonyme, rien de plus.
+
+L'effacement passe par `lib/tableRase.js`, qui ne connaît **aucun nom de clé** :
+il demande à chaque module d'oublier ce qui lui appartient (progression,
+session, files d'attente, verdict d'abonnement, modales d'emprunt). Une liste
+de littéraux recopiée là divergerait au premier renommage, et l'oubli serait
+alors partiel — le pire des états, puisqu'il a l'air complet.
+
+> **Le détail qui a coûté une correction.** Effacer *sur place* ne suffisait
+> pas : l'effet de sauvegarde de React réécrivait le store dans la seconde, et
+> la progression revenait dans le dos de l'effacement. La suppression recharge
+> donc vers `?compte-supprime=1`, où la table rase se fait **au chargement du
+> module**, avant que React ne remonte. C'est le test qui l'a montré, pas le
+> raisonnement.
+
 ## Le backoffice — valider le contenu, enregistrer les voix
 
 `/admin.html`, réservé aux adresses listées dans `ADMIN_EMAILS`. Aux trois

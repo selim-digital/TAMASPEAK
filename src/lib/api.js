@@ -195,6 +195,25 @@ export async function signOut() {
   } catch {
     /* déjà déconnecté de fait */
   }
+  oublierSession()
+}
+
+/**
+ * Oublie tout ce que CE module garde en local : l'indice de session et les
+ * files d'attente. Les autres modules oublient ce qui leur appartient — voir
+ * `lib/tableRase.js`, qui orchestre l'effacement complet.
+ *
+ * Les files partent avec la session : ce sont les événements et les retours
+ * de la personne qui s'en va, ils n'ont rien à faire dans le compte suivant.
+ */
+export function oublierSession() {
+  try {
+    localStorage.removeItem(HINT_KEY)
+    localStorage.removeItem(QUEUE_KEY)
+    localStorage.removeItem(FEEDBACK_QUEUE)
+  } catch {
+    /* stockage indisponible */
+  }
 }
 
 /**
@@ -229,6 +248,35 @@ export async function deleteAccount() {
 /* ------------------------------------------------------------------ */
 /* Synchronisation de la progression                                    */
 /* ------------------------------------------------------------------ */
+
+/**
+ * Confirme la suppression avec le code reçu par email.
+ *
+ * C'EST L'APP QUI APPELLE, avec sa session : le lien de Better Auth, lui,
+ * exigeait une session dans le navigateur qui l'ouvre — et un lien reçu par
+ * email n'y atterrit presque jamais (les messageries ouvrent les liens dans
+ * leur navigateur intégré, et sur iOS une PWA a un stockage séparé de
+ * Safari). D'où le « Failed to get user info » rencontré en vrai. Même
+ * règle que la connexion : le code se tape DANS l'app, on n'en sort jamais.
+ *
+ * @returns {Promise<'supprime'|'code-faux'|'erreur'>}
+ */
+export async function confirmDeleteAccount(code) {
+  try {
+    const r = await fetch('/api/auth/suppression', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ code }),
+    })
+    if (r.ok) return 'supprime'
+    if (!isApi(r)) return 'erreur'
+    // 400 : code faux ou expiré — distinct d'une panne, et dit comme tel.
+    return r.status === 400 ? 'code-faux' : 'erreur'
+  } catch {
+    return 'erreur'
+  }
+}
 
 /**
  * Cycle complet : lire l'instantané serveur, fusionner (max/union — voir
