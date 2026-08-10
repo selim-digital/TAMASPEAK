@@ -119,7 +119,8 @@ function scenesParMot(course) {
  * `graine` (facultative) rend le tirage déterministe — c'est elle qui
  * permet le duel entre téléphones distants.
  */
-export function pairesMemoire(course, n = 6, graine = null) {
+/** Les candidats du Mémory pour un cours — partagé avec le compteur. */
+function candidatsMemoire(course) {
   const scenes = scenesParMot(course)
   const vusMots = new Set()
   const vusSens = new Set()
@@ -149,6 +150,14 @@ export function pairesMemoire(course, n = 6, graine = null) {
       candidats.push({ mot: m, sens: s, scene: scenes.get(km) || null })
     }
   }
+  return candidats
+}
+
+/** Combien de paires ce cours peut offrir — borne les tailles de tapis. */
+export const nbPairesMemoire = (course) => candidatsMemoire(course).length
+
+export function pairesMemoire(course, n = 6, graine = null) {
+  const candidats = candidatsMemoire(course)
   // Avec une graine (duel), le tirage est DÉTERMINISTE : deux téléphones
   // distants reconstruisent exactement le même tapis à partir du lien.
   const illustres = candidats.filter((c) => c.scene)

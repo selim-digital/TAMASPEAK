@@ -41,7 +41,8 @@ import {
   signOut,
 } from './lib/api.js'
 import { tableRase, suppressionDemandee } from './lib/tableRase.js'
-import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDemandes } from './lib/distance.js'
+import { notifsServeur, rejoindreCercle, lireDefi, creerDefi, scorerDefi, mesDemandes, partieMemory } from './lib/distance.js'
+import { MemoryLiveScreen } from './screens/MemoryLiveScreen.jsx'
 import { CercleScreen } from './screens/CercleScreen.jsx'
 import { EnregistrerScreen } from './screens/EnregistrerScreen.jsx'
 import { AccountScreen } from './screens/AccountScreen.jsx'
@@ -172,6 +173,8 @@ export default function App() {
   const [notifsServ, setNotifsServ] = useState([])
   // La demande d'enregistrement en cours de réponse (écran micro).
   const [demandeActive, setDemandeActive] = useState(null)
+  // La partie de Mémory en direct ouverte à l'écran.
+  const [partieLive, setPartieLive] = useState(null)
   // Résultat du lien d'invitation au cercle, affiché sur l'accueil.
   const [cercleInfo, setCercleInfo] = useState(null)
   // L'écran compte a deux visages : porte d'entrée obligatoire (verrou de
@@ -737,6 +740,14 @@ export default function App() {
         return
       }
     }
+    if ((n.kind === 'memory' || n.kind === 'memory-fini') && n.data?.partieId) {
+      const p = await partieMemory(n.data.partieId)
+      if (p) {
+        setPartieLive(p)
+        setScreen(ECRANS.MEMORY_LIVE)
+        return
+      }
+    }
     // audio-recu, cercle, defi-fini, défi déjà clos… : tout se voit là-bas.
     setScreen(ECRANS.CERCLE)
   }
@@ -1102,6 +1113,10 @@ export default function App() {
               course={course}
               onDefier={defierMembre}
               onJouerDefi={(code) => ouvrirNotifServeur({ kind: 'defi', data: { code } })}
+              onOuvrirPartie={(p) => {
+                setPartieLive(p)
+                setScreen(ECRANS.MEMORY_LIVE)
+              }}
               onMissions={() => setScreen(ECRANS.MISSIONS)}
               onContribuer={() => setScreen(ECRANS.CONTRIBUER)}
               onEnregistrer={(d) => {
@@ -1109,6 +1124,17 @@ export default function App() {
                 setScreen(ECRANS.ENREGISTRER)
               }}
               onBack={() => setScreen(ECRANS.AUJOURDHUI)}
+            />
+          )}
+
+          {screen === ECRANS.MEMORY_LIVE && partieLive && (
+            <MemoryLiveScreen
+              course={getCourse(partieLive.lang)}
+              partieInitiale={partieLive}
+              onBack={() => {
+                setPartieLive(null)
+                setScreen(ECRANS.CERCLE)
+              }}
             />
           )}
 

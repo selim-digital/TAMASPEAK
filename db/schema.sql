@@ -274,6 +274,37 @@ CREATE INDEX IF NOT EXISTS defis_adversaire ON defis (adversaire, created_at DES
 ALTER TABLE notifications ADD COLUMN IF NOT EXISTS data JSONB;
 
 -- ------------------------------------------------------------------
+-- Mémory EN DIRECT — au tour par tour, entre deux membres du cercle.
+--
+-- Le serveur est L'ARBITRE : il reconstruit le tapis depuis la graine
+-- (le même code que les téléphones) et valide chaque coup — qui joue,
+-- quelles cartes, paire ou non. L'état ne stocke que l'essentiel :
+-- les paires gagnées (et par qui) et le dernier coup joué, pour que
+-- l'adversaire VOIE les cartes retournées en face — c'est là que la
+-- mémoire travaille. Les téléphones interrogent la partie toutes les
+-- quelques secondes : un tour de Mémory se joue en direct sans
+-- WebSocket, l'infrastructure reste la nôtre.
+-- ------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS memory_parties (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  createur TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  adversaire TEXT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  lang TEXT NOT NULL,
+  seed TEXT NOT NULL,
+  paires INT NOT NULL DEFAULT 8,
+  tour TEXT NOT NULL,                     -- l'id de qui doit jouer
+  etat JSONB NOT NULL DEFAULT '{}',       -- { trouvees: {paire: userId}, dernierCoup: {par, cartes, paire} }
+  status TEXT NOT NULL DEFAULT 'ouvert',  -- 'ouvert' | 'fini'
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  finished_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS memory_parties_createur ON memory_parties (createur, status);
+CREATE INDEX IF NOT EXISTS memory_parties_adversaire ON memory_parties (adversaire, status);
+
+-- ------------------------------------------------------------------
 -- LA SUPPRESSION DE COMPTE, CONFIRMÉE PAR UN CODE — pas par un lien.
 --
 -- Better Auth confirme la suppression par un lien, et son point d'arrivée
