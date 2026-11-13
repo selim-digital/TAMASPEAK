@@ -88,7 +88,11 @@ function normaliser(lang, e) {
   return {
     lang,
     mot: e.mot,
-    sens: [e.fr],
+    // Un mot peut avoir PLUSIEURS sens français, chacun cherchable pour
+    // lui-même : « uccen » est le chacal des contes ET le « loup » qu'on
+    // cherche en français. Un seul libellé « le chacal, le loup » aurait
+    // donné un noyau de sens bancal, et « loup » serait resté introuvable.
+    sens: Array.isArray(e.fr) ? e.fr : [e.fr],
     type: e.type || 'nom',
     genre: genreDe(e.mot, e.type || 'nom'),
     theme: e.theme || null,
