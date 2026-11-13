@@ -158,7 +158,17 @@ export const KAB = [
   n('Afrux', 'L’oiseau', 'animaux'),
   n('Agḍiḍ', 'L’oiseau', 'animaux'),
   n('Tasekkurt', 'La perdrix', 'animaux'),
-  n('Uccen', 'Le chacal', 'animaux', 'Le personnage des contes kabyles : rusé, et toujours puni.'),
+  // Deux sens, et le second n'est pas une approximation : il n'y a pas
+  // d'autre loup en Afrique du Nord. L'animal longtemps appelé « chacal doré »
+  // a été reclassé « loup doré d'Afrique » par les zoologues — c'est lui que
+  // l'arabe maghrébin nomme « dib » et que le français d'ici appelle « loup ».
+  // Quelqu'un qui cherche « loup » doit tomber sur ce mot-là.
+  n(
+    'Uccen',
+    ['Le chacal', 'Le loup'],
+    'animaux',
+    'Le personnage des contes kabyles : rusé, et toujours puni. C’est aussi le seul « loup » d’Afrique du Nord — les zoologues ont reclassé l’ancien chacal doré en loup doré d’Afrique.',
+  ),
   n('Izem', 'Le lion', 'animaux'),
   n('Insi', 'Le hérisson', 'animaux'),
   n('Ilef', 'Le sanglier', 'animaux'),

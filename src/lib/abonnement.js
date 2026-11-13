@@ -179,6 +179,15 @@ export function uniteOuverte(indexUnite, etat) {
  * @param {object|null} etat            ce que `etatAbonnement()` a rendu
  */
 export function entreeDicoOuverte(entree, etat) {
+  // Un mot du dictionnaire étendu (data/lexique/) n'est enseigné par aucune
+  // leçon : il n'est donc dans aucune unité, et surtout dans aucune unité
+  // LIBRE. Il suit la règle générale — ouvert aux abonnés, ouvert aussi tant
+  // que le serveur n'a pas dit non. C'est ce lot qui fait le gros du volume,
+  // et c'est lui qu'on vend.
+  if (entree && entree.enseigne === false) {
+    if (!etat) return true
+    return etat.abonne === true
+  }
   return uniteOuverte(entree?.uniteIndex ?? 0, etat)
 }
 

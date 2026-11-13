@@ -203,6 +203,7 @@
     <button role="tab" data-vue="enregistrements" aria-selected="false">Enregistrements</button>
     <button role="tab" data-vue="validation" aria-selected="false">À valider</button>
     <button role="tab" data-vue="dictionnaire" aria-selected="false">Dictionnaire</button>
+    <button role="tab" data-vue="contenu" aria-selected="false">Synthèse</button>
   </nav>
 
   <main id="vue"><div class="message">· · ·</div></main>
@@ -324,7 +325,18 @@ function retention(label, base, revenus) {
 /* Vue « Usage »                                                        */
 /* ------------------------------------------------------------------ */
 
-const LANGUES = { kab: 'Kabyle', rif: 'Tarifit', shi: 'Tachelhit', tzm: 'Tamazight (Atlas)', zgh: 'Amazighe standard' }
+/*
+  Le nom des cours vient désormais du SERVEUR (`nom` sur les lignes de
+  statistiques, `langNom` sur les retours) : lui seul peut importer
+  src/data/languages.js, et une table recopiée à la main dérive. Elle a
+  d'ailleurs dérivé — le parcours d'essai « kab-beta » s'affichait en code
+  brut, faute d'une ligne ajoutée ici.
+
+  Ce qui suit n'est plus qu'un FILET : il sert si l'API n'a pas encore été
+  redéployée. Il n'a pas à être tenu à jour ; un code brut affiché vaut
+  mieux qu'une case vide, et le vrai nom arrive dès le déploiement suivant.
+*/
+const LANGUES = { kab: 'Kabyle', 'kab-beta': 'Kabyle — Le voyage', rif: 'Tarifit', shi: 'Tachelhit', tzm: 'Tamazight (Atlas)', zgh: 'Amazighe standard' }
 
 async function vueUsage() {
   const d = await api('stats')
@@ -357,7 +369,7 @@ async function vueUsage() {
           el('thead', {}, el('tr', {}, el('th', {}, 'Cours'), el('th', {}, 'Part'), el('th', { class: 'n' }, 'Leçons'))),
           el('tbody', {}, (d.parLangue || []).map((l) =>
             el('tr', {},
-              el('td', {}, LANGUES[l.lang] || l.lang),
+              el('td', {}, l.nom || LANGUES[l.lang] || l.lang),
               el('td', { style: 'width:50%' },
                 el('div', { class: 'barre' }, el('i', { style: `width:${pourcent(l.lecons, totalLecons)}%` }))),
               el('td', { class: 'n' }, nombre(l.lecons)))))))
@@ -449,7 +461,7 @@ async function vueRetours() {
           el('span', { style: 'font-size:17px' }, HUMEURS[f.mood] || '•'),
           el('span', { class: `puce ${f.status === 'traite' ? 'actif' : f.status === 'vu' ? 'essai' : 'attente'}` }, f.status),
           f.category ? el('span', {}, f.category) : null,
-          f.lang ? el('span', {}, LANGUES[f.lang] || f.lang) : null,
+          f.lang ? el('span', {}, f.langNom || LANGUES[f.lang] || f.lang) : null,
           el('span', {}, new Date(f.created_at).toLocaleString('fr-FR')),
           f.email ? el('span', {}, f.email) : el('span', {}, 'anonyme')),
         f.message ? el('p', { class: 'msg' }, f.message) : el('p', { class: 'msg muet' }, '(emoji seul, sans texte)'),
@@ -1466,6 +1478,66 @@ async function vueDictionnaire() {
 /* Aiguillage                                                           */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Vue « Contenu » — l'état de ce qu'on enseigne, et ce qui attend     */
+/* une décision. Le seul onglet qui ne parle pas des élèves.           */
+/* ------------------------------------------------------------------ */
+
+async function vueContenu() {
+  const d = await api('contenu')
+  const emp = d.emprunts || {}
+  const origines = Object.entries(emp.parOrigine || {})
+    .map(([o, n]) => `${n} ${o}`)
+    .join(' · ')
+
+  return [
+    el('h2', {}, 'Le dictionnaire'),
+    el('div', { class: 'grille' },
+      carte(d.total, 'Mots en tout'),
+      carte(d.enseignes, 'Enseignés par une leçon', 'Ils ouvrent la liste des enregistrements : ce sont eux que l’app fait entendre.'),
+      carte(d.etendus, 'Dictionnaire seul', 'Pas encore dans le parcours. À relire d’abord ; ils viennent APRÈS les mots enseignés dans les enregistrements.'),
+      carte(emp.total, 'Emprunts', origines)),
+
+    el('h2', {}, 'Par cours'),
+    el('div', { class: 'defiler' }, el('table', {},
+      el('thead', {}, el('tr', {},
+        el('th', {}, 'Cours'), el('th', { class: 'n' }, 'Mots'),
+        el('th', { class: 'n' }, 'Enseignés'), el('th', { class: 'n' }, 'Dico seul'),
+        el('th', { class: 'n' }, 'Emprunts'), el('th', { class: 'n' }, 'Étymologies'),
+        el('th', { class: 'n' }, 'Discutées'), el('th', { class: 'n' }, 'Sans origine'))),
+      el('tbody', {}, (d.langues || []).map((l) =>
+        el('tr', {},
+          el('td', {}, l.nom),
+          el('td', { class: 'n' }, nombre(l.total)),
+          el('td', { class: 'n' }, nombre(l.enseignes)),
+          el('td', { class: 'n' }, nombre(l.etendus)),
+          el('td', { class: 'n' }, nombre(l.emprunts)),
+          el('td', { class: 'n' }, nombre(l.etymologies)),
+          el('td', { class: 'n' }, nombre(l.discutees)),
+          el('td', { class: 'n' }, nombre(l.sansEtymo))))))),
+    el('div', { class: 'note' },
+      '« Discutées » : les sources ne s’accordent pas — l’app le dit à l’élève. ' +
+      '« Sans origine » : l’étymologie n’est pas encore écrite, la fiche affiche qu’elle viendra.'),
+
+    el('h2', {}, `En attente d’une décision — ${nombre((d.aTrancher || []).length)}`),
+    (d.aTrancher || []).length
+      ? el('div', { class: 'defiler' }, el('table', {},
+          el('thead', {}, el('tr', {},
+            el('th', {}, 'Cours'), el('th', {}, 'Expression'),
+            el('th', {}, 'Français'), el('th', {}, 'Pourquoi'))),
+          el('tbody', {}, d.aTrancher.map((e) =>
+            el('tr', {},
+              el('td', {}, e.nom),
+              el('td', {}, e.mot),
+              el('td', {}, e.sens),
+              el('td', {}, e.raison))))))
+      : el('div', { class: 'message' }, 'Rien en attente.'),
+    el('div', { class: 'note' },
+      'Ces expressions n’affichent AUCUNE modale dans l’app tant qu’elles ne sont pas tranchées : ' +
+      'origine discutée par les sources, ou formule qui nomme Dieu — on ne propose pas de remplacer une bénédiction.'),
+  ]
+}
+
 const VUES = {
   usage: vueUsage,
   abonnements: vueAbonnements,
@@ -1473,10 +1545,11 @@ const VUES = {
   enregistrements: vueEnregistrements,
   validation: vueValidation,
   dictionnaire: vueDictionnaire,
+  contenu: vueContenu,
 }
 
 /** Les vues de contenu ont besoin de largeur ; les chiffres se lisent serrés. */
-const LARGES = new Set(['enregistrements', 'validation', 'dictionnaire'])
+const LARGES = new Set(['enregistrements', 'validation', 'dictionnaire', 'contenu'])
 
 let vueCourante = 'usage'
 
