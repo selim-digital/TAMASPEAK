@@ -258,6 +258,187 @@ son compte et sa progression ; seul l'accès est partagé. Le titulaire peut
 retirer quelqu'un, un membre peut partir de lui-même, et une résiliation libère
 les places.
 
+## À qui appartient la progression posée sur un appareil
+
+La synchronisation est une **fusion max/union** : rien ne s'y perd jamais.
+C'est sa raison d'être — et c'était aussi ce qui la rendait aveugle. Elle
+unissait deux progressions sans se demander si elles étaient de la même
+personne. Sur un téléphone où quelqu'un se déconnecte et où quelqu'un d'autre
+se connecte, elle versait donc la progression du partant dans le compte de
+l'arrivant, **puis la réécrivait sur le serveur** : leçons, gemmes, série et
+lexique changeaient de propriétaire, définitivement.
+
+Le store local porte désormais une **étiquette de propriété** — l'identifiant
+du compte avec lequel il a été réconcilié pour la dernière fois
+(`storeOwner()`, `src/lib/progress.js`). Trois cas, et trois seulement :
+
+| État de l'étiquette | Ce qui se passe à la connexion |
+| --- | --- |
+| **absente** | personne ne s'est jamais connecté ici — c'est le cas « j'ai joué sans compte puis j'en ai créé un », **on fusionne** |
+| **même compte** | un autre appareil, une autre session — **on fusionne** |
+| **autre compte** | **on ne fusionne pas** : l'arrivant reçoit sa progression telle que le serveur la connaît, et rien n'est réécrit |
+
+Deux garde-fous, pour que le remède ne soit pas pire que le mal :
+
+- **L'étiquette ne se pose qu'après une réconciliation réussie.** La poser sur
+  un échec réseau reviendrait à attribuer à l'arrivant ce qu'il n'a pas encore
+  vu, et à effacer la trace du vrai propriétaire. Serveur muet ⇒ rien ne bouge.
+- **Se déconnecter ne vide pas l'appareil.** L'écran du compte le promet en
+  toutes lettres, et un joueur sans compte doit garder sa progression. C'est
+  l'arrivée de *quelqu'un d'autre* qui écarte les données, jamais le départ —
+  et elles ne sont pas perdues pour autant, elles restent sur l'instantané
+  serveur de leur propriétaire, qui les retrouve en se reconnectant.
+
+Le verdict d'abonnement en cache est oublié en même temps : sur un téléphone
+partagé, le suivant n'hérite pas des unités ouvertes du précédent.
+
+> **Un compte déjà pollué ne se répare pas tout seul.** La fusion ayant déjà
+> eu lieu, on ne peut plus distinguer dans l'instantané ce qui venait de qui.
+> La remise à zéro (écran du compte) écrit un store vierge **sans fusion**
+> (`pushStore`) — c'est la sortie, et la seule.
+
+### Supprimer son compte : un code, jamais un lien
+
+Better Auth confirme la suppression par un lien, et son point d'arrivée
+**exige une session dans le navigateur qui l'ouvre** — sans elle, il répond
+`Failed to get user info`. Or un lien reçu par email n'atterrit presque jamais
+dans le bon contexte : les applications de messagerie ouvrent les liens dans
+**leur propre navigateur intégré**, et sur iOS une PWA installée a un stockage
+séparé de Safari. La confirmation échouait donc précisément pour les gens qui
+utilisent l'app comme elle est faite pour l'être.
+
+C'est exactement le piège déjà contourné pour la **connexion**, et la même
+règle s'applique : *le code se tape dans l'app, on n'en sort jamais*. L'email
+ne transporte plus qu'un **code à six chiffres** ; le jeton de Better Auth,
+lui, ne quitte jamais le serveur (table `suppression_codes`, une heure de
+validité, un seul code vivant par personne, consommé à la lecture). L'app
+poste le code sur `POST /api/auth/suppression` **avec sa propre session**, et
+le serveur passe la main à Better Auth (`POST /delete-user` accepte le jeton) :
+ses garde-fous, ses crochets Stripe et RGPD, sa purge de cookie jouent tels
+quels.
+
+Un code faux et un code expiré donnent volontairement la même réponse —
+distinguer les deux renseignerait qui essaie au hasard. Et un code est lié à
+**son** compte : reçu pour le sien, il ne vaut rien contre un autre.
+
+### Quand le compte disparaît pendant que l'app est ouverte
+
+Nos comptes n'ont pas de mot de passe : la suppression se confirme **par un
+clic dans un email**, donc presque toujours dans un autre contexte — un autre
+onglet, le navigateur système alors que l'app tourne en PWA (sur iOS les deux
+ont des stockages séparés), parfois un autre appareil. La page restée ouverte,
+elle, ne rechargeait jamais : elle continuait d'afficher le nom et l'email d'un
+compte qui n'existait plus.
+
+L'app revérifie donc sa session **au retour au premier plan**
+(`visibilitychange`) — le moment exact où l'on revient de sa boîte mail. La
+règle anti-boucle tient : on ne dégrade que sur un « anonyme » **explicite** du
+serveur, jamais sur une panne réseau, et la progression locale n'est effacée
+que si une suppression était en cours. Une session simplement expirée fait
+redevenir anonyme, rien de plus.
+
+L'effacement passe par `lib/tableRase.js`, qui ne connaît **aucun nom de clé** :
+il demande à chaque module d'oublier ce qui lui appartient (progression,
+session, files d'attente, verdict d'abonnement, modales d'emprunt). Une liste
+de littéraux recopiée là divergerait au premier renommage, et l'oubli serait
+alors partiel — le pire des états, puisqu'il a l'air complet.
+
+> **Le détail qui a coûté une correction.** Effacer *sur place* ne suffisait
+> pas : l'effet de sauvegarde de React réécrivait le store dans la seconde, et
+> la progression revenait dans le dos de l'effacement. La suppression recharge
+> donc vers `?compte-supprime=1`, où la table rase se fait **au chargement du
+> module**, avant que React ne remonte. C'est le test qui l'a montré, pas le
+> raisonnement.
+
+## Le backoffice — valider le contenu, enregistrer les voix
+
+`/admin.html`, réservé aux adresses listées dans `ADMIN_EMAILS`. Aux trois
+onglets de chiffres (usage, abonnements, retours) s'en ajoutent trois qui
+travaillent le **contenu** — trois regards sur une même liste, jamais trois
+listes :
+
+| Onglet | Ce qu'on y fait |
+| --- | --- |
+| **Enregistrements** | La liste de ce qu'il reste à dire, avec **quatre voix par entrée** — femme, homme, enfant fille, enfant garçon. On enregistre au micro depuis la page, ou l'on dépose le vocal reçu par messagerie. |
+| **À valider** | Les mots et expressions que personne n'a encore relus. Un locuteur natif valide, corrige, pose un doute (« à revoir ») ou rejette — en écoutant les prises, sur la même fiche. |
+| **Dictionnaire** | Tout le contenu, **entièrement modifiable** : forme retenue, français, notes, type, statut. On peut aussi ajouter une entrée qui n'est dans aucune leçon, et exporter la sélection en CSV pour l'envoyer à un relecteur. |
+
+### Publier — l'étape qui fait sortir le travail
+
+Valider ne suffisait pas : tant que la correction dormait en base, l'app
+continuait d'enseigner l'ancienne forme, et la relecture d'un locuteur natif
+n'atteignait personne avant le déploiement suivant. **Publier** est le geste qui
+la fait sortir — délibéré, jamais l'effet de bord d'une frappe au clavier.
+
+Le panneau en tête de l'onglet « À valider » montre, ligne à ligne, **ce qui va
+partir et ce que les élèves ont sous les yeux aujourd'hui**. Trois gestes
+sortent, et trois seulement :
+
+| Geste | Effet dans le dictionnaire en ligne |
+| --- | --- |
+| **correction** | l'entrée prend la forme et le sens relus |
+| **ajout** | un mot qui n'est dans aucune leçon entre au dictionnaire |
+| **retrait** | une entrée rejetée disparaît, sans attendre un déploiement |
+
+Ni « à valider » ni « à revoir » ne sortent jamais : un doute n'a rien à faire
+chez les élèves. Les colonnes `publie_*` sont un **instantané** de l'entrée au
+moment du clic, pas un miroir de la table — sans quoi une frappe malheureuse
+d'après-publication partirait sans que personne l'ait décidée. L'écart entre
+`terme` et `publie_terme` est exactement « ce qui attend d'être publié », et la
+colonne « En ligne » le dit sur chaque entrée : *en ligne · à publier · à
+republier · atelier*.
+
+Côté app, `GET /api/sync?r=dictionnaire` renvoie **la seule couche de
+corrections** — publique, anonyme, mise en cache cinq minutes au bord de
+Vercel. `src/lib/dictionnaireLive.js` va la chercher et la garde dans
+`localStorage` (au deuxième lancement, les corrections sont là même sans
+réseau) ; `appliquerCouche()` dans `src/data/dictionnaire.js` la **pose**.
+
+La pose est là, et pas dans le module de transport, pour une raison : corriger
+un mot périme tout ce qu'on en dérive — clé de recherche, tifinagh, nom du
+fichier audio, noyaux de sens qui font les cousins. Ces règles vivent dans
+`dictionnaire.js` ; les rejouer ailleurs, ce serait les écrire deux fois et
+laisser des entrées corrigées **introuvables à la recherche**. Une entrée
+publiée est donc cherchable sous sa nouvelle forme, comptée dans `STATS`, et
+reliée à ses cousins par son nouveau sens.
+
+L'écran le dit : « *N relus par des locuteurs* » en tête du dictionnaire, et la
+fiche d'un mot corrigé porte « *relu par un locuteur* » (« *ajouté par un
+locuteur* » pour une entrée qui n'est dans aucune leçon). Une correction est le
+travail de quelqu'un, pas une mise à jour silencieuse.
+
+Hors-ligne, serveur muet ou réponse illisible : on garde le contenu embarqué et
+on se tait — un dictionnaire qui refuserait de s'ouvrir faute de réseau serait
+pire que celui qui montre un mot d'avant-hier.
+
+> **Les leçons ne bougent pas.** Une correction change ce que le dictionnaire
+> *montre*, pas ce que les exercices *demandent* — un exercice dont la bonne
+> réponse changerait sous les pieds de l'élève casserait sa série. Pour
+> corriger le cours lui-même, le report dans `src/data/` reste le geste.
+
+### La règle qui gouverne tout cela
+
+**`src/data/` reste la source de vérité.** L'app embarque son contenu — c'est
+ce qui la rend hors-ligne — et une base de données ne peut pas le lui reprendre
+sans lui reprendre le hors-ligne. Le backoffice est donc un **atelier**, pas un
+second contenu : il ensemence sa table depuis `src/data/dictionnaire.js` (ou,
+tant qu'il n'est pas là, depuis le vocabulaire des cours), on y relit et on y
+enregistre, puis **on reporte les corrections dans les fichiers du cours**. La
+colonne « du cours » affiche en rouge, entrée par entrée, l'écart qui reste à
+reporter : la liste de ce travail ne se perd pas.
+
+L'ensemencement est rejoué à chaque ouverture, en une seule requête. Il est
+idempotent et **n'écrase jamais une main humaine** : il ajoute ce qui manque,
+complète un sens vide, et se tait sur le reste. Un mot ajouté à une leçon
+apparaît donc dans « à valider » sans qu'on ait rien à lancer.
+
+Les quatre voix vivent dans `lexique_audio`, en base64, une prise par voix
+(ré-enregistrer remplace). Même règle morale que partout ailleurs ici —
+**aucune IA, aucune reconstitution, aucune notation** : la voix est gardée
+telle quelle, attribuée à qui l'a prêtée, et effaçable d'un clic. Pour la faire
+entendre dans l'app, on télécharge le fichier (le nom proposé est déjà le bon,
+`<slug>-<voix>`) et on le range dans `public/audio/`.
+
 ## Architecture
 
 ```
@@ -292,13 +473,17 @@ scripts/
 ```
 api/
   billing.js         abonnements — caisse, portail, pack famille, webhook Stripe
-  admin.js           tableau de bord (?r=stats|feedbacks|revenus)
+  admin.js           tableau de bord (?r=stats|feedbacks|revenus|lexique|voix)
   distance.js        cercle, défis, demandes de voix (?r=…)
   _lib/stripe.js     client REST Stripe + vérification de signature, sans SDK
+  _lib/lexique.js    l'atelier du contenu — ensemencement depuis src/data/
+  sync.js            progression (privée) + ?r=dictionnaire (corrections publiées)
 src/
   data/tarifs.js     zones, prix, pays — source de vérité partagée app/serveur
   lib/abonnement.js  client de la caisse + le verrou (`uniteOuverte`)
+  lib/dictionnaireLive.js  la couche de corrections, posée sur le bundle
   screens/AbonnementScreen.jsx
+public/admin.html    le backoffice, en HTML nu, hors du bundle des élèves
 ```
 
 > **Le plafond de douze fonctions.** Le plan Vercel Hobby n'accepte que douze
@@ -329,7 +514,11 @@ src/
 
 ## Reste à faire
 
-- Validation du vocabulaire et des enregistrements par des locuteurs natifs
+- Validation du vocabulaire et des enregistrements par des locuteurs natifs —
+  l'outil existe (voir « Le backoffice » ci-dessus), le travail reste à faire
+- Faire entendre les quatre voix dans l'app : aujourd'hui la couche audio
+  (`src/lib/audio.js`) ne connaît qu'un enregistrement par mot, et le
+  backoffice n'exporte donc qu'un fichier à ranger à la main
 - Comptes et synchronisation (Supabase) — la couche `lib/progress.js` est isolée
   pour être remplaçable
 - Étoffer les cours autres que le kabyle

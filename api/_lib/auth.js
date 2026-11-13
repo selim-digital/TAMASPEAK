@@ -19,6 +19,7 @@
  * L'instance est créée PARESSEUSEMENT : sans DATABASE_URL le module se
  * charge sans rien initialiser, et l'endpoint répond 503 (voir db.js).
  */
+import { randomInt } from 'node:crypto'
 import { betterAuth } from 'better-auth'
 import { magicLink, emailOTP } from 'better-auth/plugins'
 import { Pool } from '@neondatabase/serverless'
@@ -62,19 +63,36 @@ export function auth() {
     user: {
       deleteUser: {
         enabled: true,
-        sendDeleteAccountVerification: async ({ user, url }) => {
+        /**
+         * UN CODE, PAS UN LIEN — et c'est tout le sujet.
+         *
+         * Le point d'arrivée du lien de Better Auth exige une session dans le
+         * navigateur qui l'ouvre ; sans elle il répond « Failed to get user
+         * info ». Or un lien reçu par email n'atterrit presque jamais dans le
+         * bon contexte : les applications de messagerie ouvrent les liens
+         * dans LEUR navigateur intégré, et sur iOS une PWA installée a un
+         * stockage séparé de Safari. La confirmation échouait donc pile pour
+         * les gens qui utilisent l'app comme elle est faite pour l'être.
+         *
+         * Même piège, même remède que pour la connexion : LE CODE SE TAPE
+         * DANS L'APP, ON N'EN SORT JAMAIS. L'app garde sa session, l'email
+         * prouve la boîte, et le jeton ne quitte jamais le serveur.
+         */
+        sendDeleteAccountVerification: async ({ user, url, token }) => {
+          const code = await poserCodeSuppression(user.id, token)
           const ok = await sendEmail({
             to: user.email,
-            subject: 'Confirme la suppression de ton compte Tama Speak',
+            subject: `${code} — confirme la suppression de ton compte Tama Speak`,
             template: 'confirmer-suppression',
-            data: { name: user.name, url },
+            data: { name: user.name, code },
           })
           if (!ok) {
             // Vécu par Selim : l'email refusé (quota) laissait l'app dire
             // « email envoyé » — un mensonge sur un droit RGPD. On échoue
             // FRANCHEMENT : le client affichera « réessaie », pas « vérifie
-            // ta boîte ». Le lien reste en log pour un dépannage manuel.
-            console.log(`[tama] lien de suppression pour ${user.email} : ${url}`)
+            // ta boîte ». Le code reste en log pour un dépannage manuel ;
+            // le lien aussi, il dépanne encore depuis le bon navigateur.
+            console.log(`[tama] code de suppression pour ${user.email} : ${code} (lien : ${url})`)
             throw new Error('email de confirmation refusé (quota ou panne Resend)')
           }
         },
@@ -208,6 +226,50 @@ export async function sessionOf(req) {
     console.error('[tama] sessionOf en échec — panne technique, pas une déconnexion :', e?.message || e)
     return null
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Le pont code ↔ jeton de suppression                                 */
+/*                                                                      */
+/* Le jeton de Better Auth fait 32 caractères : illisible au téléphone, */
+/* et personne ne le recopie sans faute. On envoie donc SIX CHIFFRES —  */
+/* la même forme que le code de connexion, déjà familière — et on garde */
+/* la correspondance ici. Le jeton, lui, ne quitte jamais le serveur.    */
+/* ------------------------------------------------------------------ */
+
+/** Six chiffres, tirés du générateur cryptographique — pas de Math.random. */
+const codeSixChiffres = () => String(randomInt(0, 1_000_000)).padStart(6, '0')
+
+/**
+ * Range le code et son jeton, et RETIRE le précédent : un code lu dans un
+ * vieil email ne doit pas effacer un compte que son propriétaire a
+ * entre-temps décidé de garder.
+ */
+export async function poserCodeSuppression(userId, token) {
+  const { sql, assurerSchema } = await import('./db.js')
+  await assurerSchema()
+  const code = codeSixChiffres()
+  await sql()`DELETE FROM suppression_codes WHERE user_id = ${userId}`
+  await sql()`
+    INSERT INTO suppression_codes (code, token, user_id, expires_at)
+    VALUES (${code}, ${token}, ${userId}, NOW() + INTERVAL '1 hour')`
+  return code
+}
+
+/**
+ * Le jeton correspondant à un code, pour CETTE personne — ou null.
+ *
+ * Le code est lié au compte connecté : sans cela, quelqu'un qui a reçu un
+ * code pour son propre compte pourrait tenter de le jouer contre un autre.
+ * Il est consommé à la lecture (un code ne sert qu'une fois).
+ */
+export async function consommerCodeSuppression(userId, code) {
+  const { sql } = await import('./db.js')
+  const [ligne] = await sql()`
+    DELETE FROM suppression_codes
+    WHERE user_id = ${userId} AND code = ${String(code).trim()} AND expires_at > NOW()
+    RETURNING token`
+  return ligne?.token || null
 }
 
 /** L'admin est une liste d'emails dans ADMIN_EMAILS (séparés par virgules). */

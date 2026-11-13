@@ -127,6 +127,27 @@ export async function scorerDefi({ code, correct, total }) {
   return r?.ok ? { correct: r.scoreCreateur, total: r.totalCreateur } : null
 }
 
+/* ---------------- Mémory en direct (tour par tour) ---------------- */
+
+/** Mes parties (ouvertes d'abord). @returns {{parties:[...]} | null} */
+export const mesPartiesMemory = () => get({ r: 'memory' })
+
+/** Une partie précise — l'appel de SONDAGE (toutes les ~3 s en attente). */
+export const partieMemory = (id) => get({ r: 'memory', id }).then((r) => r?.partie || null)
+
+/** Invite un membre du cercle : crée (ou retrouve) la partie. */
+export async function creerPartieMemory({ pour, lang, paires = 8 }) {
+  const r = await post('memory', { action: 'creer', pour, lang, paires })
+  return r?.ok ? r.partie : null
+}
+
+/** Joue deux cartes (indices du tapis). @returns la partie à jour, ou {erreur} */
+export async function jouerMemory({ id, cartes }) {
+  const r = await post('memory', { action: 'jouer', id, cartes })
+  if (!r) return null
+  return r.ok ? r.partie : { erreur: r.erreur }
+}
+
 /* ---------------- notifications serveur ---------------- */
 
 /** @returns {Array<{id,srvId,kind,title,body,data,lue}>} jamais null : [] si muet */

@@ -1,7 +1,18 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { Akermus } from '../components/mascots/Akermus.jsx'
-import { chercher, cousins, synonymes, entree, STATS, VEDETTES, ORIGINES, TYPES } from '../data/dictionnaire.js'
+import {
+  chercher,
+  cousins,
+  synonymes,
+  entree,
+  STATS,
+  VEDETTES,
+  ORIGINES,
+  TYPES,
+  appliquerCouche,
+} from '../data/dictionnaire.js'
+import { chargerCorrections, coucheEnCache, compteCorrections } from '../lib/dictionnaireLive.js'
 import { SOURCES } from '../data/emprunts.js'
 import { versLatin } from '../lib/translit.js'
 import { entreeDicoOuverte } from '../lib/abonnement.js'
@@ -144,6 +155,14 @@ function Fiche({ e, onMot }) {
             {!e.enseigne && (
               <span className="rounded-full bg-coral/12 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-coral-dark">
                 Pas encore dans les leçons
+              </span>
+            )}
+            {/* Ce que le bundle ne savait pas encore : la forme vient d'une
+                relecture publiée depuis le backoffice. Le dire évite qu'on
+                croie l'app en désaccord avec elle-même. */}
+            {(e.corrigee || e.ajoutee) && (
+              <span className="rounded-full bg-turquoise/15 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-turquoise-dark">
+                {e.ajoutee ? 'ajouté par un locuteur' : 'relu par un locuteur'}
               </span>
             )}
           </div>
@@ -319,9 +338,36 @@ export function DictionnaireScreen({ abonnement, onAbonnement, onBack }) {
   const [filtre, setFiltre] = useState('') // '' = toutes les langues
   const [selectionId, setSelectionId] = useState(null)
 
-  const resultats = useMemo(() => chercher(q, { lang: filtre || undefined }), [q, filtre])
+  /**
+   * Les corrections publiées depuis le backoffice — la relecture des
+   * locuteurs natifs, arrivée sans attendre un déploiement.
+   *
+   * La couche du cache est posée DÈS LE PREMIER RENDU (dans l'initialiseur
+   * d'état) : la poser dans un effet ferait clignoter l'ancienne forme le
+   * temps d'un battement. Le réseau, lui, ne fait que rafraîchir — et son
+   * échec ne change rien, le dictionnaire embarqué suffit.
+   */
+  const [couche, setCouche] = useState(() => {
+    const c = coucheEnCache()
+    appliquerCouche(c)
+    return c
+  })
+  useEffect(() => {
+    let vivant = true
+    chargerCorrections().then((c) => {
+      if (!vivant) return
+      appliquerCouche(c)
+      setCouche(c)
+    })
+    return () => {
+      vivant = false
+    }
+  }, [])
+
+  const resultats = useMemo(() => chercher(q, { lang: filtre || undefined }), [q, filtre, couche])
   const selection = selectionId ? entree(selectionId) : null
   const total = STATS.reduce((n, s) => n + s.total, 0)
+  const relues = compteCorrections(couche)
 
   function ouvrir(e) {
     sfx.click()
@@ -361,7 +407,16 @@ export function DictionnaireScreen({ abonnement, onAbonnement, onBack }) {
           ←
         </button>
         <h1 className="text-[17px] font-extrabold tracking-tight">Dictionnaire</h1>
-        <span className="ml-auto text-[11px] font-bold tabular-nums text-ink-soft">{total} mots</span>
+        <span className="ml-auto text-right text-[11px] font-bold tabular-nums text-ink-soft">
+          {total} mots
+          {/* Une correction venue d'un locuteur natif se DIT : elle est le
+              travail de quelqu'un, pas une mise à jour silencieuse. */}
+          {relues > 0 && (
+            <span className="block text-[9.5px] font-extrabold uppercase tracking-wide text-turquoise-dark">
+              {relues} relu{relues > 1 ? 's' : ''} par des locuteurs
+            </span>
+          )}
+        </span>
       </div>
 
       <div className="px-4 pt-2">
