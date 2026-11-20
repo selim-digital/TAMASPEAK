@@ -65,7 +65,7 @@
 | 48 | **Baba** | Père | mot | amazigh | `baba.mp3` | l14 l15 l17 |
 | 49 | **D acu-yagi ?** | Qu’est-ce que c’est ? | expression | amazigh | `d-acu-yagi.mp3` | l44 |
 | 50 | **Ečč !** | Mange ! | expression | amazigh | `ecc.mp3` | l43 l45 |
-| 51 | **Ɛumm !** | Nage ! | expression | arabe | `eumm.mp3` | l51 |
+| 51 | **Ɛumm !** | Nage ! / Nager | expression | arabe | `eumm.mp3` | l51 |
 | 52 | **Gma** | Frère | mot | amazigh | `gma.mp3` | l14 l15 |
 | 53 | **Iḍ** | Nuit | mot | amazigh | `id.mp3` | l39 l40 |
 | 54 | **Iḍelli** | Hier | mot | amazigh | `idelli.mp3` | l41 |
@@ -307,6 +307,32 @@
 | 47 | **ⵣ** | z | lettre | amazigh | — | zgh4 |
 | 48 | **ⵥ** | ẓ | lettre | amazigh | — | zgh6 |
 
+## Dictionnaire étendu — les candidats leçon
+
+> 267 mots que le dictionnaire connaît et qu'**aucune leçon n'enseigne encore** (`src/data/lexique/`). Ils ne sont PAS à enregistrer : ils n'auront de fichier audio que le jour où une unité les reprendra. C'est ici qu'on pioche pour écrire la suite du parcours, plutôt que d'inventer.
+
+### Kabyle (267)
+
+| Thème | Mots | Nombre |
+| --- | --- | ---: |
+| Les paroles | A tasa-w · Ansi i d-tekkiḍ ? · Ar timlilit · D acu i d isem-ik ? · D tidet · Ɛawen-iyi · Isem-iw… · Ma ulac aɣilif · Ṣbeḥ lxir · Ur ẓriɣ ara · Yerbeḥ | 11 |
+| Les gens | Aberrani · Aɣerfan · Ajar · Amdakkel · Amɣar · Anebgi · Medden · Tajart · Tamdakkelt | 9 |
+| Le village & la ville | Abrid · Aɣbalu · Aɣerbaz · Aqbu · Lǧameɛ · Tajmaɛt · Tala · Tamdint | 8 |
+| Le corps | Acebbub · Aḍad · Aɛebbuḍ · Afud · Aglim · Aksum · Allen · Ameẓẓuɣ · Amgerḍ · Anzaren · Aẓar · Idammen · Idis · Iɣes · Iɣil · Iles · Imi · Tasa · Tayett · Tiṭ · Tuɣmas · Udem | 22 |
+| Les mots-outils | Acḥal · Acu · Akk · Akked · Amek · Anda · Anta · Anwa · Aṭas · Ayɣer · Cwiṭ · Dagi · Daɣen · Ddaw · Deffir · Deg · Dihin · Gar · Ɣef · Ihi · Imir · Kra · Maca · Mačči · Neɣ · Seg · Sennig · Sya · Ulac · Yal · Yella · Zdat · Zik | 33 |
+| La nature | Adrar · Aggur · Aɣanim · Akal · Aseklu · Asɣar · Asif · Azaɣar · Aẓru · Igenni · Ijeǧǧigen · Itran · Itri · Lebḥer · Tamurt · Tiɣilt · Ttejra · Tuga | 18 |
+| La famille | Adrum · Ayetma · Ɛemmi · Ɛemti · Isli · Jeddi · Mmi · Setti · Tarwa · Tawacult · Tislit · Xali · Xalti · Yelli · Yessetma | 15 |
+| Les animaux | Afrux · Agḍiḍ · Aqjun · Aserdun · Ayaziḍ · Ayis · Azger · Azrem · Ifis · Ikerri · Ilef · Insi · Izem · Izi · Taɣaṭ · Tasekkurt · Tayaziṭ · Tazizwit · Tixsi · Uccen | 20 |
+| Les nombres | Agim · Ɛecṛa · Meyya · Mraw · Sa · Sḍis · Tam · Tẓa | 8 |
+| Les qualités | Aɣezzfan · Ajdid · Ameqqran · Ameṛkanti · Amerẓag · Ameẓyan · Aqbur · Areqqaq · Awezlan · Aẓawali · Azedgan · Aẓidan · Azuran | 13 |
+| Manger & boire | Aɣi · Ibawen · Ifelfel · Imekli · Imensi · Lbeṣel · Lefṭur · Lmelḥ · Seksu · Tamellalt · Tazart · Tibexsisin · Tibḥirt · Tiyni · Tiẓurin · Udi · Zzit | 17 |
+| Le travail | Aḥeddad · Ameksa · Ameqyas · Anejjar · Aqendur · Aselham · Axemmas · Aẓeṭṭa · Ssnaɛa · Ssuma · Tabzimt · Tacacit | 12 |
+| La maison | Ajenwi · Akursi · Amrar · Lḥiḍ · Lkaɣeḍ · Lkanun · Ssqef · Tabaqit · Tafat · Taɣenǧawt · Taqbuct · Tasumta · Tazeqqa · Tillas · Times · Tissegnit · Ṭṭabla · Usu | 18 |
+| Les verbes | Ali · Amen · Aru · Awi · Bdu · Bɣu · Bnu · Cfu · Ddem · Ddu · Diri · Efk · Erǧu · Err · Ɛreḍ · Fak · Ffeɣ · Fhem · Ɣer · Ɣiwel · Ḥemmel · Ḥmu · Ili · Ini · Issin · Kcem · Kker · Krez · Lhu · Lḥu · Meslay · Muqel · Qqim · Sel · Semmeḍ · Sers · Sɛu · Sɣ · Sired · Ssiwel · Ssuter · Steqsi · Ṣubb · Suref · Ṭṭes · Ttu · Uɣal · Uẓum · Wet · Ẓall · Ẓer · Zzenz · Ẓẓu | 53 |
+| Les couleurs | Aqehwi · Azerwal | 2 |
+| Le temps qu’il fait | Asemmiḍ · Azɣal · Tignewt | 3 |
+| Le temps qui passe | Imalas · Ssmana · Tasaɛet · Useggas · Yennayer | 5 |
+
 ## Étymologies — la couche écrite à la main
 
 > `src/data/etymologies.js`. C’est la SEULE partie du dictionnaire qui ne soit pas dérivée du contenu des cours : elle est à valider ligne par ligne. « Discuté » signale que les sources ne s’accordent pas — l’app l’affiche alors à l’élève.
@@ -525,6 +551,30 @@
 | --- | --- | --- | --- | :-: | :-: |
 | **Atay** | kab | — | Venu de Chine par l’arabe maghrébin. Le mot a voyagé avec la boisson : il n’y a pas de thé amazigh plus ancien que lui. |  | ☐ |
 | **Idrimen** | kab | — | Arrivé par l’arabe « dirham », lui-même venu du grec « drachmê » : trois langues pour une pièce de monnaie. |  | ☐ |
+
+### Sans étymologie — à écrire (267)
+
+Le dictionnaire affiche pour ces entrées : « L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur ou un linguiste, bi-idniLlah. »
+
+**Kabyle** (267)
+
+- *Les paroles* — A tasa-w · Ansi i d-tekkiḍ ? · Ar timlilit · D acu i d isem-ik ? · D tidet · Ɛawen-iyi · Isem-iw… · Ma ulac aɣilif · Ṣbeḥ lxir · Ur ẓriɣ ara · Yerbeḥ
+- *Les gens* — Aberrani · Aɣerfan · Ajar · Amdakkel · Amɣar · Anebgi · Medden · Tajart · Tamdakkelt
+- *Le village & la ville* — Abrid · Aɣbalu · Aɣerbaz · Aqbu · Lǧameɛ · Tajmaɛt · Tala · Tamdint
+- *Le corps* — Acebbub · Aḍad · Aɛebbuḍ · Afud · Aglim · Aksum · Allen · Ameẓẓuɣ · Amgerḍ · Anzaren · Aẓar · Idammen · Idis · Iɣes · Iɣil · Iles · Imi · Tasa · Tayett · Tiṭ · Tuɣmas · Udem
+- *Les mots-outils* — Acḥal · Acu · Akk · Akked · Amek · Anda · Anta · Anwa · Aṭas · Ayɣer · Cwiṭ · Dagi · Daɣen · Ddaw · Deffir · Deg · Dihin · Gar · Ɣef · Ihi · Imir · Kra · Maca · Mačči · Neɣ · Seg · Sennig · Sya · Ulac · Yal · Yella · Zdat · Zik
+- *La nature* — Adrar · Aggur · Aɣanim · Akal · Aseklu · Asɣar · Asif · Azaɣar · Aẓru · Igenni · Ijeǧǧigen · Itran · Itri · Lebḥer · Tamurt · Tiɣilt · Ttejra · Tuga
+- *La famille* — Adrum · Ayetma · Ɛemmi · Ɛemti · Isli · Jeddi · Mmi · Setti · Tarwa · Tawacult · Tislit · Xali · Xalti · Yelli · Yessetma
+- *Les animaux* — Afrux · Agḍiḍ · Aqjun · Aserdun · Ayaziḍ · Ayis · Azger · Azrem · Ifis · Ikerri · Ilef · Insi · Izem · Izi · Taɣaṭ · Tasekkurt · Tayaziṭ · Tazizwit · Tixsi · Uccen
+- *Les nombres* — Agim · Ɛecṛa · Meyya · Mraw · Sa · Sḍis · Tam · Tẓa
+- *Les qualités* — Aɣezzfan · Ajdid · Ameqqran · Ameṛkanti · Amerẓag · Ameẓyan · Aqbur · Areqqaq · Awezlan · Aẓawali · Azedgan · Aẓidan · Azuran
+- *Manger & boire* — Aɣi · Ibawen · Ifelfel · Imekli · Imensi · Lbeṣel · Lefṭur · Lmelḥ · Seksu · Tamellalt · Tazart · Tibexsisin · Tibḥirt · Tiyni · Tiẓurin · Udi · Zzit
+- *Le travail* — Aḥeddad · Ameksa · Ameqyas · Anejjar · Aqendur · Aselham · Axemmas · Aẓeṭṭa · Ssnaɛa · Ssuma · Tabzimt · Tacacit
+- *La maison* — Ajenwi · Akursi · Amrar · Lḥiḍ · Lkaɣeḍ · Lkanun · Ssqef · Tabaqit · Tafat · Taɣenǧawt · Taqbuct · Tasumta · Tazeqqa · Tillas · Times · Tissegnit · Ṭṭabla · Usu
+- *Les verbes* — Ali · Amen · Aru · Awi · Bdu · Bɣu · Bnu · Cfu · Ddem · Ddu · Diri · Efk · Erǧu · Err · Ɛreḍ · Fak · Ffeɣ · Fhem · Ɣer · Ɣiwel · Ḥemmel · Ḥmu · Ili · Ini · Issin · Kcem · Kker · Krez · Lhu · Lḥu · Meslay · Muqel · Qqim · Sel · Semmeḍ · Sers · Sɛu · Sɣ · Sired · Ssiwel · Ssuter · Steqsi · Ṣubb · Suref · Ṭṭes · Ttu · Uɣal · Uẓum · Wet · Ẓall · Ẓer · Zzenz · Ẓẓu
+- *Les couleurs* — Aqehwi · Azerwal
+- *Le temps qu’il fait* — Asemmiḍ · Azɣal · Tignewt
+- *Le temps qui passe* — Imalas · Ssmana · Tasaɛet · Useggas · Yennayer
 
 ## Emprunts — les modales du cours
 

@@ -7,6 +7,9 @@
  *   ?r=lexique    GET    le contenu à valider / à enregistrer (+ export CSV)
  *                 POST   ajouter une entrée · PATCH corriger · DELETE retirer
  *   ?r=voix       GET    relire un enregistrement · POST déposer · DELETE effacer
+ *   ?r=contenu    GET    la synthèse du contenu — par cours : enseignés, dico
+ *                        seul, emprunts, étymologies ; et ce qui attend une
+ *                        décision. Calculée depuis src/data, sans SQL.
  *
  * Pourquoi réunies : le plan Vercel Hobby plafonne à DOUZE fonctions
  * serverless. `api/admin/stats.js` et `api/admin/feedbacks.js` en occupaient
@@ -33,6 +36,77 @@ import {
   semer,
   slug,
 } from './_lib/lexique.js'
+import { LANGUAGES } from '../src/data/languages.js'
+
+/**
+ * Le nom lisible d'un cours, résolu ICI et envoyé au tableau de bord.
+ *
+ * Pourquoi le serveur et pas la page : `public/admin.html` est du HTML nu,
+ * sans build ni import — elle tenait donc sa propre table de noms, copiée à
+ * la main. Elle a dérivé dès la première langue ajoutée : le parcours d'essai
+ * « kab-beta » s'y affichait en code brut, parce que personne n'avait pensé
+ * à recopier la ligne. Même règle que les tarifs (voir api/billing.js, qui
+ * importe src/data/tarifs.js) : une seule source de vérité, du côté qui peut
+ * l'importer.
+ */
+const nomDuCours = (id) => LANGUAGES.find((l) => l.id === id)?.name || id
+
+/* ------------------------------------------------------------------ */
+/* ?r=contenu — l'état du contenu, sans toucher la base                 */
+/*                                                                      */
+/* Le seul tableau qui ne parle pas des élèves mais de ce qu'on leur    */
+/* enseigne : combien de mots, combien viennent des leçons, combien du  */
+/* dictionnaire étendu, combien d'étymologies écrites, et surtout ce    */
+/* qui ATTEND une décision. C'est le suivi de validation, jusqu'ici     */
+/* lisible seulement dans lexique.md, donc seulement sur un ordinateur. */
+/*                                                                      */
+/* Aucune requête SQL ici : tout se calcule depuis src/data, qui est du */
+/* code. La route reste derrière le contrôle admin comme les autres —   */
+/* ce n'est pas secret, mais le tableau de bord est un tout.            */
+/* ------------------------------------------------------------------ */
+
+async function contenu(res) {
+  // Import différé : ces modules tirent tout le contenu des cours. Les
+  // charger à froid pour un appel `?r=stats` serait payer sans rien devoir.
+  const [{ ENTREES, ORDRE_LANGUES }, { EMPRUNTS, A_TRANCHER }] = await Promise.all([
+    import('../src/data/dictionnaire.js'),
+    import('../src/data/emprunts.js'),
+  ])
+
+  const langues = ORDRE_LANGUES.map((lang) => {
+    const l = ENTREES.filter((e) => e.lang === lang)
+    const avecEtymo = l.filter((e) => e.etymologie)
+    return {
+      lang,
+      nom: nomDuCours(lang),
+      total: l.length,
+      enseignes: l.filter((e) => e.enseigne).length,
+      etendus: l.filter((e) => !e.enseigne).length,
+      expressions: l.filter((e) => e.categorie === 'expression').length,
+      emprunts: l.filter((e) => e.emprunt).length,
+      etymologies: avecEtymo.length,
+      discutees: avecEtymo.filter((e) => e.etymologie.discute).length,
+      sansEtymo: l.length - avecEtymo.length,
+    }
+  })
+
+  const tousEmprunts = Object.values(EMPRUNTS).flat()
+  const parOrigine = {}
+  for (const e of tousEmprunts) {
+    const o = e.origine || 'arabe'
+    parOrigine[o] = (parOrigine[o] || 0) + 1
+  }
+
+  return res.status(200).json({
+    total: ENTREES.length,
+    enseignes: ENTREES.filter((e) => e.enseigne).length,
+    etendus: ENTREES.filter((e) => !e.enseigne).length,
+    langues,
+    emprunts: { total: tousEmprunts.length, parOrigine },
+    // Ce qui attend Selim : les expressions dont l'origine n'est pas tranchée.
+    aTrancher: A_TRANCHER.map((e) => ({ lang: e.lang, nom: nomDuCours(e.lang), mot: e.mot, sens: e.sens, raison: e.raison })),
+  })
+}
 
 /* ------------------------------------------------------------------ */
 /* ?r=stats — les chiffres qui disent si l'app apprend réellement       */
@@ -50,10 +124,11 @@ async function stats(res) {
       COUNT(DISTINCT user_id) FILTER (WHERE at > NOW() - INTERVAL '30 days')::int AS j30
     FROM events`
 
-  const parLangue = await q`
+  const parLangueBrut = await q`
     SELECT lang, COUNT(*)::int AS lecons
     FROM events WHERE type = 'lesson_completed' AND lang IS NOT NULL
     GROUP BY lang ORDER BY lecons DESC`
+  const parLangue = parLangueBrut.map((r) => ({ ...r, nom: nomDuCours(r.lang) }))
 
   const courbe = await q`
     SELECT DATE(at) AS jour, COUNT(DISTINCT user_id)::int AS actifs, COUNT(*)::int AS evenements
@@ -147,7 +222,9 @@ async function feedbacks(req, res) {
                     WHERE f.status = ${statut} ORDER BY f.created_at DESC LIMIT 100`
       : await sql()`SELECT f.*, u."email" FROM feedbacks f LEFT JOIN "user" u ON u.id = f.user_id
                     ORDER BY f.created_at DESC LIMIT 100`
-    return res.status(200).json({ feedbacks: rows })
+    // Même raison qu'aux statistiques : le nom du cours se résout ici, où
+    // src/data/languages.js est importable.
+    return res.status(200).json({ feedbacks: rows.map((f) => ({ ...f, langNom: f.lang ? nomDuCours(f.lang) : null })) })
   }
 
   if (req.method === 'PATCH') {
@@ -576,6 +653,10 @@ export default async function handler(req, res) {
     return revenus(res)
   }
   if (r === 'feedbacks') return feedbacks(req, res)
+  if (r === 'contenu') {
+    if (req.method !== 'GET') return res.status(405).json({ error: 'méthode non autorisée' })
+    return contenu(res)
+  }
   if (r === 'lexique' || r === 'voix' || r === 'publier') {
     // Les tables de l'atelier sont les dernières arrivées du schéma : sur une
     // base installée avant le backoffice de contenu, elles n'existent pas
