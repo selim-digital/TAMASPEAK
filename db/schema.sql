@@ -334,6 +334,24 @@ CREATE TABLE IF NOT EXISTS suppression_codes (
 -- que son propriétaire a entre-temps décidé de garder.
 CREATE UNIQUE INDEX IF NOT EXISTS suppression_codes_user ON suppression_codes (user_id);
 
+-- La clé étrangère qui MANQUAIT — relevé par l'audit des données. Sans elle,
+-- une suppression aboutie par un autre chemin que le code (l'ancien lien,
+-- encore dans de vieux emails) laissait derrière elle une ligne et son jeton,
+-- pour un compte qui n'existait plus. Ajoutée après coup : la table était
+-- déjà en production, donc `CREATE TABLE IF NOT EXISTS` ne la toucherait
+-- jamais. Postgres ne connaît pas `ADD CONSTRAINT IF NOT EXISTS` — d'où ce
+-- bloc, rejouable sans effet. Les orphelins sont purgés AVANT la pose, sans
+-- quoi la contrainte serait refusée par les lignes qu'elle vient corriger.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'suppression_codes_user_fk') THEN
+    DELETE FROM suppression_codes WHERE user_id NOT IN (SELECT "id" FROM "user");
+    ALTER TABLE suppression_codes
+      ADD CONSTRAINT suppression_codes_user_fk
+      FOREIGN KEY (user_id) REFERENCES "user"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
+
 -- ------------------------------------------------------------------
 -- LE LEXIQUE — l'atelier du contenu : valider, corriger, enregistrer.
 --

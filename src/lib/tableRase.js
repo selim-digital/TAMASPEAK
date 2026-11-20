@@ -22,6 +22,7 @@ import { resetStore } from './progress.js'
 import { oublierSession } from './api.js'
 import { oublierAbonnement } from './abonnement.js'
 import { oublierEmprunts } from './emprunts.js'
+import { oublierVoix } from './speakerVoice.js'
 import { lire, ecrire, effacer } from './storage.js'
 
 const CLE_SUPPR = 'tama-speak:suppression-demandee'
@@ -37,8 +38,14 @@ export const noterSuppression = (valeur) =>
   valeur ? ecrire(CLE_SUPPR, valeur) : effacer(CLE_SUPPR)
 
 /**
- * Efface tout : progression, session, file d'événements, verdict
- * d'abonnement, demande de suppression. Rien ne doit survivre.
+ * Efface tout : progression, session, files d'attente, verdict
+ * d'abonnement, voix enregistrées, demande de suppression. Rien de ce qui
+ * appartient à la personne ne doit survivre à un compte supprimé.
+ *
+ * Ce qui reste VOLONTAIREMENT, parce que c'est à l'appareil ou au contenu
+ * public, pas à la personne : le réglage du son (`sfx`), la difficulté du
+ * Mémory, et le cache des corrections du dictionnaire. Les garder est une
+ * décision, pas un oubli — l'audit les a passés en revue un par un.
  */
 export function tableRase() {
   resetStore()
@@ -47,5 +54,9 @@ export function tableRase() {
   // Sans langue : toutes. Les modales d'emprunt ne s'affichent qu'une fois
   // par mot — les laisser vues priverait le suivant de ce qu'elles disent.
   oublierEmprunts(null)
+  // Les voix vivent dans IndexedDB, pas dans localStorage : c'est pour cela
+  // qu'elles avaient échappé à toutes les versions précédentes de ce
+  // fichier — et c'est ce que l'app détient de plus personnel.
+  oublierVoix()
   effacer(CLE_SUPPR)
 }

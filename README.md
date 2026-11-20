@@ -339,9 +339,24 @@ redevenir anonyme, rien de plus.
 
 L'effacement passe par `lib/tableRase.js`, qui ne connaît **aucun nom de clé** :
 il demande à chaque module d'oublier ce qui lui appartient (progression,
-session, files d'attente, verdict d'abonnement, modales d'emprunt). Une liste
-de littéraux recopiée là divergerait au premier renommage, et l'oubli serait
-alors partiel — le pire des états, puisqu'il a l'air complet.
+session, files d'attente, verdict d'abonnement, modales d'emprunt, **voix
+enregistrées**). Une liste de littéraux recopiée là divergerait au premier
+renommage, et l'oubli serait alors partiel — le pire des états, puisqu'il a
+l'air complet.
+
+> **Les voix avaient échappé à toutes les versions précédentes.** Elles vivent
+> dans IndexedDB (`tama-speak-voix`), pas dans `localStorage`, et la table
+> rase ne connaissait que ce dernier. C'est pourtant ce que l'app détient de
+> plus personnel : la voix d'une grand-mère, avec le nom qu'elle a donné.
+> Elles partent désormais avec le compte — et **seulement** avec lui : une
+> simple déconnexion les laisse sur l'appareil, comme le reste de la
+> progression locale.
+
+Ce qui reste **volontairement** après une suppression, parce que c'est à
+l'appareil ou au contenu public et non à la personne : le réglage du son, la
+difficulté du Mémory, et le cache des corrections du dictionnaire. Côté
+serveur, toutes les tables liées à un compte s'effacent avec lui par cascade ;
+les **retours** (`feedbacks`) sont gardés, anonymisés (`user_id → NULL`).
 
 > **Le détail qui a coûté une correction.** Effacer *sur place* ne suffisait
 > pas : l'effet de sauvegarde de React réécrivait le store dans la seconde, et

@@ -56,6 +56,12 @@ export async function assurerSchema() {
     await sql()`SELECT 1 FROM famille_membres LIMIT 0`
     await sql()`SELECT publie_le FROM lexique LIMIT 0`
     await sql()`SELECT 1 FROM lexique_audio LIMIT 0`
+    // Une CONTRAINTE ne se sonde pas par un SELECT … LIMIT 0 : on la cherche
+    // dans le catalogue. Sans cette ligne, une base installée avant l'audit
+    // passait la sonde et ne recevait jamais sa clé étrangère.
+    const [fk] = await sql()`
+      SELECT 1 AS ok FROM pg_constraint WHERE conname = 'suppression_codes_user_fk'`
+    if (!fk) throw new Error('clé étrangère suppression_codes absente')
     schemaVerifie = true
     return
   } catch {

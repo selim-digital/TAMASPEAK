@@ -104,6 +104,32 @@ export function listVoices() {
   return tx('readonly', (s) => s.getAll()).then((r) => r || [])
 }
 
+/**
+ * Efface TOUTES les voix posées sur cet appareil — appelé par la table rase
+ * (`lib/tableRase.js`), quand le compte est supprimé.
+ *
+ * Une voix est ce que l'app détient de plus personnel : la voix d'une
+ * grand-mère, d'un oncle, avec le nom qu'ils ont donné. L'audit l'a montré —
+ * c'était aussi ce qui survivait le mieux : ni la suppression de compte ni
+ * aucune remise à zéro n'y touchait, parce que la table rase ne connaissait
+ * que `localStorage` et que les voix vivent dans IndexedDB.
+ *
+ * On supprime la BASE entière plutôt que de vider le magasin : rien ne reste,
+ * pas même sa structure. Si un autre onglet la tient ouverte, la suppression
+ * attend qu'il la relâche puis s'accomplit — elle ne s'annule pas.
+ */
+export function oublierVoix() {
+  index = new Set()
+  for (const u of urls.values()) URL.revokeObjectURL(u)
+  urls.clear()
+  if (typeof indexedDB === 'undefined') return
+  try {
+    indexedDB.deleteDatabase(DB)
+  } catch {
+    /* IndexedDB refusé (navigation privée stricte) : il n'y a rien à effacer */
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Index en mémoire — pour savoir SANS attendre si une voix existe      */
 /* ------------------------------------------------------------------ */
