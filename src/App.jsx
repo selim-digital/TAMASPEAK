@@ -465,7 +465,11 @@ export default function App() {
       const st = progress.statuses[n.id]
       return n.type === 'chest' ? st === 'available' : st === 'current'
     })
-    return node ? { node, unit: course.unitOfLesson(node.id) } : null
+    // Le nœud du cours porte son statut INITIAL (souvent `locked`) : on y
+    // reporte le statut réel, sur lequel le chemin aiguille (handleNode).
+    return node
+      ? { node: { ...node, status: progress.statuses[node.id] }, unit: course.unitOfLesson(node.id) }
+      : null
   })()
 
   /**
