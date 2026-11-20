@@ -19,12 +19,14 @@
  *      vraiment pour cette langue. Pas de néologisme inventé pour combler
  *      la case : « ssuq » (le marché) n'a pas de remplaçant vivant, et le
  *      dire est plus honnête que fabriquer.
- *   2. Les formules qui nomment Dieu (« Lla yɛawn », « Qqim g lman »…) ne
- *      sont PAS dans le registre : ce sont des bénédictions, pas des choix
- *      de vocabulaire, et proposer de les « remplacer » n'aurait aucun sens.
- *      Elles figurent dans A_TRANCHER, pour décision de Selim.
- *   3. Ce qui n'est pas sûr n'est pas affiché : les mots dont l'origine est
- *      discutée (ttxil-k, wah, yah…) attendent dans A_TRANCHER.
+ *   2. Les formules qui nomment Dieu ou qui sont un vœu (« Lla yɛawn »,
+ *      « Qqim g lman »…) ne sont PAS dans le registre : ce sont des
+ *      bénédictions, pas des choix de vocabulaire, et proposer de les
+ *      « remplacer » n'aurait aucun sens. Pas de modale, par principe.
+ *   3. Ce qui n'est pas sûr n'est pas affiché. La modale AFFIRME qu'un mot
+ *      vient d'ailleurs : sans source qui le dise, elle se tait. Les cas
+ *      examinés, et ce qui a été retenu pour chacun, sont consignés dans
+ *      TRANCHES ; ce qui attend encore une décision va dans A_TRANCHER.
  *
  * Tout ce fichier est PROVISOIRE tant qu'un locuteur natif ne l'a pas
  * validé, comme le reste du contenu (voir README).
@@ -248,6 +250,14 @@ export const EMPRUNTS = {
         'De l’espagnol « semana ». Le Rif est la seule langue amazighe du cours à emprunter autant à l’espagnol qu’à l’arabe — c’est l’héritage de Melilla et de Nador.',
     },
     {
+      mot: 'Wah',
+      sens: 'Oui',
+      // Pas de `classique` : on ne propose que ce qu'une source donne, et
+      // aucune de celles consultées ne nomme un « oui » plus ancien au Rif.
+      usage:
+        'De l’arabe marocain « wah ». C’est le oui de tous les jours au Rif — le linguiste M. Kossmann le range parmi les emprunts du tarifit.',
+    },
+    {
       mot: 'Lkuṛa',
       sens: 'Le ballon',
       classique: 'Takurt',
@@ -430,27 +440,145 @@ export const EMPRUNTS = {
 
 /**
  * Ce qui attend une décision — affiché nulle part dans l'app, listé dans le
- * tableau de validation (scripts/gen-lexique.mjs).
+ * tableau de validation (scripts/gen-lexique.mjs) et dans l'onglet
+ * « Synthèse » du backoffice.
  *
- * `raison` dit pourquoi ce n'est pas tranché : soit l'origine est discutée
- * par les sources, soit l'expression nomme Dieu et n'appelle pas de
- * « mot plus classique » — on ne remplace pas une bénédiction par un
- * synonyme.
+ * Vide depuis la passe de recherche de novembre 2026 : les douze cas en
+ * attente ont été examinés un par un, voir TRANCHES. Un nouveau doute se
+ * range ici, avec sa `raison`, en attendant d'être regardé.
  */
-export const A_TRANCHER = [
-  { lang: 'kab', mot: 'Ttxil-k', sens: 'S’il te plaît', raison: 'Origine discutée — arabe ou fonds kabyle selon les auteurs.' },
-  { lang: 'kab', mot: 'Tanemmirt aṭas', sens: 'Merci beaucoup', raison: '« aṭas » (beaucoup) est parfois donné comme emprunt ; le mot principal, lui, est amazigh.' },
-  { lang: 'rif', mot: 'Wah', sens: 'Oui', raison: 'Probable emprunt à l’arabe maghrébin — à confirmer.' },
-  { lang: 'rif', mot: 'Mliḥ, l-ḥamdu li-llah', sens: 'Ça va bien, Dieu merci', raison: 'Formule qui nomme Dieu — modale à écarter ou à reformuler.' },
-  { lang: 'shi', mot: 'Yah', sens: 'Oui', raison: 'Origine discutée — à confirmer par un locuteur du Souss.' },
-  { lang: 'shi', mot: 'Labas, lḥamdulillah', sens: 'Ça va, Dieu merci', raison: 'Formule qui nomme Dieu — modale à écarter ou à reformuler.' },
-  { lang: 'tzm', mot: 'Yah', sens: 'Oui', raison: 'Origine discutée — à confirmer.' },
-  { lang: 'tzm', mot: 'Lla yɛawn', sens: 'Que Dieu t’aide', raison: 'Bénédiction — aucun « mot plus classique » à proposer.' },
-  { lang: 'tzm', mot: 'Qqim g lman', sens: 'Au revoir (reste dans la paix)', raison: 'Formule mixte : verbe amazigh, « lman » (amān) arabe. Bénédiction.' },
-  { lang: 'tzm', mot: 'Labas, l-ḥamdullah', sens: 'Ça va, Dieu merci', raison: 'Formule qui nomme Dieu — modale à écarter ou à reformuler.' },
-  { lang: 'tzm', mot: 'Mayd tɛnit ?', sens: 'Comment vas-tu ?', raison: 'Le ɛ suggère une racine arabe — à trancher.' },
-  { lang: 'tzm', mot: 'Tmunt d wayḍ', sens: 'Réponse à « Qqim g lman »', raison: 'Formule d’adieu — à examiner avec la précédente.' },
+export const A_TRANCHER = []
+
+/**
+ * Ce qui a été tranché, et sur quoi — le registre des décisions.
+ *
+ * Douze expressions attendaient. La règle qui les départage est celle de
+ * l'en-tête : une modale ne s'affiche que si une source dit que le mot est
+ * un emprunt. `decision` vaut :
+ *
+ *   • 'emprunt'     une source le donne pour emprunté → il entre dans
+ *                   EMPRUNTS, la modale s'affiche ;
+ *   • 'amazigh'     une source le range dans le fonds de la langue → rien
+ *                   à dire, pas de modale ;
+ *   • 'formule'     bénédiction ou vœu → pas de modale, par principe ;
+ *   • 'sans-source' attesté, mais aucune source consultée n'en établit
+ *                   l'origine → pas de modale, et le dictionnaire le note
+ *                   comme « discuté ».
+ *
+ * `source` dit où regarder. Ce registre n'est PAS une validation par un
+ * locuteur : il dit ce que des livres permettent d'affirmer, pas plus.
+ */
+export const TRANCHES = [
+  {
+    lang: 'kab',
+    mot: 'Tanemmirt aṭas',
+    sens: 'Merci beaucoup',
+    decision: 'amazigh',
+    pourquoi:
+      'Le Dallet range « aṭas » (beaucoup, trop) sous une racine kabyle, ṬS, avec son état d’annexion (« waṭas »), sans la marque « ar. » qu’il met au mot suivant de la même page. Rien d’emprunté dans la formule.',
+    source: 'Dallet, Dictionnaire kabyle-français (1982), racine ṬS',
+  },
+  {
+    lang: 'kab',
+    mot: 'Ttxil-k',
+    sens: 'S’il te plaît',
+    decision: 'sans-source',
+    pourquoi:
+      'Le Dallet l’enregistre sous sa propre racine, ṬXL, comme « expression de supplication », sans le donner pour emprunt — alors qu’il marque « ar. » le verbe « daxel » deux pages plus loin. Aucune source consultée n’établit une origine arabe.',
+    source: 'Dallet, Dictionnaire kabyle-français (1982), racine ṬXL',
+  },
+  {
+    lang: 'rif',
+    mot: 'Wah',
+    sens: 'Oui',
+    decision: 'emprunt',
+    pourquoi:
+      'Classé parmi les emprunts à l’arabe marocain (« wah », oui) dans le vocabulaire tarifit de M. Kossmann. Il entre au registre : la modale s’affiche.',
+    source: 'World Loanword Database, vocabulaire tarifit (M. Kossmann) ; « Loanwords in Tarifiyt », 2009',
+  },
+  {
+    lang: 'rif',
+    mot: 'Mliḥ, l-ḥamdu li-llah',
+    sens: 'Ça va bien, Dieu merci',
+    decision: 'formule',
+    pourquoi: 'Formule qui nomme Dieu : une louange ne se remplace pas par un synonyme.',
+  },
+  {
+    lang: 'shi',
+    mot: 'Labas, lḥamdulillah',
+    sens: 'Ça va, Dieu merci',
+    decision: 'formule',
+    pourquoi: 'Formule qui nomme Dieu. « Labas » seul garde sa modale, comme dans les autres cours.',
+  },
+  {
+    lang: 'shi',
+    mot: 'Yah',
+    sens: 'Oui',
+    decision: 'sans-source',
+    pourquoi: 'Aucune source consultée ne dit d’où vient ce « oui ». Sans source, pas de modale.',
+  },
+  {
+    lang: 'tzm',
+    mot: 'Yah',
+    sens: 'Oui',
+    decision: 'sans-source',
+    pourquoi:
+      'Origine non établie. À faire confirmer par un locuteur : le manuel du Peace Corps pour le Moyen Atlas donne « ay / ih » pour « oui », pas « yah ».',
+    source: 'Peace Corps Morocco, Tamazight Textbook (2007), « Adverbs of opinions »',
+  },
+  {
+    lang: 'tzm',
+    mot: 'Lla yɛawn',
+    sens: 'Que Dieu t’aide',
+    decision: 'formule',
+    pourquoi:
+      'Bénédiction qui nomme Dieu. Le manuel du Peace Corps la donne telle quelle (« May God help you »), avec sa réponse « lla ysllm ».',
+    source: 'Peace Corps Morocco, Tamazight Textbook (2007), salutations',
+  },
+  {
+    lang: 'tzm',
+    mot: 'Qqim g lman',
+    sens: 'Au revoir (reste dans la paix)',
+    decision: 'formule',
+    pourquoi:
+      'Vœu d’adieu : le verbe est amazigh, « lman » vient de l’arabe « amān ». Un vœu ne se remplace pas. Graphie à faire confirmer : le manuel écrit « qim as g lman ».',
+    source: 'Peace Corps Morocco, Tamazight Textbook (2007) : « Goodbye (I leave you in peace) »',
+  },
+  {
+    lang: 'tzm',
+    mot: 'Tmunt d wayḍ',
+    sens: 'Réponse à « Qqim g lman »',
+    decision: 'formule',
+    pourquoi:
+      'L’autre moitié du même adieu, attestée par le manuel (« You go in peace »). Aucun élément arabe relevé.',
+    source: 'Peace Corps Morocco, Tamazight Textbook (2007) : « Goodbye (You go in peace) »',
+  },
+  {
+    lang: 'tzm',
+    mot: 'Labas, l-ḥamdullah',
+    sens: 'Ça va, Dieu merci',
+    decision: 'formule',
+    pourquoi: 'Formule qui nomme Dieu. Attestée telle quelle par le manuel du Peace Corps.',
+    source: 'Peace Corps Morocco, Tamazight Textbook (2007), salutations',
+  },
+  {
+    lang: 'tzm',
+    mot: 'Mayd tɛnit ?',
+    sens: 'Comment vas-tu ?',
+    decision: 'sans-source',
+    pourquoi:
+      'La question est bien attestée (« How are you? » dans le manuel), mais la racine du verbe n’est établie par aucune source consultée : le ɛ ne suffit pas à conclure.',
+    source: 'Peace Corps Morocco, Tamazight Textbook (2007), salutations',
+  },
 ]
+
+/** Le libellé de chaque décision, pour les tableaux. */
+export const DECISIONS = Object.freeze({
+  emprunt: 'Emprunt — modale affichée',
+  amazigh: 'Fonds amazigh — pas de modale',
+  formule: 'Formule, vœu — pas de modale',
+  'sans-source': 'Origine non établie — pas de modale',
+})
 
 /** Index langue → clé normalisée → entrée, construit une fois. */
 const INDEX = Object.fromEntries(

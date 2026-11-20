@@ -1535,6 +1535,25 @@ async function vueContenu() {
     el('div', { class: 'note' },
       'Ces expressions n’affichent AUCUNE modale dans l’app tant qu’elles ne sont pas tranchées : ' +
       'origine discutée par les sources, ou formule qui nomme Dieu — on ne propose pas de remplacer une bénédiction.'),
+
+    el('h2', {}, `Décisions prises — ${nombre((d.tranches || []).length)}`),
+    (d.tranches || []).length
+      ? el('div', { class: 'defiler' }, el('table', {},
+          el('thead', {}, el('tr', {},
+            el('th', {}, 'Cours'), el('th', {}, 'Expression'), el('th', {}, 'Français'),
+            el('th', {}, 'Décision'), el('th', {}, 'Pourquoi'), el('th', {}, 'Source'))),
+          el('tbody', {}, d.tranches.map((e) =>
+            el('tr', {},
+              el('td', {}, e.nom),
+              el('td', {}, e.mot),
+              el('td', {}, e.sens),
+              el('td', {}, e.decision),
+              el('td', {}, e.pourquoi),
+              el('td', {}, e.source || '—'))))))
+      : el('div', { class: 'message' }, 'Aucune décision enregistrée.'),
+    el('div', { class: 'note' },
+      'La modale affirme qu’un mot vient d’ailleurs : elle ne s’affiche que si une source le dit. ' +
+      'Ces décisions disent ce que des livres permettent d’affirmer — la validation par un locuteur reste due.'),
   ]
 }
 

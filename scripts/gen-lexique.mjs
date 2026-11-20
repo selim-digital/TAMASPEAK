@@ -23,7 +23,7 @@ import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { COURSES } from '../src/data/courses.js'
-import { EMPRUNTS, A_TRANCHER } from '../src/data/emprunts.js'
+import { EMPRUNTS, A_TRANCHER, TRANCHES, DECISIONS } from '../src/data/emprunts.js'
 import { ORIGINES } from '../src/data/etymologies.js'
 import { ENTREES, ORDRE_LANGUES, STATS, THEMES } from '../src/data/dictionnaire.js'
 import { cleRecherche } from '../src/lib/translit.js'
@@ -265,6 +265,23 @@ for (const e of A_TRANCHER) {
     `| ${COURSES[e.lang]?.name || e.lang} | **${cellule(e.mot)}** | ${cellule(e.sens)} | ${cellule(e.raison)} |`,
   )
 }
+if (!A_TRANCHER.length) md.push('| — | *Rien en attente.* | | |')
+md.push('')
+md.push('### Décisions prises — à faire relire par un locuteur')
+md.push('')
+md.push(
+  'Une modale ne s’affiche que si une source dit que le mot est un emprunt. Voici ce qui a été examiné, ce qui a été retenu, et sur quoi.',
+)
+md.push('')
+md.push('| ☐ | Cours | Expression | Français | Décision | Pourquoi | Source |')
+md.push('| --- | --- | --- | --- | --- | --- | --- |')
+for (const e of TRANCHES) {
+  md.push(
+    `| ☐ | ${COURSES[e.lang]?.name || e.lang} | **${cellule(e.mot)}** | ${cellule(e.sens)} | ${cellule(
+      DECISIONS[e.decision] || e.decision,
+    )} | ${cellule(e.pourquoi)} | ${cellule(e.source || '—')} |`,
+  )
+}
 md.push('')
 writeFileSync(join(root, 'lexique.md'), md.join('\n'))
 
@@ -272,7 +289,7 @@ const nbEmprunts = Object.values(EMPRUNTS).reduce((n, l) => n + l.length, 0)
 console.log(`OK — fiche d'enregistrement : ${total} entrées enseignées.`)
 console.log(`     dictionnaire : ${ENTREES.length} entrées, dont ${ETENDUS.length} pas encore enseignées.`)
 for (const s of STATS) console.log(`  ${s.nom.padEnd(20)} ${s.total}`)
-console.log(`  ${nbEmprunts} emprunts affichés, ${A_TRANCHER.length} en attente de décision.`)
+console.log(`  ${nbEmprunts} emprunts affichés, ${A_TRANCHER.length} en attente de décision, ${TRANCHES.length} tranchés.`)
 console.log(
   `  ${parEtymo.size} étymologies écrites, ${sansEtymo.length} entrées sans (« sera ajoutée plus tard » dans l'app).`,
 )

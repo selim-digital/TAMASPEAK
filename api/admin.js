@@ -68,7 +68,7 @@ const nomDuCours = (id) => LANGUAGES.find((l) => l.id === id)?.name || id
 async function contenu(res) {
   // Import différé : ces modules tirent tout le contenu des cours. Les
   // charger à froid pour un appel `?r=stats` serait payer sans rien devoir.
-  const [{ ENTREES, ORDRE_LANGUES }, { EMPRUNTS, A_TRANCHER }] = await Promise.all([
+  const [{ ENTREES, ORDRE_LANGUES }, { EMPRUNTS, A_TRANCHER, TRANCHES, DECISIONS }] = await Promise.all([
     import('../src/data/dictionnaire.js'),
     import('../src/data/emprunts.js'),
   ])
@@ -105,6 +105,18 @@ async function contenu(res) {
     emprunts: { total: tousEmprunts.length, parOrigine },
     // Ce qui attend Selim : les expressions dont l'origine n'est pas tranchée.
     aTrancher: A_TRANCHER.map((e) => ({ lang: e.lang, nom: nomDuCours(e.lang), mot: e.mot, sens: e.sens, raison: e.raison })),
+    // Ce qui a été tranché, et sur quelle source : le backoffice doit pouvoir
+    // montrer POURQUOI une expression n'a pas de modale, pas seulement qu'elle
+    // n'en a pas.
+    tranches: TRANCHES.map((e) => ({
+      lang: e.lang,
+      nom: nomDuCours(e.lang),
+      mot: e.mot,
+      sens: e.sens,
+      decision: DECISIONS[e.decision] || e.decision,
+      pourquoi: e.pourquoi,
+      source: e.source || '',
+    })),
   })
 }
 

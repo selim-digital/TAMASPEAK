@@ -114,7 +114,8 @@ export const ETYMOLOGIES = Object.freeze({
   'semmeh iyi': { origine: 'arabe', racine: 'SMḤ', note: 'De « samaḥ », pardonner.', voir: 'Suref-iyi' },
   'ttxil k': {
     origine: 'amazigh',
-    note: 'Origine débattue : fonds kabyle pour les uns, tournure arabe pour les autres.',
+    racine: 'ṬXL',
+    note: 'Le Dallet l’enregistre sous sa propre racine, comme formule de supplication, sans le donner pour emprunt. Son origine plus lointaine n’est pas établie.',
     discute: true,
   },
   'amek tellid': { origine: 'amazigh', racine: 'ILI', note: 'De « ili », être : comment es-tu ?' },
@@ -135,8 +136,15 @@ export const ETYMOLOGIES = Object.freeze({
   uhu: { origine: 'amazigh', note: 'Le non marocain, du Souss à l’Atlas.' },
   yyih: { origine: 'amazigh', note: 'Le oui de la norme écrite.' },
   lla: { origine: 'amazigh', note: 'Le non du Rif.', discute: true },
-  wah: { origine: 'arabe', note: 'Probable emprunt à l’arabe maghrébin — à confirmer.', discute: true },
-  yah: { origine: 'amazigh', note: 'Origine discutée : fonds amazigh ou emprunt.', discute: true },
+  wah: {
+    origine: 'arabe',
+    note: 'De l’arabe marocain « wah », oui — c’est ainsi que le classe le vocabulaire tarifit de M. Kossmann.',
+  },
+  yah: {
+    origine: 'amazigh',
+    note: 'Le oui du Souss et de l’Atlas. Aucune source consultée n’en établit l’origine.',
+    discute: true,
+  },
 
   /* ---------------- la famille ---------------- */
   baba: { origine: 'amazigh', note: 'Mot du langage enfantin, comme dans beaucoup de langues. « Bba » au Moyen Atlas.' },
@@ -378,7 +386,16 @@ export const ETYMOLOGIES = Object.freeze({
     note: 'Le -ɣ final, c’est « je ». Et « axxam » devient « wexxam » après la préposition : c’est l’état d’annexion, la marque la plus reconnaissable de la grammaire amazighe.',
     voir: 'Axxam',
   },
-  'tanemmirt atas': { origine: 'amazigh', note: 'Tanemmirt + aṭas, beaucoup.', voir: 'Tanemmirt' },
+  'tanemmirt atas': {
+    origine: 'amazigh',
+    note: 'Tanemmirt + aṭas, beaucoup. Les deux mots sont du fonds kabyle : le Dallet range « aṭas » sous la racine ṬS, sans le donner pour emprunt.',
+    voir: 'Tanemmirt',
+  },
+  atas: {
+    origine: 'amazigh',
+    racine: 'ṬS',
+    note: 'Beaucoup, trop. Il prend l’état d’annexion comme un nom amazigh (« waṭas »), et le Dallet ne le donne pas pour emprunt.',
+  },
   'sew atay': { origine: 'amazigh', note: 'Impératif « sew » + atay, le mot voyageur du thé.', voir: 'Atay' },
   'manzakin': {
     origine: 'amazigh',
@@ -387,7 +404,7 @@ export const ETYMOLOGIES = Object.freeze({
   'mamec teggid': { origine: 'amazigh', note: 'Comment vas-tu ?, au Rif.' },
   'mayd tenit': {
     origine: 'amazigh',
-    note: 'Comment vas-tu ?, au Moyen Atlas. Le ɛ laisse penser à une racine arabe — à trancher.',
+    note: 'Comment vas-tu ?, au Moyen Atlas. La racine du verbe n’est établie par aucune source consultée.',
     discute: true,
   },
   'is thnna ghur k': {

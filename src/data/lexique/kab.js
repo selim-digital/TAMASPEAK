@@ -35,6 +35,15 @@
  *
  * RÈGLE MAISON APPLIQUÉE ICI AUSSI : ni musique ni danse — pas de « chanter »,
  * pas de « danser », pas d'instrument.
+ *
+ * RELU CONTRE LE DALLET AVEC LE DEUXIÈME LOT (kab2.js). Ce premier lot avait
+ * été écrit de mémoire, et la relecture y a trouvé des formes d'autres
+ * langues amazighes glissées dans le kabyle : « ayis » (le cheval, c'est
+ * « aɛudiw »), « aselham » (le burnous, c'est « abernus »), « sɣ » (acheter,
+ * c'est « aɣ »), « aɣi » donné pour le lait (c'est « ayefki » ; « iɣi » est
+ * le petit-lait). Elles sont corrigées ; les mots que le Dallet ne confirmait
+ * pas (« agḍiḍ », « tuga », « tiyni », « aqbu », « azerwal », « aɣerfan »)
+ * sont retirés. Les néologismes gardés le disent dans leur note.
  */
 
 const n = (mot, fr, theme, note) => ({ mot, fr, theme, type: 'nom', note })
@@ -83,7 +92,7 @@ export const KAB = [
   n('Tislit', 'La mariée, la belle-fille', 'famille'),
   n('Tarwa', 'La progéniture, les enfants', 'famille'),
   n('Adrum', 'Le clan, la lignée', 'famille'),
-  n('Tawacult', 'La famille', 'famille'),
+  n('Tawacult', 'La famille', 'famille', 'Néologisme de l’Amawal.'),
 
   /* ---------------- Les gens ---------------- */
   n('Amɣar', 'Le vieil homme, le chef', 'gens', 'De la racine MƔR, être grand : l’âge et l’autorité dans le même mot.'),
@@ -91,10 +100,9 @@ export const KAB = [
   n('Tamdakkelt', 'L’amie', 'gens'),
   n('Ajar', 'Le voisin', 'gens'),
   n('Tajart', 'La voisine', 'gens'),
-  n('Anebgi', 'L’invité', 'gens'),
+  n('Inebgi', 'L’invité', 'gens'),
   n('Aberrani', 'L’étranger', 'gens'),
   n('Medden', 'Les gens', 'gens'),
-  n('Aɣerfan', 'Le peuple', 'gens'),
 
   /* ---------------- La maison ---------------- */
   n('Tazeqqa', 'La pièce, la chambre', 'maison'),
@@ -106,7 +114,7 @@ export const KAB = [
   n('Tillas', 'L’obscurité', 'maison'),
   n('Usu', 'Le lit', 'maison'),
   n('Tasumta', 'L’oreiller', 'maison'),
-  n('Akursi', 'La chaise', 'maison'),
+  n('Lkursi', 'La chaise', 'maison'),
   n('Ṭṭabla', 'La table', 'maison'),
   n('Taqbuct', 'La tasse, le bol', 'maison'),
   n('Tabaqit', 'L’assiette', 'maison'),
@@ -120,15 +128,14 @@ export const KAB = [
   n('Tamdint', 'La ville', 'village'),
   n('Tajmaɛt', 'L’assemblée du village, la place', 'village', 'Le lieu où le village décide — l’institution autant que la place.'),
   n('Lǧameɛ', 'La mosquée', 'village'),
-  n('Aɣerbaz', 'L’école', 'village'),
+  n('Aɣerbaz', 'L’école', 'village', 'Néologisme de l’Amawal.'),
   n('Abrid', 'Le chemin, la route', 'village'),
   n('Tala', 'La fontaine', 'village', 'Point d’eau du village, et lieu de rencontre.'),
   n('Aɣbalu', 'La source', 'village'),
-  n('Aqbu', 'Le col, le défilé', 'village'),
 
   /* ---------------- Manger & boire ---------------- */
   n('Seksu', 'Le couscous', 'manger'),
-  n('Aɣi', 'Le lait', 'manger'),
+  n('Ayefki', 'Le lait', 'manger'),
   n('Udi', 'Le beurre', 'manger'),
   n('Zzit', 'L’huile', 'manger'),
   n('Lmelḥ', 'Le sel', 'manger'),
@@ -137,7 +144,6 @@ export const KAB = [
   n('Tiẓurin', 'Le raisin', 'manger'),
   n('Tazart', 'Les figues sèches', 'manger'),
   n('Tibexsisin', 'Les figues fraîches', 'manger'),
-  n('Tiyni', 'Les dattes', 'manger'),
   n('Lbeṣel', 'L’oignon', 'manger'),
   n('Ifelfel', 'Le poivron, le piment', 'manger'),
   n('Imensi', 'Le dîner', 'manger'),
@@ -148,7 +154,7 @@ export const KAB = [
   /* ---------------- Les animaux ---------------- */
   n('Aqjun', 'Le chien', 'animaux'),
   n('Aserdun', 'Le mulet', 'animaux'),
-  n('Ayis', 'Le cheval', 'animaux'),
+  n('Aɛudiw', 'Le cheval', 'animaux'),
   n('Azger', 'Le bœuf', 'animaux'),
   n('Tixsi', 'La brebis', 'animaux'),
   n('Ikerri', 'Le mouton', 'animaux'),
@@ -156,7 +162,6 @@ export const KAB = [
   n('Ayaziḍ', 'Le coq', 'animaux'),
   n('Tayaziṭ', 'La poule', 'animaux'),
   n('Afrux', 'L’oiseau', 'animaux'),
-  n('Agḍiḍ', 'L’oiseau', 'animaux'),
   n('Tasekkurt', 'La perdrix', 'animaux'),
   // Deux sens, et le second n'est pas une approximation : il n'y a pas
   // d'autre loup en Afrique du Nord. L'animal longtemps appelé « chacal doré »
@@ -174,7 +179,7 @@ export const KAB = [
   n('Ilef', 'Le sanglier', 'animaux'),
   n('Ifis', 'L’hyène', 'animaux'),
   n('Azrem', 'Le serpent', 'animaux'),
-  n('Tazizwit', 'L’abeille', 'animaux'),
+  n('Tizizwit', 'L’abeille', 'animaux'),
   n('Izi', 'La mouche', 'animaux'),
 
   /* ---------------- La nature ---------------- */
@@ -194,7 +199,7 @@ export const KAB = [
   n('Ttejra', 'L’arbre', 'nature'),
   n('Aseklu', 'L’arbre', 'nature', 'Néologisme de l’Amawal, proposé pour remplacer « ttejra », venu de l’arabe.'),
   n('Ijeǧǧigen', 'Les fleurs', 'nature'),
-  n('Tuga', 'L’herbe', 'nature'),
+  n('Leḥcic', 'L’herbe', 'nature'),
   n('Aɣanim', 'Le roseau', 'nature'),
 
   /* ---------------- Le temps qu'il fait ---------------- */
@@ -204,8 +209,8 @@ export const KAB = [
 
   /* ---------------- Le temps qui passe ---------------- */
   n('Useggas', 'L’année', 'temps'),
-  n('Imalas', 'La semaine', 'temps', 'Néologisme de l’Amawal ; dans la rue, on entend « ssmana », de l’arabe.'),
-  n('Ssmana', 'La semaine', 'temps'),
+  n('Imalas', 'La semaine', 'temps', 'Néologisme de l’Amawal ; le Dallet donne « ddurt ».'),
+  n('Ddurt', 'La semaine', 'temps'),
   n('Tasaɛet', 'L’heure', 'temps'),
   n('Yennayer', 'Le nouvel an amazigh', 'temps', 'Célébré le 12 janvier — le premier jour du calendrier agraire.'),
   o('Zik', 'Tôt, autrefois'),
@@ -222,7 +227,6 @@ export const KAB = [
   n('Agim', 'Mille', 'nombres', 'Néologisme de l’Amawal.'),
 
   /* ---------------- Les couleurs ---------------- */
-  n('Azerwal', 'Le bleu', 'couleurs', 'Le bleu se dit aussi « azegzaw », qui couvre le vert : beaucoup de langues amazighes ne séparent pas les deux.'),
   n('Aqehwi', 'Le marron', 'couleurs'),
 
   /* ---------------- Le travail ---------------- */
@@ -233,11 +237,11 @@ export const KAB = [
   n('Aẓeṭṭa', 'Le tissage, le métier à tisser', 'travail', 'Le métier vertical des femmes, dressé dans la maison.'),
   n('Ssuma', 'Le prix', 'travail'),
   n('Ssnaɛa', 'Le métier, le savoir-faire', 'travail'),
-  n('Tabzimt', 'La fibule', 'travail', 'Le bijou d’argent émaillé d’Ath Yenni qui agrafe la robe — c’est lui qui a donné ses couleurs à cette app.'),
-  n('Ameqyas', 'Le bracelet', 'travail'),
-  n('Aselham', 'Le burnous', 'travail'),
-  n('Tacacit', 'La calotte, le bonnet', 'travail'),
-  n('Aqendur', 'La robe, la gandoura', 'travail'),
+  n('Tabzimt', 'La fibule', 'vetements', 'Le bijou d’argent émaillé d’Ath Yenni qui agrafe la robe — c’est lui qui a donné ses couleurs à cette app.'),
+  n('Ameqyas', 'Le bracelet', 'vetements'),
+  n('Abernus', 'Le burnous', 'vetements'),
+  n('Tacacit', 'La calotte, le bonnet', 'vetements'),
+  n('Aqendur', 'La robe, la gandoura', 'vetements'),
 
   /* ---------------- Les verbes ---------------- */
   v('Ddu', 'Aller, accompagner'),
@@ -267,7 +271,7 @@ export const KAB = [
   v('Erǧu', 'Attendre'),
   v('Ẓẓu', 'Planter'),
   v('Krez', 'Labourer', 'Racine du mot « amekraz », le laboureur.'),
-  v('Sɣ', 'Acheter'),
+  v('Aɣ', 'Prendre, acheter'),
   v('Zzenz', 'Vendre'),
   v('Bnu', 'Construire'),
   v('Sired', 'Laver'),
@@ -298,7 +302,7 @@ export const KAB = [
   adj('Ajdid', 'Neuf'),
   adj('Azedgan', 'Propre'),
   adj('Aẓidan', 'Sucré, doux'),
-  adj('Amerẓag', 'Amer'),
+  adj('Amerẓagu', 'Amer'),
   adj('Azuran', 'Épais, gros'),
   adj('Areqqaq', 'Fin, mince'),
   adj('Aɣezzfan', 'Long'),
@@ -319,7 +323,7 @@ export const KAB = [
   o('Acu', 'Quoi'),
   o('Acḥal', 'Combien'),
   o('Ihi', 'Donc, alors'),
-  o('Maca', 'Mais'),
+  o('Maca', 'Mais', 'Mot de l’usage écrit moderne, absent du Dallet.'),
   o('Neɣ', 'Ou'),
   o('Daɣen', 'Aussi, encore'),
   o('Yal', 'Chaque'),

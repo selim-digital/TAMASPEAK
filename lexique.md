@@ -96,7 +96,7 @@
 | 79 | **Tameṭṭut** | Femme | mot | amazigh | `tamettut.mp3` | l37 l45 |
 | 80 | **Tanarit** | Le bureau | mot | neo | `tanarit.mp3` | l48 l49 |
 | 81 | **Tanemmirt** | Merci | mot | amazigh | `tanemmirt.mp3` | l2 l3 l7 l9 |
-| 82 | **Tanemmirt aṭas** | Merci beaucoup | expression | à trancher | `tanemmirt-atas.mp3` | l12 l16 l17 |
+| 82 | **Tanemmirt aṭas** | Merci beaucoup | expression | amazigh | `tanemmirt-atas.mp3` | l12 l16 l17 |
 | 83 | **Tanezzayt** | Le matin | mot | amazigh | `tanezzayt.mp3` | l40 |
 | 84 | **Taqcict** | Fille | mot | amazigh | `taqcict.mp3` | l37 l38 |
 | 85 | **Tawuri** | Le travail (mot amazigh) | mot | amazigh | `tawuri.mp3` | l46 |
@@ -104,7 +104,7 @@
 | 87 | **Tazzla** | La course | mot | amazigh | `tazzla.mp3` | l51 l53 |
 | 88 | **Tilemẓit** | La jeune fille | mot | amazigh | `tilemzit.mp3` | l52 |
 | 89 | **Tiwizi** | L’entraide | mot | amazigh | `tiwizi.mp3` | l49 |
-| 90 | **Ttxil-k** | S’il te plaît | mot | à trancher | `ttxil-k.mp3` | l44 |
+| 90 | **Ttxil-k** | S’il te plaît | mot | amazigh | `ttxil-k.mp3` | l44 |
 | 91 | **Tura** | Maintenant | mot | amazigh | `tura.mp3` | l41 |
 | 92 | **Ul** | Cœur | mot | amazigh | `ul.mp3` | l36 |
 | 93 | **Ur fhimeɣ ara** | Je ne comprends pas | expression | amazigh | `ur-fhimegh-ara.mp3` | l44 l45 |
@@ -140,7 +140,7 @@
 | 20 | **Kkuẓ** | Quatre | mot | amazigh | `shi/kkuz.mp3` | shi8 |
 | 21 | **Kraḍ** | Trois | mot | amazigh | `shi/krad.mp3` | shi8 |
 | 22 | **Labas** | Ça va | mot | arabe | `shi/labas.mp3` | shi4 |
-| 23 | **Labas, lḥamdulillah** | Comment vas-tu ? | expression | à trancher | `shi/labas-lhamdulillah.mp3` | shi4 |
+| 23 | **Labas, lḥamdulillah** | Comment vas-tu ? | expression | arabe | `shi/labas-lhamdulillah.mp3` | shi4 |
 | 24 | **Lxdmt** | Le travail (mot arabe) | mot | arabe → Tawuri | `shi/lxdmt.mp3` | shi10 |
 | 25 | **Manzakin ?** | Comment vas-tu ? | expression | amazigh | `shi/manzakin.mp3` | shi4 |
 | 26 | **Sin** | Deux | mot | amazigh | `shi/sin.mp3` | shi8 |
@@ -158,7 +158,7 @@
 | 38 | **Uhu** | Non | mot | amazigh | `shi/uhu.mp3` | shi2 |
 | 39 | **Urar** | Le jeu | mot | amazigh | `shi/urar.mp3` | shi14 shi15 shi17 |
 | 40 | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `shi/wa-elikum-ssalam.mp3` | shi1 |
-| 41 | **Yah** | Oui | mot | à trancher | `shi/yah.mp3` | shi2 |
+| 41 | **Yah** | Oui | mot | amazigh | `shi/yah.mp3` | shi2 |
 | 42 | **Yan** | Un | mot | amazigh | `shi/yan.mp3` | shi8 |
 
 ## Tarifit — Tarifit (37)
@@ -185,7 +185,7 @@
 | 18 | **Mamec teǧǧid ?** | Comment vas-tu ? | expression | amazigh | `rif/mamec-teggid.mp3` | rif4 |
 | 19 | **Marḥba** | Bienvenue | mot | arabe → Ansuf | `rif/marhba.mp3` | rif1 rif2 |
 | 20 | **Mliḥ** | Ça va bien | mot | arabe | `rif/mlih.mp3` | rif4 |
-| 21 | **Mliḥ, l-ḥamdu li-llah** | _à préciser_ | expression | à trancher | `rif/mlih-l-hamdu-li-llah.mp3` | rif4 |
+| 21 | **Mliḥ, l-ḥamdu li-llah** | _à préciser_ | expression | arabe | `rif/mlih-l-hamdu-li-llah.mp3` | rif4 |
 | 22 | **Ryaḍa** | Le sport / Le sport (arabe) | mot | arabe → Addal | `rif/ryada.mp3` | rif14 rif16 rif17 |
 | 23 | **Simana** | La semaine | mot | espagnol | `rif/simana.mp3` | rif12 |
 | 24 | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | expression | arabe → Azul | `rif/ssalamu-elikum.mp3` | rif1 |
@@ -200,7 +200,7 @@
 | 33 | **Uř** | Le cœur | mot | amazigh | `rif/ur.mp3` | rif9 |
 | 34 | **Uraren** | Les jeux | mot | amazigh | `rif/uraren.mp3` | rif14 rif15 rif17 |
 | 35 | **Wa ɛlikum ssalam** | Et sur vous la paix (réponse) | expression | arabe → Azul | `rif/wa-elikum-ssalam.mp3` | rif1 |
-| 36 | **Wah** | Oui | mot | à trancher | `rif/wah.mp3` | rif2 |
+| 36 | **Wah** | Oui | mot | arabe | `rif/wah.mp3` | rif2 |
 | 37 | **Yemma** | Maman | mot | amazigh | `rif/yemma.mp3` | rif6 |
 
 ## Tamazight (Atlas) — Tamaziɣt (46)
@@ -230,14 +230,14 @@
 | 21 | **Kkuẓ** | Quatre | mot | amazigh | `tzm/kkuz.mp3` | tzm8 |
 | 22 | **Kraḍ** | Trois | mot | amazigh | `tzm/krad.mp3` | tzm8 |
 | 23 | **Labas** | Ça va | mot | arabe | `tzm/labas.mp3` | tzm4 |
-| 24 | **Labas, l-ḥamdullah** | Ça va, Dieu merci | expression | à trancher | `tzm/labas-l-hamdullah.mp3` | tzm4 |
-| 25 | **Lla yɛawn** | Que Dieu t’aide | expression | à trancher | `tzm/lla-yeawn.mp3` | tzm1 |
+| 24 | **Labas, l-ḥamdullah** | Ça va, Dieu merci | expression | arabe | `tzm/labas-l-hamdullah.mp3` | tzm4 |
+| 25 | **Lla yɛawn** | Que Dieu t’aide | expression | arabe | `tzm/lla-yeawn.mp3` | tzm1 |
 | 26 | **Lxdmt** | Le travail (mot arabe) | mot | arabe → Tawuri | `tzm/lxdmt.mp3` | tzm10 |
-| 27 | **Mayd tɛnit ?** | Comment vas-tu ? | expression | à trancher | `tzm/mayd-tenit.mp3` | tzm4 |
+| 27 | **Mayd tɛnit ?** | Comment vas-tu ? | expression | amazigh | `tzm/mayd-tenit.mp3` | tzm4 |
 | 28 | **Mma** | Ma mère | mot | amazigh | `tzm/mma.mp3` | tzm6 |
 | 29 | **Mmaḥllu** | Grand-mère | mot | amazigh | `tzm/mmahllu.mp3` | tzm6 |
 | 30 | **Mrḥba** | Bienvenue | mot | arabe → Ansuf | `tzm/mrhba.mp3` | tzm5 |
-| 31 | **Qqim g lman** | Au revoir (reste dans la paix) | expression | à trancher | `tzm/qqim-g-lman.mp3` | tzm5 |
+| 31 | **Qqim g lman** | Au revoir (reste dans la paix) | expression | amazigh | `tzm/qqim-g-lman.mp3` | tzm5 |
 | 32 | **Sin** | Deux | mot | amazigh | `tzm/sin.mp3` | tzm8 |
 | 33 | **Smmus** | Cinq | mot | amazigh | `tzm/smmus.mp3` | tzm8 |
 | 34 | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | expression | arabe → Azul | `tzm/ssalamu-elikum.mp3` | tzm1 |
@@ -250,7 +250,7 @@
 | 41 | **Ulli** | Les brebis | mot | amazigh | `tzm/ulli.mp3` | tzm12 tzm13 |
 | 42 | **Urar** | Le jeu | mot | amazigh | `tzm/urar.mp3` | tzm14 tzm15 tzm17 |
 | 43 | **Waxxa** | D’accord | mot | arabe | `tzm/waxxa.mp3` | tzm2 |
-| 44 | **Yah** | Oui | mot | à trancher | `tzm/yah.mp3` | tzm2 |
+| 44 | **Yah** | Oui | mot | amazigh | `tzm/yah.mp3` | tzm2 |
 | 45 | **Yan** | Un | mot | amazigh | `tzm/yan.mp3` | tzm8 tzm9 |
 | 46 | **Yat** | Une | mot | amazigh | `tzm/yat.mp3` | tzm8 |
 
@@ -309,35 +309,40 @@
 
 ## Dictionnaire étendu — les candidats leçon
 
-> 267 mots que le dictionnaire connaît et qu'**aucune leçon n'enseigne encore** (`src/data/lexique/`). Ils ne sont PAS à enregistrer : ils n'auront de fichier audio que le jour où une unité les reprendra. C'est ici qu'on pioche pour écrire la suite du parcours, plutôt que d'inventer.
+> 825 mots que le dictionnaire connaît et qu'**aucune leçon n'enseigne encore** (`src/data/lexique/`). Ils ne sont PAS à enregistrer : ils n'auront de fichier audio que le jour où une unité les reprendra. C'est ici qu'on pioche pour écrire la suite du parcours, plutôt que d'inventer.
 
-### Kabyle (267)
+### Kabyle (825)
 
 | Thème | Mots | Nombre |
 | --- | --- | ---: |
-| Les paroles | A tasa-w · Ansi i d-tekkiḍ ? · Ar timlilit · D acu i d isem-ik ? · D tidet · Ɛawen-iyi · Isem-iw… · Ma ulac aɣilif · Ṣbeḥ lxir · Ur ẓriɣ ara · Yerbeḥ | 11 |
-| Les gens | Aberrani · Aɣerfan · Ajar · Amdakkel · Amɣar · Anebgi · Medden · Tajart · Tamdakkelt | 9 |
-| Le village & la ville | Abrid · Aɣbalu · Aɣerbaz · Aqbu · Lǧameɛ · Tajmaɛt · Tala · Tamdint | 8 |
-| Le corps | Acebbub · Aḍad · Aɛebbuḍ · Afud · Aglim · Aksum · Allen · Ameẓẓuɣ · Amgerḍ · Anzaren · Aẓar · Idammen · Idis · Iɣes · Iɣil · Iles · Imi · Tasa · Tayett · Tiṭ · Tuɣmas · Udem | 22 |
-| Les mots-outils | Acḥal · Acu · Akk · Akked · Amek · Anda · Anta · Anwa · Aṭas · Ayɣer · Cwiṭ · Dagi · Daɣen · Ddaw · Deffir · Deg · Dihin · Gar · Ɣef · Ihi · Imir · Kra · Maca · Mačči · Neɣ · Seg · Sennig · Sya · Ulac · Yal · Yella · Zdat · Zik | 33 |
-| La nature | Adrar · Aggur · Aɣanim · Akal · Aseklu · Asɣar · Asif · Azaɣar · Aẓru · Igenni · Ijeǧǧigen · Itran · Itri · Lebḥer · Tamurt · Tiɣilt · Ttejra · Tuga | 18 |
-| La famille | Adrum · Ayetma · Ɛemmi · Ɛemti · Isli · Jeddi · Mmi · Setti · Tarwa · Tawacult · Tislit · Xali · Xalti · Yelli · Yessetma | 15 |
-| Les animaux | Afrux · Agḍiḍ · Aqjun · Aserdun · Ayaziḍ · Ayis · Azger · Azrem · Ifis · Ikerri · Ilef · Insi · Izem · Izi · Taɣaṭ · Tasekkurt · Tayaziṭ · Tazizwit · Tixsi · Uccen | 20 |
-| Les nombres | Agim · Ɛecṛa · Meyya · Mraw · Sa · Sḍis · Tam · Tẓa | 8 |
-| Les qualités | Aɣezzfan · Ajdid · Ameqqran · Ameṛkanti · Amerẓag · Ameẓyan · Aqbur · Areqqaq · Awezlan · Aẓawali · Azedgan · Aẓidan · Azuran | 13 |
-| Manger & boire | Aɣi · Ibawen · Ifelfel · Imekli · Imensi · Lbeṣel · Lefṭur · Lmelḥ · Seksu · Tamellalt · Tazart · Tibexsisin · Tibḥirt · Tiyni · Tiẓurin · Udi · Zzit | 17 |
-| Le travail | Aḥeddad · Ameksa · Ameqyas · Anejjar · Aqendur · Aselham · Axemmas · Aẓeṭṭa · Ssnaɛa · Ssuma · Tabzimt · Tacacit | 12 |
-| La maison | Ajenwi · Akursi · Amrar · Lḥiḍ · Lkaɣeḍ · Lkanun · Ssqef · Tabaqit · Tafat · Taɣenǧawt · Taqbuct · Tasumta · Tazeqqa · Tillas · Times · Tissegnit · Ṭṭabla · Usu | 18 |
-| Les verbes | Ali · Amen · Aru · Awi · Bdu · Bɣu · Bnu · Cfu · Ddem · Ddu · Diri · Efk · Erǧu · Err · Ɛreḍ · Fak · Ffeɣ · Fhem · Ɣer · Ɣiwel · Ḥemmel · Ḥmu · Ili · Ini · Issin · Kcem · Kker · Krez · Lhu · Lḥu · Meslay · Muqel · Qqim · Sel · Semmeḍ · Sers · Sɛu · Sɣ · Sired · Ssiwel · Ssuter · Steqsi · Ṣubb · Suref · Ṭṭes · Ttu · Uɣal · Uẓum · Wet · Ẓall · Ẓer · Zzenz · Ẓẓu | 53 |
-| Les couleurs | Aqehwi · Azerwal | 2 |
-| Le temps qu’il fait | Asemmiḍ · Azɣal · Tignewt | 3 |
-| Le temps qui passe | Imalas · Ssmana · Tasaɛet · Useggas · Yennayer | 5 |
+| Les paroles | A tasa-w · A wi yufan · Ad ruḥeɣ · Akken ilaq · Anda-t ? · Anda-tt ? · Ansi i d-tekkiḍ ? · Ar azekka · Ar timlilit · As-d ɣer dagi · Awi-d · Azul fell-awen · Bɣiɣ… · Bismillah · D acḥal ? · D acu i d isem-ik ? · D lɛali · D tidet · Diri-t · Efk-iyi-d · Erǧu cwiṭ · Ɛawen-iyi · Ɛiwed-d · Fehmeɣ · Ḥader iman-ik · Isem-iw… · Lḥemdullah · Ma ulac aɣilif · Mselxir · Ncallah · Qqim di lehna · Ruḥ di lehna · S leɛqel · S tɣawla · Ṣaḥḥa · Ṣbeḥ lxir · Sɛiɣ… · Ulac aɣilif · Ur bɣiɣ ara · Ur sɛiɣ ara · Ur ssineɣ ara · Ur ẓriɣ ara · Yelha · Yerbeḥ | 44 |
+| Les animaux | Abareɣ · Abziz · Aɛudiw · Afalku · Aferṭeṭṭu · Afrux · Agenduz · Aɣerda · Aɣilas · Aɣyul · Ajeḥniḍ · Ajrad · Akured · Alɣem · Amqerqur · Aqelwac · Aqjun · Arẓaẓ · Aserdun · Aslem · Aweṭṭuf · Awtul · Ayaziḍ · Azger · Azrem · Bururu · Ibellireǧ · Ibki · Icc · Ifer · Ifis · Ifker · Igider · Iɣid · Ikerri · Ilef · Insi · Itbir · Izem · Izi · Izimer · Lɛecc · Lḥut · Lmal · Tafunast · Tagerfa · Tagmart · Taɣaṭ · Tasekkurt · Tawekka · Tayaziṭ · Tazermemmuct · Tifirellest · Tiɣirdemt · Tilkit · Tissist · Tixsi · Tizizwit · Uccen · Ulli | 60 |
+| La maison | Abbu · Acaqur · Acmux · Adaynin · Aḍebsi · Aḍellaɛ · Aɛdil · Afrag · Agelzim · Aɣenja · Ajenwi · Ajgu · Akufi · Amesmar · Amger · Amnar · Amrar · Aqermud · Asenduq · Iɣed · Lbir · Lemri · Lḥiḍ · Lkaɣeḍ · Lkanun · Lkas · Lkursi · Lmeṣbaḥ · Lqaɛa · Ssqef · Tabaqit · Tabburt · Tabuqalt · Tacekkart · Tacemmaɛt · Taḍuṭ · Taɛrict · Tafat · Tafḍist · Taftilt · Tagertilt · Taɣenǧawt · Taqabact · Taqbuct · Taqerɛet · Tarbut · Tasarut · Tasebbalt · Taseksut · Tasga · Tasilt · Tasraft · Tasumta · Tazeqqa · Tigejdit · Tillas · Times · Tirgin · Tissegnit · Ṭṭabla · Ṭṭaq · Usu | 62 |
+| Manger & boire | Abelluḍ · Aɛeqqa · Aɛwin · Afeqqus · Akermus · Aseqqi · Awren · Ayefki · Berkukes · Ččina · Dellaɛ · Fad · Ibawen · Ifelfel · Iɣi · Ikil · Imekli · Imensi · Irden · Laẓ · Lbaṭaṭa · Lbeṣel · Lefṭur · Lesfenǧ · Lfakya · Lleft · Lluz · Lmecmac · Lmelḥ · Lqares · Lqut · Lxeḍra · Lxux · Rremman · Seksu · Ssker · Tadeffaḥt · Taḥbult · Tamellalt · Tamtunt · Tassemt · Tazart · Tibexsisin · Tibḥirt · Ticcert · Tifirest · Tiɣrifin · Timẓin · Tissit · Tiẓurin · Ṭumaṭic · Učči · Udi · Zrudeyya · Zzit | 55 |
+| Les vêtements & les parures | Abernus · Aceṭṭiḍ · Agus · Amendil · Ameqyas · Aqelmun · Aqendur · Arkasen · Aserwal · Axelxal · Isebbaḍen · Lfuḍa · Ljib · Lqecc · Lxiḍ · Tabzimt · Tacacit · Taqeccabit · Taqendurt · Taxatemt · Tazlagt · Timeḥremt | 22 |
+| Les gens | Aberrani · Aɛdaw · Agellid · Aḥbib · Ajar · Amakar · Amdakkel · Amɣar · Amsafer · Aqbayli · Aqeddac · Aterras · Ccix · Inebgi · Lamin · Lɣaci · Medden · Tajart · Tamdakkelt · Taqbaylit | 20 |
+| Le village & la ville | Abrid · Agni · Aɣbalu · Aɣerbaz · Amkan · Annar · Asqif · Azniq · Ifri · Iger · Iɣzer · Lbabuṛ · Lexla · Lǧameɛ · Lḥebs · Lqahwa · Sbiṭar · Tajmaɛt · Takeṛṛust · Tala · Talast · Tamazirt · Tamda · Tamdint · Tawrirt · Tiqenṭert · Tizi · Urti | 28 |
+| Le temps qu’il fait | Abruri · Agris · Asemmiḍ · Azɣal · Lebraq · Lehwa · Rrɛud · Tagut · Tignewt · Tislit n wanẓar | 10 |
+| Le corps | Acebbub · Acenfir · Aḍad · Aɛebbuḍ · Aɛrur · Afud · Agerz · Aglim · Aksum · Allen · Amayeg · Ameẓẓuɣ · Amgerḍ · Ammas · Anyir · Anẓad · Anzaren · Aqejjir · Aqemmuc · Aẓar · Iccer · Idammen · Idis · Idmaren · Iɣes · Iɣil · Iles · Imeṭṭi · Imi · Lǧetta · Taɣect · Taɣma · Tamart · Tasa · Tayett · Tidi · Tidikelt · Tigeẓẓelt · Tiɣmert · Timmi · Tinzert · Tiṭ · Tuɣmas · Turin · Udem | 45 |
+| Les qualités | Acebḥan · Aderɣal · Aɛeẓẓug · Afessas · Aɣezzfan · Aḥerfi · Aḥnin · Ajdid · Alemmas · Aleqqaq · Amecṭuḥ · Amenzu · Ameqqran · Ameṛkanti · Amerẓagu · Amezwaru · Ameẓyan · Aneggaru · Aqbur · Aquran · Areqqaq · Asemmaḍ · Awezlan · Awḥid · Aẓawali · Aẓayan · Azedgan · Aẓidan · Azuran · Igellil · Ilem · Ucbiḥ · Ucmit · Uḥdiq · Uḥric · Ukyis · Ungif · Uqbiḥ | 38 |
+| Les mots-outils | Acemma · Acḥal · Acu · Agemmaḍ · Ahat · Akk · Akka · Akked · Akken · Akkin · Am · Amek · Anda · Ansi · Anta · Anwa · Ar · Armi · Aṭas · Axaṭer · Ayeffus · Ayen · Ayɣer · Azelmaḍ · Beṛṛa · Cwiṭ · Dagi · Daɣen · Daxel · Ddaw · Deffir · Deg · Dɣa · Dihin · Dima · Drus · Ɛlaḥsab · Gar · Ɣef · Ɣur · Ḥedd · Ihi · Ilaq · Ilindi · Imir · Kan · Kra · Kullec · Kunemti · Kunwi · Lukan · Ma · Maca · Mačči · Mazal · Mebla · Mi · Neɣ · Nekni · Nezzeh · Nutenti · Nutni · Qrib · Seg · Segmi · Seld-iḍelli · Sell-azekka · Sennig · Siwa · Sya · Tagi · Tama · Tihin · Ula · Ulac · Ulamek · Umbeɛd · Wagi · Waqila · Weqbel · Werǧin · Wihin · Wissen · Xas · Yal · Yella · Yiwwas · Zdat · Zik | 89 |
+| La famille | Aḍeggal · Adrum · Agujil · Alwes · Ayetma · Ayyaw · Dadda · Ɛemmi · Ɛemti · Imawlan · Isli · Jeddi · Lejdud · Llufan · Mmi · Nanna · Setti · Taḍeggalt · Taǧǧalt · Tagmat · Takna · Tameɣra · Tamɣart · Tarwa · Tawacult · Tislit · Xali · Xalti · Yelli · Yessetma · Zzwaǧ | 31 |
+| La nature | Adrar · Aggur · Aɣanim · Aɣebbar · Akal · Aluḍ · Aseklu · Asɣar · Asif · Azaɣar · Aẓru · Ddheb · Ddunit · Igenni · Ijdi · Ijeǧǧigen · Iṭij · Itran · Itri · Lebḥer · Leḥcic · Lfeṭṭa · Lǧiha · Nnḥas · Tamurt · Tiɣilt · Tiziri · Ttejra · Uzzal | 29 |
+| Les verbes | Af · Agad · Aɣ · Aker · Ali · Amen · Arew · Aru · Aweḍ · Awi · Bdu · Bḍu · Bedd · Beddel · Bɣu · Bibb · Bnu · Ččar · Cɛel · Cfu · Ddem · Ddu · Degger · Ḍeggeṛ · Dɛu · Ḍfer · Diri · Eḍs · Efk · Eg · Eǧǧ · Eɣz · Eks · Els · Enɣ · Erǧu · Err · Erẓ · Eww · Eẓd · Eẓḍ · Ɛebbi · Ɛeddi · Ɛeggeḍ · Ɛiwed · Ɛiwen · Ɛjeb · Ɛqel · Ɛreḍ · Ɛyu · Fak · Ffad · Ffeɣ · Ffer · Fhem · Freḥ · Fsi · Ggri · Gmu · Gzem · Ɣer · Ɣil · Ɣiwel · Ɣli · Ɣreq · Ɣum · Ḥader · Ḥbes · Ḥemmel · Ḥess · Ḥku · Hlek · Ḥlu · Ḥmu · Ḥrez · Ḥseb · Ḥulfu · Ḥwiǧ · Idir · Ili · Imɣur · Imẓi · Ini · Issin · Jbed · Jmeɛ · Kcem · Kemmel · Kker · Kkes · Kreh · Krez · Lal · Ldi · Leqqem · Lhu · Lḥu · Lmed · Mdel · Meslay · Mger · Mlil · Mmet · Muqel · Nadi · Neggez · Nɛel · Nnaɣ · Qerreb · Qqen · Qqim · Rbeḥ · Refd · Rfu · Rnu · Ru · Rwel · Rwu · Ṣber · Ṣeggem · Sel · Semmeḍ · Sers · Serwet · Sɛu · Sfeḍ · Sired · Sselmed · Ssew · Sseww · Ssexsi · Ssiwel · Ssken · Ssusem · Ssuter · Steqsi · Ṣubb · Suref · Ṭṭef · Ṭṭes · Ttu · Uɣal · Uẓum · Wali · Wet · Wexxer · Xdem · Xemmem · Xiḍ · Xleḍ · Xser · Ẓall · Zdeɣ · Zdem · Ẓer · Zger · Zmer · Zreɛ · Zwir · Zzeg · Zzenz · Ẓẓu | 162 |
+| Les plantes & les arbres | Afurk · Aḥeccad · Ajeǧǧig · Akerruc · Alim · Amadaɣ · Amezzir · Asaɣur · Asennan · Azezzu · Iclem · Ifilku · Ileggi · Imɣi · Inijel · Lɣella · Lwerd · Nneɛneɛ · Tamegra · Taneqlet · Tara · Tasaft · Taslent · Tazemmurt · Tiẓgi · Ulmu · Zzeɛter · Zzerriɛa | 28 |
+| Les nombres | Agim · Alef · Amur · Azgen · Ɛecṛa · Ɛecrin · Meyya · Mraw · Rebɛa · Sa · Sḍis · Sebɛa · Setta · Tam · Tesɛa · Tmanya · Tẓa · Xemsa | 18 |
+| Les sentiments & les valeurs | Aɣilif · Asirem · Ccedda · Ccerr · Iman · Lbaṭel · Lebɣi · Leɛqel · Lehna · Leḥya · Leḥzen · Lekdeb · Lemḥibba · Leqder · Lferḥ · Lǧehd · Lḥeqq · Lḥerma · Lḥif · Lweḥc · Lxaṭer · Lxiq · Lxir · Lxuf · Nnif · Rruḥ · Ṣṣber · Ssɛed · Taḍsa · Talwit · Tamettant · Tamusni · Targit · Tayri · Tidet · Tikerkas · Tilelli · Tirrugza · Tismin · Ṭṭmeɛ · Tudert · Urfan · Zzher | 43 |
+| Le travail | Aḥeddad · Ameksa · Anejjar · Axemmas · Aẓeṭṭa · Lxedma · Ssnaɛa · Ssuma | 8 |
+| La santé | Amuḍin · Aqraḥ · Aṭṭan · Ddwa · Lǧerḥ · Ṣṣeḥḥa · Tawla · Tazmert | 8 |
+| Le temps qui passe | Anebdu · Azal · Ccetwa · Ddurt · Imalas · Lefjer · Lexrif · Lweqt · Tafsut · Tallit · Tasaɛet · Taṣebḥit · Tikkelt · Useggas · Yennayer | 15 |
+| Les couleurs | Aqehwi | 1 |
+| Les objets | Aṣurdi · Lḥaǧa · Lmizan · Lmus · Tabrat · Taɛekkazt · Taɣawsa · Taktabt · Tamacint | 9 |
 
 ## Étymologies — la couche écrite à la main
 
 > `src/data/etymologies.js`. C’est la SEULE partie du dictionnaire qui ne soit pas dérivée du contenu des cours : elle est à valider ligne par ligne. « Discuté » signale que les sources ne s’accordent pas — l’app l’affiche alors à l’élève.
 
-### Fonds amazigh (138)
+### Fonds amazigh (139)
 
 | Forme(s) | Cours | Racine | Note affichée | Discuté | OK ? |
 | --- | --- | --- | --- | :-: | :-: |
@@ -348,7 +353,7 @@
 | **Afus · ⴰⴼⵓⵙ** | kab shi tzm zgh | — | La main, dans toutes les langues amazighes, jusqu’au touareg. |  | ☐ |
 | **Ageffur** | kab | — | La pluie, en kabyle. |  | ☐ |
 | **Aɣrum · ⴰⵖⵔⵓⵎ** | kab shi rif tzm zgh | — | Le pain, partout pareil — un des mots les plus stables de la langue. |  | ☐ |
-| **Aɣyul** | tzm | — | L’âne — pan-amazigh. |  | ☐ |
+| **Aɣyul** | kab tzm | — | L’âne — pan-amazigh. |  | ☐ |
 | **Ala** | kab | — | Le non kabyle. |  | ☐ |
 | **Aman · ⴰⵎⴰⵏ** | kab shi rif tzm zgh | — | L’eau — toujours au pluriel, jamais au singulier, comme si l’eau ne pouvait pas se compter. Identique du Rif au Souss. |  | ☐ |
 | **Amcic** | kab | — | Le chat. Sans doute une onomatopée d’appel, partagée avec l’arabe maghrébin — l’emprunt pourrait aller dans les deux sens. | ⚠️ | ☐ |
@@ -372,6 +377,7 @@
 | **Askka** | tzm | — | Demain, au Moyen Atlas. |  | ☐ |
 | **Ass** | kab | — | Le jour. « Ass-a » : ce jour-ci, aujourd’hui. |  | ☐ |
 | **Ass-a** | kab | — | Ass (le jour) + -a, qui montre ce qui est proche : ce jour-ci. |  | ☐ |
+| **Aṭas** | kab | ṬS | Beaucoup, trop. Il prend l’état d’annexion comme un nom amazigh (« waṭas »), et le Dallet ne le donne pas pour emprunt. |  | ☐ |
 | **Awraɣ** | kab | WRƔ | Le jaune, de la même racine que « urɣ », l’or. |  | ☐ |
 | **Axxam** | kab | — | La maison kabyle — la maisonnée autant que le bâtiment. |  | ☐ |
 | **Azeggaɣ** | kab | ZGƔ | Le rouge. |  | ☐ |
@@ -394,7 +400,7 @@
 | **Gma** | kab | — | Mot composé : « g(u)-ma », le fils de ma mère. La parenté amazighe se dit par la mère. |  | ☐ |
 | **Iḍ** | kab | — | La nuit. |  | ☐ |
 | **Iḍelli** | kab | — | Hier. |  | ☐ |
-| **Iger** | rif | — | Le champ, au Rif. |  | ☐ |
+| **Iger** | kab rif | — | Le champ, au Rif. |  | ☐ |
 | **Igr** | shi tzm | — | Le champ — pan-amazigh ; « iger » au Rif. |  | ☐ |
 | **Ih** | kab | — | Le oui kabyle. |  | ☐ |
 | **Ijjen** | rif | — | Un, au Rif. Au-delà, le Rif compte en arabe. |  | ☐ |
@@ -409,7 +415,7 @@
 | **Lla** | rif | — | Le non du Rif. | ⚠️ | ☐ |
 | **Mamec teǧǧid ?** | rif | — | Comment vas-tu ?, au Rif. |  | ☐ |
 | **Manzakin ?** | shi | — | Comment vas-tu ? — la terminaison change avec le genre : « manzakmin ? » à une femme. |  | ☐ |
-| **Mayd tɛnit ?** | tzm | — | Comment vas-tu ?, au Moyen Atlas. Le ɛ laisse penser à une racine arabe — à trancher. | ⚠️ | ☐ |
+| **Mayd tɛnit ?** | tzm | — | Comment vas-tu ?, au Moyen Atlas. La racine du verbe n’est établie par aucune source consultée. | ⚠️ | ☐ |
 | **Melmi ?** | kab | — | Quand ? |  | ☐ |
 | **Mma** | tzm | — | Ma mère, au Moyen Atlas. |  | ☐ |
 | **Mmaḥllu** | tzm | — | Grand-mère, au Moyen Atlas. |  | ☐ |
@@ -424,13 +430,14 @@
 | **Smmus** | shi tzm | — | Cinq, au Maroc. |  | ☐ |
 | **Taddart** | kab tzm | — | FAUX-AMI : le village en kabyle, la MAISON au Maroc central. Le même mot, deux échelles. |  | ☐ |
 | **Tafukt** | kab | FK / FW | Le soleil — même famille que « tifawin », les lumières, le bonjour du Souss. |  | ☐ |
-| **Tafunast** | tzm | — | La vache ; le taureau, c’est « afunas ». |  | ☐ |
+| **Tafunast** | kab tzm | — | La vache ; le taureau, c’est « afunas ». |  | ☐ |
 | **Takurt · ⵜⴰⴽⵓⵔⵜ** | kab shi rif tzm zgh | — | La balle, le ballon. Elle porte la forme amazighe (ta—t) ; certains auteurs y voient tout de même un emprunt ancien à l’arabe « kura ». | ⚠️ | ☐ |
 | **Tameddit** | kab | — | Le soir, en kabyle. |  | ☐ |
 | **Tament** | kab | — | Le miel — mot du fonds, jusqu’au touareg. |  | ☐ |
 | **Tameṭṭut** | kab | — | La femme. Le t…t qui l’encadre est la marque du féminin. |  | ☐ |
+| **Tamɣart · ⵜⴰⵎⵖⴰⵔⵜ** | kab zgh | MƔR | De la racine « être grand » : la femme d’âge, celle qui compte. « Amɣar », c’est l’ancien, le chef. |  | ☐ |
 | **Tanemmirt** | kab | NMR | Le merci kabyle, repris par la norme marocaine sous la graphie « tanmmirt » — sans e, le schwa ne s’écrit pas. |  | ☐ |
-| **Tanemmirt aṭas** | kab | — | Tanemmirt + aṭas, beaucoup. |  | ☐ |
+| **Tanemmirt aṭas** | kab | — | Tanemmirt + aṭas, beaucoup. Les deux mots sont du fonds kabyle : le Dallet range « aṭas » sous la racine ṬS, sans le donner pour emprunt. |  | ☐ |
 | **Tanezzayt** | kab | — | Le matin, en kabyle. |  | ☐ |
 | **Tanmmirt · ⵜⴰⵏⵎⵎⵉⵔⵜ** | shi zgh | NMR | Merci — la graphie sans schwa, celle du Maroc et de la norme. |  | ☐ |
 | **Taqcict** | kab | — | La fille — le même mot que « aqcic », passé au féminin. |  | ☐ |
@@ -443,18 +450,18 @@
 | **Tilemẓit** | kab | LMẒ | La jeune fille. |  | ☐ |
 | **Tiwecca** | rif | — | Demain, au Rif. |  | ☐ |
 | **Tiwizi** | kab | — | L’entraide : le village travaille chez l’un, puis chez l’autre, sans salaire. Une institution autant qu’un mot. |  | ☐ |
-| **Ttxil-k** | kab | — | Origine débattue : fonds kabyle pour les uns, tournure arabe pour les autres. | ⚠️ | ☐ |
+| **Ttxil-k** | kab | ṬXL | Le Dallet l’enregistre sous sa propre racine, comme formule de supplication, sans le donner pour emprunt. Son origine plus lointaine n’est pas établie. | ⚠️ | ☐ |
 | **Tura** | kab | — | Maintenant. |  | ☐ |
 | **Uhu · ⵓⵀⵓ** | shi tzm zgh | — | Le non marocain, du Souss à l’Atlas. |  | ☐ |
 | **Ul** | kab | — | Le cœur. Le tarifit en fait « uř » : son l ancien devient ř. |  | ☐ |
-| **Ulli** | tzm | — | Les brebis et les chèvres — un pluriel sans singulier, comme « aman ». |  | ☐ |
+| **Ulli** | kab tzm | — | Les brebis et les chèvres — un pluriel sans singulier, comme « aman ». |  | ☐ |
 | **Uř** | rif | — | Le cœur, au Rif — c’est « ul » ailleurs, avec le passage l → ř. |  | ☐ |
 | **Ur fhimeɣ ara** | kab | — | La négation kabyle tient en deux morceaux qui encadrent le verbe : ur… ara. En oublier un, c’est dire l’inverse. |  | ☐ |
 | **Urar · ⵓⵔⴰⵔ** | kab shi tzm zgh | — | Le jeu. Le pluriel « uraren » vaut pour les jeux d’enfants. |  | ☐ |
 | **Uraren** | rif | — | Les jeux — le pluriel de « urar ». |  | ☐ |
 | **Weltma** | kab | — | Composé lui aussi : « welt-ma », la fille de ma mère. Le Rif en fait « učma ». |  | ☐ |
 | **Xeddmeɣ deg wexxam** | kab | — | Le -ɣ final, c’est « je ». Et « axxam » devient « wexxam » après la préposition : c’est l’état d’annexion, la marque la plus reconnaissable de la grammaire amazighe. |  | ☐ |
-| **Yah** | shi tzm | — | Origine discutée : fonds amazigh ou emprunt. | ⚠️ | ☐ |
+| **Yah** | shi tzm | — | Le oui du Souss et de l’Atlas. Aucune source consultée n’en établit l’origine. | ⚠️ | ☐ |
 | **Yan · ⵢⴰⵏ** | shi tzm zgh | — | Un, au Maroc ; « yat » au féminin. |  | ☐ |
 | **Yat** | tzm | — | Une — le féminin de « yan ». |  | ☐ |
 | **Yemma** | kab rif | — | Maman — « immi » au Souss, « mma » au Moyen Atlas. |  | ☐ |
@@ -473,7 +480,6 @@
 | **ⵖ** | zgh | — | yaɣ — le ɣ, proche du r de Paris. |  | ☐ |
 | **ⵚ** | zgh | — | yaṣ — l’emphatique de ⵙ (yas). |  | ☐ |
 | **ⵜ** | zgh | — | yat — le t. Il encadre le féminin amazigh : ta—t. |  | ☐ |
-| **ⵜⴰⵎⵖⴰⵔⵜ** | zgh | MƔR | De la racine « être grand » : la femme d’âge, celle qui compte. « Amɣar », c’est l’ancien, le chef. |  | ☐ |
 | **ⵜⵉⴼⵉⵏⴰⵖ** | zgh | — | Le nom de l’écriture. Souvent lu « les phéniciennes », par rapprochement avec l’alphabet punique — lecture répandue, mais discutée. | ⚠️ | ☐ |
 | **ⵟ** | zgh | — | yaṭ — l’emphatique de ⵜ (yat). |  | ☐ |
 | **ⵢⵢⵉⵀ** | zgh | — | Le oui de la norme écrite. |  | ☐ |
@@ -536,7 +542,7 @@
 | **Tnayen** | rif | — | Deux, emprunté à l’arabe — le Rif a perdu la série amazighe au-delà de un. |  | ☐ |
 | **Ṭṭbib** | shi rif | — | De « ṭabīb ». C’est ce qu’on dit partout au Maghreb. |  | ☐ |
 | **Wa ɛlikum ssalam** | shi rif | — | La réponse obligée : et sur vous la paix. |  | ☐ |
-| **Wah** | rif | — | Probable emprunt à l’arabe maghrébin — à confirmer. | ⚠️ | ☐ |
+| **Wah** | rif | — | De l’arabe marocain « wah », oui — c’est ainsi que le classe le vocabulaire tarifit de M. Kossmann. |  | ☐ |
 | **Waxxa** | tzm | — | De l’arabe marocain — d’accord, soit. |  | ☐ |
 
 ### Emprunt à l’espagnol (1)
@@ -552,29 +558,34 @@
 | **Atay** | kab | — | Venu de Chine par l’arabe maghrébin. Le mot a voyagé avec la boisson : il n’y a pas de thé amazigh plus ancien que lui. |  | ☐ |
 | **Idrimen** | kab | — | Arrivé par l’arabe « dirham », lui-même venu du grec « drachmê » : trois langues pour une pièce de monnaie. |  | ☐ |
 
-### Sans étymologie — à écrire (267)
+### Sans étymologie — à écrire (819)
 
 Le dictionnaire affiche pour ces entrées : « L’origine de ce mot n’est pas encore écrite. Elle sera ajoutée après validation par un locuteur ou un linguiste, bi-idniLlah. »
 
-**Kabyle** (267)
+**Kabyle** (819)
 
-- *Les paroles* — A tasa-w · Ansi i d-tekkiḍ ? · Ar timlilit · D acu i d isem-ik ? · D tidet · Ɛawen-iyi · Isem-iw… · Ma ulac aɣilif · Ṣbeḥ lxir · Ur ẓriɣ ara · Yerbeḥ
-- *Les gens* — Aberrani · Aɣerfan · Ajar · Amdakkel · Amɣar · Anebgi · Medden · Tajart · Tamdakkelt
-- *Le village & la ville* — Abrid · Aɣbalu · Aɣerbaz · Aqbu · Lǧameɛ · Tajmaɛt · Tala · Tamdint
-- *Le corps* — Acebbub · Aḍad · Aɛebbuḍ · Afud · Aglim · Aksum · Allen · Ameẓẓuɣ · Amgerḍ · Anzaren · Aẓar · Idammen · Idis · Iɣes · Iɣil · Iles · Imi · Tasa · Tayett · Tiṭ · Tuɣmas · Udem
-- *Les mots-outils* — Acḥal · Acu · Akk · Akked · Amek · Anda · Anta · Anwa · Aṭas · Ayɣer · Cwiṭ · Dagi · Daɣen · Ddaw · Deffir · Deg · Dihin · Gar · Ɣef · Ihi · Imir · Kra · Maca · Mačči · Neɣ · Seg · Sennig · Sya · Ulac · Yal · Yella · Zdat · Zik
-- *La nature* — Adrar · Aggur · Aɣanim · Akal · Aseklu · Asɣar · Asif · Azaɣar · Aẓru · Igenni · Ijeǧǧigen · Itran · Itri · Lebḥer · Tamurt · Tiɣilt · Ttejra · Tuga
-- *La famille* — Adrum · Ayetma · Ɛemmi · Ɛemti · Isli · Jeddi · Mmi · Setti · Tarwa · Tawacult · Tislit · Xali · Xalti · Yelli · Yessetma
-- *Les animaux* — Afrux · Agḍiḍ · Aqjun · Aserdun · Ayaziḍ · Ayis · Azger · Azrem · Ifis · Ikerri · Ilef · Insi · Izem · Izi · Taɣaṭ · Tasekkurt · Tayaziṭ · Tazizwit · Tixsi · Uccen
-- *Les nombres* — Agim · Ɛecṛa · Meyya · Mraw · Sa · Sḍis · Tam · Tẓa
-- *Les qualités* — Aɣezzfan · Ajdid · Ameqqran · Ameṛkanti · Amerẓag · Ameẓyan · Aqbur · Areqqaq · Awezlan · Aẓawali · Azedgan · Aẓidan · Azuran
-- *Manger & boire* — Aɣi · Ibawen · Ifelfel · Imekli · Imensi · Lbeṣel · Lefṭur · Lmelḥ · Seksu · Tamellalt · Tazart · Tibexsisin · Tibḥirt · Tiyni · Tiẓurin · Udi · Zzit
-- *Le travail* — Aḥeddad · Ameksa · Ameqyas · Anejjar · Aqendur · Aselham · Axemmas · Aẓeṭṭa · Ssnaɛa · Ssuma · Tabzimt · Tacacit
-- *La maison* — Ajenwi · Akursi · Amrar · Lḥiḍ · Lkaɣeḍ · Lkanun · Ssqef · Tabaqit · Tafat · Taɣenǧawt · Taqbuct · Tasumta · Tazeqqa · Tillas · Times · Tissegnit · Ṭṭabla · Usu
-- *Les verbes* — Ali · Amen · Aru · Awi · Bdu · Bɣu · Bnu · Cfu · Ddem · Ddu · Diri · Efk · Erǧu · Err · Ɛreḍ · Fak · Ffeɣ · Fhem · Ɣer · Ɣiwel · Ḥemmel · Ḥmu · Ili · Ini · Issin · Kcem · Kker · Krez · Lhu · Lḥu · Meslay · Muqel · Qqim · Sel · Semmeḍ · Sers · Sɛu · Sɣ · Sired · Ssiwel · Ssuter · Steqsi · Ṣubb · Suref · Ṭṭes · Ttu · Uɣal · Uẓum · Wet · Ẓall · Ẓer · Zzenz · Ẓẓu
-- *Les couleurs* — Aqehwi · Azerwal
-- *Le temps qu’il fait* — Asemmiḍ · Azɣal · Tignewt
-- *Le temps qui passe* — Imalas · Ssmana · Tasaɛet · Useggas · Yennayer
+- *Les paroles* — A tasa-w · A wi yufan · Ad ruḥeɣ · Akken ilaq · Anda-t ? · Anda-tt ? · Ansi i d-tekkiḍ ? · Ar azekka · Ar timlilit · As-d ɣer dagi · Awi-d · Azul fell-awen · Bɣiɣ… · Bismillah · D acḥal ? · D acu i d isem-ik ? · D lɛali · D tidet · Diri-t · Efk-iyi-d · Erǧu cwiṭ · Ɛawen-iyi · Ɛiwed-d · Fehmeɣ · Ḥader iman-ik · Isem-iw… · Lḥemdullah · Ma ulac aɣilif · Mselxir · Ncallah · Qqim di lehna · Ruḥ di lehna · S leɛqel · S tɣawla · Ṣaḥḥa · Ṣbeḥ lxir · Sɛiɣ… · Ulac aɣilif · Ur bɣiɣ ara · Ur sɛiɣ ara · Ur ssineɣ ara · Ur ẓriɣ ara · Yelha · Yerbeḥ
+- *Les animaux* — Abareɣ · Abziz · Aɛudiw · Afalku · Aferṭeṭṭu · Afrux · Agenduz · Aɣerda · Aɣilas · Ajeḥniḍ · Ajrad · Akured · Alɣem · Amqerqur · Aqelwac · Aqjun · Arẓaẓ · Aserdun · Aslem · Aweṭṭuf · Awtul · Ayaziḍ · Azger · Azrem · Bururu · Ibellireǧ · Ibki · Icc · Ifer · Ifis · Ifker · Igider · Iɣid · Ikerri · Ilef · Insi · Itbir · Izem · Izi · Izimer · Lɛecc · Lḥut · Lmal · Tagerfa · Tagmart · Taɣaṭ · Tasekkurt · Tawekka · Tayaziṭ · Tazermemmuct · Tifirellest · Tiɣirdemt · Tilkit · Tissist · Tixsi · Tizizwit · Uccen
+- *La maison* — Abbu · Acaqur · Acmux · Adaynin · Aḍebsi · Aḍellaɛ · Aɛdil · Afrag · Agelzim · Aɣenja · Ajenwi · Ajgu · Akufi · Amesmar · Amger · Amnar · Amrar · Aqermud · Asenduq · Iɣed · Lbir · Lemri · Lḥiḍ · Lkaɣeḍ · Lkanun · Lkas · Lkursi · Lmeṣbaḥ · Lqaɛa · Ssqef · Tabaqit · Tabburt · Tabuqalt · Tacekkart · Tacemmaɛt · Taḍuṭ · Taɛrict · Tafat · Tafḍist · Taftilt · Tagertilt · Taɣenǧawt · Taqabact · Taqbuct · Taqerɛet · Tarbut · Tasarut · Tasebbalt · Taseksut · Tasga · Tasilt · Tasraft · Tasumta · Tazeqqa · Tigejdit · Tillas · Times · Tirgin · Tissegnit · Ṭṭabla · Ṭṭaq · Usu
+- *Manger & boire* — Abelluḍ · Aɛeqqa · Aɛwin · Afeqqus · Akermus · Aseqqi · Awren · Ayefki · Berkukes · Ččina · Dellaɛ · Fad · Ibawen · Ifelfel · Iɣi · Ikil · Imekli · Imensi · Irden · Laẓ · Lbaṭaṭa · Lbeṣel · Lefṭur · Lesfenǧ · Lfakya · Lleft · Lluz · Lmecmac · Lmelḥ · Lqares · Lqut · Lxeḍra · Lxux · Rremman · Seksu · Ssker · Tadeffaḥt · Taḥbult · Tamellalt · Tamtunt · Tassemt · Tazart · Tibexsisin · Tibḥirt · Ticcert · Tifirest · Tiɣrifin · Timẓin · Tissit · Tiẓurin · Ṭumaṭic · Učči · Udi · Zrudeyya · Zzit
+- *Les vêtements & les parures* — Abernus · Aceṭṭiḍ · Agus · Amendil · Ameqyas · Aqelmun · Aqendur · Arkasen · Aserwal · Axelxal · Isebbaḍen · Lfuḍa · Ljib · Lqecc · Lxiḍ · Tabzimt · Tacacit · Taqeccabit · Taqendurt · Taxatemt · Tazlagt · Timeḥremt
+- *Les gens* — Aberrani · Aɛdaw · Agellid · Aḥbib · Ajar · Amakar · Amdakkel · Amɣar · Amsafer · Aqbayli · Aqeddac · Aterras · Ccix · Inebgi · Lamin · Lɣaci · Medden · Tajart · Tamdakkelt · Taqbaylit
+- *Le village & la ville* — Abrid · Agni · Aɣbalu · Aɣerbaz · Amkan · Annar · Asqif · Azniq · Ifri · Iɣzer · Lbabuṛ · Lexla · Lǧameɛ · Lḥebs · Lqahwa · Sbiṭar · Tajmaɛt · Takeṛṛust · Tala · Talast · Tamazirt · Tamda · Tamdint · Tawrirt · Tiqenṭert · Tizi · Urti
+- *Le temps qu’il fait* — Abruri · Agris · Asemmiḍ · Azɣal · Lebraq · Lehwa · Rrɛud · Tagut · Tignewt · Tislit n wanẓar
+- *Le corps* — Acebbub · Acenfir · Aḍad · Aɛebbuḍ · Aɛrur · Afud · Agerz · Aglim · Aksum · Allen · Amayeg · Ameẓẓuɣ · Amgerḍ · Ammas · Anyir · Anẓad · Anzaren · Aqejjir · Aqemmuc · Aẓar · Iccer · Idammen · Idis · Idmaren · Iɣes · Iɣil · Iles · Imeṭṭi · Imi · Lǧetta · Taɣect · Taɣma · Tamart · Tasa · Tayett · Tidi · Tidikelt · Tigeẓẓelt · Tiɣmert · Timmi · Tinzert · Tiṭ · Tuɣmas · Turin · Udem
+- *Les qualités* — Acebḥan · Aderɣal · Aɛeẓẓug · Afessas · Aɣezzfan · Aḥerfi · Aḥnin · Ajdid · Alemmas · Aleqqaq · Amecṭuḥ · Amenzu · Ameqqran · Ameṛkanti · Amerẓagu · Amezwaru · Ameẓyan · Aneggaru · Aqbur · Aquran · Areqqaq · Asemmaḍ · Awezlan · Awḥid · Aẓawali · Aẓayan · Azedgan · Aẓidan · Azuran · Igellil · Ilem · Ucbiḥ · Ucmit · Uḥdiq · Uḥric · Ukyis · Ungif · Uqbiḥ
+- *Les mots-outils* — Acemma · Acḥal · Acu · Agemmaḍ · Ahat · Akk · Akka · Akked · Akken · Akkin · Am · Amek · Anda · Ansi · Anta · Anwa · Ar · Armi · Axaṭer · Ayeffus · Ayen · Ayɣer · Azelmaḍ · Beṛṛa · Cwiṭ · Dagi · Daɣen · Daxel · Ddaw · Deffir · Deg · Dɣa · Dihin · Dima · Drus · Ɛlaḥsab · Gar · Ɣef · Ɣur · Ḥedd · Ihi · Ilaq · Ilindi · Imir · Kan · Kra · Kullec · Kunemti · Kunwi · Lukan · Ma · Maca · Mačči · Mazal · Mebla · Mi · Neɣ · Nekni · Nezzeh · Nutenti · Nutni · Qrib · Seg · Segmi · Seld-iḍelli · Sell-azekka · Sennig · Siwa · Sya · Tagi · Tama · Tihin · Ula · Ulac · Ulamek · Umbeɛd · Wagi · Waqila · Weqbel · Werǧin · Wihin · Wissen · Xas · Yal · Yella · Yiwwas · Zdat · Zik
+- *La famille* — Aḍeggal · Adrum · Agujil · Alwes · Ayetma · Ayyaw · Dadda · Ɛemmi · Ɛemti · Imawlan · Isli · Jeddi · Lejdud · Llufan · Mmi · Nanna · Setti · Taḍeggalt · Taǧǧalt · Tagmat · Takna · Tameɣra · Tarwa · Tawacult · Tislit · Xali · Xalti · Yelli · Yessetma · Zzwaǧ
+- *La nature* — Adrar · Aggur · Aɣanim · Aɣebbar · Akal · Aluḍ · Aseklu · Asɣar · Asif · Azaɣar · Aẓru · Ddheb · Ddunit · Igenni · Ijdi · Ijeǧǧigen · Iṭij · Itran · Itri · Lebḥer · Leḥcic · Lfeṭṭa · Lǧiha · Nnḥas · Tamurt · Tiɣilt · Tiziri · Ttejra · Uzzal
+- *Les verbes* — Af · Agad · Aɣ · Aker · Ali · Amen · Arew · Aru · Aweḍ · Awi · Bdu · Bḍu · Bedd · Beddel · Bɣu · Bibb · Bnu · Ččar · Cɛel · Cfu · Ddem · Ddu · Degger · Ḍeggeṛ · Dɛu · Ḍfer · Diri · Eḍs · Efk · Eg · Eǧǧ · Eɣz · Eks · Els · Enɣ · Erǧu · Err · Erẓ · Eww · Eẓd · Eẓḍ · Ɛebbi · Ɛeddi · Ɛeggeḍ · Ɛiwed · Ɛiwen · Ɛjeb · Ɛqel · Ɛreḍ · Ɛyu · Fak · Ffad · Ffeɣ · Ffer · Fhem · Freḥ · Fsi · Ggri · Gmu · Gzem · Ɣer · Ɣil · Ɣiwel · Ɣli · Ɣreq · Ɣum · Ḥader · Ḥbes · Ḥemmel · Ḥess · Ḥku · Hlek · Ḥlu · Ḥmu · Ḥrez · Ḥseb · Ḥulfu · Ḥwiǧ · Idir · Ili · Imɣur · Imẓi · Ini · Issin · Jbed · Jmeɛ · Kcem · Kemmel · Kker · Kkes · Kreh · Krez · Lal · Ldi · Leqqem · Lhu · Lḥu · Lmed · Mdel · Meslay · Mger · Mlil · Mmet · Muqel · Nadi · Neggez · Nɛel · Nnaɣ · Qerreb · Qqen · Qqim · Rbeḥ · Refd · Rfu · Rnu · Ru · Rwel · Rwu · Ṣber · Ṣeggem · Sel · Semmeḍ · Sers · Serwet · Sɛu · Sfeḍ · Sired · Sselmed · Ssew · Sseww · Ssexsi · Ssiwel · Ssken · Ssusem · Ssuter · Steqsi · Ṣubb · Suref · Ṭṭef · Ṭṭes · Ttu · Uɣal · Uẓum · Wali · Wet · Wexxer · Xdem · Xemmem · Xiḍ · Xleḍ · Xser · Ẓall · Zdeɣ · Zdem · Ẓer · Zger · Zmer · Zreɛ · Zwir · Zzeg · Zzenz · Ẓẓu
+- *Les plantes & les arbres* — Afurk · Aḥeccad · Ajeǧǧig · Akerruc · Alim · Amadaɣ · Amezzir · Asaɣur · Asennan · Azezzu · Iclem · Ifilku · Ileggi · Imɣi · Inijel · Lɣella · Lwerd · Nneɛneɛ · Tamegra · Taneqlet · Tara · Tasaft · Taslent · Tazemmurt · Tiẓgi · Ulmu · Zzeɛter · Zzerriɛa
+- *Les nombres* — Agim · Alef · Amur · Azgen · Ɛecṛa · Ɛecrin · Meyya · Mraw · Rebɛa · Sa · Sḍis · Sebɛa · Setta · Tam · Tesɛa · Tmanya · Tẓa · Xemsa
+- *Les sentiments & les valeurs* — Aɣilif · Asirem · Ccedda · Ccerr · Iman · Lbaṭel · Lebɣi · Leɛqel · Lehna · Leḥya · Leḥzen · Lekdeb · Lemḥibba · Leqder · Lferḥ · Lǧehd · Lḥeqq · Lḥerma · Lḥif · Lweḥc · Lxaṭer · Lxiq · Lxir · Lxuf · Nnif · Rruḥ · Ṣṣber · Ssɛed · Taḍsa · Talwit · Tamettant · Tamusni · Targit · Tayri · Tidet · Tikerkas · Tilelli · Tirrugza · Tismin · Ṭṭmeɛ · Tudert · Urfan · Zzher
+- *Le travail* — Aḥeddad · Ameksa · Anejjar · Axemmas · Aẓeṭṭa · Lxedma · Ssnaɛa · Ssuma
+- *La santé* — Amuḍin · Aqraḥ · Aṭṭan · Ddwa · Lǧerḥ · Ṣṣeḥḥa · Tawla · Tazmert
+- *Le temps qui passe* — Anebdu · Azal · Ccetwa · Ddurt · Imalas · Lefjer · Lexrif · Lweqt · Tafsut · Tallit · Tasaɛet · Taṣebḥit · Tikkelt · Useggas · Yennayer
+- *Les couleurs* — Aqehwi
+- *Les objets* — Aṣurdi · Lḥaǧa · Lmizan · Lmus · Tabrat · Taɛekkazt · Taɣawsa · Taktabt · Tamacint
 
 ## Emprunts — les modales du cours
 
@@ -625,6 +636,7 @@ Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient d�
 | Tarifit | **Taḥanut** | La boutique | arabe | — | De l’arabe « ḥānūt », habillé du t…t féminin amazigh. |
 | Tarifit | **Ryaḍa** | Le sport | arabe | **Addal** | C’est le mot de tous les jours. « Addal » est amazigh, créé au XXᵉ siècle et repris par l’école. |
 | Tarifit | **Simana** | La semaine | espagnol | — | De l’espagnol « semana ». Le Rif est la seule langue amazighe du cours à emprunter autant à l’espagnol qu’à l’arabe — c’est l’héritage de Melilla et de Nador. |
+| Tarifit | **Wah** | Oui | arabe | — | De l’arabe marocain « wah ». C’est le oui de tous les jours au Rif — le linguiste M. Kossmann le range parmi les emprunts du tarifit. |
 | Tarifit | **Lkuṛa** | Le ballon | arabe | **Takurt** | De l’arabe « kura ». « Takurt » porte, elle, la forme amazighe (ta—t) — plusieurs auteurs y voient tout de même un emprunt ancien à la même racine. |
 | Tamazight (Atlas) | **Ssalamu ɛlikum** | Bonjour (la paix sur vous) | arabe | **Azul** | C’est ce qu’on dit au Moyen Atlas. « Azul » est la forme de l’école et des pancartes — les deux sont de l’amazigh d’aujourd’hui. |
 | Tamazight (Atlas) | **Ɛlikum ssalam** | Et sur vous la paix (réponse) | arabe | **Azul** | La réponse à la salutation, du même arabe. |
@@ -646,15 +658,23 @@ Chaque ligne déclenche, après une bonne réponse, la modale « ce mot vient d�
 
 | Cours | Expression | Français | Pourquoi c’est en attente |
 | --- | --- | --- | --- |
-| Kabyle | **Ttxil-k** | S’il te plaît | Origine discutée — arabe ou fonds kabyle selon les auteurs. |
-| Kabyle | **Tanemmirt aṭas** | Merci beaucoup | « aṭas » (beaucoup) est parfois donné comme emprunt ; le mot principal, lui, est amazigh. |
-| Tarifit | **Wah** | Oui | Probable emprunt à l’arabe maghrébin — à confirmer. |
-| Tarifit | **Mliḥ, l-ḥamdu li-llah** | Ça va bien, Dieu merci | Formule qui nomme Dieu — modale à écarter ou à reformuler. |
-| Tachelhit | **Yah** | Oui | Origine discutée — à confirmer par un locuteur du Souss. |
-| Tachelhit | **Labas, lḥamdulillah** | Ça va, Dieu merci | Formule qui nomme Dieu — modale à écarter ou à reformuler. |
-| Tamazight (Atlas) | **Yah** | Oui | Origine discutée — à confirmer. |
-| Tamazight (Atlas) | **Lla yɛawn** | Que Dieu t’aide | Bénédiction — aucun « mot plus classique » à proposer. |
-| Tamazight (Atlas) | **Qqim g lman** | Au revoir (reste dans la paix) | Formule mixte : verbe amazigh, « lman » (amān) arabe. Bénédiction. |
-| Tamazight (Atlas) | **Labas, l-ḥamdullah** | Ça va, Dieu merci | Formule qui nomme Dieu — modale à écarter ou à reformuler. |
-| Tamazight (Atlas) | **Mayd tɛnit ?** | Comment vas-tu ? | Le ɛ suggère une racine arabe — à trancher. |
-| Tamazight (Atlas) | **Tmunt d wayḍ** | Réponse à « Qqim g lman » | Formule d’adieu — à examiner avec la précédente. |
+| — | *Rien en attente.* | | |
+
+### Décisions prises — à faire relire par un locuteur
+
+Une modale ne s’affiche que si une source dit que le mot est un emprunt. Voici ce qui a été examiné, ce qui a été retenu, et sur quoi.
+
+| ☐ | Cours | Expression | Français | Décision | Pourquoi | Source |
+| --- | --- | --- | --- | --- | --- | --- |
+| ☐ | Kabyle | **Tanemmirt aṭas** | Merci beaucoup | Fonds amazigh — pas de modale | Le Dallet range « aṭas » (beaucoup, trop) sous une racine kabyle, ṬS, avec son état d’annexion (« waṭas »), sans la marque « ar. » qu’il met au mot suivant de la même page. Rien d’emprunté dans la formule. | Dallet, Dictionnaire kabyle-français (1982), racine ṬS |
+| ☐ | Kabyle | **Ttxil-k** | S’il te plaît | Origine non établie — pas de modale | Le Dallet l’enregistre sous sa propre racine, ṬXL, comme « expression de supplication », sans le donner pour emprunt — alors qu’il marque « ar. » le verbe « daxel » deux pages plus loin. Aucune source consultée n’établit une origine arabe. | Dallet, Dictionnaire kabyle-français (1982), racine ṬXL |
+| ☐ | Tarifit | **Wah** | Oui | Emprunt — modale affichée | Classé parmi les emprunts à l’arabe marocain (« wah », oui) dans le vocabulaire tarifit de M. Kossmann. Il entre au registre : la modale s’affiche. | World Loanword Database, vocabulaire tarifit (M. Kossmann) ; « Loanwords in Tarifiyt », 2009 |
+| ☐ | Tarifit | **Mliḥ, l-ḥamdu li-llah** | Ça va bien, Dieu merci | Formule, vœu — pas de modale | Formule qui nomme Dieu : une louange ne se remplace pas par un synonyme. | — |
+| ☐ | Tachelhit | **Labas, lḥamdulillah** | Ça va, Dieu merci | Formule, vœu — pas de modale | Formule qui nomme Dieu. « Labas » seul garde sa modale, comme dans les autres cours. | — |
+| ☐ | Tachelhit | **Yah** | Oui | Origine non établie — pas de modale | Aucune source consultée ne dit d’où vient ce « oui ». Sans source, pas de modale. | — |
+| ☐ | Tamazight (Atlas) | **Yah** | Oui | Origine non établie — pas de modale | Origine non établie. À faire confirmer par un locuteur : le manuel du Peace Corps pour le Moyen Atlas donne « ay / ih » pour « oui », pas « yah ». | Peace Corps Morocco, Tamazight Textbook (2007), « Adverbs of opinions » |
+| ☐ | Tamazight (Atlas) | **Lla yɛawn** | Que Dieu t’aide | Formule, vœu — pas de modale | Bénédiction qui nomme Dieu. Le manuel du Peace Corps la donne telle quelle (« May God help you »), avec sa réponse « lla ysllm ». | Peace Corps Morocco, Tamazight Textbook (2007), salutations |
+| ☐ | Tamazight (Atlas) | **Qqim g lman** | Au revoir (reste dans la paix) | Formule, vœu — pas de modale | Vœu d’adieu : le verbe est amazigh, « lman » vient de l’arabe « amān ». Un vœu ne se remplace pas. Graphie à faire confirmer : le manuel écrit « qim as g lman ». | Peace Corps Morocco, Tamazight Textbook (2007) : « Goodbye (I leave you in peace) » |
+| ☐ | Tamazight (Atlas) | **Tmunt d wayḍ** | Réponse à « Qqim g lman » | Formule, vœu — pas de modale | L’autre moitié du même adieu, attestée par le manuel (« You go in peace »). Aucun élément arabe relevé. | Peace Corps Morocco, Tamazight Textbook (2007) : « Goodbye (You go in peace) » |
+| ☐ | Tamazight (Atlas) | **Labas, l-ḥamdullah** | Ça va, Dieu merci | Formule, vœu — pas de modale | Formule qui nomme Dieu. Attestée telle quelle par le manuel du Peace Corps. | Peace Corps Morocco, Tamazight Textbook (2007), salutations |
+| ☐ | Tamazight (Atlas) | **Mayd tɛnit ?** | Comment vas-tu ? | Origine non établie — pas de modale | La question est bien attestée (« How are you? » dans le manuel), mais la racine du verbe n’est établie par aucune source consultée : le ɛ ne suffit pas à conclure. | Peace Corps Morocco, Tamazight Textbook (2007), salutations |

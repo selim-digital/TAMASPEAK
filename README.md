@@ -49,7 +49,9 @@ garde-fous tiennent ce fichier honnête :
   remplaçant vivant, et le dire vaut mieux que fabriquer) ;
 - les formules qui nomment Dieu (`Lla yɛawn`, `Qqim g lman`…) sont **hors du
   registre** — ce sont des bénédictions, pas des choix de vocabulaire ;
-- ce dont l'origine est discutée attend dans `A_TRANCHER`, affiché nulle part.
+- la modale *affirme* qu'un mot vient d'ailleurs : elle ne s'affiche que si une
+  source le dit. Les cas examinés et la source de chaque décision sont dans
+  `TRANCHES` ; ce qui attend encore va dans `A_TRANCHER`, affiché nulle part.
 
 La modale s'affiche **une fois par mot et par langue** (`src/lib/emprunts.js`) :
 sinon, au troisième passage, on ferme sans lire.
@@ -61,7 +63,7 @@ Chercher « eau » et voir `aman` identique du Rif au Souss ; chercher « maison
 et voir `axxam`, `tigmmi`, `taddart` se partager le territoire ; chercher
 « travail » et voir l'emprunt et le mot du fonds côte à côte.
 
-**Il ne tient aucune liste à lui.** `src/data/dictionnaire.js` dérive ses
+**Le cœur ne tient aucune liste à lui.** `src/data/dictionnaire.js` dérive ses
 entrées du contenu réel des leçons — le même module sert le moteur de
 recherche de l'app *et* `npm run gen:lexique`. Une seconde liste tenue à la
 main aurait divergé dès la leçon suivante, et un dictionnaire qui ment sur ce
@@ -90,6 +92,21 @@ la main »** de `lexique.md` : chaque note avec les formes qu'elle couvre, sa
 racine, les cours concernés, une colonne « discuté » et une case à cocher.
 C'est la liste à valider — et elle groupe par NOTE, pas par mot : « aman » est
 le même mot du Rif au Souss, il se valide une fois.
+
+### Le dictionnaire étendu
+
+Le vocabulaire des leçons ne fait pas un dictionnaire. `src/data/lexique/`
+ajoute, par-dessus, des mots que l'app connaît sans (encore) les enseigner :
+chaque entrée porte `enseigne: false`, la fiche affiche « pas encore dans les
+leçons », et la fiche d'enregistrement (`lexique.csv`) ne grossit pas. C'est
+aussi la réserve où puiser en écrivant une unité — `lexique.md` liste ces
+« candidats leçon » par thème.
+
+Le kabyle a deux lots (`kab.js`, `kab2.js`). Le second a été relu mot par mot
+contre le *Dictionnaire kabyle-français* de J.-M. Dallet (1982) ; cette
+relecture a aussi corrigé le premier. Ce n'est pas une validation par un
+locuteur — elle reste due. Pour une autre langue : créer
+`src/data/lexique/<lang>.js` et le déclarer dans `LOTS` (`index.js`).
 
 ### Ce qui est payant, et ce qui ne l'est pas
 

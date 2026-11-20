@@ -29,23 +29,28 @@
  * n'enseigne encore.
  */
 import { KAB } from './kab.js'
+import { KAB_2 } from './kab2.js'
 
 /** Les grands domaines, pour ranger et pour filtrer. */
 export const THEMES = Object.freeze({
   corps: 'Le corps',
+  sante: 'La santé',
   famille: 'La famille',
   gens: 'Les gens',
   maison: 'La maison',
   village: 'Le village & la ville',
   manger: 'Manger & boire',
   animaux: 'Les animaux',
+  plantes: 'Les plantes & les arbres',
   nature: 'La nature',
   meteo: 'Le temps qu’il fait',
   temps: 'Le temps qui passe',
   nombres: 'Les nombres',
   couleurs: 'Les couleurs',
   travail: 'Le travail',
+  vetements: 'Les vêtements & les parures',
   objets: 'Les objets',
+  sentiments: 'Les sentiments & les valeurs',
   verbes: 'Les verbes',
   qualites: 'Les qualités',
   outils: 'Les mots-outils',
@@ -101,7 +106,9 @@ function normaliser(lang, e) {
   }
 }
 
-const LOTS = { kab: KAB }
+// Un lot par fichier, mis bout à bout : le dictionnaire ne sait pas de quel
+// lot vient un mot, et n'a pas à le savoir.
+const LOTS = { kab: [...KAB, ...KAB_2] }
 
 /** Le lot d'une langue, ou un tableau vide si elle n'en a pas encore. */
 export const lexiqueEtendu = (lang) => (LOTS[lang] || []).map((e) => normaliser(lang, e))
