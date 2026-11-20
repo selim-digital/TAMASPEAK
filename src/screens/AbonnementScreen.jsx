@@ -383,7 +383,10 @@ export function AbonnementScreen({ onBack, retour }) {
                     onPrendre={() => prendre('solo')}
                     avantages={[
                       'Les 5 cours, toutes les unités',
-                      'Le dictionnaire complet — origine des mots et correspondances entre les cinq langues',
+                      // Ne PAS écrire « le dictionnaire complet » : il ne
+                      // l'est pas, et cet écran s'interdit les promesses qu'il
+                      // ne tient pas (voir l'en-tête du fichier).
+                      'Le dictionnaire — origine des mots, racines, et le même mot dans les cinq langues',
                       'Ta progression sur tous tes appareils',
                       'Les nouveaux contenus au fur et à mesure',
                     ]}
