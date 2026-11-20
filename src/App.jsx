@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { PhoneFrame } from './components/PhoneFrame.jsx'
 import { WelcomeScreen } from './screens/WelcomeScreen.jsx'
 import { OnboardingScreen } from './screens/OnboardingScreen.jsx'
@@ -62,6 +62,7 @@ import { XP_PER_LESSON, CHEST_GEMS, UNIT_BONUS, CHALLENGE, JEUX } from './data/e
 import {
   loadStore,
   saveStore,
+  mergeStores,
   resetStore,
   progressOf,
   withProgress,
@@ -215,6 +216,104 @@ export default function App() {
   // progression locale est INTACTE et se retrouve enrichie, jamais écrasée.
   // La dégradation vers « anonyme » n'arrive que sur réponse EXPLICITE du
   // serveur ; une panne réseau laisse l'optimisme (ou passe hors-ligne).
+  /* ---------------------------------------------------------------- */
+  /* LA PROGRESSION MONTE DÈS QU'ELLE BOUGE — plus seulement à        */
+  /* l'ouverture de l'app.                                            */
+  /*                                                                  */
+  /* Elle ne partait au serveur qu'à trois moments : l'ouverture,     */
+  /* la connexion, le bouton « Synchroniser ». Finir une leçon        */
+  /* n'envoyait rien : on jouait sur son téléphone, on ouvrait l'app  */
+  /* sur son ordinateur, et la progression du jour n'y était pas tant */
+  /* qu'on n'avait pas rouvert l'app sur le téléphone. Remarqué par   */
+  /* Selim : « pourquoi la progression n'est pas en ligne ? ».        */
+  /*                                                                  */
+  /* Le local reste la source de vérité — c'est ce qui fait marcher   */
+  /* l'app dans le métro, au village, ou sans compte du tout. On      */
+  /* envoie simplement PLUS TÔT : dès qu'on gagne de l'XP (une leçon, */
+  /* un jeu, un défi). Hors-ligne, l'envoi échoue en silence et       */
+  /* repart au retour du réseau.                                      */
+  /* ---------------------------------------------------------------- */
+
+  const storeCourant = useRef(store)
+  storeCourant.current = store
+  // L'XP déjà connu du serveur. null = pas encore synchronisé dans cette
+  // session : c'est la synchro d'ouverture qui s'en charge, on ne la double pas.
+  const xpEnvoye = useRef(null)
+  const envoiEnEchec = useRef(false)
+  // Une remise à zéro rend caduque toute synchro partie AVANT elle : sa
+  // fusion porte l'ancien état, et la règle max/union ne sait pas oublier —
+  // elle ressusciterait ce qu'on vient d'effacer. Chaque remise à zéro
+  // incrémente ce compteur ; une réponse d'une autre époque est ignorée.
+  const epoque = useRef(0)
+  const xpTotal = Object.values(store.byLang || {}).reduce((n, p) => n + (p?.xp || 0), 0)
+
+  /**
+   * Une synchronisation, quelle qu'en soit l'occasion — ouverture, leçon
+   * finie, retour du réseau. Une seule règle pour toutes, celle de
+   * `syncStore` : fusion max/union, et jamais le store d'un autre compte.
+   *
+   * Le résultat est FUSIONNÉ dans l'état courant plutôt que posé à sa place :
+   * pendant l'aller-retour (quelques centaines de millisecondes), on a pu
+   * jouer encore. Poser la fusion telle quelle effacerait ce qui vient
+   * d'être gagné ; la fusionner ne peut rien perdre, la règle étant max/union.
+   */
+  const synchroniser = useCallback((aEnvoyer, userId) => {
+    const depart = epoque.current
+    const valide = () => epoque.current === depart
+    // Deux contrôles, parce que l'aller-retour a deux moitiés : `syncStore`
+    // renonce à ÉCRIRE au serveur si une remise à zéro est survenue après sa
+    // lecture, et nous renonçons à POSER le résultat si elle est survenue
+    // après son écriture. Dans les deux cas, la fusion décrit un monde qui
+    // n'existe plus.
+    return syncStore(aEnvoyer, userId, { valide }).then(({ store: fusion, synced, remplace, perime }) => {
+      if (perime || !valide()) return
+      if (!synced) {
+        envoiEnEchec.current = true
+        return
+      }
+      envoiEnEchec.current = false
+      xpEnvoye.current = Object.values(fusion.byLang || {}).reduce((n, p) => n + (p?.xp || 0), 0)
+      if (remplace) {
+        // Changement de personne sur cet appareil : on prend SA progression,
+        // sans rien fusionner, et le verdict d'abonnement du partant s'oublie.
+        setStore(fusion)
+        oublierAbonnement()
+        return
+      }
+      setStore((courant) => mergeStores(courant, fusion))
+    })
+  }, [])
+
+  // Après chaque gain d'XP : envoi, regroupé sur deux secondes — une leçon
+  // finie enchaîne souvent coffre et bonus, inutile d'en faire trois envois.
+  // Seul un GAIN déclenche : une remise à zéro fait baisser l'XP, et elle
+  // écrit déjà elle-même au serveur, sans fusion (voir pushStore).
+  useEffect(() => {
+    if (sessionEtat !== 'connecte' || !user?.id) return
+    if (xpEnvoye.current === null || xpTotal <= xpEnvoye.current) return
+    const t = setTimeout(() => synchroniser(storeCourant.current, user.id), 2000)
+    return () => clearTimeout(t)
+  }, [xpTotal, sessionEtat, user?.id, synchroniser])
+
+  // Le réseau revient : ce qui n'avait pas pu partir part. Cela couvre aussi
+  // l'app ouverte hors-ligne — la session n'avait pas pu être confirmée, la
+  // synchro d'ouverture n'avait donc jamais eu lieu.
+  useEffect(() => {
+    const auRetour = async () => {
+      if (!envoiEnEchec.current && xpEnvoye.current !== null) return
+      // Personne ne s'est jamais connecté ici : rien à envoyer, on ne
+      // dérange pas le serveur à chaque coupure de réseau.
+      if (!sessionHint()) return
+      const { state, user: u } = await sessionState()
+      if (state !== 'authenticated') return
+      setUser(u)
+      setSessionEtat('connecte')
+      synchroniser(storeCourant.current, u.id)
+    }
+    window.addEventListener('online', auRetour)
+    return () => window.removeEventListener('online', auRetour)
+  }, [synchroniser])
+
   useEffect(() => {
     let timeout = null
     sessionState().then(({ state, user: u }) => {
@@ -225,13 +324,7 @@ export default function App() {
         // L'identifiant du compte est passé à la synchronisation : c'est lui
         // qui lui permet de reconnaître un store laissé par QUELQU'UN
         // D'AUTRE et de ne pas le verser dans ce compte-ci.
-        syncStore(loadStore(), u?.id).then(({ store: fusion, synced, remplace }) => {
-          if (!synced) return
-          setStore(fusion)
-          // Changement de personne sur cet appareil : le verdict
-          // d'abonnement en cache était celui du partant.
-          if (remplace) oublierAbonnement()
-        })
+        synchroniser(loadStore(), u?.id)
       } else if (state === 'anonymous') {
         setUser(null)
         setSessionEtat('anonyme')
@@ -756,6 +849,7 @@ export default function App() {
     // Le serveur AUSSI, sinon le zéro ne tient pas : la fusion est max/union
     // et réinstallerait l'ancien état à la connexion suivante. C'est le bug
     // vécu par Selim — tout effacer, et tout retrouver.
+    epoque.current++
     wipeRemoteStore()
     setStore(resetStore())
     setPendingLang(null)
@@ -877,6 +971,7 @@ export default function App() {
               onTrophees={() => setScreen(ECRANS.TROPHEES)}
               onFamille={() => setScreen(ECRANS.FAMILLE)}
               onResetLang={(langId) => {
+                epoque.current++
                 // Le zéro voulu : local + serveur, sans fusion (voir pushStore).
                 // Les modales d'emprunt partent avec : qui recommence le cours
                 // doit retrouver ses explications, pas un parcours muet.

@@ -258,6 +258,41 @@ son compte et sa progression ; seul l'accès est partagé. Le titulaire peut
 retirer quelqu'un, un membre peut partir de lui-même, et une résiliation libère
 les places.
 
+## Quand la progression monte au serveur
+
+**Le local fait foi** — c'est ce qui fait marcher l'app dans le métro, au
+village, en avion, et pour tous ceux qui n'ont pas de compte (la plupart). Le
+serveur garde une copie, pour retrouver sa progression sur un autre appareil.
+
+Cette copie ne montait qu'à l'ouverture de l'app, à la connexion et sur le
+bouton « Synchroniser ». **Finir une leçon n'envoyait rien** : on jouait sur son
+téléphone, on ouvrait l'app sur son ordinateur, et la progression du jour n'y
+était pas tant qu'on n'avait pas rouvert le téléphone.
+
+Elle monte désormais **dès qu'on gagne de l'XP** — une leçon, un jeu, un défi —
+regroupée sur deux secondes (une leçon finie enchaîne souvent coffre et bonus).
+Hors-ligne, l'envoi échoue en silence et **repart au retour du réseau**, y
+compris quand l'app a été ouverte sans réseau et n'avait jamais pu confirmer
+sa session.
+
+Trois règles tiennent l'ensemble :
+
+- **Toutes les occasions passent par la même fusion** (`syncStore` : max/union,
+  et jamais le store d'un autre compte). Ce qu'un autre appareil a mis sur le
+  serveur n'est jamais écrasé.
+- **Le résultat est fusionné dans l'état courant, pas posé à sa place** : pendant
+  l'aller-retour on a pu jouer encore, et poser la réponse telle quelle effacerait
+  ce qui vient d'être gagné.
+- **Une remise à zéro rend caduque toute synchro partie avant elle.** La fusion
+  max/union ne sait pas oublier : une réponse qui croise une remise à zéro
+  ressusciterait la langue effacée. D'où un compteur d'« époque », interrogé à
+  deux moments — `syncStore` renonce à **écrire** au serveur si la remise est
+  survenue après sa lecture, et l'app renonce à **poser** le résultat si elle est
+  survenue après son écriture.
+
+Seul un **gain** d'XP déclenche l'envoi : une remise à zéro fait baisser l'XP,
+et elle écrit déjà elle-même au serveur, sans fusion (`pushStore`).
+
 ## À qui appartient la progression posée sur un appareil
 
 La synchronisation est une **fusion max/union** : rien ne s'y perd jamais.

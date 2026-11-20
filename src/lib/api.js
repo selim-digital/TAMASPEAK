@@ -297,8 +297,14 @@ export async function confirmDeleteAccount(code) {
  *
  * @param {object} localStore la progression posée sur cet appareil
  * @param {string} [userId]   le compte qui se connecte ; absent = on ne sait pas
+ * @param {object} [opts]
+ * @param {() => boolean} [opts.valide] interrogé APRÈS la lecture et AVANT
+ *   l'écriture : faux, on n'écrit rien. C'est le seul moment où l'on peut
+ *   encore renoncer — une remise à zéro survenue pendant l'aller-retour rend
+ *   la fusion caduque (elle porte l'ancien état), et l'écrire ressusciterait
+ *   au serveur ce qu'on vient d'y effacer.
  */
-export async function syncStore(localStore, userId) {
+export async function syncStore(localStore, userId, { valide } = {}) {
   const etranger = storeEtranger(userId)
   try {
     const r = await fetch('/api/sync', { credentials: 'include' })
@@ -317,6 +323,7 @@ export async function syncStore(localStore, userId) {
     }
 
     const merged = mergeStores(localStore, remote)
+    if (valide && !valide()) return { store: localStore, synced: false, perime: true }
     const w = await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
