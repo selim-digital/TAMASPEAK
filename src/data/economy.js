@@ -29,6 +29,9 @@ export const CHALLENGE = { xpGain: 15, gems: 10, size: 5 }
 /** Lecture d'un récit d'histoire, comptée une seule fois. */
 export const XP_RECIT = 10
 
+/** Lecture d'une histoire de Titiche et Tomatiche, comptée une seule fois. */
+export const XP_HISTOIRE = 10
+
 /** Duel à deux sur un même téléphone : pair, pour que chacun joue autant. */
 export const DUO_TOURS = 6
 

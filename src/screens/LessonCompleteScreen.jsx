@@ -58,6 +58,8 @@ export function LessonCompleteScreen({
   cheerCount = 0,
   courseName = '',
   onContinue,
+  // Ce qu'il reste avant la prochaine histoire de Titiche et Tomatiche.
+  teaser = null,
 }) {
   const xpShown = useCountUp(xp)
   const { member, message } = cheerFor(cheerCount)
@@ -105,6 +107,15 @@ export function LessonCompleteScreen({
           <b className="text-turquoise-deep">{member.name}</b> — {message}
         </div>
       </div>
+
+      {teaser && (
+        <p
+          className="animate-rise mt-3 w-full rounded-2xl border border-gold/50 bg-gold/10 px-3 py-2 text-[11.5px] font-bold leading-snug text-ink"
+          style={{ animationDelay: '600ms' }}
+        >
+          📖 {teaser}
+        </p>
+      )}
 
       <div className="flex-1" />
 

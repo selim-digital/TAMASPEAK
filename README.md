@@ -25,6 +25,39 @@ et où le contraste entre le mot d'usage et le mot du fonds amazigh
 > de son fichier (`src/data/courses/*.js`) et signale explicitement ce qui est
 > néologisme militant, emprunt arabe d'usage courant ou forme contestée.
 
+### Les histoires de Titiche et Tomatiche
+
+Dix histoires **propriétaires**, à lire ou à raconter aux enfants : un frère et
+une sœur, un village, et à chaque fois une leçon de vie (l'entraide, la vérité,
+le pardon, le partage, l'hospitalité…). Elles vivent dans l'onglet
+**« Histoires »** de l'écran Histoire.
+
+- **Le texte est français, les mots sont amazighs.** Chaque histoire est écrite
+  une seule fois dans `src/data/histoires.js` ; les mots amazighs y sont des
+  jetons (`{soleil}`) remplacés par le mot du cours en cours. Quand le cours n'a
+  pas ce mot, le jeton retombe sur le français : une histoire en tarifit porte
+  moins de mots qu'en kabyle, mais **aucun mot inventé**.
+- **Une histoire se gagne** en terminant une unité ; les histoires verrouillées
+  restent visibles avec ce qu'il faut terminer. La fin de leçon annonce ce qu'il
+  reste (« Plus que 2 leçons pour débloquer une histoire… »), l'écran d'unité
+  terminée ouvre l'histoire débloquée.
+- **Le début des deux premières est gratuit**, la suite et les huit autres
+  demandent l'abonnement (`suiteHistoiresOuverte` dans `src/lib/abonnement.js`,
+  même règle que les unités : un serveur muet n'interdit rien).
+- **Rien de surnaturel**, et Dieu y est nommé « Rebbi » (kabyle) ou « Dieu ». La
+  formule « si Dieu le veut » vit dans le récit, sous trois formes qui alternent.
+- **Les personnages** (`src/components/mascots/TiticheTomatiche.jsx`) suivent la
+  règle de la famille : silhouettes sans visage, jamais d'yeux.
+
+```bash
+npm run check:histoires   # chaque mot d'une histoire existe dans le cours
+```
+
+Le contrôle échoue si une histoire fait lire un mot que les leçons n'enseignent
+pas. Les seules exceptions sont listées dans `HORS_LEXIQUE` (`Rebbi`,
+`ma yebɣa Rebbi`, `ma yebɣa Yillu`, `Jeddi`) : elles sont **à faire valider par
+un locuteur natif**, comme le reste du contenu.
+
 ### Le lexique, et les emprunts à l'arabe
 
 ```bash

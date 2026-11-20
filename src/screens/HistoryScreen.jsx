@@ -3,9 +3,11 @@ import { Akermus } from '../components/mascots/Akermus.jsx'
 import { ExerciseChoice } from '../components/ExerciseChoice.jsx'
 import { RECITS, recitParId } from '../data/history.js'
 import { PERSONNAGES } from '../data/personnages.js'
-import { XP_RECIT } from '../data/economy.js'
+import { HISTOIRES, histoireParId, histoireDebloquee, paragraphesOuverts } from '../data/histoires.js'
+import { XP_RECIT, XP_HISTOIRE } from '../data/economy.js'
 import { LAND_BY_ID } from '../data/journey.js'
-import { recordRecit, recitLu, recitsLus } from '../lib/progress.js'
+import { recordRecit, recitLu, recitsLus, recordHistoire, histoireLue } from '../lib/progress.js'
+import { Histoire, HistoiresOnglet } from './HistoiresScreen.jsx'
 import { sfx } from '../lib/sfx.js'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -126,13 +128,44 @@ function Recit({ recit, deja, onFini, onFermer }) {
  * des cours, accessible dès le premier jour, sans dépendre du niveau de langue
  * atteint (voir l'en-tête de data/history.js).
  */
-export function HistoryScreen({ progress, onSave, onBack }) {
+export function HistoryScreen({
+  course,
+  progress,
+  onSave,
+  onBack,
+  // Les histoires de Titiche et Tomatiche : `suiteOuverte` dit si l'abonnement
+  // ouvre la suite, `histoireInitiale` ouvre l'écran directement sur une
+  // histoire (on arrive de l'écran « unité terminée »).
+  suiteOuverte = true,
+  onAbonnement,
+  histoireInitiale = null,
+}) {
   const [ouvert, setOuvert] = useState(null)
-  // Deux onglets : la frise des récits, et la galerie des personnages —
-  // qui renvoie aux récits (une porte d'entrée, pas un doublon).
-  const [onglet, setOnglet] = useState('recits')
+  // Trois onglets : la frise des récits, la galerie des personnages — qui
+  // renvoie aux récits (une porte d'entrée, pas un doublon) — et les
+  // histoires de Titiche et Tomatiche.
+  const [onglet, setOnglet] = useState(histoireInitiale ? 'histoires' : 'recits')
   const [deplie, setDeplie] = useState(null)
   const lus = recitsLus(progress)
+  // Même précaution que pour les récits : `deja` est figé à l'ouverture.
+  const [histoire, setHistoire] = useState(() => {
+    const h = histoireParId(histoireInitiale)
+    return h && histoireDebloquee(course, progress, h) ? { h, deja: histoireLue(progress, h.id) } : null
+  })
+
+  if (histoire) {
+    return (
+      <Histoire
+        histoire={histoire.h}
+        langId={course.id}
+        ouverts={paragraphesOuverts(histoire.h, suiteOuverte)}
+        deja={histoire.deja}
+        onFini={(id) => onSave(recordHistoire(progress, id, { xpGain: XP_HISTOIRE }))}
+        onFermer={() => setHistoire(null)}
+        onAbonnement={onAbonnement}
+      />
+    )
+  }
 
   if (ouvert) {
     return (
@@ -162,6 +195,7 @@ export function HistoryScreen({ progress, onSave, onBack }) {
         {[
           { id: 'recits', label: `Récits (${RECITS.length})` },
           { id: 'personnages', label: `Personnages (${PERSONNAGES.length})` },
+          { id: 'histoires', label: `Histoires (${HISTOIRES.length})` },
         ].map((o) => (
           <button
             key={o.id}
@@ -170,7 +204,7 @@ export function HistoryScreen({ progress, onSave, onBack }) {
               sfx.click()
               setOnglet(o.id)
             }}
-            className={`flex-1 rounded-xl border-2 py-2 text-[12px] font-extrabold transition ${
+            className={`flex-1 rounded-xl border-2 px-1 py-2 text-[11px] font-extrabold transition ${
               onglet === o.id
                 ? 'border-turquoise bg-turquoise/10 text-turquoise-deep'
                 : 'border-line bg-cream text-ink-soft'
@@ -182,7 +216,14 @@ export function HistoryScreen({ progress, onSave, onBack }) {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
-        {onglet === 'personnages' ? (
+        {onglet === 'histoires' ? (
+          <HistoiresOnglet
+            course={course}
+            progress={progress}
+            suiteOuverte={suiteOuverte}
+            onOuvrir={(h) => setHistoire({ h, deja: histoireLue(progress, h.id) })}
+          />
+        ) : onglet === 'personnages' ? (
           <>
             <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-line bg-sand px-3 py-3">
               <Akermus height={60} state="curious" className="flex-none" />

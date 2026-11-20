@@ -48,7 +48,14 @@ import { EnregistrerScreen } from './screens/EnregistrerScreen.jsx'
 import { AccountScreen } from './screens/AccountScreen.jsx'
 import { AbonnementScreen } from './screens/AbonnementScreen.jsx'
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx'
-import { etatAbonnement, uniteOuverte, rejoindreFamille, oublierAbonnement } from './lib/abonnement.js'
+import {
+  etatAbonnement,
+  uniteOuverte,
+  suiteHistoiresOuverte,
+  rejoindreFamille,
+  oublierAbonnement,
+} from './lib/abonnement.js'
+import { histoiresDeLUnite, prochaineHistoire } from './data/histoires.js'
 import { oublierEmprunts } from './lib/emprunts.js'
 import { makeSeed, seededPick, readDuelFromUrl, clearDuelFromUrl, contentDigest } from './lib/challenge.js'
 import { FamilyCarousel } from './components/mascots/FamilyCarousel.jsx'
@@ -139,6 +146,15 @@ export default function App() {
   const [activeLesson, setActiveLesson] = useState(null)
   const [activeChest, setActiveChest] = useState(null)
   const [completedUnit, setCompletedUnit] = useState(null)
+  // L'histoire de Titiche et Tomatiche à ouvrir en arrivant sur l'écran
+  // Histoire (on vient de la débloquer). `null` = arrivée ordinaire.
+  const [histoireCible, setHistoireCible] = useState(null)
+  // Quitter l'écran Histoire par la barre d'onglets ne passe pas par son
+  // bouton retour : sans ceci, la cible resterait armée et rouvrirait la
+  // même histoire à la visite suivante.
+  useEffect(() => {
+    if (screen !== ECRANS.HISTOIRE) setHistoireCible(null)
+  }, [screen])
   const [lastResult, setLastResult] = useState({ correct: 0, total: 0 })
   const [challengeExercises, setChallengeExercises] = useState([])
   const [duel, setDuel] = useState(null)
@@ -766,6 +782,14 @@ export default function App() {
     ? course.units.findIndex((u) => u.id === completedUnit.id) < course.units.length - 1
     : false
 
+  // Le teaser de fin de leçon. Rien quand l'unité vient de tomber : l'écran
+  // suivant annonce lui-même l'histoire débloquée, inutile de le dire deux fois.
+  const aGagner = completedUnit ? null : prochaineHistoire(course, progress)
+  const teaserHistoire =
+    aGagner && aGagner.restantes > 0
+      ? `Plus que ${aGagner.restantes} leçon${aGagner.restantes > 1 ? 's' : ''} pour débloquer une histoire de Titiche et Tomatiche à raconter à vos enfants !`
+      : null
+
   return (
     <div className="min-h-full bg-sand text-ink">
       <JewelDefs />
@@ -1153,7 +1177,18 @@ export default function App() {
           )}
 
           {screen === ECRANS.HISTOIRE && (
-            <HistoryScreen progress={progress} onSave={setProgress} onBack={() => setScreen(ECRANS.AUJOURDHUI)} />
+            <HistoryScreen
+              course={course}
+              progress={progress}
+              onSave={setProgress}
+              suiteOuverte={suiteHistoiresOuverte(abonnement)}
+              histoireInitiale={histoireCible}
+              onAbonnement={() => setScreen(ECRANS.ABONNEMENT)}
+              onBack={() => {
+                setHistoireCible(null)
+                setScreen(ECRANS.AUJOURDHUI)
+              }}
+            />
           )}
 
           {screen === ECRANS.MISSIONS && (
@@ -1183,6 +1218,7 @@ export default function App() {
               streak={progress.streak}
               cheerCount={lessonsDone(course, progress)}
               courseName={course.name}
+              teaser={teaserHistoire}
               onContinue={afterLessonComplete}
             />
           )}
@@ -1206,6 +1242,12 @@ export default function App() {
               gems={UNIT_BONUS}
               hasNext={nextUnitExists}
               courseName={course.name}
+              histoires={histoiresDeLUnite(course, completedUnit)}
+              onHistoire={(h) => {
+                setCompletedUnit(null)
+                setHistoireCible(h.id)
+                setScreen(ECRANS.HISTOIRE)
+              }}
               onContinue={() => {
                 setCompletedUnit(null)
                 setScreen(ECRANS.CHEMIN)
