@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "gen:audio": "node scripts/gen-audio-manifest.mjs",
-    "gen:lexique": "node scripts/gen-lexique.mjs"
+    "gen:lexique": "node scripts/gen-lexique.mjs",
+    "check:histoires": "node scripts/check-histoires.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

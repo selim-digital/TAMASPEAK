@@ -47,6 +47,8 @@ export function defaultProgress(course) {
     missionsFaites: [],
     // Récits d'histoire lus et dont la question a été trouvée.
     recitsLus: [],
+    // Histoires de Titiche et Tomatiche lues jusqu'à leur question.
+    histoiresLues: [],
     // Le coin jeux : parties de Mémory gagnées, niveaux de mots croisés
     // réussis (ids) — ces derniers conditionnent la récompense unique.
     jeux: { memoryVictoires: 0, motsFaits: [] },
@@ -210,6 +212,22 @@ export function recordRecit(progress, recitId, { xpGain = 10 } = {}) {
 
 export const recitLu = (progress, recitId) => (progress.recitsLus || []).includes(recitId)
 export const recitsLus = (progress) => (progress.recitsLus || []).length
+
+/* ------------------------------------------------------------------ */
+/* Histoires de Titiche et Tomatiche                                   */
+/* ------------------------------------------------------------------ */
+
+/** Marque une histoire comme lue et sa question trouvée. XP une seule fois. */
+export function recordHistoire(progress, histoireId, { xpGain = 10 } = {}) {
+  if ((progress.histoiresLues || []).includes(histoireId)) return progress
+  return {
+    ...progress,
+    ...addXp(progress, xpGain),
+    histoiresLues: [...(progress.histoiresLues || []), histoireId],
+  }
+}
+
+export const histoireLue = (progress, histoireId) => (progress.histoiresLues || []).includes(histoireId)
 
 /** Nombre de leçons terminées (hors coffres) dans cette langue. */
 export const lessonsDone = (course, progress) =>
@@ -419,6 +437,10 @@ function mergeProgress(a = {}, b = {}) {
     lastDay: (a.lastDay || '') > (b.lastDay || '') ? a.lastDay : b.lastDay,
     lexique: [...parMot.values()],
     missionsFaites: [...new Set([...(a.missionsFaites || []), ...(b.missionsFaites || [])])],
+    // Lectures : union, comme le reste — sans elle, l'appareil local écrasait
+    // les lectures faites ailleurs.
+    recitsLus: [...new Set([...(a.recitsLus || []), ...(b.recitsLus || [])])],
+    histoiresLues: [...new Set([...(a.histoiresLues || []), ...(b.histoiresLues || [])])],
     jeux: {
       memoryVictoires: Math.max(a.jeux?.memoryVictoires || 0, b.jeux?.memoryVictoires || 0),
       motsFaits: [...new Set([...(a.jeux?.motsFaits || []), ...(b.jeux?.motsFaits || [])])],

@@ -3,6 +3,7 @@ import { Button } from '../components/Button.jsx'
 import { Confetti } from '../components/Confetti.jsx'
 import { Tabzimt } from '../components/jewels/Tabzimt.jsx'
 import { GemIcon } from '../components/jewels/StatIcons.jsx'
+import { TiticheEtTomatiche } from '../components/mascots/TiticheTomatiche.jsx'
 import { sfx } from '../lib/sfx.js'
 import { shareText, unitShare } from '../lib/share.js'
 
@@ -10,7 +11,16 @@ import { shareText, unitShare } from '../lib/share.js'
  * Écran « Unité terminée » (v3) : le médaillon tabzimt — la fibule émaillée
  * d'Ath Yenni — surgit avec un effet ressort. Un bijou d'artisanat en trophée.
  */
-export function UnitCompleteScreen({ unit, gems = 25, hasNext = true, courseName = '', onContinue }) {
+export function UnitCompleteScreen({
+  unit,
+  gems = 25,
+  hasNext = true,
+  courseName = '',
+  onContinue,
+  // Les histoires de Titiche et Tomatiche que cette unité vient de débloquer.
+  histoires = [],
+  onHistoire,
+}) {
   const [flash, setFlash] = useState(null)
 
   async function share() {
@@ -49,6 +59,29 @@ export function UnitCompleteScreen({ unit, gems = 25, hasNext = true, courseName
       <div className="animate-pop-in mt-5 flex items-center gap-2 rounded-2xl border border-line bg-cream px-5 py-3 text-lg font-extrabold text-gold-deep" style={{ animationDelay: '380ms' }}>
         <GemIcon size={24} /> +{gems} gemmes bonus
       </div>
+
+      {histoires.length > 0 && (
+        <button
+          type="button"
+          onClick={() => {
+            sfx.click()
+            onHistoire?.(histoires[0])
+          }}
+          className="animate-pop-in mt-4 flex w-full items-end gap-2.5 rounded-2xl border-2 border-turquoise bg-white px-3 pt-2.5 text-left transition active:scale-[.99]"
+          style={{ animationDelay: '520ms' }}
+        >
+          <TiticheEtTomatiche height={62} className="flex-none" />
+          <span className="min-w-0 flex-1 pb-2.5">
+            <span className="block text-[9.5px] font-extrabold uppercase tracking-wide text-turquoise-deep">
+              {histoires.length > 1 ? `${histoires.length} histoires débloquées` : 'Histoire débloquée'}
+            </span>
+            <span className="block text-[13px] font-extrabold leading-snug">« {histoires[0].titre} »</span>
+            <span className="block text-[11px] leading-snug text-ink-soft">
+              Une histoire de Titiche et Tomatiche à raconter à vos enfants. Lire →
+            </span>
+          </span>
+        </button>
+      )}
 
       <div className="flex-1" />
 

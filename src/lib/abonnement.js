@@ -191,6 +191,18 @@ export function entreeDicoOuverte(entree, etat) {
   return uniteOuverte(entree?.uniteIndex ?? 0, etat)
 }
 
+/**
+ * La suite des histoires de Titiche et Tomatiche est-elle ouverte ?
+ *
+ * Le début des deux premières est gratuit (data/histoires.js) ; tout le reste
+ * est payant. Même règle que les unités au-delà des unités libres : on ouvre
+ * tant qu'on ne sait pas, on ne ferme que sur un « non » certain.
+ */
+export function suiteHistoiresOuverte(etat) {
+  if (!etat) return true
+  return etat.abonne === true
+}
+
 /** Reste-t-il quelque chose à débloquer ? (sert à décider d'inviter, ou non) */
 export function verrouActif(etat) {
   return !!etat && etat.paiementOuvert === true && etat.abonne !== true
